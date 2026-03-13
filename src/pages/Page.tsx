@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useLocation, Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { useThemeContext } from '../contexts/ThemeContext';
 import { getTenses, getTenseGroups, getPronouns } from '../data/verbs';
 import type { AppLanguage } from '../data/verbs';
@@ -17,6 +18,7 @@ import { isIrregularVerb } from '../data/irregularVerbs';
 import { getTranslation, getTranslationOrPlaceholder } from '../data/dictionary';
 import { getVerbExample } from '../data/verbExamples';
 import { getTenseExplanation } from '../data/tenseExplanations';
+import { getVerbMetadata } from '../data/verbMetadata';
 import { getMistakes, getDueMistakes, addMistake, updateMistakeReview, type MistakeEntry } from '../utils/mistakeBank';
 import { getStarredVerbs, toggleStarredVerb, isStarredVerb } from '../utils/starredVerbs';
 import { getActivityHistory, getLastNDays, addActivityToday } from '../utils/activityHistory';
@@ -395,6 +397,7 @@ export function Page() {
 
   /** Öğrenme tablosu: Ezber Modu (Active Recall) — çekimler blur, hover’da netleşir */
   const [activeRecallMode, setActiveRecallMode] = useState(false);
+  const [showAllTenses, setShowAllTenses] = useState(false);
 
   /** Quiz görünümü: 'list' = Liste, 'focus' = Odak modu (tek şahıs) */
   const [quizLayout, setQuizLayout] = useState<'list' | 'focus'>('list');
@@ -1593,21 +1596,24 @@ export function Page() {
       )}
 
       {appMode === 'conjugation' && selectedLabLanguage !== null && (
-      <main className="max-w-2xl mx-auto px-4 py-4 pb-20 flex flex-col gap-4">
-        {/* Dil seçimine dön — laboratuvar başlığının hemen üstü */}
-        <div className="shrink-0">
-          <button
-            type="button"
-            onClick={() => setSelectedLabLanguage(null)}
-            className="text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-1 dark:focus:ring-offset-slate-900 rounded-lg px-2 py-1 -ml-2"
-            aria-label="Dil seçimine dön"
-          >
-            ← Dil Seçimine Dön
-          </button>
-        </div>
-        {/* Kontrol çubuğu: Fiil + Zaman (Göster butonu yok — Enter ve zaman değişimi otomatik tetikler) */}
-        <section className="relative z-10 p-5 sm:p-6 rounded-2xl bg-white dark:bg-slate-800/80 shadow-sm border border-slate-100 dark:border-slate-700/50 backdrop-blur-md transition-colors duration-300 shrink-0 overflow-visible" ref={autocompleteWrapRef}>
-          <div className="flex flex-col md:flex-row md:items-end gap-3 md:gap-4">
+      <main className="max-w-7xl w-full mx-auto px-4 md:px-8 py-4 pb-20">
+        <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6 lg:gap-8">
+          {/* Sol sütun: Kontrol paneli (mobilde en üstte) — 4 kolon */}
+          <aside className="flex flex-col gap-4 lg:col-span-4 order-1">
+            {/* Dil seçimine dön */}
+            <div className="shrink-0">
+              <button
+                type="button"
+                onClick={() => setSelectedLabLanguage(null)}
+                className="text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-1 dark:focus:ring-offset-slate-900 rounded-lg px-2 py-1 -ml-2"
+                aria-label="Dil seçimine dön"
+              >
+                ← Dil Seçimine Dön
+              </button>
+            </div>
+            {/* Fiil arama + Zaman seçici */}
+            <section className="relative z-10 p-5 sm:p-6 rounded-2xl bg-white dark:bg-slate-800/80 shadow-sm border border-slate-100 dark:border-slate-700/50 backdrop-blur-md transition-colors duration-300 shrink-0 overflow-visible" ref={autocompleteWrapRef}>
+              <div className="flex flex-col gap-3">
             {/* Fiil girişi — relative + anchor ref (Portal pozisyonu için) */}
             <div className="flex-1 min-w-0 flex flex-col relative">
               <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">Fiil girin</label>
@@ -1707,7 +1713,7 @@ export function Page() {
               )}
             </div>
             {/* Zaman seçimi — custom dropdown (glassmorphism, kategoriler, check ikonu, animasyon) */}
-            <div className="md:w-48 flex-shrink-0 flex flex-col relative overflow-visible" ref={tenseDropdownRef}>
+            <div className="w-full flex-shrink-0 flex flex-col relative overflow-visible" ref={tenseDropdownRef}>
               <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">Zaman seçin</label>
               <button
                 type="button"
@@ -1769,8 +1775,36 @@ export function Page() {
               </div>
             </div>
           </div>
-        </section>
+            </section>
+            {/* Zaman açıklaması kartı — sol panelde */}
+            {getTenseExplanation(selectedLanguage, selectedTense) && (
+              <div className="rounded-xl bg-blue-900/20 dark:bg-blue-900/30 border border-blue-500/30 dark:border-blue-400/40 p-4 flex items-start gap-3 backdrop-blur-sm transition-all duration-200">
+                <span className="text-xl shrink-0" aria-hidden>ℹ️</span>
+                <p className="text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
+                  {getTenseExplanation(selectedLanguage, selectedTense)}
+                </p>
+              </div>
+            )}
+            {/* Tüm Zamanları Göster — sadece Öğrenme sekmesinde anlamlı */}
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setShowAllTenses((v) => !v)}
+                className={`w-full rounded-xl border px-3 py-2.5 text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${
+                  showAllTenses
+                    ? 'border-indigo-400 dark:border-indigo-500 bg-indigo-500/15 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300'
+                    : 'border-slate-200 dark:border-slate-600 bg-slate-50/80 dark:bg-slate-800/60 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700'
+                }`}
+                aria-pressed={showAllTenses}
+                aria-label={showAllTenses ? 'Tek zaman görünümüne dön' : 'Tüm zamanları göster'}
+              >
+                Tüm Zamanları Göster
+              </button>
+            </div>
+          </aside>
 
+          {/* Sağ sütun: Sekmeler + ana çalışma alanı — 8 kolon */}
+          <div className="flex flex-col gap-4 lg:col-span-8 order-2">
         {error && (
           <div className="mb-4 rounded-2xl bg-red-50/80 dark:bg-red-500/10 border border-red-200/80 dark:border-red-400/30 px-5 py-3.5 text-red-700 dark:text-red-300 text-sm shadow-sm transition-colors duration-300">
             {error}
@@ -2337,14 +2371,6 @@ export function Page() {
                 </p>
               </div>
             )}
-            {getTenseExplanation(selectedLanguage, selectedTense) && (
-              <div className="mx-4 sm:mx-0 mb-4 rounded-xl bg-blue-900/20 dark:bg-blue-900/30 border border-blue-500/30 dark:border-blue-400/40 p-4 flex items-start gap-3 backdrop-blur-sm transition-all duration-200">
-                <span className="text-xl shrink-0" aria-hidden>ℹ️</span>
-                <p className="text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
-                  {getTenseExplanation(selectedLanguage, selectedTense)}
-                </p>
-              </div>
-            )}
             <VisualTimeline tenseId={selectedTense} />
             <div className="border-b border-slate-200 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/50 px-5 sm:px-6 py-4">
               <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 text-center sm:text-left">
@@ -2391,7 +2417,72 @@ export function Page() {
                   <span>Ezber Modu</span>
                 </button>
               </div>
+              {/* Form ve kök rozetleri + Kurallı/Düzensiz + Yardımcı fiil etiketleri */}
+              {(() => {
+                const meta = getVerbMetadata(verbKey, selectedLanguage, !isIrregularVerb(verbKey, selectedLanguage));
+                return (
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-3 mt-3 border-t border-slate-200/80 dark:border-slate-600/80">
+                    <div className="flex flex-wrap gap-2">
+                      <span className="inline-flex items-center rounded-lg bg-slate-100 dark:bg-slate-700/80 border border-slate-200 dark:border-slate-600 px-2.5 py-1 text-xs font-medium text-slate-600 dark:text-slate-300">
+                        Mastar: <span className="ml-1 font-semibold text-slate-800 dark:text-slate-100">{meta.infinitive}</span>
+                      </span>
+                      <span className="inline-flex items-center rounded-lg bg-slate-100 dark:bg-slate-700/80 border border-slate-200 dark:border-slate-600 px-2.5 py-1 text-xs font-medium text-slate-600 dark:text-slate-300">
+                        Ulaç: <span className="ml-1 font-semibold text-slate-800 dark:text-slate-100">{meta.gerund}</span>
+                      </span>
+                      <span className="inline-flex items-center rounded-lg bg-slate-100 dark:bg-slate-700/80 border border-slate-200 dark:border-slate-600 px-2.5 py-1 text-xs font-medium text-slate-600 dark:text-slate-300">
+                        Geçmiş Ortaç: <span className="ml-1 font-semibold text-slate-800 dark:text-slate-100">{meta.pastParticiple}</span>
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap gap-2 ml-auto">
+                      <span className={`inline-flex items-center rounded-lg border px-2.5 py-1 text-xs font-semibold ${meta.isRegular ? 'bg-emerald-500/15 dark:bg-emerald-500/20 border-emerald-400/40 text-emerald-700 dark:text-emerald-300' : 'bg-amber-500/15 dark:bg-orange-500/20 border-amber-400/40 dark:border-orange-400/40 text-amber-800 dark:text-orange-300'}`}>
+                        {meta.isRegular ? 'Kurallı' : 'Düzensiz'}
+                      </span>
+                      <span className="inline-flex items-center rounded-lg bg-indigo-500/15 dark:bg-indigo-500/20 border border-indigo-400/40 dark:border-indigo-400/40 px-2.5 py-1 text-xs font-semibold text-indigo-700 dark:text-indigo-300">
+                        Auxiliaire: {meta.auxiliary}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
+            {showAllTenses ? (
+              /* Tüm zamanlar grid — kartlar halinde */
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mt-4">
+                {tensesForLang.map((t, index) => {
+                  let map: Record<string, string>;
+                  try {
+                    map = getConjugationForTenseForLang(verbKey, t.id, selectedLanguage);
+                  } catch {
+                    return null;
+                  }
+                  return (
+                    <motion.div
+                      key={t.id}
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.25, ease: 'easeOut', delay: index * 0.03 }}
+                      className="rounded-xl bg-slate-800/40 dark:bg-slate-800/60 border border-slate-700/50 dark:border-slate-600/50 overflow-hidden backdrop-blur-sm transition-all duration-200 hover:border-slate-600 dark:hover:border-indigo-500/30"
+                    >
+                      <div className="px-4 py-2.5 border-b border-slate-700/50 dark:border-slate-600/50 bg-slate-700/30 dark:bg-slate-700/40">
+                        <h3 className="text-sm font-bold text-slate-200 dark:text-slate-100">{t.label}</h3>
+                      </div>
+                      <ul className="divide-y divide-slate-700/50 dark:divide-slate-600/50">
+                        {pronounsForLang.map(({ id, label }) => (
+                          <li key={id} className="flex items-center justify-between gap-2 px-4 py-2 text-sm">
+                            <span className="text-slate-500 dark:text-slate-400 font-medium shrink-0 w-16">{label}</span>
+                            <span className="text-slate-200 dark:text-slate-100 text-right truncate">
+                              {map[id] ?? '—'}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            ) : (
+            <>
+            <VisualTimeline tenseId={selectedTense} />
             <ul className="divide-y divide-slate-100 dark:divide-slate-700/50">
               {pronounsForLang.map(({ id, label }) => {
                 const homophoneInfo = selectedLanguage === 'fr' ? getHomophoneInfo(id) : null;
@@ -2473,6 +2564,8 @@ export function Page() {
                   </div>
                 </div>
               </section>
+            )}
+            </>
             )}
           </>
         )}
@@ -2740,6 +2833,8 @@ export function Page() {
 
           </section>
         )}
+          </div>
+        </div>
       </main>
       )}
       {appMode === 'ezber' && <EzberMakinesi />}
