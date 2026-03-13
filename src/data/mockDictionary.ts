@@ -1,216 +1,76 @@
 /**
- * Sözlük sayfası için geçici mock veri (TR↔FR, TR↔ES).
- * API bağlanana kadar arama bu veri üzerinden çalışır.
+ * Sözlük — geçici mock veri (API bağlanana kadar).
+ * Yön: tr-fr | fr-tr | tr-es | es-tr
  */
 
 export type DictDirection = 'tr-fr' | 'fr-tr' | 'tr-es' | 'es-tr';
 
 export type DictionaryEntry = {
-  word: string;
-  partOfSpeech: string;
-  translation: string;
-  lang: 'tr' | 'fr' | 'es';
-  examples?: { sentence: string; translation: string }[];
+  tr: string;
+  fr: string;
+  es: string;
+  type: string;
+  exampleTr?: string;
+  exampleFr?: string;
+  exampleEs?: string;
 };
 
-/** Anahtar: yön + normalize kelime (küçük, trim). Değer: entry. */
-const TR_FR: Record<string, DictionaryEntry> = {
-  elma: {
-    word: 'elma',
-    partOfSpeech: 'isim',
-    translation: 'pomme',
-    lang: 'fr',
-    examples: [
-      { sentence: 'J\'ai mangé une pomme.', translation: 'Bir elma yedim.' },
-    ],
-  },
-  gitmek: {
-    word: 'gitmek',
-    partOfSpeech: 'fiil',
-    translation: 'aller',
-    lang: 'fr',
-    examples: [
-      { sentence: 'Je vais à l\'école.', translation: 'Okula gidiyorum.' },
-    ],
-  },
-  su: {
-    word: 'su',
-    partOfSpeech: 'isim',
-    translation: 'eau',
-    lang: 'fr',
-    examples: [
-      { sentence: 'L\'eau est froide.', translation: 'Su soğuk.' },
-    ],
-  },
-  kitap: {
-    word: 'kitap',
-    partOfSpeech: 'isim',
-    translation: 'livre',
-    lang: 'fr',
-    examples: [
-      { sentence: 'Ce livre est intéressant.', translation: 'Bu kitap ilginç.' },
-    ],
-  },
-  güzel: {
-    word: 'güzel',
-    partOfSpeech: 'sıfat',
-    translation: 'beau / belle',
-    lang: 'fr',
-    examples: [
-      { sentence: 'C\'est une belle journée.', translation: 'Güzel bir gün.' },
-    ],
-  },
-};
+const ENTRIES: DictionaryEntry[] = [
+  { tr: 'elma', fr: 'pomme', es: 'manzana', type: 'isim', exampleTr: 'Masadaki elmalar taze.', exampleFr: 'Les pommes sur la table sont fraîches.', exampleEs: 'Las manzanas en la mesa están frescas.' },
+  { tr: 'gitmek', fr: 'aller', es: 'ir', type: 'fiil', exampleTr: 'Yarın okula gideceğim.', exampleFr: 'J\'irai à l\'école demain.', exampleEs: 'Iré a la escuela mañana.' },
+  { tr: 'güzel', fr: 'beau / belle', es: 'hermoso / hermosa', type: 'sıfat', exampleTr: 'Çok güzel bir gün.', exampleFr: 'Une très belle journée.', exampleEs: 'Un día muy hermoso.' },
+  { tr: 'su', fr: 'eau', es: 'agua', type: 'isim', exampleTr: 'Bir bardak su lütfen.', exampleFr: 'Un verre d\'eau, s\'il vous plaît.', exampleEs: 'Un vaso de agua, por favor.' },
+  { tr: 'kitap', fr: 'livre', es: 'libro', type: 'isim', exampleTr: 'Bu kitabı okudum.', exampleFr: 'J\'ai lu ce livre.', exampleEs: 'He leído este libro.' },
+];
 
-const FR_TR: Record<string, DictionaryEntry> = {
-  pomme: {
-    word: 'pomme',
-    partOfSpeech: 'nom',
-    translation: 'elma',
-    lang: 'tr',
-    examples: [
-      { sentence: 'Une pomme par jour.', translation: 'Günde bir elma.' },
-    ],
-  },
-  aller: {
-    word: 'aller',
-    partOfSpeech: 'verbe',
-    translation: 'gitmek',
-    lang: 'tr',
-    examples: [
-      { sentence: 'Je vais au marché.', translation: 'Markete gidiyorum.' },
-    ],
-  },
-  eau: {
-    word: 'eau',
-    partOfSpeech: 'nom',
-    translation: 'su',
-    lang: 'tr',
-  },
-  livre: {
-    word: 'livre',
-    partOfSpeech: 'nom',
-    translation: 'kitap',
-    lang: 'tr',
-  },
-  beau: {
-    word: 'beau',
-    partOfSpeech: 'adjectif',
-    translation: 'güzel (eril)',
-    lang: 'tr',
-  },
-  belle: {
-    word: 'belle',
-    partOfSpeech: 'adjectif',
-    translation: 'güzel (dişil)',
-    lang: 'tr',
-  },
-};
-
-const TR_ES: Record<string, DictionaryEntry> = {
-  elma: {
-    word: 'elma',
-    partOfSpeech: 'isim',
-    translation: 'manzana',
-    lang: 'es',
-    examples: [
-      { sentence: 'Comí una manzana.', translation: 'Bir elma yedim.' },
-    ],
-  },
-  gitmek: {
-    word: 'gitmek',
-    partOfSpeech: 'verbo',
-    translation: 'ir',
-    lang: 'es',
-    examples: [
-      { sentence: 'Voy a la escuela.', translation: 'Okula gidiyorum.' },
-    ],
-  },
-  su: {
-    word: 'su',
-    partOfSpeech: 'isim',
-    translation: 'agua',
-    lang: 'es',
-  },
-  kitap: {
-    word: 'kitap',
-    partOfSpeech: 'isim',
-    translation: 'libro',
-    lang: 'es',
-  },
-  güzel: {
-    word: 'güzel',
-    partOfSpeech: 'adjetivo',
-    translation: 'hermoso / hermosa',
-    lang: 'es',
-    examples: [
-      { sentence: '¡Qué día más hermoso!', translation: 'Ne güzel bir gün!' },
-    ],
-  },
-};
-
-const ES_TR: Record<string, DictionaryEntry> = {
-  manzana: {
-    word: 'manzana',
-    partOfSpeech: 'sustantivo',
-    translation: 'elma',
-    lang: 'tr',
-    examples: [
-      { sentence: 'Una manzana al día.', translation: 'Günde bir elma.' },
-    ],
-  },
-  ir: {
-    word: 'ir',
-    partOfSpeech: 'verbo',
-    translation: 'gitmek',
-    lang: 'tr',
-    examples: [
-      { sentence: 'Voy al mercado.', translation: 'Markete gidiyorum.' },
-    ],
-  },
-  agua: {
-    word: 'agua',
-    partOfSpeech: 'sustantivo',
-    translation: 'su',
-    lang: 'tr',
-  },
-  libro: {
-    word: 'libro',
-    partOfSpeech: 'sustantivo',
-    translation: 'kitap',
-    lang: 'tr',
-  },
-  hermoso: {
-    word: 'hermoso',
-    partOfSpeech: 'adjetivo',
-    translation: 'güzel',
-    lang: 'tr',
-  },
-};
-
-const DATA: Record<DictDirection, Record<string, DictionaryEntry>> = {
-  'tr-fr': TR_FR,
-  'fr-tr': FR_TR,
-  'tr-es': TR_ES,
-  'es-tr': ES_TR,
-};
-
-function normalize(key: string): string {
-  return key
-    .trim()
+function normalize(s: string): string {
+  return s
     .toLowerCase()
+    .trim()
     .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '');
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[ı]/g, 'i');
 }
 
-export function searchDictionary(
-  direction: DictDirection,
-  query: string
-): DictionaryEntry | null {
-  const q = normalize(query);
+function matchQuery(word: string, entry: DictionaryEntry, dir: DictDirection): boolean {
+  const q = normalize(word);
+  if (dir === 'tr-fr' || dir === 'fr-tr') {
+    return normalize(entry.tr) === q || normalize(entry.fr) === q;
+  }
+  return normalize(entry.tr) === q || normalize(entry.es) === q;
+}
+
+function getSourceAndTarget(entry: DictionaryEntry, dir: DictDirection): { source: string; target: string; lang: 'fr' | 'es'; exampleSource?: string; exampleTarget?: string } {
+  switch (dir) {
+    case 'tr-fr':
+      return { source: entry.tr, target: entry.fr, lang: 'fr', exampleSource: entry.exampleTr, exampleTarget: entry.exampleFr };
+    case 'fr-tr':
+      return { source: entry.fr, target: entry.tr, lang: 'fr', exampleSource: entry.exampleFr, exampleTarget: entry.exampleTr };
+    case 'tr-es':
+      return { source: entry.tr, target: entry.es, lang: 'es', exampleSource: entry.exampleTr, exampleTarget: entry.exampleEs };
+    case 'es-tr':
+      return { source: entry.es, target: entry.tr, lang: 'es', exampleSource: entry.exampleEs, exampleTarget: entry.exampleTr };
+    default:
+      return { source: entry.tr, target: entry.fr, lang: 'fr', exampleSource: entry.exampleTr, exampleTarget: entry.exampleFr };
+  }
+}
+
+export type SearchResult = {
+  source: string;
+  target: string;
+  type: string;
+  lang: 'fr' | 'es';
+  exampleSource?: string;
+  exampleTarget?: string;
+};
+
+export function searchDictionary(query: string, direction: DictDirection): SearchResult | null {
+  const q = query.trim();
   if (!q) return null;
-  const byDir = DATA[direction];
-  return byDir[q] ?? null;
+  const entry = ENTRIES.find((e) => matchQuery(q, e, direction));
+  if (!entry) return null;
+  const { source, target, lang, exampleSource, exampleTarget } = getSourceAndTarget(entry, direction);
+  return { source, target, type: entry.type, lang, exampleSource, exampleTarget };
 }
 
 export const DIRECTION_LABELS: Record<DictDirection, string> = {
@@ -220,18 +80,4 @@ export const DIRECTION_LABELS: Record<DictDirection, string> = {
   'es-tr': 'ES ➔ TR',
 };
 
-export const DIRECTION_ORDER: DictDirection[] = ['tr-fr', 'fr-tr', 'tr-es', 'es-tr'];
-
-function swapDirection(d: DictDirection): DictDirection {
-  switch (d) {
-    case 'tr-fr': return 'fr-tr';
-    case 'fr-tr': return 'tr-fr';
-    case 'tr-es': return 'es-tr';
-    case 'es-tr': return 'tr-es';
-    default: return d;
-  }
-}
-
-export function getSwapDirection(direction: DictDirection): DictDirection {
-  return swapDirection(direction);
-}
+export const DIRECTIONS: DictDirection[] = ['tr-fr', 'fr-tr', 'tr-es', 'es-tr'];

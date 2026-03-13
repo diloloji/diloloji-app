@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Page } from './pages/Page';
 import HomePage from './pages/HomePage';
-import NotFound from './pages/NotFound';
+import Dictionary from './pages/Dictionary';
 import { XpProvider } from './contexts/XpContext';
 
 function getPageElement(pathname: string) {
@@ -13,8 +13,10 @@ function getPageElement(pathname: string) {
       return <Page />;
     case '/ezber-makinesi':
       return <Page />;
+    case '/sozluk':
+      return <Dictionary />;
     default:
-      return <NotFound />;
+      return <HomePage />;
   }
 }
 

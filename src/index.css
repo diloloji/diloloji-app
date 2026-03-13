@@ -35,3 +35,39 @@ select optgroup {
 .animate-time-attack-shake {
   animation: time-attack-shake 0.4s ease-in-out;
 }
+
+/* Yazdırma: Navbar ve sol menü gizlensin, sadece çekim alanı beyaz arka plan ve siyah metin */
+@media print {
+  body {
+    background: white !important;
+  }
+  [data-print-hide],
+  .print\:hidden {
+    display: none !important;
+  }
+  .print-area {
+    background: white !important;
+    color: #111 !important;
+  }
+  .print-area *,
+  .print-area *::before,
+  .print-area *::after {
+    color: #111 !important;
+    background: transparent !important;
+    border-color: #ccc !important;
+    box-shadow: none !important;
+  }
+  .print-area .bg-slate-50\/50,
+  .print-area .dark\:bg-slate-800\/50,
+  .print-area .bg-white,
+  .print-area .dark\:bg-slate-800\/80 {
+    background: white !important;
+  }
+  .print-area ul,
+  .print-area li,
+  .print-area section,
+  .print-area div[class*="rounded"] {
+    background: white !important;
+    border-color: #e5e7eb !important;
+  }
+}

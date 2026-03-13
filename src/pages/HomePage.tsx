@@ -1,5 +1,8 @@
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { useThemeContext } from '../contexts/ThemeContext';
+
+const SITE_URL = 'https://diloloji.com';
 
 /** Arka planda sol üst → sağ alt koyu gradyan + sönük matematik/dil sembol katmanı */
 function BackgroundWithPattern() {
@@ -66,6 +69,15 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen relative bg-slate-50 dark:bg-transparent transition-colors duration-300">
+      <Helmet>
+        <title>Ana Sayfa | Diloloji</title>
+        <meta name="description" content="Diloloji — Fransızca ve İspanyolca fiil çekimleri, ezber alıştırmaları ve sözlük ile dilin matematiğini çözün." />
+        <link rel="canonical" href={SITE_URL} />
+        <meta property="og:title" content="Ana Sayfa | Diloloji" />
+        <meta property="og:description" content="Diloloji — Fransızca ve İspanyolca fiil çekimleri, ezber alıştırmaları ve sözlük ile dilin matematiğini çözün." />
+        <meta property="og:url" content={SITE_URL} />
+        <meta property="og:type" content="website" />
+      </Helmet>
       <BackgroundWithPattern />
 
       <header className="relative z-10 w-full flex justify-between items-center py-3 px-4 sm:px-5 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-700/50 sticky top-0 transition-colors duration-300">
