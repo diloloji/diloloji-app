@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply antialiased text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-slate-900 transition-colors duration-300;
+}
+
+#root {
+  @apply min-h-screen w-full;
+}
+
+/* Açılır liste (select): light ve dark modda okunaklı */
+select option,
+select optgroup {
+  background: theme('colors.white');
+  color: theme('colors.slate.800');
+}
+.dark select option,
+.dark select optgroup {
+  background: theme('colors.slate.800');
+  color: theme('colors.slate.100');
+}

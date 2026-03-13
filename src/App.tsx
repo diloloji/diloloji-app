@@ -1,0 +1,52 @@
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Page } from './pages/Page';
+import HomePage from './pages/HomePage';
+
+function getPageElement(pathname: string) {
+  switch (pathname) {
+    case '/':
+      return <HomePage />;
+    case '/fiil-laboratuvari':
+      return <Page />;
+    case '/ezber-makinesi':
+      return <Page />;
+    default:
+      return <HomePage />;
+  }
+}
+
+function PageTransition({ pathname }: { pathname: string }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 18 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, transition: { duration: 0.15 } }}
+      transition={{ duration: 0.35, ease: 'easeOut' }}
+      style={{ minHeight: '100vh' }}
+    >
+      {getPageElement(pathname)}
+    </motion.div>
+  );
+}
+
+function AnimatedRoutes() {
+  const location = useLocation();
+  return (
+    <AnimatePresence mode="wait">
+      <PageTransition key={location.pathname} pathname={location.pathname} />
+    </AnimatePresence>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="*" element={<AnimatedRoutes />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+export default App;
