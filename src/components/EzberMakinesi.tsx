@@ -11,7 +11,6 @@ import {
   defaultCard,
   parseBulkImport,
   getDueCards,
-  getDueCount,
   updateCardSRS,
   getTodayString,
   type FlashcardDeck,
@@ -339,7 +338,7 @@ export default function EzberMakinesi() {
   const [quizAnswer, setQuizAnswer] = useState('');
   const [quizRevealed, setQuizRevealed] = useState(false);
   const [quizCorrect, setQuizCorrect] = useState(0);
-  const [quizTotal, setQuizTotal] = useState(0);
+  const [_quizTotal, setQuizTotal] = useState(0);
   /** Çoktan seçmeli: tıklanan şık (gösterim için); sonraki soruya geçince sıfırlanır */
   const [quizSelectedOption, setQuizSelectedOption] = useState<string | null>(null);
   const quizNextTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -371,7 +370,6 @@ export default function EzberMakinesi() {
     () => (quizMode === 'fill-blank' ? cards.filter((c) => c.example?.trim()) : cards),
     [cards, quizMode]
   );
-  const currentCard = cards[cardIndex];
   const quizCard = cardsForQuiz[quizIndex];
   const hasAnyExample = cards.some((c) => c.example?.trim());
 

@@ -184,13 +184,6 @@ export function getDueCount(deck: FlashcardDeck): number {
   return getDueCards(deck.cards).length;
 }
 
-/** Tarihe gün ekler (tam gün, en az 0) */
-function addDays(dateStr: string, days: number): string {
-  const d = new Date(dateStr + 'T12:00:00Z');
-  d.setUTCDate(d.getUTCDate() + Math.max(0, Math.round(days)));
-  return d.toISOString().slice(0, 10);
-}
-
 /** Tek bir kartın SRS alanlarını günceller; localStorage ile senkron */
 export function updateCardSRS(
   deckId: string,
@@ -203,7 +196,7 @@ export function updateCardSRS(
   const cardIndex = decks[deckIndex].cards.findIndex((c) => c.id === cardId);
   if (cardIndex === -1) return;
   const card = decks[deckIndex].cards[cardIndex];
-  const c = card as Record<string, unknown>;
+  const c = card as unknown as Record<string, unknown>;
   if (updates.repetition !== undefined) c.repetition = updates.repetition;
   if (updates.interval !== undefined) c.interval = updates.interval;
   if (updates.easeFactor !== undefined) c.easeFactor = Math.max(MIN_EASE_FACTOR, updates.easeFactor);

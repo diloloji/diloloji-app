@@ -65,7 +65,7 @@ export function findInfinitiveByConjugatedForm(
   const commonVerbs = lang === 'es' ? COMMON_SPANISH_VERBS : COMMON_FRENCH_VERBS;
   const fullList = lang === 'es' ? getVerbListSpanish() : getVerbList();
 
-  const searchList = [...commonVerbs, ...fullList.filter((v) => !commonVerbs.includes(v))];
+  const searchList = [...commonVerbs, ...fullList.filter((v: string) => !(commonVerbs as readonly string[]).includes(v))];
 
   for (const infinitive of searchList) {
     const key = lang === 'es' ? findVerbKeyEs(infinitive) : findVerbKey(infinitive);
