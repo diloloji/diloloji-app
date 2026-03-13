@@ -8,7 +8,6 @@ import type { TenseId } from './types';
 import type { TenseIdEs } from './spanish';
 
 type TenseIdFr = TenseId;
-type TenseIdAny = TenseIdFr | TenseIdEs;
 
 const FR: Record<TenseIdFr, string> = {
   present:
