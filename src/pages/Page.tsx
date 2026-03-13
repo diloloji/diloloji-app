@@ -351,8 +351,6 @@ function StarIcon({ filled, className }: { filled?: boolean; className?: string 
 export function Page() {
   /** Seçili dil: fr = Fransızca, es = İspanyolca */
   const [selectedLanguage, setSelectedLanguage] = useState<AppLanguage>('fr');
-  /** Fiil Laboratuvarı: null = dil seçim ekranı, 'fr'|'es' = laboratuvar açık */
-  const [selectedLabLanguage, setSelectedLabLanguage] = useState<AppLanguage | null>(null);
 
   const tensesForLang = useMemo(() => getTenses(selectedLanguage), [selectedLanguage]);
   const pronounsForLang = useMemo(() => getPronouns(selectedLanguage), [selectedLanguage]);
@@ -1307,44 +1305,6 @@ export function Page() {
             <span aria-hidden>⭐</span>
             <span className="tabular-nums">{starredVerbs.length}</span>
           </button>
-          {/* Ayırıcı + Dil seçici — sadece masaüstü */}
-          <span className="border-l border-slate-200 dark:border-slate-700 h-5 md:h-6 mx-1 md:mx-2 shrink-0 hidden md:inline" aria-hidden />
-          <div className="hidden md:flex items-center gap-2">
-            <div
-              className="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-full border border-slate-200 dark:border-slate-700"
-              role="group"
-              aria-label="Dil seçin"
-            >
-              <button
-                type="button"
-                onClick={() => setSelectedLanguage('fr')}
-                title="Fransızca"
-                aria-pressed={selectedLanguage === 'fr'}
-                className={`flex items-center gap-1 rounded-full px-2.5 py-1.5 text-xs font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-1 dark:focus:ring-offset-slate-900 ${
-                  selectedLanguage === 'fr'
-                    ? 'bg-white dark:bg-slate-600 text-slate-800 dark:text-slate-100 shadow-sm'
-                    : 'bg-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
-                }`}
-              >
-                <span aria-hidden>🇫🇷</span>
-                <span>FR</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setSelectedLanguage('es')}
-                title="İspanyolca"
-                aria-pressed={selectedLanguage === 'es'}
-                className={`flex items-center gap-1 rounded-full px-2.5 py-1.5 text-xs font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-1 dark:focus:ring-offset-slate-900 ${
-                  selectedLanguage === 'es'
-                    ? 'bg-white dark:bg-slate-600 text-slate-800 dark:text-slate-100 shadow-sm'
-                    : 'bg-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
-                }`}
-              >
-                <span aria-hidden>🇪🇸</span>
-                <span>ES</span>
-              </button>
-            </div>
-          </div>
           {/* Tema — her zaman */}
           {!themeMounted ? (
             <div className="rounded-lg bg-slate-100 dark:bg-slate-700/80 w-7 h-7 md:w-8 md:h-8 shrink-0" aria-hidden />
@@ -1433,42 +1393,6 @@ export function Page() {
                 Giriş Yap
               </button>
             )}
-            <div className="mt-8 pt-6 border-t border-slate-700/80 flex justify-center">
-              <div
-                className="flex items-center bg-slate-800 p-1 rounded-full border border-slate-600"
-                role="group"
-                aria-label="Dil seçin"
-              >
-                <button
-                  type="button"
-                  onClick={() => setSelectedLanguage('fr')}
-                  title="Fransızca"
-                  aria-pressed={selectedLanguage === 'fr'}
-                  className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${
-                    selectedLanguage === 'fr'
-                      ? 'bg-white dark:bg-slate-600 text-slate-800 dark:text-slate-100 shadow-sm'
-                      : 'bg-transparent text-slate-400 hover:text-slate-200'
-                  }`}
-                >
-                  <span aria-hidden>🇫🇷</span>
-                  <span>FR</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSelectedLanguage('es')}
-                  title="İspanyolca"
-                  aria-pressed={selectedLanguage === 'es'}
-                  className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${
-                    selectedLanguage === 'es'
-                      ? 'bg-white dark:bg-slate-600 text-slate-800 dark:text-slate-100 shadow-sm'
-                      : 'bg-transparent text-slate-400 hover:text-slate-200'
-                  }`}
-                >
-                  <span aria-hidden>🇪🇸</span>
-                  <span>ES</span>
-                </button>
-              </div>
-            </div>
           </nav>
         </div>
       )}
@@ -1560,55 +1484,38 @@ export function Page() {
         );
       })()}
 
-      {/* Fiil Laboratuvarı: Dil seçim ekranı (selectedLabLanguage === null) */}
-      {appMode === 'conjugation' && selectedLabLanguage === null && (
-        <main className="max-w-2xl mx-auto px-4 py-8 pb-20 flex flex-col items-center justify-center min-h-[60vh]">
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100 text-center mb-8">
-            Hangi dilde pratik yapmak istersin?
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full max-w-md">
-            <button
-              type="button"
-              onClick={() => {
-                setSelectedLabLanguage('fr');
-                setSelectedLanguage('fr');
-              }}
-              className="rounded-2xl bg-slate-800/40 dark:bg-slate-800/60 border border-slate-700/50 dark:border-slate-600/50 p-10 flex flex-col items-center justify-center gap-4 transition-all duration-300 hover:scale-105 hover:shadow-[0_0_24px_rgba(59,130,246,0.25)] dark:hover:shadow-[0_0_28px_rgba(96,165,250,0.2)] focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 dark:focus:ring-offset-slate-900"
-              aria-label="Fransızca ile devam et"
-            >
-              <span className="text-6xl sm:text-7xl" aria-hidden>🇫🇷</span>
-              <span className="text-lg font-semibold text-slate-200 dark:text-slate-100">Fransızca</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setSelectedLabLanguage('es');
-                setSelectedLanguage('es');
-              }}
-              className="rounded-2xl bg-slate-800/40 dark:bg-slate-800/60 border border-slate-700/50 dark:border-slate-600/50 p-10 flex flex-col items-center justify-center gap-4 transition-all duration-300 hover:scale-105 hover:shadow-[0_0_24px_rgba(220,38,38,0.2)] dark:hover:shadow-[0_0_28px_rgba(251,191,36,0.15)] focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 dark:focus:ring-offset-slate-900"
-              aria-label="İspanyolca ile devam et"
-            >
-              <span className="text-6xl sm:text-7xl" aria-hidden>🇪🇸</span>
-              <span className="text-lg font-semibold text-slate-200 dark:text-slate-100">İspanyolca</span>
-            </button>
-          </div>
-        </main>
-      )}
-
-      {appMode === 'conjugation' && selectedLabLanguage !== null && (
+      {appMode === 'conjugation' && (
       <main className="max-w-7xl w-full mx-auto px-4 md:px-8 py-4 pb-20">
         <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6 lg:gap-8">
           {/* Sol sütun: Kontrol paneli (mobilde en üstte) — 4 kolon */}
           <aside className="flex flex-col gap-4 lg:col-span-4 order-1">
-            {/* Dil seçimine dön */}
-            <div className="shrink-0">
+            {/* Dil seçici — segmented control (Fiil girişinin hemen üstü) */}
+            <div className="bg-slate-800/50 dark:bg-slate-800/50 p-1 rounded-xl flex w-full mb-1" role="group" aria-label="Dil seçin">
               <button
                 type="button"
-                onClick={() => setSelectedLabLanguage(null)}
-                className="text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-1 dark:focus:ring-offset-slate-900 rounded-lg px-2 py-1 -ml-2"
-                aria-label="Dil seçimine dön"
+                onClick={() => setSelectedLanguage('fr')}
+                aria-pressed={selectedLanguage === 'fr'}
+                className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 focus:ring-offset-slate-900 ${
+                  selectedLanguage === 'fr'
+                    ? 'bg-indigo-600 text-white shadow-md'
+                    : 'text-slate-400 hover:text-white'
+                }`}
               >
-                ← Dil Seçimine Dön
+                <span aria-hidden>🇫🇷</span>
+                Fransızca
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedLanguage('es')}
+                aria-pressed={selectedLanguage === 'es'}
+                className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 focus:ring-offset-slate-900 ${
+                  selectedLanguage === 'es'
+                    ? 'bg-indigo-600 text-white shadow-md'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                <span aria-hidden>🇪🇸</span>
+                İspanyolca
               </button>
             </div>
             {/* Fiil arama + Zaman seçici */}

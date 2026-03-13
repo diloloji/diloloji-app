@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Page } from './pages/Page';
 import HomePage from './pages/HomePage';
+import NotFound from './pages/NotFound';
 import { XpProvider } from './contexts/XpContext';
 
 function getPageElement(pathname: string) {
@@ -13,7 +14,7 @@ function getPageElement(pathname: string) {
     case '/ezber-makinesi':
       return <Page />;
     default:
-      return <HomePage />;
+      return <NotFound />;
   }
 }
 
