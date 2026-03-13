@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Page } from './pages/Page';
 import HomePage from './pages/HomePage';
+import { XpProvider } from './contexts/XpContext';
 
 function getPageElement(pathname: string) {
   switch (pathname) {
@@ -42,9 +43,11 @@ function AnimatedRoutes() {
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="*" element={<AnimatedRoutes />} />
-      </Routes>
+      <XpProvider>
+        <Routes>
+          <Route path="*" element={<AnimatedRoutes />} />
+        </Routes>
+      </XpProvider>
     </BrowserRouter>
   );
 }
