@@ -20,10 +20,10 @@ function getPageElement(pathname: string) {
 function PageTransition({ pathname }: { pathname: string }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 18 }}
+      initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, transition: { duration: 0.15 } }}
-      transition={{ duration: 0.35, ease: 'easeOut' }}
+      exit={{ opacity: 0, transition: { duration: 0.2 } }}
+      transition={{ duration: 0.3, ease: 'easeOut' }}
       style={{ minHeight: '100vh' }}
     >
       {getPageElement(pathname)}
