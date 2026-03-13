@@ -15,14 +15,10 @@ import { checkPasséComposéLogic } from '../conjugation/passeCompose';
 import { getRandomVerbForLang } from '../data/commonVerbs';
 import { isIrregularVerb } from '../data/irregularVerbs';
 import { getTranslation, getTranslationOrPlaceholder } from '../data/dictionary';
-import { getVerbExample } from '../data/verbExamples';
-import { getTenseExplanation } from '../data/tenseExplanations';
 import { getMistakes, getDueMistakes, addMistake, updateMistakeReview, type MistakeEntry } from '../utils/mistakeBank';
 import { getStarredVerbs, toggleStarredVerb, isStarredVerb } from '../utils/starredVerbs';
 import { getActivityHistory, getLastNDays, addActivityToday } from '../utils/activityHistory';
-import { useXp } from '../contexts/XpContext';
 import EzberMakinesi from '../components/EzberMakinesi';
-import AuthModal from '../components/AuthModal';
 
 type Mode = 'learning' | 'quiz' | 'review' | 'starred' | 'time-attack' | 'compare';
 type AppMode = 'conjugation' | 'ezber';
@@ -349,8 +345,6 @@ function StarIcon({ filled, className }: { filled?: boolean; className?: string 
 export function Page() {
   /** Seçili dil: fr = Fransızca, es = İspanyolca */
   const [selectedLanguage, setSelectedLanguage] = useState<AppLanguage>('fr');
-  /** Fiil Laboratuvarı: null = dil seçim ekranı, 'fr'|'es' = laboratuvar açık */
-  const [selectedLabLanguage, setSelectedLabLanguage] = useState<AppLanguage | null>(null);
 
   const tensesForLang = useMemo(() => getTenses(selectedLanguage), [selectedLanguage]);
   const pronounsForLang = useMemo(() => getPronouns(selectedLanguage), [selectedLanguage]);
@@ -360,8 +354,6 @@ export function Page() {
   const location = useLocation();
   /** Uygulama modu: URL'den türetilir */
   const appMode: AppMode = location.pathname === '/ezber-makinesi' ? 'ezber' : 'conjugation';
-
-  const { addXP, level } = useXp();
 
   const [verbInput, setVerbInput] = useState('');
   const [verbKey, setVerbKey] = useState<string | null>(null);
@@ -413,39 +405,15 @@ export function Page() {
 
   /** Aktivite haritası (heatmap) modalı açık mı */
   const [showActivityModal, setShowActivityModal] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  /** Üyelik sistemi: şimdilik mock — true yaparak giriş yapmış kullanıcıyı simüle edebilirsin */
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  /** Zamana Karşı (Arcade): süre, soru, skor, combo, can, oyun bitti */
+  /** Zamana Karşı modu: süre (saniye), soru, cevap, skor, oyun bitti mi */
   const [timeAttackTimeLeft, setTimeAttackTimeLeft] = useState(60);
   const [timeAttackQuestion, setTimeAttackQuestion] = useState<{ verbKey: string; pronoun: string; tense: string } | null>(null);
   const [timeAttackInput, setTimeAttackInput] = useState('');
   const [timeAttackScore, setTimeAttackScore] = useState(0);
-  const [timeAttackCombo, setTimeAttackCombo] = useState(1);
-  const [timeAttackLives, setTimeAttackLives] = useState(3);
-  const [timeAttackCorrectCount, setTimeAttackCorrectCount] = useState(0);
-  const [timeAttackMaxCombo, setTimeAttackMaxCombo] = useState(1);
   const [timeAttackGameOver, setTimeAttackGameOver] = useState(false);
   const [timeAttackFeedback, setTimeAttackFeedback] = useState<'correct' | 'wrong' | null>(null);
-  const [timeAttackPointsFlash, setTimeAttackPointsFlash] = useState<number | null>(null);
-  const [timeAttackShake, setTimeAttackShake] = useState(false);
   const timeAttackTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const timeAttackXpAwardedRef = useRef(false);
-
-  /** Zamana Karşı bittiğinde bir kez XP ver (skor/10); tekrar oynayınca sıfırla */
-  useEffect(() => {
-    if (timeAttackGameOver) {
-      if (!timeAttackXpAwardedRef.current) {
-        const xp = Math.floor(timeAttackScore / 10);
-        if (xp > 0) addXP(xp);
-        timeAttackXpAwardedRef.current = true;
-      }
-    } else {
-      timeAttackXpAwardedRef.current = false;
-    }
-  }, [timeAttackGameOver, timeAttackScore, addXP]);
 
   /** Zaman/Kip custom dropdown: açık/kapalı + tıklama dışı kapatma */
   const [tenseDropdownOpen, setTenseDropdownOpen] = useState(false);
@@ -788,14 +756,8 @@ export function Page() {
     setTimeAttackGameOver(false);
     setTimeAttackTimeLeft(60);
     setTimeAttackScore(0);
-    setTimeAttackCombo(1);
-    setTimeAttackLives(3);
-    setTimeAttackCorrectCount(0);
-    setTimeAttackMaxCombo(1);
     setTimeAttackInput('');
     setTimeAttackFeedback(null);
-    setTimeAttackPointsFlash(null);
-    setTimeAttackShake(false);
     setTimeAttackQuestion(getRandomTimeAttackQuestion(selectedLanguage));
     timeAttackTimerRef.current = setInterval(() => {
       setTimeAttackTimeLeft((t) => {
@@ -826,12 +788,6 @@ export function Page() {
     setTimeAttackGameOver(false);
     setTimeAttackTimeLeft(60);
     setTimeAttackScore(0);
-    setTimeAttackCombo(1);
-    setTimeAttackLives(3);
-    setTimeAttackCorrectCount(0);
-    setTimeAttackMaxCombo(1);
-    setTimeAttackPointsFlash(null);
-    setTimeAttackShake(false);
     setTimeAttackQuestion(getRandomTimeAttackQuestion(selectedLanguage));
     setTimeAttackInput('');
     setTimeAttackFeedback(null);
@@ -858,33 +814,16 @@ export function Page() {
     const isCorrect = checkOne(timeAttackInput.trim(), correct);
     setTimeAttackFeedback(isCorrect ? 'correct' : 'wrong');
     if (isCorrect) {
-      const points = 10 * timeAttackCombo;
-      setTimeAttackScore((s) => s + points);
-      setTimeAttackCombo((c) => c + 1);
-      setTimeAttackCorrectCount((n) => n + 1);
-      setTimeAttackMaxCombo((m) => Math.max(m, timeAttackCombo + 1));
-      setTimeAttackPointsFlash(points);
-      setTimeout(() => setTimeAttackPointsFlash(null), 600);
       setTimeAttackTimeLeft((t) => t + 2);
+      setTimeAttackScore((s) => s + 1);
       addActivityToday(1);
     } else {
-      setTimeAttackLives((l) => {
-        const next = l - 1;
-        if (next <= 0 && timeAttackTimerRef.current) {
-          clearInterval(timeAttackTimerRef.current);
-          timeAttackTimerRef.current = null;
-          setTimeAttackGameOver(true);
-        }
-        return Math.max(0, next);
-      });
-      setTimeAttackCombo(1);
-      setTimeAttackShake(true);
-      setTimeout(() => setTimeAttackShake(false), 400);
+      setTimeAttackTimeLeft((t) => Math.max(0, t - 5));
     }
     setTimeAttackInput('');
     setTimeAttackQuestion(getRandomTimeAttackQuestion(selectedLanguage));
     setTimeout(() => setTimeAttackFeedback(null), 800);
-  }, [timeAttackQuestion, timeAttackGameOver, timeAttackInput, timeAttackCombo]);
+  }, [timeAttackQuestion, timeAttackGameOver, timeAttackInput]);
 
   const setAnswer = useCallback((pronoun: string, value: string) => {
     setUserAnswers((prev) => ({ ...prev, [pronoun]: value }));
@@ -1062,14 +1001,9 @@ export function Page() {
     return () => clearTimeout(t);
   }, [toastMessage]);
 
-  // Klavye kısayolları: Alt+L Learning, Alt+Q Quiz, Escape menü kapat / modal kapat / quiz temizle / review'dan çık
+  // Klavye kısayolları: Alt+L Learning, Alt+Q Quiz, Escape quiz temizle / review'dan çık / aktivite modal kapat
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isMobileMenuOpen) {
-        e.preventDefault();
-        setIsMobileMenuOpen(false);
-        return;
-      }
       if (e.key === 'Escape' && showActivityModal) {
         e.preventDefault();
         setShowActivityModal(false);
@@ -1102,7 +1036,7 @@ export function Page() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [mode, verbKey, resetQuiz, showActivityModal, isMobileMenuOpen]);
+  }, [mode, verbKey, resetQuiz, showActivityModal]);
 
   const conjugationsForDisplay = conjugations;
 
@@ -1219,26 +1153,22 @@ export function Page() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-300">
-      {/* Üst menü (Navbar) — responsive: mobilde sadeleştirilmiş, md+ tam */}
+      {/* Üst menü (Navbar) — ince, cam efekti, sticky */}
       <header className="w-full flex justify-between items-center py-3 px-4 sm:px-5 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-700/50 sticky top-0 z-50 transition-colors duration-300">
-        {/* Sol: Logo + Diloloji (mobil) / Logo + tagline (md+) */}
-        <div className="min-w-0 flex items-center gap-2 sm:gap-3 flex-1">
+        <div className="min-w-0 flex items-center gap-3 flex-1">
           <Link
             to="/"
-            className="flex items-center gap-2 sm:gap-3 shrink-0 transition-all duration-300 hover:opacity-90 hover:scale-[1.02] cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 dark:focus:ring-offset-slate-900 rounded-lg"
+            className="flex items-center gap-3 shrink-0 transition-all duration-300 hover:opacity-90 hover:scale-[1.02] cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 dark:focus:ring-offset-slate-900 rounded-lg"
             aria-label="Ana sayfa"
           >
-            <img src="/logo.svg" alt="Diloloji" className="h-8 sm:h-10 w-auto shrink-0" />
-            <span className="font-semibold text-slate-700 dark:text-slate-200 text-sm md:hidden shrink-0">
-              Diloloji
-            </span>
-            <span className="text-slate-400 dark:text-slate-500 text-sm italic hidden md:inline shrink-0">
+            <img src="/logo.svg" alt="DİLOLOJİ" className="h-9 sm:h-10 w-auto shrink-0" />
+            <span className="text-slate-400 dark:text-slate-500 text-sm italic hidden sm:inline shrink-0">
               Dilin matematiğini çöz.
             </span>
           </Link>
-          {/* Uygulama modu: Fiil Laboratuvarı / Ezber Makinesi — masaüstünde görünür */}
+          {/* Uygulama modu: Fiil Laboratuvarı / Ezber Makinesi */}
           <div
-            className="ml-2 md:ml-4 hidden md:flex rounded-xl bg-slate-100 dark:bg-slate-800 p-1 border border-slate-200 dark:border-slate-600 shrink-0"
+            className="ml-2 sm:ml-4 flex rounded-xl bg-slate-100 dark:bg-slate-800 p-1 border border-slate-200 dark:border-slate-600 shrink-0"
             role="tablist"
             aria-label="Uygulama modu"
           >
@@ -1268,14 +1198,12 @@ export function Page() {
             </Link>
           </div>
         </div>
-
-        {/* Sağ: İstatistikler + Tema + Hamburger (mobil) / İstatistikler + Dil + Tema (md+) */}
-        <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0">
-          {/* Skor — mobilde daha minimal */}
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          {/* Skor alanı: puan • kombo — hap butonların solunda */}
           <button
             type="button"
             onClick={() => setShowActivityModal(true)}
-            className="flex items-center gap-0.5 md:gap-1 text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400 tabular-nums hover:text-slate-700 dark:hover:text-slate-300 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-1 dark:focus:ring-offset-slate-900 rounded px-1 md:px-1.5 py-1"
+            className="flex items-center gap-1 text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400 tabular-nums hover:text-slate-700 dark:hover:text-slate-300 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-1 dark:focus:ring-offset-slate-900 rounded px-1.5 py-1"
             title="Aktivite haritası"
             aria-label="Puan ve aktivite haritası"
           >
@@ -1283,11 +1211,11 @@ export function Page() {
             <span className="opacity-60" aria-hidden>•</span>
             <span aria-live="polite">{combo}</span>
           </button>
-          {/* Beyin (Zorlandıklarım) — mobilde daha küçük */}
+          {/* Hap butonlar: Zorlandıklarım, Yıldızlı */}
           <button
             type="button"
             onClick={openReviewMode}
-            className="flex items-center gap-1 md:gap-1.5 rounded-full bg-slate-100 dark:bg-slate-700/80 hover:bg-slate-200 dark:hover:bg-slate-600 px-2 py-1 md:px-3 md:py-1.5 text-[10px] md:text-xs font-medium text-slate-700 dark:text-slate-200 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-1 dark:focus:ring-offset-slate-900 border border-transparent dark:border-slate-600/50"
+            className="flex items-center gap-1.5 rounded-full bg-slate-100 dark:bg-slate-700/80 hover:bg-slate-200 dark:hover:bg-slate-600 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-200 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-1 dark:focus:ring-offset-slate-900 border border-transparent dark:border-slate-600/50"
             title="Zorlandıklarım"
             aria-label="Zorlandıklarım"
           >
@@ -1297,16 +1225,16 @@ export function Page() {
           <button
             type="button"
             onClick={() => setMode('starred')}
-            className="flex items-center gap-1 md:gap-1.5 rounded-full bg-slate-100 dark:bg-slate-700/80 hover:bg-slate-200 dark:hover:bg-slate-600 px-2 py-1 md:px-3 md:py-1.5 text-[10px] md:text-xs font-medium text-slate-700 dark:text-slate-200 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-1 dark:focus:ring-offset-slate-900 border border-transparent dark:border-slate-600/50"
+            className="flex items-center gap-1.5 rounded-full bg-slate-100 dark:bg-slate-700/80 hover:bg-slate-200 dark:hover:bg-slate-600 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-200 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-1 dark:focus:ring-offset-slate-900 border border-transparent dark:border-slate-600/50"
             title="Yıldızlı Fiillerim"
             aria-label="Yıldızlı Fiillerim"
           >
             <span aria-hidden>⭐</span>
             <span className="tabular-nums">{starredVerbs.length}</span>
           </button>
-          {/* Ayırıcı + Dil seçici — sadece masaüstü */}
-          <span className="border-l border-slate-200 dark:border-slate-700 h-5 md:h-6 mx-1 md:mx-2 shrink-0 hidden md:inline" aria-hidden />
-          <div className="hidden md:flex items-center gap-2">
+          {/* Ayırıcı + Dil (kapsül) + Tema — sağa yaslı */}
+          <span className="border-l border-slate-200 dark:border-slate-700 h-6 mx-1 sm:mx-2 shrink-0" aria-hidden />
+          <div className="flex items-center gap-2">
             <div
               className="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-full border border-slate-200 dark:border-slate-700"
               role="group"
@@ -1341,134 +1269,22 @@ export function Page() {
                 <span>ES</span>
               </button>
             </div>
-          </div>
-          {/* Tema — her zaman */}
-          {!themeMounted ? (
-            <div className="rounded-lg bg-slate-100 dark:bg-slate-700/80 w-7 h-7 md:w-8 md:h-8 shrink-0" aria-hidden />
-          ) : (
-            <button
-              type="button"
-              onClick={toggleTheme}
-              className="p-1 md:p-1.5 rounded-lg bg-slate-100/80 dark:bg-slate-700/80 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-1 dark:focus:ring-offset-slate-900 shrink-0"
-              title={isDark ? 'Açık mod' : 'Karanlık mod'}
-              aria-label={isDark ? 'Açık moda geç' : 'Karanlık moda geç'}
-            >
-              <span className="text-sm md:text-base leading-none" aria-hidden>{isDark ? '☀️' : '🌙'}</span>
-            </button>
-          )}
-          {/* Giriş Yap / Kullanıcı avatar + seviye (mock) */}
-          {isLoggedIn ? (
-            <div className="flex items-center gap-2 shrink-0 ml-1">
-              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-indigo-500/80 dark:bg-indigo-500 text-white text-sm font-bold shadow-md" aria-hidden>
-                K
-              </div>
-              <span className="text-xs font-semibold text-slate-600 dark:text-slate-300 tabular-nums hidden sm:inline" title="Seviye">
-                Lvl {level}
-              </span>
-            </div>
-          ) : (
-            <button
-              type="button"
-              onClick={() => setShowAuthModal(true)}
-              className="ml-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 dark:bg-indigo-500 dark:hover:bg-indigo-400 text-white text-xs font-medium px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-1 dark:focus:ring-offset-slate-900 shrink-0 transition-colors"
-              aria-label="Giriş yap"
-            >
-              Giriş Yap
-            </button>
-          )}
-          {/* Hamburger — sadece mobil */}
-          <button
-            type="button"
-            onClick={() => setIsMobileMenuOpen((o) => !o)}
-            className="md:hidden p-2 rounded-lg bg-slate-100/80 dark:bg-slate-700/80 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-1 dark:focus:ring-offset-slate-900 shrink-0"
-            aria-expanded={isMobileMenuOpen}
-            aria-label={isMobileMenuOpen ? 'Menüyü kapat' : 'Menüyü aç'}
-          >
-            <span className="text-lg leading-none" aria-hidden>☰</span>
-          </button>
-        </div>
-      </header>
-
-      {/* Mobil hamburger menü paneli */}
-      {isMobileMenuOpen && (
-        <div
-          className="fixed inset-0 top-[52px] z-40 bg-slate-900/95 dark:bg-slate-950/95 backdrop-blur-md md:hidden animate-menu-in"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Navigasyon menüsü"
-          onClick={() => setIsMobileMenuOpen(false)}
-        >
-          <nav className="flex flex-col p-4 pt-6 gap-1 max-w-md mx-auto" onClick={(e) => e.stopPropagation()}>
-            <Link
-              to="/fiil-laboratuvari"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className={`w-full py-3 px-4 rounded-xl text-left text-base font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${
-                appMode === 'conjugation'
-                  ? 'bg-indigo-500/20 dark:bg-indigo-400/20 text-indigo-700 dark:text-indigo-200 border border-indigo-400/30'
-                  : 'bg-slate-800/60 dark:bg-slate-800/80 text-slate-200 dark:text-slate-100 hover:bg-slate-700/60 dark:hover:bg-slate-700/80 border border-slate-600/50'
-              }`}
-            >
-              Fiil Laboratuvarı
-            </Link>
-            <Link
-              to="/ezber-makinesi"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className={`w-full py-3 px-4 rounded-xl text-left text-base font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${
-                appMode === 'ezber'
-                  ? 'bg-indigo-500/20 dark:bg-indigo-400/20 text-indigo-700 dark:text-indigo-200 border border-indigo-400/30'
-                  : 'bg-slate-800/60 dark:bg-slate-800/80 text-slate-200 dark:text-slate-100 hover:bg-slate-700/60 dark:hover:bg-slate-700/80 border border-slate-600/50'
-              }`}
-            >
-              Ezber Makinesi
-            </Link>
-            {!isLoggedIn && (
+            {!themeMounted ? (
+              <div className="rounded-lg bg-slate-100 dark:bg-slate-700/80 w-8 h-8 shrink-0" aria-hidden />
+            ) : (
               <button
                 type="button"
-                onClick={() => { setIsMobileMenuOpen(false); setShowAuthModal(true); }}
-                className="w-full py-3 px-4 rounded-xl text-left text-base font-medium bg-slate-800/60 dark:bg-slate-800/80 text-indigo-300 dark:text-indigo-300 border border-slate-600/50 hover:bg-indigo-500/20 dark:hover:bg-indigo-500/20 hover:border-indigo-400/30 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                onClick={toggleTheme}
+                className="p-1.5 rounded-lg bg-slate-100/80 dark:bg-slate-700/80 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-1 dark:focus:ring-offset-slate-900 shrink-0"
+                title={isDark ? 'Açık mod' : 'Karanlık mod'}
+                aria-label={isDark ? 'Açık moda geç' : 'Karanlık moda geç'}
               >
-                Giriş Yap
+                <span className="text-base leading-none" aria-hidden>{isDark ? '☀️' : '🌙'}</span>
               </button>
             )}
-            <div className="mt-8 pt-6 border-t border-slate-700/80 flex justify-center">
-              <div
-                className="flex items-center bg-slate-800 p-1 rounded-full border border-slate-600"
-                role="group"
-                aria-label="Dil seçin"
-              >
-                <button
-                  type="button"
-                  onClick={() => setSelectedLanguage('fr')}
-                  title="Fransızca"
-                  aria-pressed={selectedLanguage === 'fr'}
-                  className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${
-                    selectedLanguage === 'fr'
-                      ? 'bg-white dark:bg-slate-600 text-slate-800 dark:text-slate-100 shadow-sm'
-                      : 'bg-transparent text-slate-400 hover:text-slate-200'
-                  }`}
-                >
-                  <span aria-hidden>🇫🇷</span>
-                  <span>FR</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSelectedLanguage('es')}
-                  title="İspanyolca"
-                  aria-pressed={selectedLanguage === 'es'}
-                  className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${
-                    selectedLanguage === 'es'
-                      ? 'bg-white dark:bg-slate-600 text-slate-800 dark:text-slate-100 shadow-sm'
-                      : 'bg-transparent text-slate-400 hover:text-slate-200'
-                  }`}
-                >
-                  <span aria-hidden>🇪🇸</span>
-                  <span>ES</span>
-                </button>
-              </div>
-            </div>
-          </nav>
+          </div>
         </div>
-      )}
+      </header>
 
       {/* Kombo animasyonu */}
       {comboDisplay.show && (
@@ -1557,54 +1373,8 @@ export function Page() {
         );
       })()}
 
-      {/* Fiil Laboratuvarı: Dil seçim ekranı (selectedLabLanguage === null) */}
-      {appMode === 'conjugation' && selectedLabLanguage === null && (
-        <main className="max-w-2xl mx-auto px-4 py-8 pb-20 flex flex-col items-center justify-center min-h-[60vh]">
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100 text-center mb-8">
-            Hangi dilde pratik yapmak istersin?
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full max-w-md">
-            <button
-              type="button"
-              onClick={() => {
-                setSelectedLabLanguage('fr');
-                setSelectedLanguage('fr');
-              }}
-              className="rounded-2xl bg-slate-800/40 dark:bg-slate-800/60 border border-slate-700/50 dark:border-slate-600/50 p-10 flex flex-col items-center justify-center gap-4 transition-all duration-300 hover:scale-105 hover:shadow-[0_0_24px_rgba(59,130,246,0.25)] dark:hover:shadow-[0_0_28px_rgba(96,165,250,0.2)] focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 dark:focus:ring-offset-slate-900"
-              aria-label="Fransızca ile devam et"
-            >
-              <span className="text-6xl sm:text-7xl" aria-hidden>🇫🇷</span>
-              <span className="text-lg font-semibold text-slate-200 dark:text-slate-100">Fransızca</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setSelectedLabLanguage('es');
-                setSelectedLanguage('es');
-              }}
-              className="rounded-2xl bg-slate-800/40 dark:bg-slate-800/60 border border-slate-700/50 dark:border-slate-600/50 p-10 flex flex-col items-center justify-center gap-4 transition-all duration-300 hover:scale-105 hover:shadow-[0_0_24px_rgba(220,38,38,0.2)] dark:hover:shadow-[0_0_28px_rgba(251,191,36,0.15)] focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 dark:focus:ring-offset-slate-900"
-              aria-label="İspanyolca ile devam et"
-            >
-              <span className="text-6xl sm:text-7xl" aria-hidden>🇪🇸</span>
-              <span className="text-lg font-semibold text-slate-200 dark:text-slate-100">İspanyolca</span>
-            </button>
-          </div>
-        </main>
-      )}
-
-      {appMode === 'conjugation' && selectedLabLanguage !== null && (
+      {appMode === 'conjugation' && (
       <main className="max-w-2xl mx-auto px-4 py-4 pb-20 flex flex-col gap-4">
-        {/* Dil seçimine dön — laboratuvar başlığının hemen üstü */}
-        <div className="shrink-0">
-          <button
-            type="button"
-            onClick={() => setSelectedLabLanguage(null)}
-            className="text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-1 dark:focus:ring-offset-slate-900 rounded-lg px-2 py-1 -ml-2"
-            aria-label="Dil seçimine dön"
-          >
-            ← Dil Seçimine Dön
-          </button>
-        </div>
         {/* Kontrol çubuğu: Fiil + Zaman (Göster butonu yok — Enter ve zaman değişimi otomatik tetikler) */}
         <section className="relative z-10 p-5 sm:p-6 rounded-2xl bg-white dark:bg-slate-800/80 shadow-sm border border-slate-100 dark:border-slate-700/50 backdrop-blur-md transition-colors duration-300 shrink-0 overflow-visible" ref={autocompleteWrapRef}>
           <div className="flex flex-col md:flex-row md:items-end gap-3 md:gap-4">
@@ -2037,64 +1807,33 @@ export function Page() {
               </button>
             </div>
 
-            {/* Zamana Karşı (Arcade): HUD + oyun alanı veya sonuç kartı */}
+            {/* Zamana Karşı: oyun alanı veya oyun bitti ekranı */}
             {mode === 'time-attack' && (
-              <div className={`p-6 sm:p-8 relative ${timeAttackShake ? 'animate-time-attack-shake' : ''}`}>
+              <div className="p-6 sm:p-8">
                 {timeAttackGameOver ? (
-                  <div className="rounded-2xl border border-slate-200/80 dark:border-slate-600/80 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm shadow-xl p-8 max-w-md mx-auto text-center">
-                    <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-6">Oyun Bitti!</h2>
-                    <dl className="space-y-3 text-left max-w-xs mx-auto">
-                      <div className="flex justify-between">
-                        <dt className="text-slate-500 dark:text-slate-400">Toplam Skorun</dt>
-                        <dd className="font-bold text-slate-800 dark:text-slate-100 tabular-nums">{timeAttackScore}</dd>
-                      </div>
-                      <div className="flex justify-between">
-                        <dt className="text-slate-500 dark:text-slate-400">En Yüksek Kombon</dt>
-                        <dd className="font-bold text-orange-500 dark:text-orange-400">x{timeAttackMaxCombo}</dd>
-                      </div>
-                      <div className="flex justify-between">
-                        <dt className="text-slate-500 dark:text-slate-400">Doğru Bilinen Fiil Sayısı</dt>
-                        <dd className="font-bold text-slate-800 dark:text-slate-100 tabular-nums">{timeAttackCorrectCount}</dd>
-                      </div>
-                    </dl>
+                  <div className="text-center">
+                    <p className="text-slate-700 dark:text-slate-200 font-semibold text-lg">Süre doldu!</p>
+                    <p className="text-slate-600 dark:text-slate-300 mt-2">
+                      <span className="font-bold text-indigo-600 dark:text-indigo-400">{timeAttackScore}</span> doğru cevap
+                    </p>
                     <button
                       type="button"
                       onClick={restartTimeAttack}
-                      className="mt-8 w-full py-4 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 dark:from-violet-500 dark:to-indigo-500 dark:hover:from-violet-400 dark:hover:to-indigo-400 text-white font-bold text-lg shadow-lg shadow-indigo-500/25 transition-all duration-300"
+                      className="mt-6 px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white font-medium shadow-sm transition-colors duration-300"
                     >
                       Tekrar Oyna
                     </button>
                   </div>
                 ) : (
                   <>
-                    {/* HUD: Süre | Skor & Kombo | Canlar */}
-                    <div className="flex items-center justify-between gap-4 mb-6 flex-wrap">
-                      <div className={`flex items-center gap-2 font-mono text-2xl font-bold tabular-nums text-slate-800 dark:text-slate-100 ${timeAttackTimeLeft <= 15 ? 'animate-pulse text-red-600 dark:text-red-400' : ''}`}>
-                        <span aria-hidden>⏱</span>
+                    <div className="flex items-center justify-between mb-6">
+                      <span className="text-3xl font-mono font-bold tabular-nums text-slate-800 dark:text-slate-100">
                         {Math.floor(timeAttackTimeLeft / 60)}:{(timeAttackTimeLeft % 60).toString().padStart(2, '0')}
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <span className="text-sm font-semibold text-slate-600 dark:text-slate-300">
-                          SKOR: <span className="text-indigo-600 dark:text-indigo-400 tabular-nums">{timeAttackScore}</span>
-                        </span>
-                        <span className="text-slate-400 dark:text-slate-500">|</span>
-                        <span className={`text-sm font-bold ${timeAttackCombo > 3 ? 'text-orange-500 dark:text-orange-400 scale-110' : 'text-slate-600 dark:text-slate-300'}`}>
-                          x{timeAttackCombo} COMBO 🔥
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-0.5" aria-label={`${timeAttackLives} can`}>
-                        {[1, 2, 3].map((i) => (
-                          <span key={i} className="text-xl" aria-hidden>
-                            {i <= timeAttackLives ? '❤️' : '🖤'}
-                          </span>
-                        ))}
-                      </div>
+                      </span>
+                      <span className="text-sm font-medium text-slate-500 dark:text-slate-400">
+                        Doğru: <span className="text-indigo-600 dark:text-indigo-400 font-semibold">{timeAttackScore}</span>
+                      </span>
                     </div>
-                    {timeAttackPointsFlash !== null && (
-                      <p className="text-center text-2xl font-bold text-green-500 dark:text-green-400 animate-pulse mb-2">
-                        +{timeAttackPointsFlash}
-                      </p>
-                    )}
                     {timeAttackQuestion && (
                       <>
                         <p className="text-slate-600 dark:text-slate-300 text-center mb-1">
@@ -2132,7 +1871,7 @@ export function Page() {
                           <p className="text-center mt-3 text-green-600 dark:text-green-400 font-medium">+2 saniye</p>
                         )}
                         {timeAttackFeedback === 'wrong' && (
-                          <p className="text-center mt-3 text-red-600 dark:text-red-400 font-medium">Can -1 · Kombo sıfırlandı</p>
+                          <p className="text-center mt-3 text-red-600 dark:text-red-400 font-medium">−5 saniye</p>
                         )}
                       </>
                     )}
@@ -2330,18 +2069,10 @@ export function Page() {
               </div>
             )}
             {isIrregularVerb(verbKey, selectedLanguage) && (
-              <div className="mx-4 sm:mx-0 mb-4 rounded-xl bg-amber-500/10 dark:bg-orange-500/10 border border-amber-500/20 dark:border-orange-500/20 px-4 py-3 flex items-start gap-3 transition-all duration-200" role="alert">
+              <div className="mx-4 sm:mx-0 mb-4 rounded-xl bg-amber-500/10 dark:bg-orange-500/10 border border-amber-500/20 dark:border-orange-500/20 px-4 py-3 flex items-start gap-3" role="alert">
                 <span className="text-xl shrink-0" aria-hidden>⚠️</span>
                 <p className="text-sm text-amber-800 dark:text-amber-400 leading-relaxed">
                   Dikkat: Bu düzensiz (irregular) bir fiildir. Kök değişimi veya istisnai çekim kuralları içerebilir.
-                </p>
-              </div>
-            )}
-            {getTenseExplanation(selectedLanguage, selectedTense) && (
-              <div className="mx-4 sm:mx-0 mb-4 rounded-xl bg-blue-900/20 dark:bg-blue-900/30 border border-blue-500/30 dark:border-blue-400/40 p-4 flex items-start gap-3 backdrop-blur-sm transition-all duration-200">
-                <span className="text-xl shrink-0" aria-hidden>ℹ️</span>
-                <p className="text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
-                  {getTenseExplanation(selectedLanguage, selectedTense)}
                 </p>
               </div>
             )}
@@ -2426,25 +2157,6 @@ export function Page() {
               );
               })}
             </ul>
-
-            {/* Örnek cümle kartı — çekim tablosunun hemen altı, 'Bu fiili biliyorsan' kutusunun üstü */}
-            {(() => {
-              const example = getVerbExample(selectedLanguage, verbKey);
-              if (!example) return null;
-              return (
-                <div className="mx-4 sm:mx-0 mt-4 rounded-xl bg-indigo-900/20 dark:bg-indigo-900/30 border border-indigo-500/30 dark:border-indigo-400/40 p-4 flex items-start gap-3 backdrop-blur-sm transition-all duration-200">
-                  <span className="text-xl shrink-0" aria-hidden>💡</span>
-                  <div className="min-w-0">
-                    <p className="text-lg italic text-slate-800 dark:text-indigo-100">
-                      {example.sentence}
-                    </p>
-                    <p className="mt-1 text-sm text-slate-500 dark:text-indigo-300/90">
-                      {example.translation}
-                    </p>
-                  </div>
-                </div>
-              );
-            })()}
 
             {/* Fiil Aileleri: aynı çekim matematiğine sahip fiiller */}
             {verbFamily.length > 0 && (
@@ -2754,14 +2466,6 @@ export function Page() {
           {toastMessage}
         </div>
       )}
-
-      {/* Giriş / Kayıt modali (mock — backend bağlanmadan önce sadece UI) */}
-      <AuthModal
-        isOpen={showAuthModal}
-        onClose={() => setShowAuthModal(false)}
-        onLogin={() => setIsLoggedIn(true)}
-        onRegister={() => setIsLoggedIn(true)}
-      />
     </div>
   );
 }

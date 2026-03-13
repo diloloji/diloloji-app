@@ -29,14 +29,9 @@ export default {
           '0%, 100%': { opacity: '1', filter: 'drop-shadow(0 0 6px rgba(45, 212, 191, 0.4))' },
           '50%': { opacity: '0.95', filter: 'drop-shadow(0 0 12px rgba(45, 212, 191, 0.6))' },
         },
-        'menu-in': {
-          '0%': { opacity: '0', transform: 'translateY(-8px)' },
-          '100%': { opacity: '1', transform: 'translateY(0)' },
-        },
       },
       animation: {
         'combo-in': 'combo-in 0.35s ease-out forwards',
-        'menu-in': 'menu-in 0.2s ease-out forwards',
         shake: 'shake 0.2s ease-in-out 2',
         'icon-sway': 'icon-sway 2s ease-in-out infinite',
         'icon-glow': 'icon-glow 2s ease-in-out infinite',

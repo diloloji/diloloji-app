@@ -17,7 +17,6 @@ import {
   type Flashcard,
 } from '../utils/flashcardDecks';
 import { getCurrentStreak } from '../utils/activityHistory';
-import { useXp } from '../contexts/XpContext';
 
 type View = 'list' | 'detail' | 'create' | 'edit' | 'flashcard' | 'quiz';
 type QuizMode = 'classic' | 'multiple-choice' | 'fill-blank';
@@ -305,7 +304,6 @@ function FlashcardCelebration({
 }
 
 export default function EzberMakinesi() {
-  const { addXP, level, title, xpProgress } = useXp();
   const [decks, setDecks] = useState<FlashcardDeck[]>([]);
   const [view, setView] = useState<View>('list');
   const [selectedDeckId, setSelectedDeckId] = useState<string | null>(null);
@@ -703,8 +701,8 @@ export default function EzberMakinesi() {
           Kelime setleri oluştur, flashcard veya quiz ile çalış.
         </p>
 
-        {/* Üst panel: 4 istatistik kartı (Toplam Set, Toplam Kelime, Günlük Seri, Senin Seviyen) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        {/* Üst panel: 3 istatistik kartı */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
           <div className="rounded-2xl bg-slate-800/40 dark:bg-slate-800/60 border border-slate-700/50 dark:border-slate-600/50 px-4 py-4">
             <p className="text-slate-400 dark:text-slate-500 text-xs font-medium uppercase tracking-wider mb-1">Toplam Set</p>
             <p className="text-2xl font-bold text-white dark:text-slate-100">{decks.length}</p>
@@ -719,23 +717,6 @@ export default function EzberMakinesi() {
             <p className="text-slate-400 dark:text-slate-500 text-xs font-medium uppercase tracking-wider mb-1">Günlük Seri</p>
             <p className="text-2xl font-bold text-white dark:text-slate-100">{streakDisplay} gün</p>
             <span className="text-lg mt-1 inline-block" aria-hidden>🔥</span>
-          </div>
-          <div className="rounded-2xl bg-slate-800/40 dark:bg-slate-800/60 border border-amber-500/30 dark:border-amber-400/30 px-4 py-4 relative overflow-hidden shadow-[0_0_20px_rgba(245,158,11,0.15)] dark:shadow-[0_0_24px_rgba(251,191,36,0.2)]">
-            <p className="text-slate-400 dark:text-slate-500 text-xs font-medium uppercase tracking-wider mb-1">Senin Seviyen</p>
-            <p className="text-lg font-bold text-amber-400 dark:text-amber-300">{title}</p>
-            <p className="text-slate-200 dark:text-slate-100 text-sm font-semibold mt-0.5">Lvl {level}</p>
-            <div className="mt-3 h-2 rounded-full bg-slate-700/80 dark:bg-slate-600/80 overflow-hidden">
-              <div
-                className="h-full rounded-full bg-gradient-to-r from-amber-500 to-yellow-400 dark:from-amber-400 dark:to-yellow-300 transition-all duration-500 ease-out shadow-[0_0_10px_rgba(245,158,11,0.5)]"
-                style={{ width: `${xpProgress.percent}%` }}
-                role="progressbar"
-                aria-valuenow={xpProgress.xpInCurrentLevel}
-                aria-valuemin={0}
-                aria-valuemax={xpProgress.xpNeededForNext}
-                aria-label={`Seviye ilerlemesi: %${Math.round(xpProgress.percent)}`}
-              />
-            </div>
-            <span className="text-amber-500/80 dark:text-amber-400/80 text-lg mt-1 inline-block" aria-hidden>⭐</span>
           </div>
         </div>
 
@@ -1417,7 +1398,6 @@ export default function EzberMakinesi() {
         easeFactor: update.easeFactor,
         nextReviewDate: update.nextReviewDate,
       });
-      if (rating === 'good' || rating === 'easy') addXP(5);
       loadDecks();
       next();
     };
