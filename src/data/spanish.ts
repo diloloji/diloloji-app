@@ -150,9 +150,19 @@ export const COMMON_SPANISH_VERBS = [
   'erguir',
 ] as const;
 
-export function getRandomVerbSpanish(): string {
-  const i = Math.floor(Math.random() * COMMON_SPANISH_VERBS.length);
-  return COMMON_SPANISH_VERBS[i];
+export function getRandomVerbSpanish(exclude?: string): string {
+  const list = COMMON_SPANISH_VERBS as unknown as string[];
+  if (!exclude || list.length <= 1) {
+    const i = Math.floor(Math.random() * list.length);
+    return list[i];
+  }
+  const normalizedExclude = exclude.trim().toLowerCase();
+  for (let attempt = 0; attempt < 25; attempt++) {
+    const i = Math.floor(Math.random() * list.length);
+    const v = list[i];
+    if (v.toLowerCase() !== normalizedExclude) return v;
+  }
+  return list[Math.floor(Math.random() * list.length)];
 }
 
 /** İspanyolca fiil listesi (otomatik tamamlama için) */

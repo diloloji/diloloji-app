@@ -256,59 +256,24 @@ export default function HomePage() {
       </Helmet>
       <BackgroundWithPattern mouseX={mouse.x} mouseY={mouse.y} />
 
-      <header className="relative z-20 w-full flex justify-between items-center py-4 px-4 sm:px-6 lg:px-8 bg-white/70 dark:bg-slate-900/50 backdrop-blur-xl border-b border-slate-200/80 dark:border-white/5 sticky top-0 transition-colors duration-300">
-        <Link
-          to="/"
-          className="min-w-0 flex items-center gap-3 shrink-0 transition-all duration-300 hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 dark:focus:ring-offset-slate-900 rounded-xl"
-          aria-label="Ana sayfa"
-        >
-          <img src="/logo.svg" alt="Diloloji" className="h-9 sm:h-10 w-auto shrink-0" />
-          <span className="text-slate-500 dark:text-slate-400 text-sm italic hidden sm:inline shrink-0">
-            Dilin matematiğini çöz.
-          </span>
+      <header className="relative z-20 w-full flex justify-between items-center py-3 px-4 sm:px-6 lg:px-8 bg-transparent dark:bg-transparent backdrop-blur-md border-b border-slate-200/60 dark:border-slate-700/50 sticky top-0 transition-all duration-300">
+        <Link to="/" className="min-w-0 flex items-center gap-2 sm:gap-3 shrink-0 transition-all duration-300 hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 rounded-xl" aria-label="Ana sayfa">
+          <img src="/logo.svg" alt="Diloloji" className="h-8 sm:h-10 w-auto shrink-0" />
+          <span className="text-slate-400 dark:text-slate-500 text-xs italic hidden sm:inline shrink-0 opacity-60">Dilin matematiğini çöz.</span>
         </Link>
         <nav className="flex items-center gap-2">
-          <Link
-            to="/sozluk"
-            className="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
-          >
+          <Link to="/sozluk" className="rounded-lg px-3 py-2 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-800/40 dark:hover:bg-slate-700/40 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50">
             {t('sozluk')}
           </Link>
           <div className="relative shrink-0" ref={uiLangDropdownRef}>
-            <button
-              type="button"
-              onClick={() => setUiLangDropdownOpen((o) => !o)}
-              className="flex items-center gap-1.5 rounded-xl bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 px-2.5 py-2 text-xs font-medium text-slate-600 dark:text-slate-300 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 border border-slate-200/80 dark:border-white/10"
-              title={t('arayuz_dili')}
-              aria-label={t('dil_secin')}
-              aria-expanded={uiLangDropdownOpen}
-              aria-haspopup="listbox"
-            >
-              <span aria-hidden>🌐</span>
-              <span className="uppercase tabular-nums">{['tr', 'en', 'fr', 'es'].includes((i18n.language || 'tr').slice(0, 2)) ? (i18n.language || 'tr').slice(0, 2).toUpperCase() : 'TR'}</span>
+            <button type="button" onClick={() => setUiLangDropdownOpen((o) => !o)} className="h-9 flex items-center justify-center gap-1 rounded-lg px-2 text-slate-400 dark:text-slate-500 hover:text-indigo-500 dark:hover:text-indigo-400 hover:bg-slate-800/40 dark:hover:bg-slate-700/40 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50" title={t('arayuz_dili')} aria-label={t('dil_secin')} aria-expanded={uiLangDropdownOpen} aria-haspopup="listbox">
+              <span className="text-base w-5 h-5 inline-flex items-center justify-center leading-none" aria-hidden>🌐</span>
+              <span className="text-xs font-medium uppercase tabular-nums">{['tr', 'en', 'fr', 'es'].includes((i18n.language || 'tr').slice(0, 2)) ? (i18n.language || 'tr').slice(0, 2).toUpperCase() : 'TR'}</span>
             </button>
             {uiLangDropdownOpen && (
-              <div
-                role="listbox"
-                aria-label={t('dil_secin')}
-                className="absolute right-0 top-full mt-1.5 w-max min-w-[120px] rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 shadow-xl py-1 z-50"
-              >
+              <div role="listbox" aria-label={t('dil_secin')} className="absolute right-0 top-full mt-1.5 w-max min-w-[120px] rounded-xl border border-slate-200 dark:border-slate-600 bg-white/95 dark:bg-slate-800/95 backdrop-blur-md shadow-xl py-1 z-50">
                 {(['tr', 'en', 'fr', 'es'] as const).map((lng) => (
-                  <button
-                    key={lng}
-                    type="button"
-                    role="option"
-                    aria-selected={i18n.language === lng}
-                    onClick={() => {
-                      i18n.changeLanguage(lng);
-                      setUiLangDropdownOpen(false);
-                    }}
-                    className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors flex items-center gap-2 whitespace-nowrap ${
-                      i18n.language === lng
-                        ? 'bg-indigo-500/15 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-200'
-                        : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/80'
-                    }`}
-                  >
+                  <button key={lng} type="button" role="option" aria-selected={i18n.language === lng} onClick={() => { i18n.changeLanguage(lng); setUiLangDropdownOpen(false); }} className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-all duration-300 flex items-center gap-2 whitespace-nowrap ${i18n.language === lng ? 'bg-indigo-500/15 text-indigo-700 dark:text-indigo-200' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/80'}`}>
                     {t(lng === 'tr' ? 'lang_turkce' : lng === 'en' ? 'lang_english' : lng === 'fr' ? 'lang_francais' : 'lang_espanol')}
                   </button>
                 ))}
@@ -316,14 +281,8 @@ export default function HomePage() {
             )}
           </div>
           {mounted && (
-            <button
-              type="button"
-              onClick={toggleTheme}
-              className="p-2.5 rounded-xl bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
-              title={isDark ? 'Açık mod' : 'Karanlık mod'}
-              aria-label={isDark ? 'Açık moda geç' : 'Karanlık moda geç'}
-            >
-              <span className="text-base leading-none" aria-hidden>{isDark ? '☀️' : '🌙'}</span>
+            <button type="button" onClick={toggleTheme} className="h-9 w-9 flex items-center justify-center rounded-lg text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-800/40 dark:hover:bg-slate-700/40 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50" title={isDark ? 'Açık mod' : 'Karanlık mod'} aria-label={isDark ? 'Açık moda geç' : 'Karanlık moda geç'}>
+              <span className="text-base w-5 h-5 inline-flex items-center justify-center leading-none" aria-hidden>{isDark ? '☀️' : '🌙'}</span>
             </button>
           )}
         </nav>

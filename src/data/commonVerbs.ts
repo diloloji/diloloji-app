@@ -118,14 +118,24 @@ export const COMMON_FRENCH_VERBS = [
   'subvenir',
 ] as const;
 
-export function getRandomVerb(): string {
-  const i = Math.floor(Math.random() * COMMON_FRENCH_VERBS.length);
-  return COMMON_FRENCH_VERBS[i];
+export function getRandomVerb(exclude?: string): string {
+  const list = COMMON_FRENCH_VERBS as unknown as string[];
+  if (!exclude || list.length <= 1) {
+    const i = Math.floor(Math.random() * list.length);
+    return list[i];
+  }
+  const normalizedExclude = exclude.trim().toLowerCase();
+  for (let attempt = 0; attempt < 25; attempt++) {
+    const i = Math.floor(Math.random() * list.length);
+    const v = list[i];
+    if (v.toLowerCase() !== normalizedExclude) return v;
+  }
+  return list[Math.floor(Math.random() * list.length)];
 }
 
 import type { AppLanguage } from './verbs';
 import { getRandomVerbSpanish } from './spanish';
 
-export function getRandomVerbForLang(lang: AppLanguage): string {
-  return lang === 'es' ? getRandomVerbSpanish() : getRandomVerb();
+export function getRandomVerbForLang(lang: AppLanguage, exclude?: string): string {
+  return lang === 'es' ? getRandomVerbSpanish(exclude) : getRandomVerb(exclude);
 }

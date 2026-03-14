@@ -33,6 +33,7 @@ import { BookA } from 'lucide-react';
 import EzberMakinesi from '../components/EzberMakinesi';
 import AuthModal from '../components/AuthModal';
 import AccentKeyboard from '../components/AccentKeyboard';
+import { sanitizeForDisplay } from '../utils/sanitize';
 
 type Mode = 'learning' | 'quiz' | 'review' | 'starred' | 'time-attack' | 'compare';
 type AppMode = 'conjugation' | 'ezber';
@@ -195,29 +196,6 @@ function ConjugationWithStemSuffix({
   );
 }
 
-/** Zaman çizelgesi tipi: tense id → görsel mantık */
-type TimelineVariant = 'future' | 'imperfect' | 'definite-past' | 'present' | 'subjunctive';
-
-function getTimelineVariant(tenseId: string): TimelineVariant {
-  const futureIds = ['futur-simple', 'futuro', 'condicional'];
-  const imperfectIds = ['imparfait', 'imperfecto'];
-  const definitePastIds = ['passe-compose', 'passe-simple', 'preterito'];
-  const subjunctiveIds = ['subjonctif-present', 'subjuntivo-presente'];
-  if (futureIds.includes(tenseId)) return 'future';
-  if (imperfectIds.includes(tenseId)) return 'imperfect';
-  if (definitePastIds.includes(tenseId)) return 'definite-past';
-  if (subjunctiveIds.includes(tenseId)) return 'subjunctive';
-  return 'present';
-}
-
-const TIMELINE_DESCRIPTIONS: Record<TimelineVariant, string> = {
-  future: 'Gelecekte gerçekleşecek eylem',
-  imperfect: 'Geçmişte süren eylem veya alışkanlık',
-  'definite-past': 'Geçmişte tamamlanmış eylem',
-  present: 'Şu an veya genel gerçek',
-  subjunctive: 'Dilek, olasılık veya bağımlı ifade',
-};
-
 /** Aynı çekim köküne sahip fiilleri döner (örn. venir → revenir, devenir). En uzun ortak sonekten aile oluşturur. */
 function getVerbFamily(verbKey: string, verbList: string[]): string[] {
   if (!verbKey || verbList.length === 0) return [];
@@ -274,66 +252,6 @@ function getFrenchHomophoneGroups(
     }
   });
   return result;
-}
-
-/** Fiil Laboratuvarı: Seçilen zamanın mantığını görselleştiren yatay çizelge (Şimdi ortada). */
-function VisualTimeline({ tenseId }: { tenseId: string }) {
-  const variant = getTimelineVariant(tenseId);
-  const description = TIMELINE_DESCRIPTIONS[variant];
-
-  return (
-    <div className="mx-4 sm:mx-0 mb-6 rounded-2xl border border-slate-200/80 dark:border-slate-600/80 bg-slate-50/50 dark:bg-slate-800/30 backdrop-blur-sm overflow-hidden">
-      <div className="px-4 py-4 sm:px-6">
-        <div className="relative flex items-center justify-center" style={{ minHeight: '3rem' }}>
-          {/* Yatay eksen: ince slate-700 çizgisi, ortada Şimdi için boşluk */}
-          <div className="absolute left-0 top-1/2 h-px w-[calc(50%-1.5rem)] -translate-y-1/2 bg-slate-700 dark:bg-slate-600" aria-hidden />
-          <div className="absolute right-0 top-1/2 h-px left-[calc(50%+1.5rem)] -translate-y-1/2 bg-slate-700 dark:bg-slate-600" aria-hidden />
-
-          {/* Ortadaki Şimdi noktası */}
-          <div className="relative z-10 flex flex-col items-center gap-1 px-2">
-            <div className="w-2.5 h-2.5 rounded-full bg-slate-500 dark:bg-slate-400 ring-2 ring-slate-300 dark:ring-slate-500 shrink-0" />
-            <span className="text-[10px] sm:text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider whitespace-nowrap">Şimdi</span>
-          </div>
-
-          {/* Gelecek: sağda parlayan nokta + çizgi vurgusu */}
-          {variant === 'future' && (
-            <>
-              <div className="absolute left-1/2 right-6 top-1/2 h-px w-[calc(50%-2rem)] -translate-y-1/2 bg-gradient-to-r from-blue-500/50 to-blue-500 dark:from-indigo-400/50 dark:to-indigo-400" style={{ marginLeft: '1rem' }} aria-hidden />
-              <div className="absolute right-6 top-1/2 h-3 w-3 -translate-y-1/2 rounded-full bg-blue-500 dark:bg-indigo-400 shadow-[0_0_14px_4px] shadow-blue-500/50 dark:shadow-indigo-400/50 ring-2 ring-blue-400/50 dark:ring-indigo-300/50" aria-hidden />
-            </>
-          )}
-
-          {/* Imparfait: solda tırtıklı (dashed) süreç çizgisi */}
-          {variant === 'imperfect' && (
-            <div className="absolute left-6 right-1/2 top-1/2 -translate-y-1/2 flex items-center" style={{ marginRight: '1rem' }}>
-              <div className="h-px w-full border-t-2 border-blue-500 dark:border-indigo-400 border-dashed opacity-90" aria-hidden />
-            </div>
-          )}
-
-          {/* Belirli geçmiş: solda tek, net nokta */}
-          {variant === 'definite-past' && (
-            <>
-              <div className="absolute left-6 right-1/2 top-1/2 h-px w-[calc(50%-2.5rem)] -translate-y-1/2 bg-blue-500/50 dark:bg-indigo-400/50" style={{ marginRight: '1rem' }} aria-hidden />
-              <div className="absolute left-6 top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-500 dark:bg-indigo-400 shadow-[0_0_10px] shadow-blue-500/40 dark:shadow-indigo-400/40 ring-2 ring-blue-400/40 dark:ring-indigo-300/40" aria-hidden />
-            </>
-          )}
-
-          {/* Present: ortada hafif mavi/indigo glow */}
-          {variant === 'present' && (
-            <div className="absolute left-1/2 top-1/2 h-2 w-10 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-500/30 dark:bg-indigo-400/30" aria-hidden />
-          )}
-
-          {/* Subjunctive: ortada hafif vurgu */}
-          {variant === 'subjunctive' && (
-            <div className="absolute left-1/2 top-1/2 h-1.5 w-8 -translate-x-1/2 -translate-y-1/2 rounded-full bg-indigo-400/25 dark:bg-indigo-300/25" aria-hidden />
-          )}
-        </div>
-        <p className="text-center text-xs text-slate-500 dark:text-slate-400 mt-3 font-medium">
-          {description}
-        </p>
-      </div>
-    </div>
-  );
 }
 
 /** Tarayıcı ses sentezi ile metni seçili dilde (fr-FR veya es-ES) okur */
@@ -475,6 +393,7 @@ export function Page() {
   const [showHints, setShowHints] = useState(false);
   const [error, setError] = useState('');
   const [showCongrats, setShowCongrats] = useState(false);
+  const [randomVerbMode, setRandomVerbMode] = useState(false);
   const [combo, setCombo] = useState(0);
   const [totalScore, setTotalScore] = useState(0);
   const [comboDisplay, setComboDisplay] = useState<{ show: boolean; value: number }>({ show: false, value: 0 });
@@ -717,7 +636,7 @@ export function Page() {
         const conj = result.conjugations;
         if (conj && typeof conj === 'object' && Object.keys(conj).length > 0) {
           const verified = verifyConjugationMap(conj, selectedTense, effectiveLang);
-          if (overrideVerb) setVerbInput(overrideVerb);
+          if (overrideVerb) setVerbInput(sanitizeForDisplay(overrideVerb));
           setVerbKey(result.infinitive);
           setConjugations(verified);
           if (langOverride) setSelectedLanguage(langOverride);
@@ -731,7 +650,7 @@ export function Page() {
           const conjugationsMap = getConjugationForTenseForLang(reverse.infinitive, reverse.tenseId, effectiveLang);
           if (conjugationsMap && typeof conjugationsMap === 'object' && Object.keys(conjugationsMap).length > 0) {
             const verified = verifyConjugationMap(conjugationsMap, reverse.tenseId, effectiveLang);
-            setVerbInput(reverse.infinitive);
+            setVerbInput(sanitizeForDisplay(reverse.infinitive));
             setVerbKey(reverse.infinitive);
             setSelectedTense(reverse.tenseId);
             setConjugations(verified);
@@ -796,8 +715,9 @@ export function Page() {
       const result = getConjugationsForLang(v, selectedTense, selectedLanguage);
       if (result.ok) {
         const verified = verifyConjugationMap(result.conjugations, selectedTense, selectedLanguage);
-        setVerbInput(result.infinitive);
-        setVerbKey(result.infinitive);
+        const safeInfinitive = sanitizeForDisplay(result.infinitive);
+        setVerbInput(safeInfinitive);
+        setVerbKey(safeInfinitive);
         setConjugations(verified);
         setError('');
         return;
@@ -805,6 +725,33 @@ export function Page() {
     }
     setError('Rastgele fiil seçilemedi. Lütfen manuel girin.');
   }, [selectedTense, selectedLanguage]);
+
+  /** Rastgele mod: Sonraki rastgele fiil (öncekinden farklı, aynı zaman). Quiz state sıfırlanır. */
+  const pickNextRandomVerb = useCallback(() => {
+    const exclude = verbKey ?? undefined;
+    setAutocompleteClosed(true);
+    for (let attempt = 0; attempt < 20; attempt++) {
+      const v = getRandomVerbForLang(selectedLanguage, exclude);
+      const result = getConjugationsForLang(v, selectedTense, selectedLanguage);
+      if (result.ok) {
+        const verified = verifyConjugationMap(result.conjugations, selectedTense, selectedLanguage);
+        const safeInfinitive = sanitizeForDisplay(result.infinitive);
+        setVerbInput(safeInfinitive);
+        setVerbKey(safeInfinitive);
+        setConjugations(verified);
+        setError('');
+        setUserAnswers(getInitialUserAnswers(selectedLanguage));
+        setQuizFeedback({ je: null, tu: null, il: null, nous: null, vous: null, ils: null });
+        setQuizPasséHint({ je: null, tu: null, il: null, nous: null, vous: null, ils: null });
+        setShowHints(false);
+        setShowCongrats(false);
+        setCurrentFocusIndex(0);
+        requestAnimationFrame(() => quizInputRefs.current[0]?.focus());
+        return;
+      }
+    }
+    setError('Yeni rastgele fiil seçilemedi. Lütfen tekrar deneyin.');
+  }, [selectedTense, selectedLanguage, verbKey]);
 
   useEffect(() => {
     if (!verbKey) return;
@@ -1432,90 +1379,88 @@ export function Page() {
         <meta property="og:url" content={seoUrl} />
         <meta property="og:type" content="website" />
       </Helmet>
-      {/* Üst menü (Navbar) — responsive: mobilde sadeleştirilmiş, md+ tam */}
-      <header data-print-hide className="w-full flex justify-between items-center py-3 px-4 sm:px-5 bg-white dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-700/50 shadow-sm dark:shadow-none sticky top-0 z-50 transition-colors duration-300 print:hidden">
-        {/* Sol: Logo + Diloloji (mobil) / Logo + tagline (md+) */}
+      {/* Üst menü (Navbar) — glassmorphism, minimalist, premium */}
+      <header data-print-hide className="w-full flex justify-between items-center py-3 px-4 sm:px-5 bg-transparent dark:bg-transparent backdrop-blur-md border-b border-slate-200/60 dark:border-slate-700/50 sticky top-0 z-50 transition-all duration-300 print:hidden">
+        {/* Sol: Logo + slogan — dikey hizalı, slogan küçük ve hafif */}
         <div className="min-w-0 flex items-center gap-2 sm:gap-3 flex-1">
           <Link
             to="/"
-            className="flex items-center gap-2 sm:gap-3 shrink-0 transition-all duration-300 hover:opacity-90 hover:scale-[1.02] cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 dark:focus:ring-offset-slate-900 rounded-lg"
+            className="flex items-center gap-2 sm:gap-3 shrink-0 transition-all duration-300 hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 dark:focus:ring-offset-slate-900 rounded-lg"
             aria-label="Ana sayfa"
           >
             <img src="/logo.svg" alt="Diloloji" className="h-8 sm:h-10 w-auto shrink-0" />
             <span className="font-semibold text-slate-700 dark:text-slate-200 text-sm md:hidden shrink-0">
               Diloloji
             </span>
-            <span className="text-slate-400 dark:text-slate-500 text-sm italic hidden md:inline shrink-0">
+            <span className="text-slate-400 dark:text-slate-500 text-xs italic hidden md:inline shrink-0 opacity-60">
               Dilin matematiğini çöz.
             </span>
           </Link>
-          {/* Uygulama modu: Fiil Laboratuvarı / Ezber Makinesi — masaüstünde görünür */}
-          <div
-            className="ml-2 md:ml-4 hidden md:flex rounded-xl bg-slate-100 dark:bg-slate-800 p-1 border border-slate-200 dark:border-slate-600 shrink-0 shadow-sm"
-            role="tablist"
-            aria-label="Uygulama modu"
-          >
+          {/* Menü: yatay liste, hover arka plan, aktif indigo + nokta */}
+          <nav className="ml-4 md:ml-6 hidden md:flex items-center gap-0.5" role="tablist" aria-label="Uygulama modu">
             <Link
               to="/fiil-laboratuvari"
               role="tab"
               aria-selected={appMode === 'conjugation'}
-              className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-1 dark:focus:ring-offset-slate-900 ${
+              className={`relative rounded-lg px-3 py-2 text-sm font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-1 dark:focus:ring-offset-slate-900 ${
                 appMode === 'conjugation'
-                  ? 'bg-white dark:bg-slate-600 text-slate-800 dark:text-slate-100 shadow-sm'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+                  ? 'text-indigo-500 dark:text-indigo-400'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-800/40 dark:hover:bg-slate-700/40'
               }`}
             >
               {t('fiil_laboratuvari')}
+              {appMode === 'conjugation' && <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-indigo-500 dark:bg-indigo-400" aria-hidden />}
             </Link>
             <Link
               to="/ezber-makinesi"
               role="tab"
               aria-selected={appMode === 'ezber'}
-              className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-1 dark:focus:ring-offset-slate-900 ${
+              className={`relative rounded-lg px-3 py-2 text-sm font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-1 dark:focus:ring-offset-slate-900 ${
                 appMode === 'ezber'
-                  ? 'bg-white dark:bg-slate-600 text-slate-800 dark:text-slate-100 shadow-sm'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+                  ? 'text-indigo-500 dark:text-indigo-400'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-800/40 dark:hover:bg-slate-700/40'
               }`}
             >
               {t('ezber_makinesi')}
+              {appMode === 'ezber' && <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-indigo-500 dark:bg-indigo-400" aria-hidden />}
             </Link>
             <Link
               to="/sozluk"
               role="tab"
               aria-selected={location.pathname === '/sozluk'}
-              className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-1 dark:focus:ring-offset-slate-900 flex items-center gap-1.5 ${
+              className={`relative rounded-lg px-3 py-2 text-sm font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-1 dark:focus:ring-offset-slate-900 flex items-center gap-1.5 ${
                 location.pathname === '/sozluk'
-                  ? 'bg-white dark:bg-slate-600 text-slate-800 dark:text-slate-100 shadow-sm'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+                  ? 'text-indigo-500 dark:text-indigo-400'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-800/40 dark:hover:bg-slate-700/40'
               }`}
             >
-              <BookA className="w-3.5 h-3.5" strokeWidth={2} aria-hidden />
+              <BookA className="w-4 h-4" strokeWidth={2} aria-hidden />
               {t('sozluk')}
+              {location.pathname === '/sozluk' && <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-indigo-500 dark:bg-indigo-400" aria-hidden />}
             </Link>
             <Link
               to="/ogrenme"
               role="tab"
               aria-selected={location.pathname === '/ogrenme'}
-              className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-1 dark:focus:ring-offset-slate-900 ${
+              className={`relative rounded-lg px-3 py-2 text-sm font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-1 dark:focus:ring-offset-slate-900 ${
                 location.pathname === '/ogrenme'
-                  ? 'bg-white dark:bg-slate-600 text-slate-800 dark:text-slate-100 shadow-sm'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+                  ? 'text-indigo-500 dark:text-indigo-400'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-800/40 dark:hover:bg-slate-700/40'
               }`}
             >
               {t('ogrenme')}
+              {location.pathname === '/ogrenme' && <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-indigo-500 dark:bg-indigo-400" aria-hidden />}
             </Link>
-          </div>
+          </nav>
         </div>
 
-        {/* Sağ: İstatistikler + Tema + Hamburger (mobil) / İstatistikler + Dil + Tema (md+) */}
-        <div className="flex items-center justify-center gap-2 md:gap-3 shrink-0">
-          {/* Skor + Beyin + Yıldız + FR/ES — mobilde gizle, sadece Logo + Tema + Hamburger görünsün */}
-          <div className="hidden md:flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0">
-            {/* Skor — mobilde daha minimal */}
+        {/* Sağ: İkonlar (kompakt, yumuşak gri → hover rengi) + Giriş Yap (gradyan) */}
+        <div className="flex items-center gap-2 md:gap-3 shrink-0">
+          <div className="hidden md:flex items-center gap-2 shrink-0">
             <button
               type="button"
               onClick={() => setShowActivityModal(true)}
-              className="flex items-center gap-0.5 md:gap-1 text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400 tabular-nums hover:text-slate-700 dark:hover:text-slate-300 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-1 dark:focus:ring-offset-slate-900 rounded px-1 md:px-1.5 py-1"
+              className="flex items-center gap-0.5 text-[10px] uppercase tracking-wider text-slate-400 dark:text-slate-500 tabular-nums hover:text-amber-600 dark:hover:text-amber-400 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-1.5 py-1"
               title="Aktivite haritası"
               aria-label="Puan ve aktivite haritası"
             >
@@ -1523,61 +1468,58 @@ export function Page() {
               <span className="opacity-60" aria-hidden>•</span>
               <span aria-live="polite">{combo}</span>
             </button>
-            {/* Beyin (Zorlandıklarım) — mobilde daha küçük */}
             <button
               type="button"
               onClick={openReviewMode}
-              className="flex items-center gap-1 md:gap-1.5 rounded-full bg-slate-100 dark:bg-slate-700/80 hover:bg-slate-200 dark:hover:bg-slate-600 px-2 py-1 md:px-3 md:py-1.5 text-[10px] md:text-xs font-medium text-slate-700 dark:text-slate-200 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-1 dark:focus:ring-offset-slate-900 border border-transparent dark:border-slate-600/50"
+              className="flex items-center gap-1 rounded-lg p-2 text-slate-400 dark:text-slate-500 hover:text-amber-500 dark:hover:text-amber-400 hover:bg-slate-800/40 dark:hover:bg-slate-700/40 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shrink-0"
               title="Zorlandıklarım"
               aria-label="Zorlandıklarım"
             >
-              <span aria-hidden>🧠</span>
-              <span className="tabular-nums" aria-live="polite">{dueCount}</span>
+              <span className="text-base leading-none w-5 h-5 inline-flex items-center justify-center" aria-hidden>🧠</span>
+              <span className="tabular-nums text-xs font-medium ml-0.5" aria-live="polite">{dueCount}</span>
             </button>
             <button
               type="button"
               onClick={() => setMode('starred')}
-              className="flex items-center gap-1 md:gap-1.5 rounded-full bg-slate-100 dark:bg-slate-700/80 hover:bg-slate-200 dark:hover:bg-slate-600 px-2 py-1 md:px-3 md:py-1.5 text-[10px] md:text-xs font-medium text-slate-700 dark:text-slate-200 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-1 dark:focus:ring-offset-slate-900 border border-transparent dark:border-slate-600/50"
+              className="flex items-center gap-1 rounded-lg p-2 text-slate-400 dark:text-slate-500 hover:text-yellow-500 dark:hover:text-yellow-400 hover:bg-slate-800/40 dark:hover:bg-slate-700/40 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shrink-0"
               title="Yıldızlı Fiillerim"
               aria-label="Yıldızlı Fiillerim"
             >
-              <span aria-hidden>⭐</span>
-              <span className="tabular-nums">{starredVerbs.length}</span>
+              <span className="text-base leading-none w-5 h-5 inline-flex items-center justify-center" aria-hidden>⭐</span>
+              <span className="tabular-nums text-xs font-medium ml-0.5">{starredVerbs.length}</span>
             </button>
           </div>
-          {/* Tema — her zaman */}
           {!themeMounted ? (
-            <div className="rounded-lg bg-slate-100 dark:bg-slate-700/80 h-9 w-9 md:h-10 md:w-10 shrink-0 flex items-center justify-center" aria-hidden />
+            <div className="rounded-lg h-9 w-9 shrink-0 flex items-center justify-center bg-slate-800/30" aria-hidden />
           ) : (
             <button
               type="button"
               onClick={toggleTheme}
-              className="h-9 w-9 md:h-10 md:w-10 flex items-center justify-center rounded-lg bg-slate-100/80 dark:bg-slate-700/80 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-1 dark:focus:ring-offset-slate-900 shrink-0"
+              className="h-9 w-9 flex items-center justify-center rounded-lg text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-800/40 dark:hover:bg-slate-700/40 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shrink-0"
               title={isDark ? 'Açık mod' : 'Karanlık mod'}
               aria-label={isDark ? 'Açık moda geç' : 'Karanlık moda geç'}
             >
-              <span className="text-sm md:text-base leading-none" aria-hidden>{isDark ? '☀️' : '🌙'}</span>
+              <span className="text-base w-5 h-5 inline-flex items-center justify-center leading-none" aria-hidden>{isDark ? '☀️' : '🌙'}</span>
             </button>
           )}
-          {/* Arayüz dili (i18n) — 🌐 TR/EN/FR/ES dropdown; hedef dil FR/ES ile karışmaz */}
           <div className="relative shrink-0 flex items-center" ref={uiLangDropdownRef}>
             <button
               type="button"
               onClick={() => setUiLangDropdownOpen((o) => !o)}
-              className="h-9 md:h-10 flex items-center justify-center gap-1 rounded-lg bg-slate-100/80 dark:bg-slate-700/80 hover:bg-slate-200 dark:hover:bg-slate-600 px-2 py-0 text-xs font-medium text-slate-600 dark:text-slate-300 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-1 dark:focus:ring-offset-slate-900 border border-slate-200/80 dark:border-slate-600/80 shrink-0"
+              className="h-9 flex items-center justify-center gap-1 rounded-lg px-2 text-slate-400 dark:text-slate-500 hover:text-indigo-500 dark:hover:text-indigo-400 hover:bg-slate-800/40 dark:hover:bg-slate-700/40 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shrink-0"
               title={t('arayuz_dili')}
               aria-label={t('dil_secin')}
               aria-expanded={uiLangDropdownOpen}
               aria-haspopup="listbox"
             >
-              <span aria-hidden>🌐</span>
-              <span className="uppercase tabular-nums">{['tr', 'en', 'fr', 'es'].includes((i18n.language || 'tr').slice(0, 2)) ? (i18n.language || 'tr').slice(0, 2).toUpperCase() : 'TR'}</span>
+              <span className="text-base w-5 h-5 inline-flex items-center justify-center leading-none" aria-hidden>🌐</span>
+              <span className="text-xs font-medium uppercase tabular-nums">{['tr', 'en', 'fr', 'es'].includes((i18n.language || 'tr').slice(0, 2)) ? (i18n.language || 'tr').slice(0, 2).toUpperCase() : 'TR'}</span>
             </button>
             {uiLangDropdownOpen && (
               <div
                 role="listbox"
                 aria-label={t('dil_secin')}
-                className="absolute right-0 top-full mt-1.5 w-max min-w-[120px] rounded-xl border border-slate-200 dark:border-slate-600 bg-white/95 dark:bg-slate-800/95 backdrop-blur-md shadow-xl shadow-slate-200/50 dark:shadow-black/30 py-1 z-50"
+                className="absolute right-0 top-full mt-1.5 w-max min-w-[120px] rounded-xl border border-slate-200 dark:border-slate-600 bg-white/95 dark:bg-slate-800/95 backdrop-blur-md shadow-xl py-1 z-50"
               >
                 {(['tr', 'en', 'fr', 'es'] as const).map((lng) => (
                   <button
@@ -1589,9 +1531,9 @@ export function Page() {
                       i18n.changeLanguage(lng);
                       setUiLangDropdownOpen(false);
                     }}
-                    className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors flex items-center gap-2 whitespace-nowrap ${
+                    className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-all duration-300 flex items-center gap-2 whitespace-nowrap ${
                       i18n.language === lng
-                        ? 'bg-indigo-500/15 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-200'
+                        ? 'bg-indigo-500/15 text-indigo-700 dark:text-indigo-200'
                         : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/80'
                     }`}
                   >
@@ -1601,31 +1543,25 @@ export function Page() {
               </div>
             )}
           </div>
-          {/* Giriş Yap / Kullanıcı avatar + seviye (mock) */}
           {isLoggedIn ? (
-            <div className="flex items-center justify-center gap-2 shrink-0 ml-1 h-9 md:h-10">
-              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-indigo-500/80 dark:bg-indigo-500 text-white text-sm font-bold shadow-md" aria-hidden>
-                K
-              </div>
-              <span className="text-xs font-semibold text-slate-600 dark:text-slate-300 tabular-nums hidden sm:inline" title="Seviye">
-                Lvl {level}
-              </span>
+            <div className="flex items-center gap-2 shrink-0 ml-1 h-9">
+              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-indigo-500/80 text-white text-sm font-bold shadow-md" aria-hidden>K</div>
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 tabular-nums hidden sm:inline">Lvl {level}</span>
             </div>
           ) : (
             <button
               type="button"
               onClick={() => setShowAuthModal(true)}
-              className="h-9 md:h-10 flex items-center justify-center rounded-lg bg-indigo-600 hover:bg-indigo-500 dark:bg-indigo-500 dark:hover:bg-indigo-400 text-white text-sm font-medium px-3 py-2 md:px-4 md:py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-1 dark:focus:ring-offset-slate-900 shrink-0 transition-colors"
+              className="h-9 flex items-center justify-center rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white text-sm font-medium px-4 py-2 shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 dark:focus:ring-offset-slate-900 shrink-0"
               aria-label={t('giris_yap')}
             >
               {t('giris_yap')}
             </button>
           )}
-          {/* Hamburger — sadece mobil */}
           <button
             type="button"
             onClick={() => setIsMobileMenuOpen((o) => !o)}
-            className="md:hidden h-9 w-9 md:h-10 md:w-10 flex items-center justify-center rounded-lg bg-slate-100/80 dark:bg-slate-700/80 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-1 dark:focus:ring-offset-slate-900 shrink-0"
+            className="md:hidden h-9 w-9 flex items-center justify-center rounded-lg text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-800/40 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shrink-0"
             aria-expanded={isMobileMenuOpen}
             aria-label={isMobileMenuOpen ? 'Menüyü kapat' : 'Menüyü aç'}
           >
@@ -1853,7 +1789,7 @@ export function Page() {
       <main className="max-w-7xl w-full mx-auto px-4 md:px-8 py-4 pb-20">
         <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6 lg:gap-8">
           {/* Sol sütun: Kontrol paneli (mobilde en üstte) — 4 kolon */}
-          <aside data-print-hide className="flex flex-col gap-4 lg:col-span-4 order-1 print:hidden">
+          <aside data-print-hide className="flex flex-col gap-4 lg:col-span-4 order-1 print:hidden lg:sticky lg:top-6 lg:self-start">
             {/* Entegre dil seçici — arama alanının hemen üzerinde, segmented control */}
             <section className="relative z-10 shrink-0 w-full">
               <div
@@ -1919,7 +1855,7 @@ export function Page() {
                   type="text"
                   value={verbInput}
                   onChange={(e) => {
-                    setVerbInput(e.target.value);
+                    setVerbInput(sanitizeForDisplay(e.target.value));
                     setError('');
                     setAutocompleteSelectedIndex(0);
                     setAutocompleteClosed(false);
@@ -2084,6 +2020,30 @@ export function Page() {
                 </div>
               </div>
             </div>
+            {/* Rastgele Fiillerle Pratik Yap */}
+            <label className="flex items-center gap-2 mt-3 cursor-pointer group" title="Rastgele Fiillerle Pratik Yap">
+              <span className="relative inline-flex h-6 w-10 flex-shrink-0 cursor-pointer rounded-full border border-slate-200 dark:border-slate-600 bg-slate-100 dark:bg-slate-700/80 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 dark:focus:ring-offset-slate-800 group-hover:border-slate-300 dark:group-hover:border-slate-500">
+                <input
+                  type="checkbox"
+                  checked={randomVerbMode}
+                  onChange={(e) => {
+                    const on = e.target.checked;
+                    setRandomVerbMode(on);
+                    if (on) pickRandomVerb();
+                  }}
+                  className="sr-only"
+                  aria-label="Rastgele Fiillerle Pratik Yap"
+                />
+                <span
+                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white dark:bg-slate-200 shadow ring-0 transition duration-200 mt-0.5 ml-0.5 ${
+                    randomVerbMode ? 'translate-x-4' : 'translate-x-0'
+                  }`}
+                />
+              </span>
+              <span className="text-sm font-medium text-slate-600 dark:text-slate-400 group-hover:text-slate-800 dark:group-hover:text-slate-200">
+                Rastgele Fiillerle Pratik Yap
+              </span>
+            </label>
           </div>
             </section>
             {/* Zaman açıklaması kartı — sol panelde + Detaylı İncele */}
@@ -2354,13 +2314,24 @@ export function Page() {
           >
             <p className="text-emerald-800 dark:text-emerald-200 font-semibold text-lg">Tebrikler!</p>
             <p className="text-emerald-700 dark:text-emerald-300/90 mt-1 text-sm">Tüm çekimler doğru.</p>
-            <button
-              type="button"
-              onClick={() => setShowCongrats(false)}
-              className="mt-4 rounded-xl bg-emerald-600 dark:bg-emerald-500 text-white text-sm font-medium px-5 py-2.5 hover:bg-emerald-700 dark:hover:bg-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:ring-offset-2 dark:focus:ring-offset-slate-900 transition-colors duration-300"
-            >
-              Kapat
-            </button>
+            <div className="mt-4 flex flex-wrap justify-center gap-2">
+              {randomVerbMode && (
+                <button
+                  type="button"
+                  onClick={pickNextRandomVerb}
+                  className="rounded-xl bg-indigo-600 dark:bg-indigo-500 text-white text-sm font-medium px-5 py-2.5 hover:bg-indigo-700 dark:hover:bg-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:ring-offset-2 dark:focus:ring-offset-slate-900 transition-colors duration-300"
+                >
+                  Sonraki Rastgele Fiil ✨
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => setShowCongrats(false)}
+                className="rounded-xl bg-emerald-600 dark:bg-emerald-500 text-white text-sm font-medium px-5 py-2.5 hover:bg-emerald-700 dark:hover:bg-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:ring-offset-2 dark:focus:ring-offset-slate-900 transition-colors duration-300"
+              >
+                Kapat
+              </button>
+            </div>
           </div>
         )}
 
@@ -2832,11 +2803,15 @@ export function Page() {
                 </p>
               </div>
             )}
-            <VisualTimeline tenseId={selectedTense} />
-            <div className="border-b border-slate-200 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/50 px-5 sm:px-6 py-4">
-              <div className="flex flex-col md:flex-row flex-wrap items-start md:items-center justify-between gap-2 md:gap-x-4 md:gap-y-3 text-center sm:text-left">
+            <div className="border-b border-slate-200 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/50 px-5 sm:px-6 py-2 sm:py-3">
+              <div className="flex flex-col md:flex-row flex-wrap items-start md:items-center justify-between gap-1.5 md:gap-x-3 md:gap-y-2 text-center sm:text-left">
                 <div className="flex items-center gap-2 min-w-0 order-1">
                   <h2 className="font-bold text-slate-800 dark:text-slate-100 capitalize text-xl tracking-tight">{verbKey}</h2>
+                  {randomVerbMode && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-indigo-100 dark:bg-indigo-500/25 text-indigo-700 dark:text-indigo-300 text-xs font-medium px-2.5 py-0.5 shrink-0" title="Rastgele mod açık">
+                      🎲 Rastgele Mod Aktif
+                    </span>
+                  )}
                   <button
                     type="button"
                     onClick={() => toggleStar(verbKey)}
@@ -2937,40 +2912,36 @@ export function Page() {
                   </button>
                 </div>
               </div>
-              {/* Form ve kök rozetleri + Kurallı/Düzensiz + Yardımcı fiil etiketleri — statik, tıklanmaz */}
+              {/* Form ve kök rozetleri + Kurallı/Düzensiz + Yardımcı fiil + Alternatif formlar — kompakt tek blok */}
               {(() => {
                 const meta = getVerbMetadata(verbKey, selectedLanguage, !isIrregularVerb(verbKey, selectedLanguage));
                 return (
-                  <div className="flex flex-wrap items-center gap-2 pt-3 mt-3 border-t border-slate-200/80 dark:border-slate-600/80">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="inline-flex items-center rounded-lg bg-slate-100/90 dark:bg-slate-800/30 border border-slate-300 dark:border-slate-700 px-2.5 py-1 text-xs md:text-sm font-medium text-slate-600 dark:text-slate-400 cursor-default select-none">
-                        Mastar: <span className="ml-1 font-semibold text-slate-800 dark:text-slate-100">{meta.infinitive}</span>
-                      </span>
-                      <span className="inline-flex items-center rounded-lg bg-slate-100/90 dark:bg-slate-800/30 border border-slate-300 dark:border-slate-700 px-2.5 py-1 text-xs md:text-sm font-medium text-slate-600 dark:text-slate-400 cursor-default select-none">
-                        Ulaç: <span className="ml-1 font-semibold text-slate-800 dark:text-slate-100">{meta.gerund}</span>
-                      </span>
-                      <span className="inline-flex items-center rounded-lg bg-slate-100/90 dark:bg-slate-800/30 border border-slate-300 dark:border-slate-700 px-2.5 py-1 text-xs md:text-sm font-medium text-slate-600 dark:text-slate-400 cursor-default select-none">
-                        Geçmiş Ortaç: <span className="ml-1 font-semibold text-slate-800 dark:text-slate-100">{meta.pastParticiple}</span>
-                      </span>
-                    </div>
-                    <div className="flex flex-wrap items-center gap-2 ml-auto">
-                      <span className={`inline-flex items-center rounded-lg border border-slate-300 dark:border-slate-700 px-2.5 py-1 text-xs font-semibold cursor-default select-none ${meta.isRegular ? 'bg-emerald-500/10 dark:bg-slate-800/30 text-emerald-700 dark:text-emerald-400' : 'bg-amber-500/10 dark:bg-slate-800/30 text-amber-800 dark:text-amber-400'}`}>
-                        {meta.isRegular ? 'Kurallı' : 'Düzensiz'}
-                      </span>
-                      <span className="inline-flex items-center rounded-lg bg-slate-100/90 dark:bg-slate-800/30 border border-slate-300 dark:border-slate-700 px-2.5 py-1 text-xs font-semibold text-slate-700 dark:text-slate-300 cursor-default select-none">
-                        Auxiliaire: {meta.auxiliary}
-                      </span>
-                    </div>
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 pt-2 mt-2 border-t border-slate-200/80 dark:border-slate-600/80">
+                    <span className="inline-flex items-center rounded-lg bg-slate-100/90 dark:bg-slate-800/30 border border-slate-300 dark:border-slate-700 px-2 py-0.5 text-xs font-medium text-slate-600 dark:text-slate-400 cursor-default select-none">
+                      Mastar: <span className="ml-0.5 font-semibold text-slate-800 dark:text-slate-100">{meta.infinitive}</span>
+                    </span>
+                    <span className="inline-flex items-center rounded-lg bg-slate-100/90 dark:bg-slate-800/30 border border-slate-300 dark:border-slate-700 px-2 py-0.5 text-xs font-medium text-slate-600 dark:text-slate-400 cursor-default select-none">
+                      Ulaç: <span className="ml-0.5 font-semibold text-slate-800 dark:text-slate-100">{meta.gerund}</span>
+                    </span>
+                    <span className="inline-flex items-center rounded-lg bg-slate-100/90 dark:bg-slate-800/30 border border-slate-300 dark:border-slate-700 px-2 py-0.5 text-xs font-medium text-slate-600 dark:text-slate-400 cursor-default select-none">
+                      Geçmiş Ortaç: <span className="ml-0.5 font-semibold text-slate-800 dark:text-slate-100">{meta.pastParticiple}</span>
+                    </span>
+                    <span className={`inline-flex items-center rounded-lg border border-slate-300 dark:border-slate-700 px-2 py-0.5 text-xs font-semibold cursor-default select-none ${meta.isRegular ? 'bg-emerald-500/10 dark:bg-slate-800/30 text-emerald-700 dark:text-emerald-400' : 'bg-amber-500/10 dark:bg-slate-800/30 text-amber-800 dark:text-amber-400'}`}>
+                      {meta.isRegular ? 'Kurallı' : 'Düzensiz'}
+                    </span>
+                    <span className="inline-flex items-center rounded-lg bg-slate-100/90 dark:bg-slate-800/30 border border-slate-300 dark:border-slate-700 px-2 py-0.5 text-xs font-semibold text-slate-700 dark:text-slate-300 cursor-default select-none">
+                      Auxiliaire: {meta.auxiliary}
+                    </span>
                   </div>
                 );
               })()}
-              {/* Alternatif formlar: Dönüşlü / Olumsuz — interaktif butonlar; dar ekranda wrap */}
-              <div className="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-slate-200/80 dark:border-slate-600/80 print:hidden">
+              {/* Alternatif formlar: Dönüşlü / Olumsuz — rozet satırının hemen altında, sıkışık */}
+              <div className="flex flex-wrap items-center gap-2 mt-1.5 pt-1.5 border-t border-slate-200/80 dark:border-slate-600/80 print:hidden">
                 <span className="text-xs font-medium text-slate-500 dark:text-slate-400 cursor-default">Alternatif formlar:</span>
                 <button
                   type="button"
                   onClick={() => setIsReflexive((v) => !v)}
-                  className={`cursor-pointer inline-flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm font-medium transition-all duration-200 active:scale-95 ${isReflexive ? 'bg-indigo-600 border-indigo-500 text-white dark:bg-indigo-500 dark:border-indigo-400' : 'bg-slate-100 dark:bg-slate-700/80 border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-indigo-500/20 hover:border-indigo-400 dark:hover:border-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-200'}`}
+                  className={`cursor-pointer inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-medium transition-all duration-200 active:scale-95 ${isReflexive ? 'bg-indigo-600 border-indigo-500 text-white dark:bg-indigo-500 dark:border-indigo-400' : 'bg-slate-100 dark:bg-slate-700/80 border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-indigo-500/20 hover:border-indigo-400 dark:hover:border-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-200'}`}
                   aria-pressed={isReflexive}
                   aria-label={isReflexive ? 'Dönüşlü açık' : 'Dönüşlü kapalı'}
                   title={selectedLanguage === 'fr' ? 'Örn: se laver' : 'Örn: lavarse'}
@@ -2980,7 +2951,7 @@ export function Page() {
                 <button
                   type="button"
                   onClick={() => setIsNegative((v) => !v)}
-                  className={`cursor-pointer inline-flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm font-medium transition-all duration-200 active:scale-95 ${isNegative ? 'bg-indigo-600 border-indigo-500 text-white dark:bg-indigo-500 dark:border-indigo-400' : 'bg-slate-100 dark:bg-slate-700/80 border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-indigo-500/20 hover:border-indigo-400 dark:hover:border-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-200'}`}
+                  className={`cursor-pointer inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-medium transition-all duration-200 active:scale-95 ${isNegative ? 'bg-indigo-600 border-indigo-500 text-white dark:bg-indigo-500 dark:border-indigo-400' : 'bg-slate-100 dark:bg-slate-700/80 border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-indigo-500/20 hover:border-indigo-400 dark:hover:border-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-200'}`}
                   aria-pressed={isNegative}
                   aria-label={isNegative ? 'Olumsuz açık' : 'Olumsuz kapalı'}
                   title={selectedLanguage === 'fr' ? 'ne … pas' : 'no …'}
@@ -3082,63 +3053,67 @@ export function Page() {
               </div>
             ) : (
             <>
-            <VisualTimeline tenseId={selectedTense} />
-            <ul className="divide-y divide-slate-100 dark:divide-slate-700/50">
-              {pronounsForLang.map(({ id, label }) => {
-                const homophoneInfo = selectedLanguage === 'fr' ? getHomophoneInfo(id) : null;
-                const displayText = formatConjugationForDisplay(conjugationsForDisplay[id], id, selectedLanguage, isReflexive, isNegative);
-                const fullPhrase = `${label} ${conjugationsForDisplay[id]}`.trim();
-                const justCopied = copiedRowKey === id;
-                return (
-                <li
-                  key={id}
-                  className={`group flex items-center justify-between gap-3 sm:gap-4 px-4 sm:px-6 py-4 ${activeRecallMode ? 'cursor-default' : ''} ${homophoneInfo ? 'border-l-2 border-l-amber-400/50 dark:border-l-amber-500/40 pl-4 sm:pl-5' : ''}`}
-                  title={homophoneInfo ? `Bu ${homophoneInfo.count} çekimin yazılışı farklı olsa da okunuşu aynıdır: [${homophoneInfo.key}]` : undefined}
-                >
-                  <span className="text-slate-600 dark:text-slate-300 font-semibold min-w-[5.5rem] shrink-0">{label}</span>
-                  <div className="flex items-center gap-3 sm:gap-4 text-right min-w-0">
-                    <span
-                      className={`inline-block min-w-0 truncate transition-all duration-300 ${activeRecallMode ? 'blur-md group-hover:blur-none' : ''}`}
-                    >
-                      <ConjugationWithStemSuffix
-                        text={displayText}
-                        tenseId={selectedTense}
-                        lang={selectedLanguage}
-                      />
-                    </span>
-                    <span className="inline-flex items-center gap-1 shrink-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200 print:opacity-0 print:!hidden">
-                      <button
-                        type="button"
-                        onClick={async () => {
-                          try {
-                            await navigator.clipboard.writeText(fullPhrase);
-                            setCopiedRowKey(id);
-                            setTimeout(() => setCopiedRowKey(null), 1500);
-                          } catch {
-                            setCopiedRowKey(null);
-                          }
-                        }}
-                        className="p-1.5 rounded-full bg-slate-800/40 text-slate-400 hover:text-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 transition-colors duration-200"
-                        title="Panoya kopyala"
-                        aria-label={justCopied ? 'Kopyalandı' : 'Kopyala'}
+            {/* İki sütun: tekil (Je, Tu, Il) | çoğul (Nous, Vous, Ils) — dikey alan yarıya iner */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+              {[pronounsForLang.slice(0, 3), pronounsForLang.slice(3, 6)].map((group, colIndex) => (
+                <ul key={colIndex} className="divide-y divide-slate-100 dark:divide-slate-700/50">
+                  {group.map(({ id, label }) => {
+                    const homophoneInfo = selectedLanguage === 'fr' ? getHomophoneInfo(id) : null;
+                    const displayText = formatConjugationForDisplay(conjugationsForDisplay[id], id, selectedLanguage, isReflexive, isNegative);
+                    const fullPhrase = `${label} ${conjugationsForDisplay[id]}`.trim();
+                    const justCopied = copiedRowKey === id;
+                    return (
+                      <li
+                        key={id}
+                        className={`group flex items-center justify-between gap-3 sm:gap-4 px-4 sm:px-6 py-2.5 sm:py-3 ${activeRecallMode ? 'cursor-default' : ''} ${homophoneInfo ? 'border-l-2 border-l-amber-400/50 dark:border-l-amber-500/40 pl-4 sm:pl-5' : ''}`}
+                        title={homophoneInfo ? `Bu ${homophoneInfo.count} çekimin yazılışı farklı olsa da okunuşu aynıdır: [${homophoneInfo.key}]` : undefined}
                       >
-                        {justCopied ? <CheckIcon className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> : <ClipboardIcon className="w-4 h-4" />}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => speakConjugation(fullPhrase, selectedLanguage)}
-                        className="p-1.5 rounded-full bg-slate-800/40 text-slate-400 hover:text-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 transition-colors duration-200"
-                        title={selectedLanguage === 'es' ? 'Dinle (İspanyolca)' : 'Dinle (Fransızca)'}
-                        aria-label={`${fullPhrase} dinle`}
-                      >
-                        <SpeakerIcon className="w-4 h-4" />
-                      </button>
-                    </span>
-                  </div>
-                </li>
-              );
-              })}
-            </ul>
+                        <span className="text-slate-600 dark:text-slate-300 font-semibold min-w-[5.5rem] shrink-0">{label}</span>
+                        <div className="flex items-center gap-3 sm:gap-4 text-right min-w-0">
+                          <span
+                            className={`inline-block min-w-0 truncate transition-all duration-300 ${activeRecallMode ? 'blur-md group-hover:blur-none' : ''}`}
+                          >
+                            <ConjugationWithStemSuffix
+                              text={displayText}
+                              tenseId={selectedTense}
+                              lang={selectedLanguage}
+                            />
+                          </span>
+                          <span className="inline-flex items-center gap-1 shrink-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200 print:opacity-0 print:!hidden">
+                            <button
+                              type="button"
+                              onClick={async () => {
+                                try {
+                                  await navigator.clipboard.writeText(fullPhrase);
+                                  setCopiedRowKey(id);
+                                  setTimeout(() => setCopiedRowKey(null), 1500);
+                                } catch {
+                                  setCopiedRowKey(null);
+                                }
+                              }}
+                              className="p-1.5 rounded-full bg-slate-800/40 text-slate-400 hover:text-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 transition-colors duration-200"
+                              title="Panoya kopyala"
+                              aria-label={justCopied ? 'Kopyalandı' : 'Kopyala'}
+                            >
+                              {justCopied ? <CheckIcon className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> : <ClipboardIcon className="w-4 h-4" />}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => speakConjugation(fullPhrase, selectedLanguage)}
+                              className="p-1.5 rounded-full bg-slate-800/40 text-slate-400 hover:text-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 transition-colors duration-200"
+                              title={selectedLanguage === 'es' ? 'Dinle (İspanyolca)' : 'Dinle (Fransızca)'}
+                              aria-label={`${fullPhrase} dinle`}
+                            >
+                              <SpeakerIcon className="w-4 h-4" />
+                            </button>
+                          </span>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              ))}
+            </div>
 
             {/* Örnek cümle kartı — çekim tablosunun hemen altı, 'Bu fiili biliyorsan' kutusunun üstü */}
             {(() => {
@@ -3200,6 +3175,11 @@ export function Page() {
               <div className="flex flex-row flex-wrap items-center justify-between gap-x-4 gap-y-2 text-center sm:text-left">
                 <div className="flex items-center gap-2 min-w-0 order-1">
                   <h2 className="font-bold text-slate-800 dark:text-slate-100 capitalize text-xl tracking-tight">{verbKey}</h2>
+                  {randomVerbMode && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-indigo-100 dark:bg-indigo-500/25 text-indigo-700 dark:text-indigo-300 text-xs font-medium px-2.5 py-0.5 shrink-0" title="Rastgele mod açık">
+                      🎲 Rastgele Mod Aktif
+                    </span>
+                  )}
                   <button
                     type="button"
                     onClick={() => toggleStar(verbKey)}

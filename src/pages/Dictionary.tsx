@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -15,6 +15,8 @@ import {
 } from '../data/mockDictionary';
 import { translateWord } from '../services/dictionaryApi';
 import { getFlashcardDecks, addCardToDeck, type FlashcardDeck } from '../utils/flashcardDecks';
+import { fetchSentencePairs, findSentencesContainingWord, type SentencePair } from '../data/tatoebaSentences';
+import { sanitizeForDisplay } from '../utils/sanitize';
 
 const SITE_URL = 'https://diloloji.com';
 
@@ -123,6 +125,8 @@ export default function Dictionary() {
   const addToSetRef = useRef<HTMLDivElement>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [tatoebaPairsFr, setTatoebaPairsFr] = useState<SentencePair[] | null>(null);
+  const [tatoebaPairsEs, setTatoebaPairsEs] = useState<SentencePair[] | null>(null);
 
   useEffect(() => {
     if (!uiLangDropdownOpen) return;
@@ -146,6 +150,22 @@ export default function Dictionary() {
     return () => document.removeEventListener('mousedown', handle);
   }, [addToSetOpen]);
 
+  /** Tatoeba cümle listelerini yükle (fr-tr ve es-tr); bir kez yüklenir, cache sayesinde tekrar istek atılmaz. */
+  useEffect(() => {
+    let cancelled = false;
+    if (!tatoebaPairsFr) {
+      fetchSentencePairs('fr').then((pairs) => {
+        if (!cancelled) setTatoebaPairsFr(pairs);
+      });
+    }
+    if (!tatoebaPairsEs) {
+      fetchSentencePairs('es').then((pairs) => {
+        if (!cancelled) setTatoebaPairsEs(pairs);
+      });
+    }
+    return () => { cancelled = true; };
+  }, []);
+
   useEffect(() => {
     if (!toastMessage) return;
     const t = setTimeout(() => setToastMessage(null), 3000);
@@ -157,7 +177,7 @@ export default function Dictionary() {
   const pageDescription = 'Kelime Analiz Paneli — Fransızca ve İspanyolca kelime anlamları, örnek cümleler ve ilişkili denklemler.';
 
   const doSearch = useCallback(async (q: string, dir: DictDirection) => {
-    const trimmed = q.trim();
+    const trimmed = sanitizeForDisplay(q);
     if (!trimmed) return;
     setIsLoading(true);
     setResult(undefined);
@@ -169,6 +189,15 @@ export default function Dictionary() {
         r = null;
       }
       if (!r) r = searchDictionary(trimmed, dir) ?? searchDictionary(trimmed, swapDirection(dir)) ?? null;
+      if (r) {
+        r = {
+          ...r,
+          source: sanitizeForDisplay(r.source),
+          target: sanitizeForDisplay(r.target),
+          exampleSource: r.exampleSource ? sanitizeForDisplay(r.exampleSource) : undefined,
+          exampleTarget: r.exampleTarget ? sanitizeForDisplay(r.exampleTarget) : undefined,
+        };
+      }
       setResult(r);
       if (r) {
         setRecentSearches((prev) => {
@@ -185,7 +214,17 @@ export default function Dictionary() {
       }
     } catch {
       const fallback = searchDictionary(trimmed, dir) ?? searchDictionary(trimmed, swapDirection(dir)) ?? null;
-      setResult(fallback);
+      if (fallback) {
+        setResult({
+          ...fallback,
+          source: sanitizeForDisplay(fallback.source),
+          target: sanitizeForDisplay(fallback.target),
+          exampleSource: fallback.exampleSource ? sanitizeForDisplay(fallback.exampleSource) : undefined,
+          exampleTarget: fallback.exampleTarget ? sanitizeForDisplay(fallback.exampleTarget) : undefined,
+        });
+      } else {
+        setResult(fallback);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -256,6 +295,16 @@ export default function Dictionary() {
     []
   );
 
+  /** Aranan kelimenin geçtiği ilk 3 Tatoeba cümlesi — dil seçimine göre fr-tr veya es-tr, useMemo ile optimize. */
+  const tatoebaExamples = useMemo(() => {
+    if (!result) return [];
+    const isFrench = direction === 'fr-tr' || direction === 'tr-fr';
+    const pairs = isFrench ? tatoebaPairsFr : tatoebaPairsEs;
+    if (!pairs || pairs.length === 0) return [];
+    const word = isFrench || direction === 'es-tr' ? result.source : result.target;
+    return findSentencesContainingWord(pairs, word, 3);
+  }, [result, direction, tatoebaPairsFr, tatoebaPairsEs]);
+
   return (
     <div className="min-h-screen relative bg-slate-50 dark:bg-transparent transition-colors duration-300">
       <Helmet>
@@ -268,60 +317,33 @@ export default function Dictionary() {
         <meta property="og:type" content="website" />
       </Helmet>
       <DictionaryBackground />
-      <header className="relative z-20 w-full flex justify-between items-center py-3 px-4 sm:px-5 bg-white/80 dark:bg-slate-900/50 backdrop-blur-xl border-b border-slate-200 dark:border-white/5 sticky top-0 z-50 transition-colors duration-300">
+      <header className="relative z-20 w-full flex justify-between items-center py-3 px-4 sm:px-5 bg-transparent dark:bg-transparent backdrop-blur-md border-b border-slate-200/60 dark:border-slate-700/50 sticky top-0 z-50 transition-all duration-300">
         <div className="min-w-0 flex items-center gap-2 sm:gap-3 flex-1">
-          <Link
-            to="/fiil-laboratuvari"
-            className="flex items-center gap-2 sm:gap-3 shrink-0 transition-all duration-300 hover:opacity-90 hover:scale-[1.02] cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 dark:focus:ring-offset-slate-900 rounded-lg"
-            aria-label="Ana sayfa"
-          >
+          <Link to="/" className="flex items-center gap-2 sm:gap-3 shrink-0 transition-all duration-300 hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 rounded-lg" aria-label="Ana sayfa">
             <img src="/logo.svg" alt="Diloloji" className="h-8 sm:h-10 w-auto shrink-0" />
             <span className="font-semibold text-slate-700 dark:text-slate-200 text-sm md:hidden shrink-0">Diloloji</span>
-            <span className="text-slate-400 dark:text-slate-500 text-sm italic hidden md:inline shrink-0">Dilin matematiğini çöz.</span>
+            <span className="text-slate-400 dark:text-slate-500 text-xs italic hidden md:inline shrink-0 opacity-60">Dilin matematiğini çöz.</span>
           </Link>
-          <div className="ml-2 md:ml-4 hidden md:flex rounded-xl bg-slate-100 dark:bg-slate-800 p-1 border border-slate-200 dark:border-slate-600 shrink-0" role="tablist">
-            <Link to="/fiil-laboratuvari" className="rounded-lg px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors" aria-label="Fiil Laboratuvarı">Fiil Laboratuvarı</Link>
-            <Link to="/ezber-makinesi" className="rounded-lg px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors" aria-label="Ezber Makinesi">Ezber Makinesi</Link>
-            <Link to="/sozluk" className="rounded-lg px-3 py-1.5 text-xs font-medium bg-white dark:bg-slate-600 text-slate-800 dark:text-slate-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50" aria-current="page">📖 Sözlük</Link>
-            <Link to="/ogrenme" className="rounded-lg px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors" aria-label="Öğrenme">{t('ogrenme')}</Link>
-          </div>
+          <nav className="ml-4 md:ml-6 hidden md:flex items-center gap-0.5" role="tablist">
+            <Link to="/fiil-laboratuvari" className="relative rounded-lg px-3 py-2 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-800/40 dark:hover:bg-slate-700/40 transition-all duration-300">Fiil Laboratuvarı</Link>
+            <Link to="/ezber-makinesi" className="relative rounded-lg px-3 py-2 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-800/40 dark:hover:bg-slate-700/40 transition-all duration-300">Ezber Makinesi</Link>
+            <Link to="/sozluk" className="relative rounded-lg px-3 py-2 text-sm font-medium text-indigo-500 dark:text-indigo-400 transition-all duration-300">
+              Sözlük
+              <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-indigo-500 dark:bg-indigo-400" aria-hidden />
+            </Link>
+            <Link to="/ogrenme" className="relative rounded-lg px-3 py-2 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-800/40 dark:hover:bg-slate-700/40 transition-all duration-300">{t('ogrenme')}</Link>
+          </nav>
         </div>
-        <div className="flex items-center shrink-0 gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           <div className="relative shrink-0" ref={uiLangDropdownRef}>
-            <button
-              type="button"
-              onClick={() => setUiLangDropdownOpen((o) => !o)}
-              className="flex items-center gap-1.5 rounded-lg bg-slate-100/80 dark:bg-slate-700/80 hover:bg-slate-200 dark:hover:bg-slate-600 px-2 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-300 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 border border-slate-200/80 dark:border-slate-600/80"
-              title={t('arayuz_dili')}
-              aria-label={t('dil_secin')}
-              aria-expanded={uiLangDropdownOpen}
-              aria-haspopup="listbox"
-            >
-              <span aria-hidden>🌐</span>
-              <span className="uppercase tabular-nums">{['tr', 'en', 'fr', 'es'].includes((i18n.language || 'tr').slice(0, 2)) ? (i18n.language || 'tr').slice(0, 2).toUpperCase() : 'TR'}</span>
+            <button type="button" onClick={() => setUiLangDropdownOpen((o) => !o)} className="h-9 flex items-center justify-center gap-1 rounded-lg px-2 text-slate-400 dark:text-slate-500 hover:text-indigo-500 dark:hover:text-indigo-400 hover:bg-slate-800/40 dark:hover:bg-slate-700/40 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50" title={t('arayuz_dili')} aria-label={t('dil_secin')} aria-expanded={uiLangDropdownOpen} aria-haspopup="listbox">
+              <span className="text-base w-5 h-5 inline-flex items-center justify-center leading-none" aria-hidden>🌐</span>
+              <span className="text-xs font-medium uppercase tabular-nums">{['tr', 'en', 'fr', 'es'].includes((i18n.language || 'tr').slice(0, 2)) ? (i18n.language || 'tr').slice(0, 2).toUpperCase() : 'TR'}</span>
             </button>
             {uiLangDropdownOpen && (
-              <div
-                role="listbox"
-                aria-label={t('dil_secin')}
-                className="absolute right-0 top-full mt-1.5 w-max min-w-[120px] rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 shadow-xl py-1 z-50"
-              >
+              <div role="listbox" aria-label={t('dil_secin')} className="absolute right-0 top-full mt-1.5 w-max min-w-[120px] rounded-xl border border-slate-200 dark:border-slate-600 bg-white/95 dark:bg-slate-800/95 backdrop-blur-md shadow-xl py-1 z-50">
                 {(['tr', 'en', 'fr', 'es'] as const).map((lng) => (
-                  <button
-                    key={lng}
-                    type="button"
-                    role="option"
-                    aria-selected={i18n.language === lng}
-                    onClick={() => {
-                      i18n.changeLanguage(lng);
-                      setUiLangDropdownOpen(false);
-                    }}
-                    className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors flex items-center gap-2 whitespace-nowrap ${
-                      i18n.language === lng
-                        ? 'bg-indigo-500/15 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-200'
-                        : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/80'
-                    }`}
-                  >
+                  <button key={lng} type="button" role="option" aria-selected={i18n.language === lng} onClick={() => { i18n.changeLanguage(lng); setUiLangDropdownOpen(false); }} className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-all duration-300 flex items-center gap-2 whitespace-nowrap ${i18n.language === lng ? 'bg-indigo-500/15 text-indigo-700 dark:text-indigo-200' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/80'}`}>
                     {t(lng === 'tr' ? 'lang_turkce' : lng === 'en' ? 'lang_english' : lng === 'fr' ? 'lang_francais' : 'lang_espanol')}
                   </button>
                 ))}
@@ -329,8 +351,8 @@ export default function Dictionary() {
             )}
           </div>
           {mounted && (
-            <button type="button" onClick={toggleTheme} className="p-1.5 rounded-lg bg-slate-100/80 dark:bg-slate-700/80 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50" aria-label={isDark ? 'Açık moda geç' : 'Karanlık moda geç'}>
-              <span className="text-sm md:text-base leading-none" aria-hidden>{isDark ? '☀️' : '🌙'}</span>
+            <button type="button" onClick={toggleTheme} className="h-9 w-9 flex items-center justify-center rounded-lg text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-800/40 dark:hover:bg-slate-700/40 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50" aria-label={isDark ? 'Açık moda geç' : 'Karanlık moda geç'}>
+              <span className="text-base w-5 h-5 inline-flex items-center justify-center leading-none" aria-hidden>{isDark ? '☀️' : '🌙'}</span>
             </button>
           )}
         </div>
@@ -691,6 +713,27 @@ export default function Dictionary() {
                           })()}
                         </div>
                       )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Tatoeba örnek cümleler — aranan kelimenin geçtiği ilk 3 cümle (fr-tr veya es-tr) */}
+                {tatoebaExamples.length > 0 && (
+                  <div className="px-6 sm:px-8 py-5 border-b border-slate-200/80 dark:border-slate-600/60">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">
+                      Örnek cümleler (Tatoeba)
+                    </p>
+                    <div className="space-y-4">
+                      {tatoebaExamples.map((pair, i) => (
+                        <div key={i} className="rounded-xl bg-slate-100/80 dark:bg-slate-700/40 border border-slate-200/80 dark:border-slate-600/50 p-4">
+                          <p className="text-slate-700 dark:text-slate-200 leading-relaxed">
+                            {highlightWord(sanitizeForDisplay(pair.original), direction === 'fr-tr' || direction === 'es-tr' ? result!.source : result!.target)}
+                          </p>
+                          <p className="text-slate-600 dark:text-slate-300 text-sm mt-2 leading-relaxed">
+                            {sanitizeForDisplay(pair.translated)}
+                          </p>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}
