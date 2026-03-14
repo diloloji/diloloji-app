@@ -12,19 +12,27 @@ export interface GroqExampleItem {
   turkish: string;
 }
 
+/** Sık kullanılan kalıp / collocation: hedef dilde ifade + Türkçe anlamı */
+export interface GroqCommonPhrase {
+  phrase: string;
+  meaning: string;
+}
+
 /** Groq LLM kelime analiz cevabı (JSON). word + translation = kart için source/target. */
 export interface GroqWordAnalysis {
   word?: string;
   phonetic?: string;
   translation?: string;
   examples?: GroqExampleItem[];
+  /** Günlük hayatta sık kullanılan kalıplar / collocations */
+  commonPhrases?: GroqCommonPhrase[];
   /** Eski format uyumluluğu (fallback) */
   source?: string;
   target?: string;
 }
 
 const GROQ_SYSTEM_MESSAGE =
-  'Sen profesyonel bir dilbilimci ve sözlük editörüsün. Kullanıcının girdiği kelimenin dilini otomatik algıla ve hedeflenen dile çevir. Cevabını her zaman sadece şu JSON formatında ver, başka açıklama ekleme: { "word": "orijinal kelime", "phonetic": "/ipa telaffuzu/", "translation": "çevirisi", "examples": [ { "original": "hedef dilde örnek cümle", "turkish": "türkçe çevirisi" } ] }. Asla açıklama yapma, sadece geçerli bir JSON objesi döndür.';
+  'Sen profesyonel bir dilbilimci ve sözlük editörüsün. Kullanıcının girdiği kelimenin dilini otomatik algıla ve hedeflenen dile çevir. Cevabını her zaman sadece şu JSON formatında ver, başka açıklama ekleme: { "word": "orijinal kelime", "phonetic": "/ipa telaffuzu/", "translation": "çevirisi", "examples": [ { "original": "hedef dilde örnek cümle", "turkish": "türkçe çevirisi" } ], "commonPhrases": [ { "phrase": "hedef dildeki kalıp", "meaning": "türkçe anlamı" } ] }. Ayrıca bu kelimenin günlük hayatta en çok kullanıldığı 3 popüler kalıbı veya deyimi (collocations) commonPhrases dizisi içinde döndür. Asla açıklama yapma, sadece geçerli bir JSON objesi döndür.';
 
 /**
  * Groq API ile tek istekte kelime analizi (dil algılama + çeviri + IPA + örnekler).
@@ -37,7 +45,7 @@ export const fetchFromGroq = async (word: string, targetLanguage: string): Promi
     return {};
   }
   console.log('[Sözlük] Aranan kelime:', word, '| Hedef dil:', targetLanguage);
-  const userMessage = `Kullanıcı şu kelimeyi girdi: "${word}". Bu kelimenin dilini otomatik algıla ve hedeflenen dile (${targetLanguage}) çevir. Bana her zaman şu JSON formatında cevap ver: { "word": "orijinal kelime", "phonetic": "/ipa telaffuzu/", "translation": "çevirisi", "examples": [ { "original": "hedef dilde örnek cümle", "turkish": "türkçe çevirisi" } ] }`;
+  const userMessage = `Kullanıcı şu kelimeyi girdi: "${word}". Bu kelimenin dilini otomatik algıla ve hedeflenen dile (${targetLanguage}) çevir. Bana her zaman şu JSON formatında cevap ver: { "word": "orijinal kelime", "phonetic": "/ipa telaffuzu/", "translation": "çevirisi", "examples": [ { "original": "hedef dilde örnek cümle", "turkish": "türkçe çevirisi" } ], "commonPhrases": [ { "phrase": "hedef dildeki kalıp", "meaning": "türkçe anlamı" } ] }. commonPhrases içinde bu kelimenin günlük hayatta en çok kullanıldığı 3 popüler kalıbı veya deyimi döndür.`;
   try {
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
@@ -73,6 +81,7 @@ export const fetchFromGroq = async (word: string, targetLanguage: string): Promi
       phonetic: parsed.phonetic,
       translation: parsed.translation,
       examplesCount: Array.isArray(parsed.examples) ? parsed.examples.length : 0,
+      commonPhrasesCount: Array.isArray(parsed.commonPhrases) ? parsed.commonPhrases.length : 0,
     });
     return parsed;
   } catch (error) {

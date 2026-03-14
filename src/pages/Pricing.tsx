@@ -64,8 +64,8 @@ const PLANS: Plan[] = [
     yearlyPrice: 0,
     lifetimePrice: null,
     features: [
-      'Kısıtlı sözlük araması',
-      'Basit fiil çekim aramaları',
+      'Standart sözlük araması',
+      'Kısıtlı fiil çekimi',
       'Temel örnek cümleler',
       'Reklam destekli deneyim',
     ],
@@ -79,17 +79,18 @@ const PLANS: Plan[] = [
     nameEn: 'Pro',
     description: 'En çok tercih edilen',
     monthlyPrice: 99,
-    yearlyPrice: 79,
+    yearlyPrice: 950,
     lifetimePrice: null,
     features: [
-      'Sınırsız yapay zeka destekli örnek cümleler',
-      'Detaylı fiil analizleri ve tüm zamanlar',
+      'Sınırsız yapay zeka analizi',
+      'Sesli okuma (TTS)',
+      'Etimoloji ve kelime kökeni',
+      'Ezber makinesi (sınırsız set)',
       'Reklamsız deneyim',
       'Öncelikli destek',
-      'Yeni özelliklere erken erişim',
     ],
-    cta: 'Planı Seç',
-    ctaEn: 'Choose Plan',
+    cta: 'Pro\'ya Geç',
+    ctaEn: 'Go Pro',
     popular: true,
   },
   {
@@ -127,7 +128,7 @@ export default function Pricing() {
       <Helmet>
         <title>Fiyatlandırma — Diloloji</title>
         <meta name="description" content="Dilin matematiğini avantajlı çözün. Temel, Pro ve Ömür Boyu planları." />
-        <link rel="canonical" href={`${SITE_URL}/fiyatlandirma`} />
+        <link rel="canonical" href={`${SITE_URL}/pricing`} />
       </Helmet>
       <PricingBackground />
 
@@ -155,6 +156,12 @@ export default function Pricing() {
           >
             {t('ogrenme')}
           </Link>
+          <Link
+            to="/pricing"
+            className="rounded-lg px-3 py-2 text-sm font-semibold bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-900 hover:from-amber-300 hover:via-yellow-300 hover:to-amber-400 shadow-md shadow-amber-500/25 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-slate-100 dark:focus:ring-offset-slate-900"
+          >
+            🌟 Pro&apos;ya Geç
+          </Link>
           {mounted && (
             <button
               type="button"
@@ -180,7 +187,7 @@ export default function Pricing() {
           className="text-center mb-10 sm:mb-14"
         >
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-slate-900 dark:text-white mb-4">
-            {isTr ? 'Dilin Matematiğini Avantajlı Çözün' : 'Solve the Math of Language — Affordably'}
+            {isTr ? 'Dilin Matematiğini Sınırları Kaldırarak Çözün' : 'Solve the Math of Language — Without Limits'}
           </h1>
           <p className="text-slate-600 dark:text-slate-400 text-base sm:text-lg max-w-xl mx-auto mb-8">
             {isTr ? 'İhtiyacınıza uygun planı seçin, hemen başlayın.' : 'Choose the plan that fits you and get started.'}
@@ -216,10 +223,7 @@ export default function Pricing() {
                   : 'text-slate-600 dark:text-slate-400'
               }`}
             >
-              {isTr ? 'Yıllık' : 'Yearly'}
-              <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/15 dark:bg-emerald-500/20 px-1.5 py-0.5 rounded">
-                %20
-              </span>
+              {isTr ? 'Yıllık (%20 İndirimli)' : 'Yearly (20% off)'}
             </span>
           </div>
         </motion.section>
@@ -256,7 +260,7 @@ export default function Pricing() {
                   plan.muted
                     ? 'border-slate-300/60 dark:border-slate-600/50 text-slate-700 dark:text-slate-300'
                     : plan.popular
-                      ? 'border-transparent ring-2 ring-indigo-400/60 dark:ring-indigo-400/50 shadow-indigo-500/10 scale-105 z-10'
+                      ? 'border-transparent ring-2 ring-indigo-400/80 dark:ring-indigo-400/70 shadow-[0_0_32px_rgba(99,102,241,0.25)] dark:shadow-[0_0_40px_rgba(99,102,241,0.2)] scale-105 z-10'
                       : 'border-white/20 dark:border-white/10'
                 }`}
               >

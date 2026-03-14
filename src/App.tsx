@@ -24,6 +24,8 @@ function getPageElement(pathname: string) {
     case '/ogrenme':
       return <LearningPath />;
     case '/fiyatlandirma':
+    case '/pricing':
+    case '/paketler':
       return <Pricing />;
     default:
       return <Navigate to="/" replace />;
