@@ -269,18 +269,23 @@ export default function HomePage() {
       </Helmet>
       <BackgroundWithPattern mouseX={mouse.x} mouseY={mouse.y} />
 
-      <header className="relative z-20 w-full flex justify-between items-center py-3 px-4 sm:px-6 lg:px-8 bg-transparent dark:bg-transparent backdrop-blur-md border-b border-slate-200/60 dark:border-slate-700/50 sticky top-0 transition-all duration-300">
+      <header className="relative z-20 w-full flex justify-between items-center py-3 px-4 sm:px-6 lg:px-8 bg-white/70 dark:bg-night-950/80 backdrop-blur-md border-b border-slate-200/50 dark:border-white/5 sticky top-0 transition-all duration-300">
         <Link to="/" className="min-w-0 flex items-center gap-2 sm:gap-3 shrink-0 transition-all duration-300 hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 rounded-xl" aria-label="Ana sayfa">
           <img src="/logo.svg" alt="Diloloji" className="h-8 sm:h-10 w-auto shrink-0" />
           <span className="text-slate-400 dark:text-slate-500 text-xs italic hidden sm:inline shrink-0 opacity-60">Dilin matematiğini çöz.</span>
         </Link>
-        <nav className="flex items-center gap-2">
-          <Link to="/sozluk" className="rounded-lg px-3 py-2 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-800/40 dark:hover:bg-slate-700/40 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50">
-            {t('sozluk')}
-          </Link>
+        <nav className="flex items-center gap-1 sm:gap-2">
+          <div className="hidden sm:flex items-center gap-0.5 rounded-xl border border-transparent dark:border-white/5 px-1 py-0.5">
+            <Link to="/sozluk" className="rounded-lg px-3 py-2 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50">
+              {t('sozluk')}
+            </Link>
+            <Link to="/ogrenme" className="rounded-lg px-3 py-2 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50">
+              {t('ogrenme')}
+            </Link>
+          </div>
           <Link
             to="/pricing"
-            className="rounded-lg px-3 py-2 text-sm font-semibold bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-900 hover:from-amber-300 hover:via-yellow-300 hover:to-amber-400 shadow-md shadow-amber-500/25 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-slate-100 dark:focus:ring-offset-slate-900"
+            className="rounded-xl px-4 py-2.5 text-sm font-semibold bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-900 hover:from-amber-300 hover:via-yellow-300 hover:to-amber-400 shadow-lg shadow-amber-500/30 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-slate-100 dark:focus:ring-offset-night-950 hover:shadow-amber-500/40"
           >
             🌟 Pro&apos;ya Geç
           </Link>
@@ -484,7 +489,7 @@ export default function HomePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: i * 0.1 }}
-                className="relative rounded-2xl border border-white/20 dark:border-white/10 bg-white/50 dark:bg-white/5 backdrop-blur-md p-6 lg:p-8 text-center"
+                className="relative glass-panel-strong p-6 lg:p-8 text-center"
               >
                 <span className="text-3xl font-bold text-slate-300 dark:text-white/20 mb-4 block">{item.step}</span>
                 <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">{item.title}</h3>
@@ -506,7 +511,7 @@ export default function HomePage() {
           transition={{ duration: 0.5 }}
           className="mt-20 lg:mt-28 pb-16 lg:pb-24"
         >
-          <div className="rounded-2xl border border-white/20 dark:border-white/10 bg-white/50 dark:bg-white/5 backdrop-blur-md px-6 py-8 sm:px-10 sm:py-10">
+          <div className="glass-panel-strong px-6 py-8 sm:px-10 sm:py-10">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-6 text-center">
               {STATS.map((stat) => (
                 <StatRow key={stat.label} stat={stat} inView={statsInView} />
@@ -523,7 +528,7 @@ export default function HomePage() {
           transition={{ duration: 0.4 }}
           className="mt-24 pt-12 pb-8 border-t border-white/10 dark:border-white/10"
         >
-          <div className="rounded-2xl border border-white/20 dark:border-white/10 bg-white/40 dark:bg-white/5 backdrop-blur-md p-8 sm:p-10">
+          <div className="glass-panel-strong p-8 sm:p-10">
             <div className="flex flex-col sm:flex-row flex-wrap items-center justify-between gap-8">
               <div className="flex items-center gap-2">
                 <img src="/logo.svg" alt="Diloloji" className="h-8 w-auto" />

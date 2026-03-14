@@ -32,7 +32,7 @@ function DictionaryBackground() {
   return (
     <>
       <div
-        className="absolute inset-0 bg-gradient-to-br from-[#0b1220] via-[#0f172a] via-40% to-[#1e1b4b] to-[#312e81] transition-colors duration-500 dark:from-[#0b1220] dark:via-[#0f172a] dark:via-[#1e1b4b] dark:to-[#1e1b4b] opacity-0 dark:opacity-100"
+        className="absolute inset-0 bg-gradient-to-br from-[#0a0f1a] via-[#0f1623] via-40% to-[#151d2e] to-[#1e293b] transition-colors duration-500 dark:from-[#0a0f1a] dark:via-[#0f1623] dark:via-[#151d2e] dark:to-[#1e293b] opacity-0 dark:opacity-100"
         aria-hidden
       />
       <div
@@ -305,7 +305,7 @@ export default function Dictionary() {
         <meta property="og:type" content="website" />
       </Helmet>
       <DictionaryBackground />
-      <header className="relative z-20 w-full flex justify-between items-center py-3 px-4 sm:px-5 bg-transparent dark:bg-transparent backdrop-blur-md border-b border-slate-200/60 dark:border-slate-700/50 sticky top-0 z-50 transition-all duration-300">
+      <header className="relative z-20 w-full flex justify-between items-center py-3 px-4 sm:px-5 bg-white/70 dark:bg-night-950/80 backdrop-blur-md border-b border-slate-200/50 dark:border-white/5 sticky top-0 z-50 transition-all duration-300">
         <div className="min-w-0 flex items-center gap-2 sm:gap-3 flex-1">
           <Link to="/" className="flex items-center gap-2 sm:gap-3 shrink-0 transition-all duration-300 hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 rounded-lg" aria-label="Ana sayfa">
             <img src="/logo.svg" alt="Diloloji" className="h-8 sm:h-10 w-auto shrink-0" />
@@ -398,8 +398,7 @@ export default function Dictionary() {
 
           {/* Arama çubuğu — temizle (X) + bayrak ikonu */}
           <form onSubmit={handleSearch} className="mb-8">
-            <div className="relative rounded-2xl p-[2px] bg-gradient-to-r from-indigo-500/20 via-purple-500/20 to-indigo-500/20 dark:from-indigo-400/30 dark:via-purple-400/30 dark:to-indigo-400/30 shadow-[0_0_24px_rgba(99,102,241,0.15)] dark:shadow-[0_0_32px_rgba(99,102,241,0.2)]">
-              <div className="relative rounded-[14px] bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-600/80 overflow-hidden flex items-center h-12">
+            <div className="relative rounded-xl border border-slate-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-sm shadow-glass dark:shadow-glass-dark overflow-hidden flex items-center h-12">
                 <span className="pl-4 text-2xl shrink-0" aria-hidden title={direction.startsWith('fr') ? 'Fransızca' : 'İspanyolca'}>
                   {direction === 'tr-fr' || direction === 'fr-tr' ? '🇫🇷' : '🇪🇸'}
                 </span>
@@ -603,7 +602,7 @@ export default function Dictionary() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 12 }}
                 transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                className="rounded-3xl bg-white/70 dark:bg-slate-800/60 backdrop-blur-xl border border-slate-200/80 dark:border-slate-600/80 shadow-xl overflow-hidden relative"
+                className="rounded-2xl backdrop-blur-md bg-white/70 dark:bg-white/[0.07] border border-slate-200/70 dark:border-white/10 shadow-glass dark:shadow-glass-dark overflow-hidden relative"
               >
                 <button
                   type="button"
@@ -702,7 +701,7 @@ export default function Dictionary() {
                   {groqExamples && groqExamples.length > 0 ? (
                     <div className="space-y-4">
                       {groqExamples.map((item, i) => (
-                        <div key={i} className="rounded-xl bg-slate-100/80 dark:bg-slate-700/40 border border-slate-200/80 dark:border-slate-600/50 p-4">
+                        <div key={i} className="rounded-xl bg-slate-50/80 dark:bg-white/5 border border-slate-200/60 dark:border-white/10 p-4">
                           <p className="text-slate-800 dark:text-slate-100 font-semibold leading-relaxed">
                             {highlightWord(item.original, (direction === 'tr-fr' || direction === 'tr-es') ? result.target : result.source)}
                           </p>
@@ -731,7 +730,7 @@ export default function Dictionary() {
                       {groqCommonPhrases.map((item, i) => (
                         <div
                           key={i}
-                          className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 rounded-xl bg-slate-100/80 dark:bg-slate-700/40 border border-slate-200/80 dark:border-slate-600/50 px-4 py-3 min-w-0"
+                          className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 rounded-xl bg-slate-50/80 dark:bg-white/5 border border-slate-200/60 dark:border-white/10 px-4 py-3 min-w-0"
                         >
                           <span className="font-semibold text-slate-800 dark:text-slate-100 shrink-0">
                             {item.phrase}

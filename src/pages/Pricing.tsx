@@ -16,7 +16,7 @@ function PricingBackground() {
   return (
     <>
       <div
-        className="absolute inset-0 bg-gradient-to-br from-[#0b1220] via-[#0f172a] via-40% to-[#1e1b4b] to-[#312e81] transition-colors duration-500 dark:from-[#0b1220] dark:via-[#0f172a] dark:via-[#1e1b4b] dark:to-[#1e1b4b] opacity-0 dark:opacity-100"
+        className="absolute inset-0 bg-gradient-to-br from-[#0a0f1a] via-[#0f1623] via-40% to-[#151d2e] to-[#1e293b] transition-colors duration-500 dark:from-[#0a0f1a] dark:via-[#0f1623] dark:via-[#151d2e] dark:to-[#1e293b] opacity-0 dark:opacity-100"
         aria-hidden
       />
       <div
@@ -132,7 +132,7 @@ export default function Pricing() {
       </Helmet>
       <PricingBackground />
 
-      <header className="relative z-20 w-full flex justify-between items-center py-3 px-4 sm:px-6 lg:px-8 bg-transparent border-b border-slate-200/60 dark:border-slate-700/50 sticky top-0 backdrop-blur-md transition-all duration-300">
+      <header className="relative z-20 w-full flex justify-between items-center py-3 px-4 sm:px-6 lg:px-8 bg-white/70 dark:bg-night-950/80 border-b border-slate-200/50 dark:border-white/5 sticky top-0 backdrop-blur-md transition-all duration-300">
         <Link
           to="/"
           className="min-w-0 flex items-center gap-2 sm:gap-3 shrink-0 transition-all duration-300 hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 rounded-xl"
