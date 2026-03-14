@@ -1383,7 +1383,7 @@ export function Page() {
         <meta property="og:type" content="website" />
       </Helmet>
       {/* Üst menü (Navbar) — glassmorphism, minimalist, premium */}
-      <header data-print-hide className="w-full flex justify-between items-center py-3 px-4 sm:px-5 bg-transparent dark:bg-transparent backdrop-blur-md border-b border-slate-200/60 dark:border-slate-700/50 sticky top-0 z-50 transition-all duration-300 print:hidden">
+      <header data-print-hide className="w-full flex justify-between items-center py-3 px-4 sm:px-5 bg-white/70 dark:bg-night-950/80 backdrop-blur-md border-b border-slate-200/50 dark:border-white/5 sticky top-0 z-50 transition-all duration-300 print:hidden">
         {/* Sol: Logo + slogan — dikey hizalı, slogan küçük ve hafif */}
         <div className="min-w-0 flex items-center gap-2 sm:gap-3 flex-1">
           <Link

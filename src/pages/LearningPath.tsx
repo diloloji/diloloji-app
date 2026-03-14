@@ -227,13 +227,13 @@ export default function LearningPath() {
   const selectedUnit = selectedUnitId ? getUnitContent(selectedUnitId) : null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-indigo-50/20 to-slate-200/80 dark:from-[#0b1220] dark:via-[#0f172a] dark:to-[#1e1b4b] transition-colors duration-500">
+    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-indigo-50/20 to-slate-200/80 dark:from-[#0a0f1a] dark:via-[#0f1623] dark:to-[#151d2e] transition-colors duration-500">
       <Helmet>
         <title>Öğrenme Yolu | Diloloji</title>
         <meta name="description" content="Fransızca ve İspanyolca A1–C1 müfredat yol haritası." />
       </Helmet>
 
-      <header className="sticky top-0 z-20 w-full flex justify-between items-center py-3 px-4 sm:px-5 bg-transparent dark:bg-transparent backdrop-blur-md border-b border-slate-200/60 dark:border-slate-700/50 transition-all duration-300">
+      <header className="sticky top-0 z-20 w-full flex justify-between items-center py-3 px-4 sm:px-5 bg-white/70 dark:bg-night-950/80 backdrop-blur-md border-b border-slate-200/50 dark:border-white/5 transition-all duration-300">
         <div className="flex items-center gap-2 sm:gap-3">
           <Link to="/" className="flex items-center gap-2 sm:gap-3 shrink-0 transition-all duration-300 hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 rounded-lg" aria-label="Ana sayfa">
             <img src="/logo.svg" alt="Diloloji" className="h-8 sm:h-10 w-auto" />
