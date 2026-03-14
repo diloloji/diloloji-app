@@ -1492,6 +1492,18 @@ export function Page() {
               <BookA className="w-3.5 h-3.5" strokeWidth={2} aria-hidden />
               {t('sozluk')}
             </Link>
+            <Link
+              to="/ogrenme"
+              role="tab"
+              aria-selected={location.pathname === '/ogrenme'}
+              className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-1 dark:focus:ring-offset-slate-900 ${
+                location.pathname === '/ogrenme'
+                  ? 'bg-white dark:bg-slate-600 text-slate-800 dark:text-slate-100 shadow-sm'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+              }`}
+            >
+              {t('ogrenme')}
+            </Link>
           </div>
         </div>
 
@@ -1665,6 +1677,17 @@ export function Page() {
             >
               <BookA className="w-4 h-4 shrink-0" strokeWidth={2} aria-hidden />
               {t('sozluk')}
+            </Link>
+            <Link
+              to="/ogrenme"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className={`w-full py-3 px-4 rounded-xl text-left text-base font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${
+                location.pathname === '/ogrenme'
+                  ? 'bg-indigo-500/20 dark:bg-indigo-400/20 text-indigo-700 dark:text-indigo-200 border border-indigo-400/30'
+                  : 'bg-slate-800/60 dark:bg-slate-800/80 text-slate-200 dark:text-slate-100 hover:bg-slate-700/60 dark:hover:bg-slate-700/80 border border-slate-600/50'
+              }`}
+            >
+              {t('ogrenme')}
             </Link>
             {!isLoggedIn && (
               <button

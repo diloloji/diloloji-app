@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Volume2, X } from 'lucide-react';
@@ -7,6 +7,7 @@ import { useThemeContext } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTranslation } from 'react-i18next';
 import {
+  searchDictionary,
   POPULAR_SEARCHES,
   getWordsOfTheDay,
   type DictDirection,
@@ -97,7 +98,8 @@ function typeBadgeClass(type: string): string {
 export default function Dictionary() {
   const { isDark, toggleTheme, mounted } = useThemeContext();
   const { t, i18n } = useTranslation();
-  const { selectedLanguage } = useLanguage();
+  const { selectedLanguage, setSelectedLanguage } = useLanguage();
+  const navigate = useNavigate();
   const [uiLangDropdownOpen, setUiLangDropdownOpen] = useState(false);
   const uiLangDropdownRef = useRef<HTMLDivElement>(null);
   const [direction, setDirection] = useState<DictDirection>(selectedLanguage === 'es' ? 'tr-es' : 'tr-fr');
@@ -160,8 +162,10 @@ export default function Dictionary() {
     setIsLoading(true);
     setResult(undefined);
     try {
-      const r = await translateWord(trimmed, dir);
-      setResult(r ?? null);
+      let r = await translateWord(trimmed, dir);
+      if (!r) r = await translateWord(trimmed, swapDirection(dir));
+      if (!r) r = searchDictionary(trimmed, dir) ?? searchDictionary(trimmed, swapDirection(dir)) ?? null;
+      setResult(r);
       if (r) {
         setRecentSearches((prev) => {
           const next = [{ query: trimmed, dir }, ...prev.filter((x) => !(x.query === trimmed && x.dir === dir))].slice(0, 5);
@@ -274,6 +278,7 @@ export default function Dictionary() {
             <Link to="/fiil-laboratuvari" className="rounded-lg px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors" aria-label="Fiil Laboratuvarı">Fiil Laboratuvarı</Link>
             <Link to="/ezber-makinesi" className="rounded-lg px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors" aria-label="Ezber Makinesi">Ezber Makinesi</Link>
             <Link to="/sozluk" className="rounded-lg px-3 py-1.5 text-xs font-medium bg-white dark:bg-slate-600 text-slate-800 dark:text-slate-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50" aria-current="page">📖 Sözlük</Link>
+            <Link to="/ogrenme" className="rounded-lg px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors" aria-label="Öğrenme">{t('ogrenme')}</Link>
           </div>
         </div>
         <div className="flex items-center shrink-0 gap-2">
@@ -544,19 +549,19 @@ export default function Dictionary() {
                 <button
                   type="button"
                   onClick={() => setResult(null)}
-                  className="absolute top-3 right-3 z-10 p-2 rounded-lg text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-200/80 dark:hover:bg-slate-700/80 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                  className="absolute top-2 right-2 z-10 p-2 rounded-lg text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-200/80 dark:hover:bg-slate-700/80 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
                   aria-label="Kapat"
                 >
                   <X className="w-5 h-5" strokeWidth={2} />
                 </button>
-                {/* Başlık: Kelime + fonetik + TTS */}
+                {/* Başlık: Kelime + fonetik (sadece gerçek IPA varsa) + TTS */}
                 <div className="p-6 sm:p-8 border-b border-slate-200/80 dark:border-slate-600/60">
                   <div className="flex flex-wrap items-start justify-between gap-4">
                     <div className="min-w-0">
                       <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-slate-100 capitalize tracking-tight">
                         {result.source}
                       </h2>
-                      {result.phonetic && (
+                      {result.phonetic && result.phonetic !== '/[Arama]/' && (
                         <p className="mt-1 text-lg text-slate-500 dark:text-slate-400 font-mono">{result.phonetic}</p>
                       )}
                       <p className="mt-2 text-xl font-semibold text-indigo-600 dark:text-indigo-400">{result.target}</p>
@@ -640,15 +645,22 @@ export default function Dictionary() {
                           <p className="text-slate-700 dark:text-slate-200 leading-relaxed">
                             {highlightWord(result.exampleSource, result.source)}
                           </p>
-                          {result.type === 'fiil' && result.targetVerb && (
-                            <Link
-                              to={`/fiil-laboratuvari?verb=${encodeURIComponent(result.targetVerb)}&lang=${direction === 'tr-fr' || direction === 'fr-tr' ? 'fr' : 'es'}`}
-                              className="inline-flex items-center gap-2 mt-3 rounded-lg border border-indigo-500/40 dark:border-indigo-400/50 bg-indigo-500/10 dark:bg-indigo-500/20 px-3 py-2 text-sm font-medium text-indigo-700 dark:text-indigo-300 hover:bg-indigo-500/20 dark:hover:bg-indigo-500/30 transition-colors"
-                            >
-                              Fiil Lab'da Çöz
-                              <span aria-hidden>→</span>
-                            </Link>
-                          )}
+                          {result.type === 'fiil' && result.targetVerb && (() => {
+                            const verbLabLang = direction === 'tr-fr' || direction === 'fr-tr' ? 'fr' : 'es';
+                            return (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setSelectedLanguage(verbLabLang);
+                                  navigate(`/fiil-laboratuvari?verb=${encodeURIComponent(result.targetVerb!)}&lang=${verbLabLang}`);
+                                }}
+                                className="inline-flex items-center gap-2 mt-3 rounded-lg border border-indigo-500/40 dark:border-indigo-400/50 bg-indigo-500/10 dark:bg-indigo-500/20 px-3 py-2 text-sm font-medium text-indigo-700 dark:text-indigo-300 hover:bg-indigo-500/20 dark:hover:bg-indigo-500/30 transition-colors"
+                              >
+                                Fiil Lab'da Çöz
+                                <span aria-hidden>→</span>
+                              </button>
+                            );
+                          })()}
                         </div>
                       )}
                       {result.exampleTarget && (
@@ -656,15 +668,22 @@ export default function Dictionary() {
                           <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
                             {highlightWord(result.exampleTarget, result.target)}
                           </p>
-                          {result.type === 'fiil' && result.targetVerb && (
-                            <Link
-                              to={`/fiil-laboratuvari?verb=${encodeURIComponent(result.targetVerb)}&lang=${direction === 'tr-fr' || direction === 'fr-tr' ? 'fr' : 'es'}`}
-                              className="inline-flex items-center gap-2 mt-3 rounded-lg border border-indigo-500/40 dark:border-indigo-400/50 bg-indigo-500/10 dark:bg-indigo-500/20 px-3 py-2 text-sm font-medium text-indigo-700 dark:text-indigo-300 hover:bg-indigo-500/20 dark:hover:bg-indigo-500/30 transition-colors"
-                            >
-                              Fiil Lab'da Çöz
-                              <span aria-hidden>→</span>
-                            </Link>
-                          )}
+                          {result.type === 'fiil' && result.targetVerb && (() => {
+                            const verbLabLang = direction === 'tr-fr' || direction === 'fr-tr' ? 'fr' : 'es';
+                            return (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setSelectedLanguage(verbLabLang);
+                                  navigate(`/fiil-laboratuvari?verb=${encodeURIComponent(result.targetVerb!)}&lang=${verbLabLang}`);
+                                }}
+                                className="inline-flex items-center gap-2 mt-3 rounded-lg border border-indigo-500/40 dark:border-indigo-400/50 bg-indigo-500/10 dark:bg-indigo-500/20 px-3 py-2 text-sm font-medium text-indigo-700 dark:text-indigo-300 hover:bg-indigo-500/20 dark:hover:bg-indigo-500/30 transition-colors"
+                              >
+                                Fiil Lab'da Çöz
+                                <span aria-hidden>→</span>
+                              </button>
+                            );
+                          })()}
                         </div>
                       )}
                     </div>

@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Page } from './pages/Page';
 import HomePage from './pages/HomePage';
 import Dictionary from './pages/Dictionary';
+import LearningPath from './pages/LearningPath';
 import { XpProvider } from './contexts/XpContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -19,6 +20,8 @@ function getPageElement(pathname: string) {
       return <Page />;
     case '/sozluk':
       return <Dictionary />;
+    case '/ogrenme':
+      return <LearningPath />;
     default:
       return <Navigate to="/" replace />;
   }

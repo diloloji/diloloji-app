@@ -57,6 +57,10 @@ export async function translateWord(
   const translatedText = data.responseData?.translatedText?.trim();
   if (!translatedText) return null;
 
+  const normalizedInput = trimmed.toLowerCase().replace(/\s+/g, ' ');
+  const normalizedTranslation = translatedText.toLowerCase().replace(/\s+/g, ' ');
+  if (normalizedInput === normalizedTranslation) return null;
+
   const lang: 'fr' | 'es' = direction === 'tr-fr' || direction === 'fr-tr' ? 'fr' : 'es';
   const source = trimmed;
   const target = translatedText;
@@ -67,7 +71,7 @@ export async function translateWord(
     target,
     type: 'kelime',
     lang,
-    phonetic: '/[Arama]/',
+    phonetic: undefined,
     exampleSource: firstMatch?.segment,
     exampleTarget: firstMatch?.translation,
     synonyms: undefined,
