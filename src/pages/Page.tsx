@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { useLocation, useNavigate, Link } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { useThemeContext } from '../contexts/ThemeContext';
@@ -17,11 +17,11 @@ import { formatConjugation } from '../conjugation/stemSuffix';
 import { checkPasséComposéLogic } from '../conjugation/passeCompose';
 import { getRandomVerbForLang } from '../data/commonVerbs';
 import { isIrregularVerb } from '../data/irregularVerbs';
-import { getTranslation, getTranslationOrPlaceholder } from '../data/dictionary';
+import { getTranslationOrPlaceholder } from '../data/dictionary';
 import { getVerbExample } from '../data/verbExamples';
 import { getTenseExplanation } from '../data/tenseExplanations';
 import { getVerbMetadata } from '../data/verbMetadata';
-import { getVerbMeaningAndSynonyms } from '../data/verbMeaningSynonyms';
+import { translateWord } from '../services/dictionaryApi';
 import { getMistakes, getDueMistakes, addMistake, updateMistakeReview, type MistakeEntry } from '../utils/mistakeBank';
 import { getStarredVerbs, toggleStarredVerb, isStarredVerb } from '../utils/starredVerbs';
 import { getActivityHistory, getLastNDays, addActivityToday } from '../utils/activityHistory';
@@ -29,6 +29,7 @@ import { getFlashcardDecks, addCardToDeck, type FlashcardDeck } from '../utils/f
 import { useXp } from '../contexts/XpContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTranslation } from 'react-i18next';
+import { BookA } from 'lucide-react';
 import EzberMakinesi from '../components/EzberMakinesi';
 import AuthModal from '../components/AuthModal';
 import AccentKeyboard from '../components/AccentKeyboard';
@@ -457,9 +458,10 @@ export function Page() {
     tenseLabel: string;
     pronounLabel: string;
   } | null>(null);
-  /** Türkçe anlam: yerel sözlük + yoksa MyMemory API fallback */
+  /** Türkçe anlam: dictionaryApi (dinamik) + statik fallback */
   const [translation, setTranslation] = useState<string | null>(null);
-  const [isTranslating, setIsTranslating] = useState(false);
+  const [dynamicMeaning, setDynamicMeaning] = useState<string | null>(null);
+  const [isMeaningLoading, setIsMeaningLoading] = useState(false);
   const [selectedTense, setSelectedTense] = useState<string>(() => getTenses('fr')[0].id);
   const [mode, setMode] = useState<Mode>('learning');
   const [userAnswers, setUserAnswers] = useState<Record<string, string>>(() => getInitialUserAnswers('fr'));
@@ -612,7 +614,7 @@ export function Page() {
   /** Tema: global context, mounted sonrası butonu göster (hydration uyumu) */
   const { isDark, toggleTheme, mounted: themeMounted } = useThemeContext();
 
-  /** Dil değişince: tam sıfırlama — arama metni, hata, sonuçlar temizlenir; boş ekran yeni dile göre gösterilir */
+  /** Dil değişince: tam sıfırlama — fiil, arama metni, anlam, hata temizlenir; "Laboratuvar Hazır!" boş ekranına dönülür */
   useEffect(() => {
     const tenses = tensesForLang;
     setSelectedTense(tenses[0].id);
@@ -624,6 +626,8 @@ export function Page() {
     setError('');
     setReverseLookupInfo(null);
     setTranslation(null);
+    setDynamicMeaning(null);
+    setIsMeaningLoading(false);
     setUserAnswers(getInitialUserAnswers(selectedLanguage));
     setQuizFeedback(Object.fromEntries(pronounsForLang.map((p) => [p.id, null as 'correct' | 'wrong' | null])));
     setQuizPasséHint(Object.fromEntries(pronounsForLang.map((p) => [p.id, null as string | null])));
@@ -641,7 +645,7 @@ export function Page() {
   const reviewInputRef = useRef<HTMLInputElement>(null);
   const autocompleteWrapRef = useRef<HTMLDivElement>(null);
   /** Dil değişiminde mevcut fiili yeni dilde denemek için (effect içinden güncel loadVerb çağrısı) */
-  const loadVerbRef = useRef<((overrideVerb?: string) => void) | null>(null);
+  const loadVerbRef = useRef<((overrideVerb?: string, langOverride?: 'fr' | 'es') => void) | null>(null);
   /** Çeviri isteği sırasında güncel fiili takip et (stale response'ları uygulama) */
   const verbKeyRef = useRef<string | null>(null);
   const comboDisplayTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -702,33 +706,36 @@ export function Page() {
   const autocompleteAnchorRef = useRef<HTMLDivElement>(null);
   const [autocompletePosition, setAutocompletePosition] = useState<{ top: number; left: number; width: number } | null>(null);
 
-  const loadVerb = useCallback((overrideVerb?: string) => {
+  const loadVerb = useCallback((overrideVerb?: string, langOverride?: 'fr' | 'es') => {
+    const effectiveLang = langOverride ?? selectedLanguage;
     setError('');
     setReverseLookupInfo(null);
     const toLoad = (overrideVerb ?? verbInput).trim();
     try {
-      const result = getConjugationsForLang(toLoad, selectedTense, selectedLanguage);
+      const result = getConjugationsForLang(toLoad, selectedTense, effectiveLang);
       if (result && result.ok) {
         const conj = result.conjugations;
         if (conj && typeof conj === 'object' && Object.keys(conj).length > 0) {
-          const verified = verifyConjugationMap(conj, selectedTense, selectedLanguage);
+          const verified = verifyConjugationMap(conj, selectedTense, effectiveLang);
           if (overrideVerb) setVerbInput(overrideVerb);
           setVerbKey(result.infinitive);
           setConjugations(verified);
+          if (langOverride) setSelectedLanguage(langOverride);
           setError('');
           return;
         }
       }
-      const reverse = findInfinitiveByConjugatedForm(toLoad, selectedLanguage);
+      const reverse = findInfinitiveByConjugatedForm(toLoad, effectiveLang);
       if (reverse) {
         try {
-          const conjugationsMap = getConjugationForTenseForLang(reverse.infinitive, reverse.tenseId, selectedLanguage);
+          const conjugationsMap = getConjugationForTenseForLang(reverse.infinitive, reverse.tenseId, effectiveLang);
           if (conjugationsMap && typeof conjugationsMap === 'object' && Object.keys(conjugationsMap).length > 0) {
-            const verified = verifyConjugationMap(conjugationsMap, reverse.tenseId, selectedLanguage);
+            const verified = verifyConjugationMap(conjugationsMap, reverse.tenseId, effectiveLang);
             setVerbInput(reverse.infinitive);
             setVerbKey(reverse.infinitive);
             setSelectedTense(reverse.tenseId);
             setConjugations(verified);
+            if (langOverride) setSelectedLanguage(langOverride);
             setReverseLookupInfo({
               searched: toLoad,
               infinitive: reverse.infinitive,
@@ -754,15 +761,33 @@ export function Page() {
 
   loadVerbRef.current = loadVerb;
 
-  /** Sözlükten "Fiil Lab'da Çöz" ile gelen fiili aç */
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  /** Sözlükten "Fiil Lab'da Çöz" ile gelen fiili aç (state veya URL query: verb + lang) */
   useEffect(() => {
+    const verbFromUrl = searchParams.get('verb');
+    const langFromUrl = searchParams.get('lang');
+    if (langFromUrl === 'fr' || langFromUrl === 'es') {
+      setSelectedLanguage(langFromUrl);
+    }
+    if (verbFromUrl && typeof verbFromUrl === 'string' && loadVerbRef.current) {
+      const lang = langFromUrl === 'fr' || langFromUrl === 'es' ? langFromUrl : undefined;
+      loadVerbRef.current(verbFromUrl.trim(), lang);
+      setSearchParams((prev) => {
+        const next = new URLSearchParams(prev);
+        next.delete('verb');
+        next.delete('lang');
+        return next;
+      }, { replace: true });
+      return;
+    }
     const state = location.state as { openVerb?: string } | null;
     const openVerb = state?.openVerb;
     if (openVerb && typeof openVerb === 'string' && loadVerbRef.current) {
       loadVerbRef.current(openVerb.trim());
       navigate(location.pathname, { replace: true, state: {} });
     }
-  }, [location.state, location.pathname, navigate]);
+  }, [location.state, location.pathname, navigate, searchParams, setSearchParams]);
 
   const pickRandomVerb = useCallback(() => {
     setAutocompleteClosed(true);
@@ -804,59 +829,39 @@ export function Page() {
     verbKeyRef.current = verbKey;
   }, [verbKey]);
 
-  /** Türkçe anlam: önce yerel sözlük, yoksa MyMemory API */
-  const fetchTranslation = useCallback(async (verb: string) => {
-    const lang = selectedLanguage;
-    const local = getTranslation(verb, lang);
-    if (local) {
-      setTranslation(local);
-      setIsTranslating(false);
-      return;
-    }
-    setIsTranslating(true);
-    setTranslation(null);
-    try {
-      const langPair = lang === 'fr' ? 'fr|tr' : 'es|tr';
-      const res = await fetch(
-        `https://api.mymemory.translated.net/get?q=${encodeURIComponent(verb)}&langpair=${langPair}`
-      );
-      if (!res.ok) {
-        if (verbKeyRef.current === verb) setTranslation(null);
-        return;
-      }
-      const contentType = res.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
-        if (verbKeyRef.current === verb) setTranslation(null);
-        return;
-      }
-      const data = await res.json();
-      if (verbKeyRef.current !== verb) return;
-      const responseData = data && typeof data === 'object' ? data.responseData : undefined;
-      const raw = responseData && typeof responseData === 'object' && typeof responseData.translatedText === 'string'
-        ? responseData.translatedText
-        : null;
-      if (raw) {
-        const capitalized = raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase();
-        setTranslation(capitalized);
-      } else {
-        setTranslation(null);
-      }
-    } catch {
-      if (verbKeyRef.current === verb) setTranslation(null);
-    } finally {
-      if (verbKeyRef.current === verb) setIsTranslating(false);
-    }
-  }, [selectedLanguage]);
-
-  /** Fiil veya dil değişince çeviriyi güncelle */
+  /** Fiil veya dil değişince dictionaryApi ile Türkçe anlamı çek */
   useEffect(() => {
     if (!verbKey) {
       setTranslation(null);
-      setIsTranslating(false);
+      setDynamicMeaning(null);
+      setIsMeaningLoading(false);
       return;
     }
-    fetchTranslation(verbKey);
-  }, [verbKey, selectedLanguage, fetchTranslation]);
+    const dir = selectedLanguage === 'fr' ? 'fr-tr' as const : 'es-tr' as const;
+    setIsMeaningLoading(true);
+    setDynamicMeaning(null);
+    setTranslation(null);
+    let cancelled = false;
+    translateWord(verbKey, dir)
+      .then((res) => {
+        if (cancelled || verbKeyRef.current !== verbKey) return;
+        if (res?.target) {
+          const text = res.target.charAt(0).toUpperCase() + res.target.slice(1).toLowerCase();
+          setDynamicMeaning(text);
+          setTranslation(text);
+        }
+      })
+      .catch(() => {
+        if (!cancelled && verbKeyRef.current === verbKey) {
+          setDynamicMeaning(null);
+          setTranslation(null);
+        }
+      })
+      .finally(() => {
+        if (!cancelled && verbKeyRef.current === verbKey) setIsMeaningLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, [verbKey, selectedLanguage]);
 
   // Yeni fiil yüklendiğinde quiz cevaplarını ve ipucunu sıfırla (doğru cevaplar kütüphaneden gelen conjugations ile güncellenir)
   useEffect(() => {
@@ -1478,9 +1483,14 @@ export function Page() {
               to="/sozluk"
               role="tab"
               aria-selected={location.pathname === '/sozluk'}
-              className="rounded-lg px-3 py-1.5 text-xs font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-1 dark:focus:ring-offset-slate-900 text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
+              className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-1 dark:focus:ring-offset-slate-900 flex items-center gap-1.5 ${
+                location.pathname === '/sozluk'
+                  ? 'bg-white dark:bg-slate-600 text-slate-800 dark:text-slate-100 shadow-sm'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+              }`}
             >
-              📖 {t('sozluk')}
+              <BookA className="w-3.5 h-3.5" strokeWidth={2} aria-hidden />
+              {t('sozluk')}
             </Link>
           </div>
         </div>
@@ -1647,9 +1657,14 @@ export function Page() {
             <Link
               to="/sozluk"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="w-full py-3 px-4 rounded-xl text-left text-base font-medium bg-slate-800/60 dark:bg-slate-800/80 text-slate-200 dark:text-slate-100 hover:bg-slate-700/60 dark:hover:bg-slate-700/80 border border-slate-600/50 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+              className={`w-full py-3 px-4 rounded-xl text-left text-base font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 flex items-center gap-2 ${
+                location.pathname === '/sozluk'
+                  ? 'bg-indigo-500/20 dark:bg-indigo-400/20 text-indigo-700 dark:text-indigo-200 border border-indigo-400/30'
+                  : 'bg-slate-800/60 dark:bg-slate-800/80 text-slate-200 dark:text-slate-100 hover:bg-slate-700/60 dark:hover:bg-slate-700/80 border border-slate-600/50'
+              }`}
             >
-              📖 {t('sozluk')}
+              <BookA className="w-4 h-4 shrink-0" strokeWidth={2} aria-hidden />
+              {t('sozluk')}
             </Link>
             {!isLoggedIn && (
               <button
@@ -1916,7 +1931,7 @@ export function Page() {
                     }
                   }}
                   onFocus={() => setAutocompleteClosed(false)}
-                  placeholder={selectedLanguage === 'es' ? 'Çekimini merak ettiğin fiili yaz (Örn: hablar, ser...)' : 'Çekimini merak ettiğin fiili yaz (Örn: être, aller...)'}
+                  placeholder={selectedLanguage === 'es' ? 'Örn: hablar, ser...' : 'Örn: être, aller...'}
                   className="absolute inset-0 w-full h-full rounded-xl border border-slate-200 dark:border-slate-700/50 bg-slate-50 dark:bg-slate-800/80 pl-4 pr-12 py-3 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 dark:focus:ring-indigo-400 dark:focus:border-indigo-400 transition-colors duration-300"
                   aria-label={t('fiil_girin')}
                   aria-autocomplete="list"
@@ -2060,7 +2075,7 @@ export function Page() {
                 <button
                   type="button"
                   onClick={() => setTenseDetailModalOpen(true)}
-                  className="mt-2 text-sm font-semibold text-indigo-400 hover:text-indigo-300 cursor-pointer flex items-center gap-1 transition-colors w-fit focus:outline-none focus:ring-2 focus:ring-indigo-500/50 rounded"
+                  className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-full bg-blue-600/30 border border-blue-500/40 text-blue-200 hover:bg-blue-600/50 transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
                   aria-label="Zaman açıklaması detayı"
                 >
                   Detaylı İncele ➔
@@ -2329,15 +2344,16 @@ export function Page() {
         {/* Boş durum + Öğrenme/Alıştırma — tek kart, üstte sekmeler */}
         {mode !== 'review' && mode !== 'starred' && (
           <section className="rounded-2xl bg-white dark:bg-slate-800/80 shadow-md dark:shadow-none border border-slate-200 dark:border-slate-700/50 overflow-visible mb-4 backdrop-blur-md transition-colors duration-300 min-h-[400px] print:shadow-none print:border print:border-slate-200">
-            {/* Kart başlığı sekmeleri — yazdırmada gizle */}
-            <div className="flex border-b border-slate-100 dark:border-slate-700/50 print:hidden">
+            {/* Kart başlığı sekmeleri — Segmented Control (yazdırmada gizle) */}
+            <div className="flex justify-center pt-4 pb-2 print:hidden">
+              <div className="flex items-center gap-1 p-1 bg-slate-800/60 backdrop-blur-sm border border-slate-700 rounded-full w-max shadow-inner" role="tablist" aria-label="Mod">
               <button
                 type="button"
                 onClick={() => setMode('learning')}
-                className={`flex-1 py-3.5 text-sm font-semibold transition-all duration-300 ${
+                className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer ${
                   mode === 'learning'
-                    ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 border-b-2 border-indigo-500 dark:border-indigo-400 shadow-sm'
-                    : 'text-slate-500 dark:text-slate-400 bg-slate-50/80 dark:bg-slate-700/50 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100/80 dark:hover:bg-slate-700'
+                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
+                    : 'bg-transparent text-slate-400 hover:text-slate-200'
                 }`}
                 title="Alt+L"
               >
@@ -2346,10 +2362,10 @@ export function Page() {
               <button
                 type="button"
                 onClick={() => setMode('quiz')}
-                className={`flex-1 py-3.5 text-sm font-semibold transition-all duration-300 ${
+                className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer ${
                   mode === 'quiz'
-                    ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 border-b-2 border-indigo-500 dark:border-indigo-400 shadow-sm'
-                    : 'text-slate-500 dark:text-slate-400 bg-slate-50/80 dark:bg-slate-700/50 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100/80 dark:hover:bg-slate-700'
+                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
+                    : 'bg-transparent text-slate-400 hover:text-slate-200'
                 }`}
                 title="Alt+Q"
               >
@@ -2358,10 +2374,10 @@ export function Page() {
               <button
                 type="button"
                 onClick={() => setMode('time-attack')}
-                className={`flex-1 py-3.5 text-sm font-semibold transition-all duration-300 ${
+                className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer ${
                   mode === 'time-attack'
-                    ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 border-b-2 border-indigo-500 dark:border-indigo-400 shadow-sm'
-                    : 'text-slate-500 dark:text-slate-400 bg-slate-50/80 dark:bg-slate-700/50 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100/80 dark:hover:bg-slate-700'
+                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
+                    : 'bg-transparent text-slate-400 hover:text-slate-200'
                 }`}
                 title={t('zamana_karsi')}
               >
@@ -2370,15 +2386,16 @@ export function Page() {
               <button
                 type="button"
                 onClick={() => setMode('compare')}
-                className={`flex-1 py-3.5 text-sm font-semibold transition-all duration-300 ${
+                className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer ${
                   mode === 'compare'
-                    ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 border-b-2 border-indigo-500 dark:border-indigo-400 shadow-sm'
-                    : 'text-slate-500 dark:text-slate-400 bg-slate-50/80 dark:bg-slate-700/50 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100/80 dark:hover:bg-slate-700'
+                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
+                    : 'bg-transparent text-slate-400 hover:text-slate-200'
                 }`}
                 title={t('kiyaslama')}
               >
                 {t('kiyaslama')}
               </button>
+              </div>
             </div>
 
             {/* Zamana Karşı (Arcade): HUD + oyun alanı veya sonuç kartı */}
@@ -2684,7 +2701,7 @@ export function Page() {
                             setVerbInput(verb);
                             loadVerb(verb);
                           }}
-                          className="px-4 py-2 rounded-full bg-slate-200/90 dark:bg-slate-800/50 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-indigo-600 hover:border-indigo-500 hover:text-white transition-all cursor-pointer text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                          className="px-4 py-2 rounded-full bg-slate-200/90 dark:bg-slate-800/50 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:scale-105 hover:bg-indigo-600 hover:border-indigo-500 hover:text-white hover:shadow-lg hover:shadow-indigo-500/20 active:scale-95 transition-all duration-200 ease-out cursor-pointer text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
                         >
                           {verb}
                         </button>
@@ -2808,13 +2825,10 @@ export function Page() {
                   </button>
                 </div>
                 <span className="text-slate-500 dark:text-slate-400 italic text-lg flex-1 min-w-0 order-2 flex justify-center items-center gap-2">
-                  {isTranslating ? (
-                    <>
-                      <span className="inline-block w-4 h-4 border-2 border-slate-300 dark:border-slate-500 border-t-indigo-500 dark:border-t-indigo-400 rounded-full animate-spin" aria-hidden />
-                      Çevriliyor...
-                    </>
-                  ) : translation ? (
-                    translation.charAt(0).toUpperCase() + translation.slice(1)
+                  {isMeaningLoading ? (
+                    <div className="h-5 w-24 bg-slate-700/50 dark:bg-slate-600/50 rounded animate-pulse" aria-hidden />
+                  ) : dynamicMeaning ? (
+                    <span className="italic text-slate-600 dark:text-slate-300">{dynamicMeaning}</span>
                   ) : (
                     getTranslationOrPlaceholder(verbKey, selectedLanguage)
                   )}
@@ -2900,11 +2914,6 @@ export function Page() {
                   </button>
                 </div>
               </div>
-              {/* Hızlı anlam ve eş anlamlılar — Mastar/Ulaç etiketlerinin üstünde */}
-              <p className="flex items-center gap-2 mt-2 text-sm italic text-slate-500 dark:text-slate-400" title="Anlam ve eş anlamlılar">
-                <span className="shrink-0 text-slate-400 dark:text-slate-500 font-normal not-italic" aria-hidden>[S]</span>
-                {getVerbMeaningAndSynonyms(verbKey, selectedLanguage)}
-              </p>
               {/* Form ve kök rozetleri + Kurallı/Düzensiz + Yardımcı fiil etiketleri — statik, tıklanmaz */}
               {(() => {
                 const meta = getVerbMetadata(verbKey, selectedLanguage, !isIrregularVerb(verbKey, selectedLanguage));
@@ -3179,13 +3188,10 @@ export function Page() {
                   </button>
                 </div>
                 <span className="text-slate-500 dark:text-slate-400 italic text-lg flex-1 min-w-0 order-2 flex justify-center items-center gap-2">
-                  {isTranslating ? (
-                    <>
-                      <span className="inline-block w-4 h-4 border-2 border-slate-300 dark:border-slate-500 border-t-indigo-500 dark:border-t-indigo-400 rounded-full animate-spin" aria-hidden />
-                      Çevriliyor...
-                    </>
-                  ) : translation ? (
-                    translation.charAt(0).toUpperCase() + translation.slice(1)
+                  {isMeaningLoading ? (
+                    <div className="h-5 w-24 bg-slate-700/50 dark:bg-slate-600/50 rounded animate-pulse" aria-hidden />
+                  ) : dynamicMeaning ? (
+                    <span className="italic text-slate-600 dark:text-slate-300">{dynamicMeaning}</span>
                   ) : (
                     getTranslationOrPlaceholder(verbKey, selectedLanguage)
                   )}

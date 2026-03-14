@@ -7,12 +7,12 @@ import { useThemeContext } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTranslation } from 'react-i18next';
 import {
-  searchDictionary,
   POPULAR_SEARCHES,
   getWordsOfTheDay,
   type DictDirection,
   type SearchResult,
 } from '../data/mockDictionary';
+import { translateWord } from '../services/dictionaryApi';
 import { getFlashcardDecks, addCardToDeck, type FlashcardDeck } from '../utils/flashcardDecks';
 
 const SITE_URL = 'https://diloloji.com';
@@ -120,6 +120,7 @@ export default function Dictionary() {
   const [addToSetOpen, setAddToSetOpen] = useState(false);
   const addToSetRef = useRef<HTMLDivElement>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (!uiLangDropdownOpen) return;
@@ -153,29 +154,17 @@ export default function Dictionary() {
   const pageTitle = 'Sözlük | Diloloji';
   const pageDescription = 'Kelime Analiz Paneli — Fransızca ve İspanyolca kelime anlamları, örnek cümleler ve ilişkili denklemler.';
 
-  useEffect(() => {
-    const newDir: DictDirection = selectedLanguage === 'es' ? 'tr-es' : 'tr-fr';
-    setDirection(newDir);
+  const doSearch = useCallback(async (q: string, dir: DictDirection) => {
+    const trimmed = q.trim();
+    if (!trimmed) return;
+    setIsLoading(true);
     setResult(undefined);
-    if (query.trim()) {
-      const r = searchDictionary(query.trim(), newDir);
-      setResult(r ?? null);
-    }
-  }, [selectedLanguage]);
-
-  const handleSearch = useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault();
-      const q = query.trim();
-      if (!q) {
-        setResult(undefined);
-        return;
-      }
-      const r = searchDictionary(q, direction);
+    try {
+      const r = await translateWord(trimmed, dir);
       setResult(r ?? null);
       if (r) {
         setRecentSearches((prev) => {
-          const next = [{ query: q, dir: direction }, ...prev.filter((x) => !(x.query === q && x.dir === direction))].slice(0, 5);
+          const next = [{ query: trimmed, dir }, ...prev.filter((x) => !(x.query === trimmed && x.dir === dir))].slice(0, 5);
           if (typeof window !== 'undefined') {
             try {
               window.localStorage.setItem('dictionary_recent', JSON.stringify(next));
@@ -186,8 +175,33 @@ export default function Dictionary() {
           return next;
         });
       }
+    } catch {
+      setResult(null);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    const newDir: DictDirection = selectedLanguage === 'es' ? 'tr-es' : 'tr-fr';
+    setDirection(newDir);
+    setResult(undefined);
+    if (query.trim()) {
+      doSearch(query.trim(), newDir);
+    }
+  }, [selectedLanguage, doSearch]);
+
+  const handleSearch = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      const q = query.trim();
+      if (!q) {
+        setResult(undefined);
+        return;
+      }
+      doSearch(q, direction);
     },
-    [query, direction]
+    [query, direction, doSearch]
   );
 
   const handleSpeak = useCallback(
@@ -202,22 +216,8 @@ export default function Dictionary() {
   const handleSearchQuery = useCallback((q: string, dir: DictDirection) => {
     setQuery(q);
     setDirection(dir);
-    const r = searchDictionary(q.trim(), dir);
-    setResult(r ?? null);
-    if (r) {
-      setRecentSearches((prev) => {
-        const next = [{ query: q.trim(), dir }, ...prev.filter((x) => !(x.query === q.trim() && x.dir === dir))].slice(0, 5);
-        if (typeof window !== 'undefined') {
-          try {
-            window.localStorage.setItem('dictionary_recent', JSON.stringify(next));
-          } catch {
-            // ignore
-          }
-        }
-        return next;
-      });
-    }
-  }, []);
+    doSearch(q, dir);
+  }, [doSearch]);
 
   const decks: FlashcardDeck[] = typeof window !== 'undefined' ? getFlashcardDecks() : [];
   const mockDecksIfEmpty = decks.length === 0
@@ -342,7 +342,7 @@ export default function Dictionary() {
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder={direction.startsWith('tr') ? 'İspanyolca veya Fransızca bir kelime arat...' : direction.startsWith('fr') ? 'Entrez un mot...' : 'Introduce una palabra...'}
+                  placeholder={direction === 'tr-fr' || direction === 'fr-tr' ? 'Fransızca veya Türkçe bir kelime arat...' : 'İspanyolca veya Türkçe bir kelime arat...'}
                   className="flex-1 min-w-0 bg-transparent border-0 py-4 pl-2 pr-12 text-lg text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-0"
                   aria-label={direction.startsWith('tr') ? 'Hangi kelimenin anlamına bakalım?' : 'Arama'}
                 />
@@ -357,7 +357,7 @@ export default function Dictionary() {
                       <X className="w-5 h-5" strokeWidth={2} />
                     </button>
                   )}
-                  <button type="submit" className="p-2.5 rounded-xl text-slate-400 dark:text-slate-500 hover:text-indigo-500 dark:hover:text-indigo-400 hover:bg-indigo-500/10 transition-colors duration-200" aria-label="Ara">
+                  <button type="submit" disabled={isLoading} className="p-2.5 rounded-xl text-slate-400 dark:text-slate-500 hover:text-indigo-500 dark:hover:text-indigo-400 hover:bg-indigo-500/10 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed" aria-label="Ara">
                     <span className="text-xl" aria-hidden>🔍</span>
                   </button>
                 </div>
@@ -419,8 +419,7 @@ export default function Dictionary() {
                   onClick={() => {
                     setQuery(q);
                     setDirection(dir);
-                    const r = searchDictionary(q.trim(), dir);
-                    setResult(r ?? null);
+                    doSearch(q, dir);
                   }}
                   className="px-3 py-1 rounded-full text-sm font-medium bg-slate-200/80 dark:bg-slate-800/50 hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-500/80 text-slate-700 dark:text-slate-200 transition-colors border border-slate-200/80 dark:border-slate-600/50"
                 >
@@ -430,9 +429,29 @@ export default function Dictionary() {
             </div>
           )}
 
-          {/* İçerik: Boş durum (Günün Kelimeleri) / Sonuç / Bulunamadı */}
+          {/* İçerik: Boş durum / Yükleniyor (Skeleton) / Sonuç / Bulunamadı */}
           <AnimatePresence mode="wait">
-            {result === undefined && !query.trim() && (
+            {isLoading && (
+              <motion.div
+                key="skeleton"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.25 }}
+                className="bg-slate-800/50 dark:bg-slate-800/50 rounded-xl sm:rounded-2xl h-48 w-full p-6 flex flex-col gap-4 animate-pulse"
+                aria-busy="true"
+                aria-label="Yükleniyor"
+              >
+                <div className="h-8 bg-slate-600/50 dark:bg-slate-600/50 rounded-lg w-3/4 max-w-xs" />
+                <div className="h-5 bg-slate-600/40 dark:bg-slate-600/40 rounded w-1/2 max-w-[10rem]" />
+                <div className="h-6 bg-slate-600/40 dark:bg-slate-600/40 rounded-lg w-full max-w-sm mt-2" />
+                <div className="flex gap-2 mt-auto">
+                  <div className="h-8 bg-slate-600/40 dark:bg-slate-600/40 rounded-full w-20" />
+                  <div className="h-8 bg-slate-600/40 dark:bg-slate-600/40 rounded-full w-24" />
+                </div>
+              </motion.div>
+            )}
+            {result === undefined && !query.trim() && !isLoading && (
               <motion.section
                 key="empty"
                 initial={{ opacity: 0, y: 16 }}
@@ -499,7 +518,7 @@ export default function Dictionary() {
               </motion.section>
             )}
 
-            {result === undefined && query.trim() ? null : result === null ? (
+            {!isLoading && result === undefined && query.trim() ? null : !isLoading && result === null ? (
               <motion.div
                 key="notfound"
                 initial={{ opacity: 0, y: 24 }}
@@ -512,7 +531,7 @@ export default function Dictionary() {
                 <p className="text-slate-500 dark:text-slate-400 text-sm mt-2">Farklı bir kelime veya yazım deneyin.</p>
                 <p className="text-4xl mt-4 opacity-60" aria-hidden>∫</p>
               </motion.div>
-            ) : result ? (
+            ) : !isLoading && result ? (
               <motion.div
                 key="result"
                 layoutId="dict-result-card"
@@ -520,8 +539,16 @@ export default function Dictionary() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 12 }}
                 transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                className="rounded-3xl bg-white/70 dark:bg-slate-800/60 backdrop-blur-xl border border-slate-200/80 dark:border-slate-600/80 shadow-xl overflow-hidden"
+                className="rounded-3xl bg-white/70 dark:bg-slate-800/60 backdrop-blur-xl border border-slate-200/80 dark:border-slate-600/80 shadow-xl overflow-hidden relative"
               >
+                <button
+                  type="button"
+                  onClick={() => setResult(null)}
+                  className="absolute top-3 right-3 z-10 p-2 rounded-lg text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-200/80 dark:hover:bg-slate-700/80 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                  aria-label="Kapat"
+                >
+                  <X className="w-5 h-5" strokeWidth={2} />
+                </button>
                 {/* Başlık: Kelime + fonetik + TTS */}
                 <div className="p-6 sm:p-8 border-b border-slate-200/80 dark:border-slate-600/60">
                   <div className="flex flex-wrap items-start justify-between gap-4">
@@ -615,8 +642,7 @@ export default function Dictionary() {
                           </p>
                           {result.type === 'fiil' && result.targetVerb && (
                             <Link
-                              to="/fiil-laboratuvari"
-                              state={result.targetVerb ? { openVerb: result.targetVerb } : undefined}
+                              to={`/fiil-laboratuvari?verb=${encodeURIComponent(result.targetVerb)}&lang=${direction === 'tr-fr' || direction === 'fr-tr' ? 'fr' : 'es'}`}
                               className="inline-flex items-center gap-2 mt-3 rounded-lg border border-indigo-500/40 dark:border-indigo-400/50 bg-indigo-500/10 dark:bg-indigo-500/20 px-3 py-2 text-sm font-medium text-indigo-700 dark:text-indigo-300 hover:bg-indigo-500/20 dark:hover:bg-indigo-500/30 transition-colors"
                             >
                               Fiil Lab'da Çöz
@@ -632,8 +658,7 @@ export default function Dictionary() {
                           </p>
                           {result.type === 'fiil' && result.targetVerb && (
                             <Link
-                              to="/fiil-laboratuvari"
-                              state={result.targetVerb ? { openVerb: result.targetVerb } : undefined}
+                              to={`/fiil-laboratuvari?verb=${encodeURIComponent(result.targetVerb)}&lang=${direction === 'tr-fr' || direction === 'fr-tr' ? 'fr' : 'es'}`}
                               className="inline-flex items-center gap-2 mt-3 rounded-lg border border-indigo-500/40 dark:border-indigo-400/50 bg-indigo-500/10 dark:bg-indigo-500/20 px-3 py-2 text-sm font-medium text-indigo-700 dark:text-indigo-300 hover:bg-indigo-500/20 dark:hover:bg-indigo-500/30 transition-colors"
                             >
                               Fiil Lab'da Çöz

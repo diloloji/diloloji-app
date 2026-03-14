@@ -107,7 +107,6 @@ const SUPPORTED_LANGUAGES = [
   { name: 'İspanyolca', flag: '🇪🇸', code: 'es' },
   { name: 'Almanca', flag: '🇩🇪', code: 'de' },
   { name: 'İtalyanca', flag: '🇮🇹', code: 'it' },
-  { name: 'Portekizce', flag: '🇵🇹', code: 'pt' },
 ];
 
 const FEATURES = [

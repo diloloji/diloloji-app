@@ -1,0 +1,26 @@
+{
+  "name": "Diloloji – Dilin matematiğini çöz",
+  "short_name": "Diloloji",
+  "description": "Fransızca ve İspanyolca fiil çekimi, sözlük ve ezber makinesi.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#0f172a",
+  "background_color": "#0f172a",
+  "lang": "tr",
+  "icons": [
+    {
+      "src": "/logo.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any"
+    }
+  ]
+}
