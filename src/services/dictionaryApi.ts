@@ -1,6 +1,6 @@
 /**
  * Sözlük — MyMemory çeviri API entegrasyonu.
- * Endpoint: https://api.mymemory.translated.net/get?q=${word}&langpair=${fromLang}|${toLang}
+ * Langpair: hedef dil Türkçe (fr|tr / es|tr); metin Türkçe ise tr|fr veya tr|es.
  */
 
 import type { DictDirection } from '../data/mockDictionary';
@@ -22,23 +22,65 @@ interface MyMemoryResponse {
   responseDetails?: string;
 }
 
-function directionToLangPair(direction: DictDirection): { from: string; to: string } {
-  switch (direction) {
-    case 'tr-fr':
-      return { from: 'tr', to: 'fr' };
-    case 'fr-tr':
-      return { from: 'fr', to: 'tr' };
-    case 'tr-es':
-      return { from: 'tr', to: 'es' };
-    case 'es-tr':
-      return { from: 'es', to: 'tr' };
-    default:
-      return { from: 'tr', to: 'fr' };
-  }
+const TURKISH_CHARS = /[ğüşıöçĞÜŞİÖÇ]/;
+const FRENCH_CHARS = /[éèêëàâçîïôùûœü]/i;
+const SPANISH_CHARS = /[ñáéíóúü¿¡]/i;
+
+function isLikelyTurkish(text: string): boolean {
+  const t = text.trim();
+  if (!t) return false;
+  if (TURKISH_CHARS.test(t)) return true;
+  const lower = t.toLowerCase();
+  const turkishWords = ['ve', 'bir', 'bu', 'için', 'ile', 'gibi', 'kadar', 'mi', 'mı', 'mu', 'mü', 'da', 'de', 'ta', 'te', 'ne', 'nasıl', 'var', 'yok', 'gitmek', 'olmak', 'yapmak', 'gelmek', 'almak', 'demek', 'bilmek', 'istemek', 'daha', 'çok', 'en', 'şey', 'zaman', 'şimdi', 'sonra', 'önce', 'her', 'bazı', 'tüm', 'kendi', 'merhaba', 'evet', 'hayır'];
+  const firstWord = lower.split(/\s+/)[0].replace(/[^a-zğüşıöç]/gi, '');
+  return turkishWords.some((w) => firstWord === w || lower.startsWith(w + ' '));
+}
+
+function getLangPair(direction: DictDirection, word: string): { from: string; to: string } {
+  const trimmed = word.trim();
+  const isTr = isLikelyTurkish(trimmed);
+  const isFrenchTab = direction === 'tr-fr' || direction === 'fr-tr';
+  const isSpanishTab = direction === 'tr-es' || direction === 'es-tr';
+  if (isFrenchTab) return isTr ? { from: 'tr', to: 'fr' } : { from: 'fr', to: 'tr' };
+  if (isSpanishTab) return isTr ? { from: 'tr', to: 'es' } : { from: 'es', to: 'tr' };
+  return { from: 'tr', to: 'fr' };
+}
+
+function resultLooksLikeSourceLanguage(translatedText: string, fromLang: string): boolean {
+  const t = translatedText.trim();
+  if (TURKISH_CHARS.test(t)) return false;
+  if (fromLang === 'fr' && FRENCH_CHARS.test(t)) return true;
+  if (fromLang === 'es' && SPANISH_CHARS.test(t)) return true;
+  return false;
+}
+
+function isValidResult(
+  translatedText: string,
+  source: string,
+  fromLang: string,
+  toLang: string
+): boolean {
+  const normalizedInput = source.toLowerCase().replace(/\s+/g, ' ');
+  const normalizedTranslation = translatedText.toLowerCase().replace(/\s+/g, ' ');
+  if (normalizedInput === normalizedTranslation) return false;
+  if (toLang === 'tr' && resultLooksLikeSourceLanguage(translatedText, fromLang)) return false;
+  return true;
+}
+
+async function fetchTranslation(
+  word: string,
+  langpair: string,
+  useMt: boolean
+): Promise<MyMemoryResponse | null> {
+  const url = `${MYMEMORY_BASE}?q=${encodeURIComponent(word)}&langpair=${encodeURIComponent(langpair)}${useMt ? '&mt=1' : ''}`;
+  const res = await fetch(url);
+  const data = (await res.json()) as MyMemoryResponse;
+  return data;
 }
 
 /**
  * MyMemory API ile kelime çevirir; sonucu SearchResult formatına dönüştürür.
+ * Hatalı veya aynı kelime dönerse &mt=1 ile tekrar dener; yine geçersizse null.
  */
 export async function translateWord(
   word: string,
@@ -47,28 +89,24 @@ export async function translateWord(
   const trimmed = word.trim();
   if (!trimmed) return null;
 
-  const { from, to } = directionToLangPair(direction);
+  const { from, to } = getLangPair(direction, trimmed);
   const langpair = `${from}|${to}`;
-  const url = `${MYMEMORY_BASE}?q=${encodeURIComponent(trimmed)}&langpair=${encodeURIComponent(langpair)}`;
 
-  const res = await fetch(url);
-  const data = (await res.json()) as MyMemoryResponse;
+  let data = await fetchTranslation(trimmed, langpair, false);
+  let translatedText = data?.responseData?.translatedText?.trim();
 
-  const translatedText = data.responseData?.translatedText?.trim();
-  if (!translatedText) return null;
+  if (!translatedText || !isValidResult(translatedText, trimmed, from, to)) {
+    data = await fetchTranslation(trimmed, langpair, true);
+    translatedText = data?.responseData?.translatedText?.trim();
+    if (!translatedText || !isValidResult(translatedText, trimmed, from, to)) return null;
+  }
 
-  const normalizedInput = trimmed.toLowerCase().replace(/\s+/g, ' ');
-  const normalizedTranslation = translatedText.toLowerCase().replace(/\s+/g, ' ');
-  if (normalizedInput === normalizedTranslation) return null;
-
-  const lang: 'fr' | 'es' = direction === 'tr-fr' || direction === 'fr-tr' ? 'fr' : 'es';
-  const source = trimmed;
-  const target = translatedText;
-  const firstMatch = Array.isArray(data.matches) && data.matches.length > 0 ? data.matches[0] : null;
+  const lang: 'fr' | 'es' = to === 'fr' || from === 'fr' ? 'fr' : 'es';
+  const firstMatch = Array.isArray(data?.matches) && data.matches.length > 0 ? data.matches[0] : null;
 
   const result: SearchResult = {
-    source,
-    target,
+    source: trimmed,
+    target: translatedText,
     type: 'kelime',
     lang,
     phonetic: undefined,

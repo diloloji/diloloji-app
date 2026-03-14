@@ -162,8 +162,12 @@ export default function Dictionary() {
     setIsLoading(true);
     setResult(undefined);
     try {
-      let r = await translateWord(trimmed, dir);
-      if (!r) r = await translateWord(trimmed, swapDirection(dir));
+      let r: SearchResult | null = null;
+      try {
+        r = await translateWord(trimmed, dir);
+      } catch {
+        r = null;
+      }
       if (!r) r = searchDictionary(trimmed, dir) ?? searchDictionary(trimmed, swapDirection(dir)) ?? null;
       setResult(r);
       if (r) {
@@ -180,7 +184,8 @@ export default function Dictionary() {
         });
       }
     } catch {
-      setResult(null);
+      const fallback = searchDictionary(trimmed, dir) ?? searchDictionary(trimmed, swapDirection(dir)) ?? null;
+      setResult(fallback);
     } finally {
       setIsLoading(false);
     }
@@ -561,7 +566,7 @@ export default function Dictionary() {
                       <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-slate-100 capitalize tracking-tight">
                         {result.source}
                       </h2>
-                      {result.phonetic && result.phonetic !== '/[Arama]/' && (
+                      {result.phonetic && (
                         <p className="mt-1 text-lg text-slate-500 dark:text-slate-400 font-mono">{result.phonetic}</p>
                       )}
                       <p className="mt-2 text-xl font-semibold text-indigo-600 dark:text-indigo-400">{result.target}</p>
