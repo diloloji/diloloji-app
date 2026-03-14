@@ -1,11 +1,24 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-body {
-  @apply antialiased text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-slate-900 transition-colors duration-300;
+@layer base {
+  body {
+    @apply antialiased text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-night-950 transition-colors duration-300 font-sans;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading font-semibold tracking-tight;
+  }
+}
+
+/* Glassmorphism utility */
+@layer components {
+  .glass-panel {
+    @apply backdrop-blur-sm bg-white/50 dark:bg-white/5 border border-slate-200/60 dark:border-white/10 rounded-xl shadow-glass dark:shadow-glass-dark;
+  }
+  .glass-panel-strong {
+    @apply backdrop-blur-md bg-white/60 dark:bg-white/[0.07] border border-slate-200/70 dark:border-white/10 rounded-2xl shadow-glass dark:shadow-glass-dark;
+  }
 }
 
 #root {
