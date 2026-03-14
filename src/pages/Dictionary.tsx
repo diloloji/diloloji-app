@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Volume2, X, BookA } from 'lucide-react';
@@ -111,8 +111,7 @@ function typeBadgeClass(type: string): string {
 export default function Dictionary() {
   const { isDark, toggleTheme, mounted } = useThemeContext();
   const { t, i18n } = useTranslation();
-  const { selectedLanguage, setSelectedLanguage } = useLanguage();
-  const navigate = useNavigate();
+  const { selectedLanguage } = useLanguage();
   const [uiLangDropdownOpen, setUiLangDropdownOpen] = useState(false);
   const uiLangDropdownRef = useRef<HTMLDivElement>(null);
   const [direction, setDirection] = useState<DictDirection>(selectedLanguage === 'es' ? 'tr-es' : 'tr-fr');
