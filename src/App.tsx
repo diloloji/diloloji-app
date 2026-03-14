@@ -10,9 +10,9 @@ import ErrorBoundary from './components/ErrorBoundary';
 function getPageElement(pathname: string) {
   switch (pathname) {
     case '/':
-      return <Navigate to="/fiil-laboratuvari" replace />;
-    case '/anasayfa':
       return <HomePage />;
+    case '/anasayfa':
+      return <Navigate to="/" replace />;
     case '/fiil-laboratuvari':
       return <Page />;
     case '/ezber-makinesi':
@@ -20,7 +20,7 @@ function getPageElement(pathname: string) {
     case '/sozluk':
       return <Dictionary />;
     default:
-      return <Navigate to="/fiil-laboratuvari" replace />;
+      return <Navigate to="/" replace />;
   }
 }
 
