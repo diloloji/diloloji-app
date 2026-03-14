@@ -31,8 +31,14 @@ const ES: Record<TenseIdEs, string> = {
     'Geçmişte süren, alışkanlık veya tasvir ifade eden eylemler için kullanılır; "iyidi, ederdi" anlamına gelir.',
   preterito:
     'Geçmişte belirli bir anda tamamlanmış eylemler için kullanılır (Pretérito Indefinido).',
+  'preterito-perfecto':
+    'Konuşma dilinde geçmişte tamamlanan eylemler için; haber (şimdiki) + participio ile kurulur.',
+  pluscuamperfecto:
+    'Geçmişte başka bir eylemden önce tamamlanmış eylemler için; había + participio ile kurulur.',
   futuro:
     'Gelecekte gerçekleşecek eylemleri veya tahmin ifade eder.',
+  'futuro-compuesto':
+    'Gelecekte bir zamana kadar tamamlanmış olacak eylemler için; habré + participio ile kurulur.',
   condicional:
     'Koşula bağlı olasılık, nazik istek veya geçmişte geleceğe dönük eylemleri anlatır.',
   'subjuntivo-presente':

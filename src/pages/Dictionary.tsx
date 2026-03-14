@@ -8,7 +8,6 @@ import { useLanguage } from '../contexts/LanguageContext';
 import {
   searchDictionary,
   DIRECTION_LABELS,
-  DIRECTIONS,
   POPULAR_SEARCHES,
   getWordOfTheDay,
   type DictDirection,
