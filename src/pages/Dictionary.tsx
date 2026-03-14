@@ -1,37 +1,22 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Volume2, X } from 'lucide-react';
 import { useThemeContext } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useTranslation } from 'react-i18next';
 import {
   searchDictionary,
   DIRECTION_LABELS,
   POPULAR_SEARCHES,
-  getWordOfTheDay,
+  getWordsOfTheDay,
   type DictDirection,
   type SearchResult,
 } from '../data/mockDictionary';
+import { getFlashcardDecks, addCardToDeck, type FlashcardDeck } from '../utils/flashcardDecks';
 
 const SITE_URL = 'https://diloloji.com';
-
-function getSegmentsForDirection(direction: DictDirection): { dir: DictDirection; label: string; flag: string }[] {
-  const isFr = direction === 'tr-fr' || direction === 'fr-tr';
-  return isFr
-    ? [
-        { dir: 'tr-fr', label: 'TR → FR', flag: '🇫🇷' },
-        { dir: 'fr-tr', label: 'FR → TR', flag: '🇫🇷' },
-        { dir: 'tr-es', label: 'TR → ES', flag: '🇪🇸' },
-        { dir: 'es-tr', label: 'ES → TR', flag: '🇪🇸' },
-      ]
-    : [
-        { dir: 'tr-es', label: 'TR → ES', flag: '🇪🇸' },
-        { dir: 'es-tr', label: 'ES → TR', flag: '🇪🇸' },
-        { dir: 'tr-fr', label: 'TR → FR', flag: '🇫🇷' },
-        { dir: 'fr-tr', label: 'FR → TR', flag: '🇫🇷' },
-      ];
-}
 
 function DictionaryBackground() {
   return (
@@ -112,10 +97,58 @@ function typeBadgeClass(type: string): string {
 
 export default function Dictionary() {
   const { isDark, toggleTheme, mounted } = useThemeContext();
+  const { t, i18n } = useTranslation();
   const { selectedLanguage } = useLanguage();
+  const [uiLangDropdownOpen, setUiLangDropdownOpen] = useState(false);
+  const uiLangDropdownRef = useRef<HTMLDivElement>(null);
   const [direction, setDirection] = useState<DictDirection>(selectedLanguage === 'es' ? 'tr-es' : 'tr-fr');
   const [query, setQuery] = useState('');
   const [result, setResult] = useState<SearchResult | null | undefined>(undefined);
+  const [recentSearches, setRecentSearches] = useState<{ query: string; dir: DictDirection }[]>(() => {
+    if (typeof window === 'undefined') return [];
+    try {
+      const raw = window.localStorage.getItem('dictionary_recent');
+      if (!raw) return [];
+      const parsed = JSON.parse(raw) as unknown;
+      if (!Array.isArray(parsed)) return [];
+      return parsed
+        .filter((x): x is { query: string; dir: DictDirection } => typeof x === 'object' && x !== null && 'query' in x && 'dir' in x)
+        .slice(0, 5);
+    } catch {
+      return [];
+    }
+  });
+  const [addToSetOpen, setAddToSetOpen] = useState(false);
+  const addToSetRef = useRef<HTMLDivElement>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!uiLangDropdownOpen) return;
+    const handle = (e: MouseEvent) => {
+      if (uiLangDropdownRef.current && !uiLangDropdownRef.current.contains(e.target as Node)) {
+        setUiLangDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handle);
+    return () => document.removeEventListener('mousedown', handle);
+  }, [uiLangDropdownOpen]);
+
+  useEffect(() => {
+    if (!addToSetOpen) return;
+    const handle = (e: MouseEvent) => {
+      if (addToSetRef.current && !addToSetRef.current.contains(e.target as Node)) {
+        setAddToSetOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handle);
+    return () => document.removeEventListener('mousedown', handle);
+  }, [addToSetOpen]);
+
+  useEffect(() => {
+    if (!toastMessage) return;
+    const t = setTimeout(() => setToastMessage(null), 3000);
+    return () => clearTimeout(t);
+  }, [toastMessage]);
 
   const pageUrl = `${SITE_URL}/sozluk`;
   const pageTitle = 'Sözlük | Diloloji';
@@ -141,6 +174,19 @@ export default function Dictionary() {
       }
       const r = searchDictionary(q, direction);
       setResult(r ?? null);
+      if (r) {
+        setRecentSearches((prev) => {
+          const next = [{ query: q, dir: direction }, ...prev.filter((x) => !(x.query === q && x.dir === direction))].slice(0, 5);
+          if (typeof window !== 'undefined') {
+            try {
+              window.localStorage.setItem('dictionary_recent', JSON.stringify(next));
+            } catch {
+              // ignore
+            }
+          }
+          return next;
+        });
+      }
     },
     [query, direction]
   );
@@ -159,9 +205,48 @@ export default function Dictionary() {
     setDirection(dir);
     const r = searchDictionary(q.trim(), dir);
     setResult(r ?? null);
+    if (r) {
+      setRecentSearches((prev) => {
+        const next = [{ query: q.trim(), dir }, ...prev.filter((x) => !(x.query === q.trim() && x.dir === dir))].slice(0, 5);
+        if (typeof window !== 'undefined') {
+          try {
+            window.localStorage.setItem('dictionary_recent', JSON.stringify(next));
+          } catch {
+            // ignore
+          }
+        }
+        return next;
+      });
+    }
   }, []);
 
-  const segments = getSegmentsForDirection(direction);
+  const decks: FlashcardDeck[] = typeof window !== 'undefined' ? getFlashcardDecks() : [];
+  const mockDecksIfEmpty = decks.length === 0
+    ? [
+        { id: 'mock-1', title: 'Seyahat Kelimeleri', cards: [] },
+        { id: 'mock-2', title: 'Zor Fiiller', cards: [] },
+      ] as { id: string; title: string; cards: unknown[] }[]
+    : decks;
+
+  const handleAddToSet = useCallback(
+    (deckId: string, deckTitle: string, res: SearchResult) => {
+      if (deckId.startsWith('mock-')) {
+        setToastMessage(`Önce Ezber Makinesi'nden bir set oluşturun. 🎯`);
+        setAddToSetOpen(false);
+        return;
+      }
+      const ok = addCardToDeck(deckId, {
+        front: res.source,
+        back: res.target,
+        example: res.exampleSource || res.exampleTarget,
+      });
+      if (ok) {
+        setToastMessage(`Kelime başarıyla "${deckTitle}" setine eklendi! 🎉`);
+        setAddToSetOpen(false);
+      }
+    },
+    []
+  );
 
   return (
     <div className="min-h-screen relative bg-slate-50 dark:bg-transparent transition-colors duration-300">
@@ -193,6 +278,47 @@ export default function Dictionary() {
           </div>
         </div>
         <div className="flex items-center shrink-0 gap-2">
+          <div className="relative shrink-0" ref={uiLangDropdownRef}>
+            <button
+              type="button"
+              onClick={() => setUiLangDropdownOpen((o) => !o)}
+              className="flex items-center gap-1.5 rounded-lg bg-slate-100/80 dark:bg-slate-700/80 hover:bg-slate-200 dark:hover:bg-slate-600 px-2 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-300 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 border border-slate-200/80 dark:border-slate-600/80"
+              title={t('arayuz_dili')}
+              aria-label={t('dil_secin')}
+              aria-expanded={uiLangDropdownOpen}
+              aria-haspopup="listbox"
+            >
+              <span aria-hidden>🌐</span>
+              <span className="uppercase tabular-nums">{['tr', 'en', 'fr', 'es'].includes((i18n.language || 'tr').slice(0, 2)) ? (i18n.language || 'tr').slice(0, 2).toUpperCase() : 'TR'}</span>
+            </button>
+            {uiLangDropdownOpen && (
+              <div
+                role="listbox"
+                aria-label={t('dil_secin')}
+                className="absolute right-0 top-full mt-1.5 w-max min-w-[120px] rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 shadow-xl py-1 z-50"
+              >
+                {(['tr', 'en', 'fr', 'es'] as const).map((lng) => (
+                  <button
+                    key={lng}
+                    type="button"
+                    role="option"
+                    aria-selected={i18n.language === lng}
+                    onClick={() => {
+                      i18n.changeLanguage(lng);
+                      setUiLangDropdownOpen(false);
+                    }}
+                    className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors flex items-center gap-2 whitespace-nowrap ${
+                      i18n.language === lng
+                        ? 'bg-indigo-500/15 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-200'
+                        : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/80'
+                    }`}
+                  >
+                    {t(lng === 'tr' ? 'lang_turkce' : lng === 'en' ? 'lang_english' : lng === 'fr' ? 'lang_francais' : 'lang_espanol')}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
           {mounted && (
             <button type="button" onClick={toggleTheme} className="p-1.5 rounded-lg bg-slate-100/80 dark:bg-slate-700/80 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50" aria-label={isDark ? 'Açık moda geç' : 'Karanlık moda geç'}>
               <span className="text-sm md:text-base leading-none" aria-hidden>{isDark ? '☀️' : '🌙'}</span>
@@ -206,38 +332,6 @@ export default function Dictionary() {
           <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100 mb-2 text-center">Kelime Analiz Paneli</h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm text-center mb-6">Anlam, örnek cümleler ve ilişkili denklemler</p>
 
-          {/* Dil seçici — arama çubuğunun hemen üstü, segmented control + neon + alt çizgi */}
-          <div className="flex flex-wrap items-center justify-center gap-2 mb-4 overflow-x-auto pb-1">
-            <div className="inline-flex p-1 rounded-xl bg-slate-200/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-600" role="tablist" aria-label="Dil yönü">
-              {segments.map((seg) => (
-                <button
-                  key={seg.dir}
-                  type="button"
-                  role="tab"
-                  aria-selected={direction === seg.dir}
-                  onClick={() => setDirection(seg.dir)}
-                  className={`relative rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-1 dark:focus:ring-offset-slate-800 whitespace-nowrap ${
-                    direction === seg.dir
-                      ? 'bg-indigo-500 text-white shadow-[0_0_16px_rgba(99,102,241,0.5)] dark:shadow-[0_0_20px_rgba(129,140,248,0.4)] border-b-2 border-indigo-300 dark:border-indigo-400'
-                      : 'bg-transparent text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 opacity-80'
-                  }`}
-                >
-                  <span className="mr-1.5" aria-hidden>{seg.flag}</span>
-                  {DIRECTION_LABELS[seg.dir]}
-                </button>
-              ))}
-            </div>
-            <button
-              type="button"
-              onClick={() => setDirection(swapDirection(direction))}
-              className="p-2.5 rounded-xl bg-slate-200/80 dark:bg-slate-800/80 text-slate-600 dark:text-slate-400 hover:bg-slate-300 dark:hover:bg-slate-700 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
-              title="Yönü değiştir"
-              aria-label="Yönü değiştir"
-            >
-              <span className="text-lg" aria-hidden>⇄</span>
-            </button>
-          </div>
-
           {/* Arama çubuğu — temizle (X) + bayrak ikonu */}
           <form onSubmit={handleSearch} className="mb-8">
             <div className="relative rounded-2xl p-[2px] bg-gradient-to-r from-indigo-500/20 via-purple-500/20 to-indigo-500/20 dark:from-indigo-400/30 dark:via-purple-400/30 dark:to-indigo-400/30 shadow-[0_0_24px_rgba(99,102,241,0.15)] dark:shadow-[0_0_32px_rgba(99,102,241,0.2)]">
@@ -249,9 +343,9 @@ export default function Dictionary() {
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder={direction.startsWith('tr') ? 'Kelime girin...' : direction.startsWith('fr') ? 'Entrez un mot...' : 'Introduce una palabra...'}
+                  placeholder={direction.startsWith('tr') ? 'İspanyolca veya Fransızca bir kelime arat...' : direction.startsWith('fr') ? 'Entrez un mot...' : 'Introduce una palabra...'}
                   className="flex-1 min-w-0 bg-transparent border-0 py-4 pl-2 pr-12 text-lg text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-0"
-                  aria-label="Arama"
+                  aria-label={direction.startsWith('tr') ? 'Hangi kelimenin anlamına bakalım?' : 'Arama'}
                 />
                 <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
                   {query.length > 0 && (
@@ -272,7 +366,72 @@ export default function Dictionary() {
             </div>
           </form>
 
-          {/* İçerik: Boş durum / Sonuç / Bulunamadı */}
+          {/* Dil seçici — iOS tarzı segmented control (Fransızca | İspanyolca), arama kutusunun hemen altında */}
+          <div className="flex items-center gap-2 mb-6" role="tablist" aria-label="Sözlük dili">
+            <div className="flex w-full bg-slate-800/60 backdrop-blur-sm border border-slate-700 rounded-full p-1">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={direction === 'tr-fr' || direction === 'fr-tr'}
+                onClick={() => setDirection(direction === 'tr-fr' || direction === 'fr-tr' ? swapDirection(direction) : 'tr-fr')}
+                className={`flex-1 flex items-center justify-center gap-2 px-6 py-2.5 rounded-full transition-all duration-300 ease-in-out text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 focus:ring-offset-slate-900 ${
+                  direction === 'tr-fr' || direction === 'fr-tr'
+                    ? 'bg-indigo-600 text-white shadow-md'
+                    : 'bg-transparent text-slate-400 hover:text-white'
+                }`}
+              >
+                <span aria-hidden>🇫🇷</span>
+                Fransızca
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={direction === 'tr-es' || direction === 'es-tr'}
+                onClick={() => setDirection(direction === 'tr-es' || direction === 'es-tr' ? swapDirection(direction) : 'tr-es')}
+                className={`flex-1 flex items-center justify-center gap-2 px-6 py-2.5 rounded-full transition-all duration-300 ease-in-out text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 focus:ring-offset-slate-900 ${
+                  direction === 'tr-es' || direction === 'es-tr'
+                    ? 'bg-indigo-600 text-white shadow-md'
+                    : 'bg-transparent text-slate-400 hover:text-white'
+                }`}
+              >
+                <span aria-hidden>🇪🇸</span>
+                İspanyolca
+              </button>
+            </div>
+            <button
+              type="button"
+              onClick={() => setDirection(swapDirection(direction))}
+              className="shrink-0 p-2.5 rounded-full bg-slate-800/60 dark:bg-slate-700/80 border border-slate-700 text-slate-400 hover:text-white hover:border-slate-600 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+              title="Yönü değiştir (TR↔FR / TR↔ES)"
+              aria-label="Yönü değiştir"
+            >
+              <span className="text-lg" aria-hidden>⇄</span>
+            </button>
+          </div>
+
+          {/* Arama Geçmişi — tıklanabilir chips */}
+          {recentSearches.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-4 mb-6">
+              <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 self-center mr-1">Son aramalar:</span>
+              {recentSearches.map(({ query: q, dir }) => (
+                <button
+                  key={`${dir}-${q}`}
+                  type="button"
+                  onClick={() => {
+                    setQuery(q);
+                    setDirection(dir);
+                    const r = searchDictionary(q.trim(), dir);
+                    setResult(r ?? null);
+                  }}
+                  className="px-3 py-1 rounded-full text-sm font-medium bg-slate-200/80 dark:bg-slate-800/50 hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-500/80 text-slate-700 dark:text-slate-200 transition-colors border border-slate-200/80 dark:border-slate-600/50"
+                >
+                  {q}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* İçerik: Boş durum (Günün Kelimeleri) / Sonuç / Bulunamadı */}
           <AnimatePresence mode="wait">
             {result === undefined && !query.trim() && (
               <motion.section
@@ -283,22 +442,45 @@ export default function Dictionary() {
                 transition={{ duration: 0.3 }}
                 className="space-y-8"
               >
-                {/* Bugünün Kelimesi */}
-                {(() => {
-                  const wotd = getWordOfTheDay();
-                  return (
-                    <div className="rounded-2xl bg-white/60 dark:bg-slate-800/50 backdrop-blur-xl border border-slate-200/80 dark:border-slate-600/60 p-6 shadow-lg">
-                      <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">Bugünün Kelimesi</h2>
-                      <button
-                        type="button"
-                        onClick={() => handleSearchQuery(wotd.word, wotd.dir)}
-                        className="text-xl font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors text-left"
-                      >
-                        {wotd.label}
-                      </button>
-                    </div>
-                  );
-                })()}
+                {/* Günün Kelimeleri — iki kart (FR + ES) */}
+                <div>
+                  <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-4 text-center">Günün Kelimeleri</h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {(() => {
+                      const { fr, es } = getWordsOfTheDay();
+                      return (
+                        <>
+                          <motion.button
+                            type="button"
+                            initial={{ opacity: 0, y: 12 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.3, delay: 0.05 }}
+                            onClick={() => handleSearchQuery(fr.word, fr.dir)}
+                            className="rounded-2xl bg-white/70 dark:bg-slate-800/60 backdrop-blur-xl border border-slate-200/80 dark:border-slate-600/60 p-6 shadow-lg hover:shadow-xl hover:border-indigo-300/50 dark:hover:border-indigo-500/40 transition-all duration-200 text-left focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 dark:focus:ring-offset-slate-800"
+                          >
+                            <span className="text-2xl mb-2 block" aria-hidden>🌟</span>
+                            <p className="text-lg font-bold text-slate-900 dark:text-slate-100">{fr.label}</p>
+                            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{fr.translation}</p>
+                            <p className="text-xs text-indigo-600 dark:text-indigo-400 mt-2">🇫🇷 Fransızca</p>
+                          </motion.button>
+                          <motion.button
+                            type="button"
+                            initial={{ opacity: 0, y: 12 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.3, delay: 0.1 }}
+                            onClick={() => handleSearchQuery(es.word, es.dir)}
+                            className="rounded-2xl bg-white/70 dark:bg-slate-800/60 backdrop-blur-xl border border-slate-200/80 dark:border-slate-600/60 p-6 shadow-lg hover:shadow-xl hover:border-indigo-300/50 dark:hover:border-indigo-500/40 transition-all duration-200 text-left focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 dark:focus:ring-offset-slate-800"
+                          >
+                            <span className="text-2xl mb-2 block" aria-hidden>🌟</span>
+                            <p className="text-lg font-bold text-slate-900 dark:text-slate-100">{es.label}</p>
+                            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{es.translation}</p>
+                            <p className="text-xs text-indigo-600 dark:text-indigo-400 mt-2">🇪🇸 İspanyolca</p>
+                          </motion.button>
+                        </>
+                      );
+                    })()}
+                  </div>
+                </div>
                 {/* Popüler Aramalar */}
                 <div className="rounded-2xl bg-white/60 dark:bg-slate-800/50 backdrop-blur-xl border border-slate-200/80 dark:border-slate-600/60 p-6 shadow-lg">
                   <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-4">Popüler Aramalar</h2>
@@ -363,11 +545,50 @@ export default function Dictionary() {
                       <Volume2 className="w-6 h-6" strokeWidth={2} />
                     </button>
                   </div>
-                  {/* Tür etiketleri */}
-                  <div className="flex flex-wrap gap-2 mt-4">
-                    <span className={`inline-flex items-center rounded-lg border px-3 py-1 text-xs font-medium ${typeBadgeClass(result.type)}`}>
-                      {result.type}
-                    </span>
+                  {/* Tür etiketleri + Set'e Ekle */}
+                  <div className="flex flex-wrap items-center justify-between gap-4 mt-4">
+                    <div className="flex flex-wrap gap-2">
+                      <span className={`inline-flex items-center rounded-lg border px-3 py-1 text-xs font-medium ${typeBadgeClass(result.type)}`}>
+                        {result.type}
+                      </span>
+                    </div>
+                    <div className="relative shrink-0" ref={addToSetRef}>
+                      <button
+                        type="button"
+                        onClick={() => setAddToSetOpen((o) => !o)}
+                        className="flex items-center gap-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 dark:bg-indigo-500 dark:hover:bg-indigo-400 text-white px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 dark:focus:ring-offset-slate-800"
+                      >
+                        <span aria-hidden>➕</span>
+                        Set&apos;e Ekle
+                      </button>
+                      {addToSetOpen && (
+                        <div className="absolute right-0 top-full mt-2 min-w-[12rem] rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 shadow-xl py-2 z-50 max-h-64 overflow-y-auto">
+                          {mockDecksIfEmpty.length === 0 ? (
+                            <p className="px-4 py-3 text-sm text-slate-500 dark:text-slate-400">Henüz set yok.</p>
+                          ) : (
+                            mockDecksIfEmpty.map((deck) => (
+                              <button
+                                key={deck.id}
+                                type="button"
+                                onClick={() => handleAddToSet(deck.id, deck.title, result)}
+                                className="w-full text-left px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-indigo-500/15 dark:hover:bg-indigo-500/20 transition-colors"
+                              >
+                                {deck.title}
+                              </button>
+                            ))
+                          )}
+                          {decks.length === 0 && (
+                            <Link
+                              to="/ezber-makinesi"
+                              className="block px-4 py-2.5 text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:bg-indigo-500/10"
+                              onClick={() => setAddToSetOpen(false)}
+                            >
+                              Ezber Makinesi’nde set oluştur →
+                            </Link>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -459,6 +680,23 @@ export default function Dictionary() {
           </AnimatePresence>
         </motion.div>
       </main>
+
+      {/* Toast: Set'e eklendi / uyarı */}
+      <AnimatePresence>
+        {toastMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            transition={{ duration: 0.25 }}
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] rounded-xl bg-slate-800 dark:bg-slate-700 text-white px-5 py-3 shadow-xl border border-slate-600/50 dark:border-slate-500/50 text-sm font-medium"
+            role="status"
+            aria-live="polite"
+          >
+            {toastMessage}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

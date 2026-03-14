@@ -124,6 +124,36 @@ const ENTRIES: DictionaryEntry[] = [
     rootFr: 'faire',
     rootEs: 'hacer',
   },
+  {
+    tr: 'geçici, kısa ömürlü',
+    fr: 'éphémère',
+    es: 'efímero',
+    type: 'sıfat',
+    exampleTr: 'Anılarımız ne kadar éphémère.',
+    exampleFr: 'Nos souvenirs sont éphémères.',
+    exampleEs: 'Nuestros recuerdos son efímeros.',
+    phoneticFr: '/efemɛʁ/',
+    phoneticEs: '/eˈfimeɾo/',
+    synonymsFr: 'fugace, passager',
+    synonymsEs: 'pasajero, fugaz',
+    antonymsFr: 'durable, permanent',
+    antonymsEs: 'duradero, permanente',
+  },
+  {
+    tr: 'şafak vakti, sabaha karşı',
+    fr: 'aube',
+    es: 'madrugada',
+    type: 'isim',
+    exampleTr: 'Madrugada\'da yola çıktık.',
+    exampleFr: "Nous sommes partis à l'aube.",
+    exampleEs: 'Salimos en la madrugada.',
+    phoneticFr: '/ob/',
+    phoneticEs: '/maðɾuˈɣaða/',
+    synonymsFr: 'aube, point du jour',
+    synonymsEs: 'alba, amanecer',
+    antonymsFr: 'crépuscule',
+    antonymsEs: 'atardecer',
+  },
 ];
 
 function normalize(s: string): string {
@@ -281,15 +311,34 @@ export const POPULAR_SEARCHES: { label: string; query: string; dir: DictDirectio
   { label: 'refaire', query: 'refaire', dir: 'fr-tr' },
 ];
 
-/** Bugünün kelimesi — basit rotasyon (günün tarihine göre) */
+/** Bugünün kelimesi — basit rotasyon (günün tarihine göre) — tek kelime (geriye uyumluluk) */
 export function getWordOfTheDay(): { word: string; dir: DictDirection; label: string } {
+  const { fr } = getWordsOfTheDay();
+  return { word: fr.word, dir: fr.dir, label: fr.label };
+}
+
+/** Günün kelimeleri — Fransızca + İspanyolca (boş durum ekranı için iki kart) */
+export function getWordsOfTheDay(): {
+  fr: { word: string; dir: DictDirection; label: string; translation: string };
+  es: { word: string; dir: DictDirection; label: string; translation: string };
+} {
   const day = typeof window !== 'undefined' ? new Date().getDate() : 1;
-  const items = [
-    { word: 'pomme', dir: 'fr-tr' as DictDirection, label: 'Pomme (elma)' },
-    { word: 'aller', dir: 'fr-tr' as DictDirection, label: 'Aller (gitmek)' },
-    { word: 'manzana', dir: 'es-tr' as DictDirection, label: 'Manzana (elma)' },
-    { word: 'ir', dir: 'es-tr' as DictDirection, label: 'Ir (gitmek)' },
-    { word: 'refaire', dir: 'fr-tr' as DictDirection, label: 'Refaire (yeniden yapmak)' },
+  const frItems: { word: string; dir: DictDirection; label: string; translation: string }[] = [
+    { word: 'éphémère', dir: 'fr-tr', label: 'Éphémère', translation: 'geçici, kısa ömürlü' },
+    { word: 'refaire', dir: 'fr-tr', label: 'Refaire', translation: 'yeniden yapmak' },
+    { word: 'pomme', dir: 'fr-tr', label: 'Pomme', translation: 'elma' },
+    { word: 'aller', dir: 'fr-tr', label: 'Aller', translation: 'gitmek' },
+    { word: 'eau', dir: 'fr-tr', label: 'Eau', translation: 'su' },
   ];
-  return items[day % items.length];
+  const esItems: { word: string; dir: DictDirection; label: string; translation: string }[] = [
+    { word: 'madrugada', dir: 'es-tr', label: 'Madrugada', translation: 'şafak vakti, sabaha karşı' },
+    { word: 'manzana', dir: 'es-tr', label: 'Manzana', translation: 'elma' },
+    { word: 'ir', dir: 'es-tr', label: 'Ir', translation: 'gitmek' },
+    { word: 'rehacer', dir: 'es-tr', label: 'Rehacer', translation: 'yeniden yapmak' },
+    { word: 'agua', dir: 'es-tr', label: 'Agua', translation: 'su' },
+  ];
+  return {
+    fr: frItems[day % frItems.length],
+    es: esItems[day % esItems.length],
+  };
 }

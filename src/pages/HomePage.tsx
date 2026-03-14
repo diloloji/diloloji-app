@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { motion, useInView } from 'framer-motion';
 import { Cpu, Brain, Activity } from 'lucide-react';
 import { useThemeContext } from '../contexts/ThemeContext';
+import { useTranslation } from 'react-i18next';
 import FloatingBackgroundElements from '../components/FloatingBackgroundElements';
 import { useRef, useState, useCallback, useEffect } from 'react';
 
@@ -218,13 +219,27 @@ function useCountUp(target: number, inView: boolean, durationMs = 1800) {
 
 export default function HomePage() {
   const { isDark, toggleTheme, mounted } = useThemeContext();
+  const { t, i18n } = useTranslation();
   const [mouse, setMouse] = useState({ x: 0, y: 0 });
+  const [uiLangDropdownOpen, setUiLangDropdownOpen] = useState(false);
+  const uiLangDropdownRef = useRef<HTMLDivElement>(null);
   const statsRef = useRef<HTMLDivElement>(null);
   const statsInView = useInView(statsRef, { once: true, amount: 0.3 });
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     setMouse({ x: e.clientX, y: e.clientY });
   }, []);
+
+  useEffect(() => {
+    if (!uiLangDropdownOpen) return;
+    const handle = (e: MouseEvent) => {
+      if (uiLangDropdownRef.current && !uiLangDropdownRef.current.contains(e.target as Node)) {
+        setUiLangDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handle);
+    return () => document.removeEventListener('mousedown', handle);
+  }, [uiLangDropdownOpen]);
 
   return (
     <div
@@ -258,8 +273,49 @@ export default function HomePage() {
             to="/sozluk"
             className="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
           >
-            Sözlük
+            {t('sozluk')}
           </Link>
+          <div className="relative shrink-0" ref={uiLangDropdownRef}>
+            <button
+              type="button"
+              onClick={() => setUiLangDropdownOpen((o) => !o)}
+              className="flex items-center gap-1.5 rounded-xl bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 px-2.5 py-2 text-xs font-medium text-slate-600 dark:text-slate-300 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 border border-slate-200/80 dark:border-white/10"
+              title={t('arayuz_dili')}
+              aria-label={t('dil_secin')}
+              aria-expanded={uiLangDropdownOpen}
+              aria-haspopup="listbox"
+            >
+              <span aria-hidden>🌐</span>
+              <span className="uppercase tabular-nums">{['tr', 'en', 'fr', 'es'].includes((i18n.language || 'tr').slice(0, 2)) ? (i18n.language || 'tr').slice(0, 2).toUpperCase() : 'TR'}</span>
+            </button>
+            {uiLangDropdownOpen && (
+              <div
+                role="listbox"
+                aria-label={t('dil_secin')}
+                className="absolute right-0 top-full mt-1.5 w-max min-w-[120px] rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 shadow-xl py-1 z-50"
+              >
+                {(['tr', 'en', 'fr', 'es'] as const).map((lng) => (
+                  <button
+                    key={lng}
+                    type="button"
+                    role="option"
+                    aria-selected={i18n.language === lng}
+                    onClick={() => {
+                      i18n.changeLanguage(lng);
+                      setUiLangDropdownOpen(false);
+                    }}
+                    className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors flex items-center gap-2 whitespace-nowrap ${
+                      i18n.language === lng
+                        ? 'bg-indigo-500/15 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-200'
+                        : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/80'
+                    }`}
+                  >
+                    {t(lng === 'tr' ? 'lang_turkce' : lng === 'en' ? 'lang_english' : lng === 'fr' ? 'lang_francais' : 'lang_espanol')}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
           {mounted && (
             <button
               type="button"
@@ -316,15 +372,23 @@ export default function HomePage() {
           </p>
           <div className="rounded-2xl border border-white/20 dark:border-white/10 bg-white/40 dark:bg-white/5 backdrop-blur-md px-6 py-5 sm:px-8 sm:py-6">
             <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4 sm:gap-x-14">
-              {SUPPORTED_LANGUAGES.map((lang) => (
-                <div
-                  key={lang.code}
-                  className="flex items-center gap-3 text-slate-700 dark:text-slate-200"
-                >
-                  <span className="text-2xl sm:text-3xl" aria-hidden>{lang.flag}</span>
-                  <span className="text-sm font-medium sm:text-base">{lang.name}</span>
-                </div>
-              ))}
+              {SUPPORTED_LANGUAGES.map((lang) => {
+                const isActive = lang.code === 'fr' || lang.code === 'es';
+                return (
+                  <div
+                    key={lang.code}
+                    className={`flex items-center gap-3 text-slate-700 dark:text-slate-200 ${!isActive ? 'opacity-40 grayscale cursor-default hover:opacity-50 transition-opacity pointer-events-none' : ''}`}
+                  >
+                    <span className="text-2xl sm:text-3xl" aria-hidden>{lang.flag}</span>
+                    <span className="text-sm font-medium sm:text-base">{lang.name}</span>
+                    {!isActive && (
+                      <span className="bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[10px] font-medium px-2 py-0.5 rounded-full ml-2 whitespace-nowrap">
+                        {t('coming_soon')}
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </motion.section>
@@ -400,7 +464,7 @@ export default function HomePage() {
           </div>
         </motion.section>
 
-        {/* How it works */}
+        {/* How it works / Nasıl Çalışır */}
         <motion.section
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -409,7 +473,7 @@ export default function HomePage() {
           className="pt-12 lg:pt-16 border-t border-white/10 dark:border-white/10"
         >
           <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white text-center mb-12 lg:mb-16">
-            How it works
+            {t('how_it_works')}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
             {HOW_IT_WORKS.map((item, i) => (

@@ -160,6 +160,20 @@ export function replaceDeckCards(deckId: string, cards: Flashcard[]): void {
   storageSet(decks);
 }
 
+/** Desteye yeni kart ekler (front/back/example). */
+export function addCardToDeck(
+  deckId: string,
+  card: { front: string; back: string; example?: string }
+): boolean {
+  const decks = storageGet();
+  const index = decks.findIndex((d) => d.id === deckId);
+  if (index === -1) return false;
+  const newCard = defaultCard(card.front, card.back, card.example);
+  decks[index].cards = [...decks[index].cards.map((c) => normalizeCard(c as Flashcard)), newCard];
+  storageSet(decks);
+  return true;
+}
+
 /** Desteyi siler. */
 export function deleteDeck(id: string): boolean {
   const decks = storageGet().filter((d) => d.id !== id);
