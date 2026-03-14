@@ -208,7 +208,7 @@ export default function Dictionary() {
             } else {
               setGroqExamples(null);
             }
-            setResult((prev) => (prev ? { ...prev, phonetic: r.phonetic ?? prev.phonetic } : prev));
+            setResult((prev) => (prev && r ? { ...prev, phonetic: r.phonetic ?? prev.phonetic } : prev));
           } catch {
             setGroqExamples(null);
           } finally {
