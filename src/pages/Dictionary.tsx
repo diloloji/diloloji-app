@@ -17,18 +17,6 @@ import { translateWord, fetchFromGroq, groqToSourceTarget, type GroqExampleItem 
 import { getFlashcardDecks, addCardToDeck, type FlashcardDeck } from '../utils/flashcardDecks';
 import { sanitizeForDisplay } from '../utils/sanitize';
 
-/** Groq examples string[] → [original, translation] çiftleri (eski format) */
-function examplesToPairs(arr: string[]): Array<{ original: string; translation?: string }> {
-  const out: Array<{ original: string; translation?: string }> = [];
-  for (let i = 0; i < arr.length; i += 2) {
-    out.push({
-      original: sanitizeForDisplay(arr[i] ?? ''),
-      translation: arr[i + 1] ? sanitizeForDisplay(arr[i + 1]) : undefined,
-    });
-  }
-  return out.filter((p) => p.original.length > 0);
-}
-
 /** Groq examples (GroqExampleItem[]) → state formatı: original + translation (turkish) */
 function groqExamplesToState(examples: GroqExampleItem[]): Array<{ original: string; translation?: string }> {
   return examples
