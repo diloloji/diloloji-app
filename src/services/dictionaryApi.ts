@@ -15,30 +15,47 @@ export interface GroqWordAnalysis {
 /**
  * Groq API ile kelime analizi (fonetik + örnek cümleler).
  * language: "Fransızca" veya "İspanyolca"
+ * Anahtar yoksa veya hata olursa boş obje döner; böylece "Yükleniyor" sonsuza kadar kalmaz.
  */
 export const fetchFromGroq = async (word: string, language: string): Promise<GroqWordAnalysis> => {
-  const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: 'llama-3.3-70b-versatile',
-      messages: [
-        { role: 'system', content: 'Sen profesyonel bir dilbilimci ve sözlük editörüsün. Sadece JSON döndür.' },
-        { role: 'user', content: `${language} '${word}' kelimesini analiz et ve sonucu JSON formatında döndür.` },
-      ],
-      response_format: { type: 'json_object' },
-      temperature: 0.2,
-    }),
-  });
-  const data = await response.json();
-  const raw = data?.choices?.[0]?.message?.content;
-  if (typeof raw !== 'string') return {};
+  const apiKey = import.meta.env.VITE_GROQ_API_KEY;
+  if (!apiKey || typeof apiKey !== 'string') {
+    console.warn('VITE_GROQ_API_KEY tanımlı değil; Groq isteği atlanıyor.');
+    return {};
+  }
+  console.log('Groq isteği atılıyor:', word);
   try {
-    return JSON.parse(raw) as GroqWordAnalysis;
-  } catch {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: [
+          { role: 'system', content: 'Sen profesyonel bir dilbilimci ve sözlük editörüsün. Sadece JSON döndür.' },
+          { role: 'user', content: `${language} '${word}' kelimesini analiz et ve sonucu JSON formatında döndür.` },
+        ],
+        response_format: { type: 'json_object' },
+        temperature: 0.2,
+      }),
+    });
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error('Groq hatası:', response.status, errText);
+      return {};
+    }
+    const data = await response.json();
+    const raw = data?.choices?.[0]?.message?.content;
+    if (typeof raw !== 'string') return {};
+    try {
+      return JSON.parse(raw) as GroqWordAnalysis;
+    } catch {
+      return {};
+    }
+  } catch (error) {
+    console.error('Groq hatası:', error);
     return {};
   }
 };

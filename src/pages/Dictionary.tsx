@@ -197,6 +197,7 @@ export default function Dictionary() {
         const groqKey = import.meta.env.VITE_GROQ_API_KEY;
         const wordForGroq = dir === 'tr-fr' || dir === 'tr-es' ? r.target : r.source;
         const langLabel = dir === 'tr-fr' || dir === 'fr-tr' ? 'Fransızca' : 'İspanyolca';
+        setResult(r);
         if (groqKey && wordForGroq) {
           setExamplesLoading(true);
           try {
@@ -207,6 +208,7 @@ export default function Dictionary() {
             } else {
               setGroqExamples(null);
             }
+            setResult((prev) => (prev ? { ...prev, phonetic: r.phonetic ?? prev.phonetic } : prev));
           } catch {
             setGroqExamples(null);
           } finally {
@@ -214,9 +216,11 @@ export default function Dictionary() {
           }
         } else {
           setGroqExamples(null);
+          setExamplesLoading(false);
         }
+      } else {
+        setResult(r);
       }
-      setResult(r);
       if (r) {
         setRecentSearches((prev) => {
           const next = [{ query: trimmed, dir }, ...prev.filter((x) => !(x.query === trimmed && x.dir === dir))].slice(0, 5);
@@ -243,8 +247,11 @@ export default function Dictionary() {
       } else {
         setResult(fallback);
       }
+      setGroqExamples(null);
+      setExamplesLoading(false);
     } finally {
       setIsLoading(false);
+      setExamplesLoading(false);
     }
   }, []);
 
