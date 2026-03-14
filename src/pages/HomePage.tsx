@@ -58,39 +58,6 @@ function BackgroundWithPattern({ mouseX = 0, mouseY = 0 }: { mouseX?: number; mo
   );
 }
 
-function TestTubeIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-      <path
-        d="M18 4h12v12l10 10c2 2 2 6 0 8s-6 2-8 0L18 24V4z"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path d="M18 24l-8 8c-2 2-2 6 0 8s6 2 8 0l8-8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M30 4v12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function BrainIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-      <path
-        d="M24 8c-4 0-8 2-10 6-2 4-2 10 0 14 1 2 0 4-2 5-2 1-3 3-2 5 1 4 5 6 10 6s9-2 10-6c1-2 0-4-2-5-2-1-3-3-2-5 2-4 2-10 0-14-2-4-6-6-10-6z"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path d="M18 20c-1 2-2 4-2 6 0 4 3 8 8 8s8-4 8-8c0-2-1-4-2-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M24 28v8M20 34h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M14 36c2 2 4 4 8 4s6-2 8-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </svg>
-  );
-}
-
 const HOW_IT_WORKS = [
   {
     step: '01',

@@ -144,14 +144,14 @@ function UnitDetailPanel({ unit, onClose }: { unit: UnitContent; onClose: () => 
       </div>
       <div className="flex-1 overflow-y-auto px-4 py-6 pb-24 max-w-3xl mx-auto w-full">
         {unit.lessons.map((lesson, idx) => (
-          <LessonBlock key={idx} lesson={lesson} index={idx + 1} />
+          <LessonBlock key={idx} lesson={lesson} />
         ))}
       </div>
     </div>
   );
 }
 
-function LessonBlock({ lesson, index }: { lesson: LessonItem; index: number }) {
+function LessonBlock({ lesson }: { lesson: LessonItem }) {
   return (
     <section className="mb-10">
       <h3 className="text-base font-semibold text-indigo-400 dark:text-indigo-300 mb-2">
