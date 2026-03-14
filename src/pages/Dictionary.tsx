@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Volume2, X } from 'lucide-react';
+import { Volume2, X, BookA } from 'lucide-react';
 import { useThemeContext } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTranslation } from 'react-i18next';
@@ -125,6 +125,7 @@ export default function Dictionary() {
   const addToSetRef = useRef<HTMLDivElement>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [tatoebaPairsFr, setTatoebaPairsFr] = useState<SentencePair[] | null>(null);
   const [tatoebaPairsEs, setTatoebaPairsEs] = useState<SentencePair[] | null>(null);
 
@@ -355,8 +356,44 @@ export default function Dictionary() {
               <span className="text-base w-5 h-5 inline-flex items-center justify-center leading-none" aria-hidden>{isDark ? '☀️' : '🌙'}</span>
             </button>
           )}
+          <button
+            type="button"
+            onClick={() => setIsMobileMenuOpen((o) => !o)}
+            className="md:hidden h-9 w-9 flex items-center justify-center rounded-lg text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-800/40 dark:hover:bg-slate-700/40 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shrink-0"
+            aria-expanded={isMobileMenuOpen}
+            aria-label={isMobileMenuOpen ? 'Menüyü kapat' : 'Menüyü aç'}
+          >
+            <span className="text-lg leading-none" aria-hidden>☰</span>
+          </button>
         </div>
       </header>
+
+      {/* Mobil hamburger menü paneli — Sözlük sayfasında da tüm sayfalara link */}
+      {isMobileMenuOpen && (
+        <div
+          className="fixed inset-0 top-[52px] z-40 bg-slate-900/95 dark:bg-slate-950/95 backdrop-blur-md md:hidden animate-menu-in"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Navigasyon menüsü"
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+          <nav className="flex flex-col p-4 pt-6 gap-1 max-w-md mx-auto" onClick={(e) => e.stopPropagation()}>
+            <Link to="/fiil-laboratuvari" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-3 px-4 rounded-xl text-left text-base font-medium bg-slate-800/60 dark:bg-slate-800/80 text-slate-200 dark:text-slate-100 hover:bg-slate-700/60 border border-slate-600/50 focus:outline-none focus:ring-2 focus:ring-indigo-500/50">
+              {t('fiil_laboratuvari')}
+            </Link>
+            <Link to="/ezber-makinesi" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-3 px-4 rounded-xl text-left text-base font-medium bg-slate-800/60 dark:bg-slate-800/80 text-slate-200 dark:text-slate-100 hover:bg-slate-700/60 border border-slate-600/50 focus:outline-none focus:ring-2 focus:ring-indigo-500/50">
+              {t('ezber_makinesi')}
+            </Link>
+            <Link to="/sozluk" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-3 px-4 rounded-xl text-left text-base font-medium bg-indigo-500/20 dark:bg-indigo-400/20 text-indigo-700 dark:text-indigo-200 border border-indigo-400/30 flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-indigo-500/50">
+              <BookA className="w-4 h-4 shrink-0" strokeWidth={2} aria-hidden />
+              {t('sozluk')}
+            </Link>
+            <Link to="/ogrenme" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-3 px-4 rounded-xl text-left text-base font-medium bg-slate-800/60 dark:bg-slate-800/80 text-slate-200 dark:text-slate-100 hover:bg-slate-700/60 border border-slate-600/50 focus:outline-none focus:ring-2 focus:ring-indigo-500/50">
+              {t('ogrenme')}
+            </Link>
+          </nav>
+        </div>
+      )}
 
       <main className="relative z-10 max-w-3xl mx-auto px-4 md:px-8 py-8 pb-24">
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="max-w-2xl mx-auto">
@@ -366,7 +403,7 @@ export default function Dictionary() {
           {/* Arama çubuğu — temizle (X) + bayrak ikonu */}
           <form onSubmit={handleSearch} className="mb-8">
             <div className="relative rounded-2xl p-[2px] bg-gradient-to-r from-indigo-500/20 via-purple-500/20 to-indigo-500/20 dark:from-indigo-400/30 dark:via-purple-400/30 dark:to-indigo-400/30 shadow-[0_0_24px_rgba(99,102,241,0.15)] dark:shadow-[0_0_32px_rgba(99,102,241,0.2)]">
-              <div className="relative rounded-[14px] bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-600/80 overflow-hidden flex items-center">
+              <div className="relative rounded-[14px] bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-600/80 overflow-hidden flex items-center h-12">
                 <span className="pl-4 text-2xl shrink-0" aria-hidden title={direction.startsWith('fr') ? 'Fransızca' : 'İspanyolca'}>
                   {direction === 'tr-fr' || direction === 'fr-tr' ? '🇫🇷' : '🇪🇸'}
                 </span>
@@ -375,7 +412,7 @@ export default function Dictionary() {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder={direction === 'tr-fr' || direction === 'fr-tr' ? 'Fransızca veya Türkçe bir kelime arat...' : 'İspanyolca veya Türkçe bir kelime arat...'}
-                  className="flex-1 min-w-0 bg-transparent border-0 py-4 pl-2 pr-12 text-lg text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-0"
+                  className="flex-1 min-w-0 min-h-0 h-full bg-transparent border-0 py-0 pl-2 pr-12 text-base text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-0"
                   aria-label={direction.startsWith('tr') ? 'Hangi kelimenin anlamına bakalım?' : 'Arama'}
                 />
                 <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">

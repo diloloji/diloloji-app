@@ -18,7 +18,7 @@ export default function AccentKeyboard({ lang, onInsert, className = '' }: Accen
   const chars = lang === 'fr' ? CHARS_FR : CHARS_ES;
   return (
     <div
-      className={`flex flex-wrap gap-1 mt-2 ${className}`}
+      className={`flex flex-wrap gap-2 mt-2 ${className}`}
       role="group"
       aria-label={lang === 'es' ? 'İspanyolca özel karakterler' : 'Fransızca aksanlı harfler'}
     >
@@ -27,7 +27,7 @@ export default function AccentKeyboard({ lang, onInsert, className = '' }: Accen
           key={char}
           type="button"
           onClick={() => onInsert(char)}
-          className="text-sm bg-slate-800/50 dark:bg-slate-700/50 hover:bg-slate-700 dark:hover:bg-slate-600 text-slate-300 dark:text-slate-300 rounded px-2.5 py-1 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+          className="text-sm min-w-[2.25rem] min-h-[2.25rem] flex items-center justify-center bg-slate-800/50 dark:bg-slate-700/50 hover:bg-slate-700 dark:hover:bg-slate-600 text-slate-300 dark:text-slate-300 rounded-lg px-2.5 py-1.5 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
           aria-label={`${char} ekle`}
         >
           {char}

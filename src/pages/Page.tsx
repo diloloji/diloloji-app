@@ -1786,7 +1786,7 @@ export function Page() {
       })()}
 
       {appMode === 'conjugation' && (
-      <main className="max-w-7xl w-full mx-auto px-4 md:px-8 py-4 pb-20">
+      <main className="max-w-7xl w-full mx-auto px-4 md:px-8 py-4 pb-24 md:pb-20">
         <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6 lg:gap-8">
           {/* Sol sütun: Kontrol paneli (mobilde en üstte) — 4 kolon */}
           <aside data-print-hide className="flex flex-col gap-4 lg:col-span-4 order-1 print:hidden lg:sticky lg:top-6 lg:self-start">
@@ -1891,7 +1891,7 @@ export function Page() {
                   }}
                   onFocus={() => setAutocompleteClosed(false)}
                   placeholder={selectedLanguage === 'es' ? 'Örn: hablar, ser...' : 'Örn: être, aller...'}
-                  className="absolute inset-0 w-full h-full rounded-xl border border-slate-200 dark:border-slate-700/50 bg-slate-50 dark:bg-slate-800/80 pl-4 pr-12 py-3 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 dark:focus:ring-indigo-400 dark:focus:border-indigo-400 transition-colors duration-300"
+                  className="absolute inset-0 w-full h-full rounded-xl border border-slate-200 dark:border-slate-700/50 bg-slate-50 dark:bg-slate-800/80 pl-4 pr-12 py-3 text-base text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 dark:focus:ring-indigo-400 dark:focus:border-indigo-400 transition-colors duration-300"
                   aria-label={t('fiil_girin')}
                   aria-autocomplete="list"
                   aria-expanded={autocompleteSuggestions.length > 0 && !autocompleteClosed}
@@ -2232,7 +2232,7 @@ export function Page() {
                     <div className="flex flex-col sm:flex-row sm:items-start gap-3 mt-4">
                       <label className="text-slate-300 font-semibold w-20 shrink-0 pt-2">{pronounLabel}</label>
                       <div className="flex-1 flex flex-col">
-                        <div className="relative flex items-center">
+                        <div className="relative flex items-center min-h-12">
                           <input
                             ref={reviewInputRef}
                             type="text"
@@ -2241,7 +2241,7 @@ export function Page() {
                             onKeyDown={(e) => e.key === 'Enter' && submitReviewAnswer()}
                             placeholder="Cevabınız..."
                             disabled={reviewSubmitted}
-                            className={`flex-1 rounded-xl border px-4 py-3 placeholder-slate-500 focus:outline-none focus:ring-2 transition-all ${
+                            className={`flex-1 min-h-12 rounded-xl border px-4 py-3 text-base placeholder-slate-500 focus:outline-none focus:ring-2 transition-all ${
                               !reviewSubmitted
                                 ? 'border-slate-600 bg-slate-900/50 text-slate-200 focus:ring-indigo-500 focus:border-indigo-500'
                                 : reviewCorrect
@@ -2337,14 +2337,14 @@ export function Page() {
 
         {/* Boş durum + Öğrenme/Alıştırma — tek kart, üstte sekmeler */}
         {mode !== 'review' && mode !== 'starred' && (
-          <section className="rounded-2xl bg-white dark:bg-slate-800/80 shadow-md dark:shadow-none border border-slate-200 dark:border-slate-700/50 overflow-visible mb-4 backdrop-blur-md transition-colors duration-300 min-h-[400px] print:shadow-none print:border print:border-slate-200">
-            {/* Kart başlığı sekmeleri — Segmented Control (yazdırmada gizle) */}
-            <div className="flex justify-center pt-4 pb-2 print:hidden">
-              <div className="flex items-center gap-1 p-1 bg-slate-800/60 backdrop-blur-sm border border-slate-700 rounded-full w-max shadow-inner" role="tablist" aria-label="Mod">
+          <section className="rounded-2xl bg-white dark:bg-slate-800/80 shadow-md dark:shadow-none border border-slate-200 dark:border-slate-700/50 overflow-visible mb-4 mt-6 md:mt-0 backdrop-blur-md transition-colors duration-300 min-h-[400px] print:shadow-none print:border print:border-slate-200">
+            {/* Kart başlığı sekmeleri — mobilde yatay kaydırılabilir, masaüstünde ortalanmış */}
+            <div className="flex justify-start md:justify-center overflow-x-auto overflow-y-hidden scrollbar-hide print:hidden pt-4 pb-3 px-1 -mx-1">
+              <div className="flex items-center gap-1 p-1 bg-slate-800/60 backdrop-blur-sm border border-slate-700 rounded-full w-max min-w-0 flex-nowrap shadow-inner" role="tablist" aria-label="Mod">
               <button
                 type="button"
                 onClick={() => setMode('learning')}
-                className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer ${
+                className={`px-3 py-1.5 md:px-5 md:py-2 rounded-full text-xs md:text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer shrink-0 ${
                   mode === 'learning'
                     ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
                     : 'bg-transparent text-slate-400 hover:text-slate-200'
@@ -2356,7 +2356,7 @@ export function Page() {
               <button
                 type="button"
                 onClick={() => setMode('quiz')}
-                className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer ${
+                className={`px-3 py-1.5 md:px-5 md:py-2 rounded-full text-xs md:text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer shrink-0 ${
                   mode === 'quiz'
                     ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
                     : 'bg-transparent text-slate-400 hover:text-slate-200'
@@ -2368,7 +2368,7 @@ export function Page() {
               <button
                 type="button"
                 onClick={() => setMode('time-attack')}
-                className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer ${
+                className={`px-3 py-1.5 md:px-5 md:py-2 rounded-full text-xs md:text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer shrink-0 ${
                   mode === 'time-attack'
                     ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
                     : 'bg-transparent text-slate-400 hover:text-slate-200'
@@ -2380,7 +2380,7 @@ export function Page() {
               <button
                 type="button"
                 onClick={() => setMode('compare')}
-                className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer ${
+                className={`px-3 py-1.5 md:px-5 md:py-2 rounded-full text-xs md:text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer shrink-0 ${
                   mode === 'compare'
                     ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
                     : 'bg-transparent text-slate-400 hover:text-slate-200'
@@ -2473,7 +2473,7 @@ export function Page() {
                                 }
                               }}
                               placeholder="Cevabınız..."
-                              className="flex-1 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 px-4 py-3 text-base placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400"
+                              className="flex-1 h-12 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 px-4 py-3 text-base placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400"
                               autoComplete="off"
                               autoFocus
                             />
@@ -3256,7 +3256,7 @@ export function Page() {
                       onFocus={() => { activeQuizInputIndexRef.current = currentFocusIndex; }}
                       onKeyDown={(e) => { if (e.key === 'Enter') handleFocusModeSubmit(); }}
                       placeholder="Cevabınız..."
-                      className={`w-full rounded-2xl border px-5 py-4 text-2xl text-center placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all duration-300 shadow-inner ${
+                      className={`w-full h-12 rounded-2xl border px-5 py-4 text-base sm:text-2xl text-center placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all duration-300 shadow-inner ${
                         feedback === 'correct'
                           ? 'border-emerald-400 dark:border-emerald-500/60 bg-emerald-50/80 dark:bg-emerald-500/20 text-slate-800 dark:text-slate-100 focus:ring-emerald-500/30 dark:focus:ring-emerald-400/30'
                           : feedback === 'wrong'
@@ -3321,7 +3321,7 @@ export function Page() {
                             if (e.key === 'Enter') handleQuizInputKeyDown(e, index);
                           }}
                           placeholder="Cevabınız..."
-                          className={`w-full rounded-xl border px-4 py-3 pr-20 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all shadow-inner ${
+                          className={`w-full h-12 rounded-xl border px-4 py-3 pr-20 text-base placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all shadow-inner ${
                             feedback === 'correct'
                               ? 'border-emerald-400 dark:border-emerald-500/60 bg-emerald-50/80 dark:bg-emerald-500/20 text-slate-800 dark:text-slate-100 focus:ring-emerald-500/30 dark:focus:ring-emerald-400/30'
                               : feedback === 'wrong'

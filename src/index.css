@@ -36,6 +36,15 @@ select optgroup {
   animation: time-attack-shake 0.4s ease-in-out;
 }
 
+/* Mobil: yatay kaydırma alanında scrollbar gizle */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 /* Yazdırma: Çalışma yaprağı — beyaz arka plan, siyah metin; navbar/menü/butonlar gizli */
 @media print {
   body {

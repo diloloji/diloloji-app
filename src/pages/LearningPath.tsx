@@ -5,7 +5,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { BookOpen, PenLine, MessageCircle } from 'lucide-react';
+import { BookOpen, PenLine, MessageCircle, BookA } from 'lucide-react';
 type Lang = 'fr' | 'es';
 type Level = 'A1' | 'A2' | 'B1' | 'B2' | 'C1';
 
@@ -125,6 +125,7 @@ const CURRICULUM: Record<Lang, Record<Level, ModuleItem[]>> = {
 export default function LearningPath() {
   const [lang, setLang] = useState<Lang>('fr');
   const [level, setLevel] = useState<Level>('A1');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const modules = CURRICULUM[lang][level];
 
@@ -152,7 +153,36 @@ export default function LearningPath() {
             </Link>
           </nav>
         </div>
+        <button
+          type="button"
+          onClick={() => setIsMobileMenuOpen((o) => !o)}
+          className="md:hidden h-9 w-9 flex items-center justify-center rounded-lg text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-800/40 dark:hover:bg-slate-700/40 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shrink-0"
+          aria-expanded={isMobileMenuOpen}
+          aria-label={isMobileMenuOpen ? 'Menüyü kapat' : 'Menüyü aç'}
+        >
+          <span className="text-lg leading-none" aria-hidden>☰</span>
+        </button>
       </header>
+
+      {isMobileMenuOpen && (
+        <div
+          className="fixed inset-0 top-[52px] z-40 bg-slate-900/95 dark:bg-slate-950/95 backdrop-blur-md md:hidden animate-menu-in"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Navigasyon menüsü"
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+          <nav className="flex flex-col p-4 pt-6 gap-1 max-w-md mx-auto" onClick={(e) => e.stopPropagation()}>
+            <Link to="/fiil-laboratuvari" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-3 px-4 rounded-xl text-left text-base font-medium bg-slate-800/60 dark:bg-slate-800/80 text-slate-200 dark:text-slate-100 hover:bg-slate-700/60 border border-slate-600/50 focus:outline-none focus:ring-2 focus:ring-indigo-500/50">Fiil Laboratuvarı</Link>
+            <Link to="/ezber-makinesi" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-3 px-4 rounded-xl text-left text-base font-medium bg-slate-800/60 dark:bg-slate-800/80 text-slate-200 dark:text-slate-100 hover:bg-slate-700/60 border border-slate-600/50 focus:outline-none focus:ring-2 focus:ring-indigo-500/50">Ezber Makinesi</Link>
+            <Link to="/sozluk" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-3 px-4 rounded-xl text-left text-base font-medium bg-slate-800/60 dark:bg-slate-800/80 text-slate-200 dark:text-slate-100 hover:bg-slate-700/60 border border-slate-600/50 flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-indigo-500/50">
+              <BookA className="w-4 h-4 shrink-0" strokeWidth={2} aria-hidden />
+              Sözlük
+            </Link>
+            <Link to="/ogrenme" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-3 px-4 rounded-xl text-left text-base font-medium bg-indigo-500/20 dark:bg-indigo-400/20 text-indigo-700 dark:text-indigo-200 border border-indigo-400/30 focus:outline-none focus:ring-2 focus:ring-indigo-500/50">Öğrenme</Link>
+          </nav>
+        </div>
+      )}
 
       <main className="relative z-10 max-w-5xl mx-auto px-4 md:px-8 py-8 pb-24">
         <div className="text-center mb-8">
