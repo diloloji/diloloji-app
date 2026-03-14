@@ -13,7 +13,7 @@ import {
   type DictDirection,
   type SearchResult,
 } from '../data/mockDictionary';
-import { translateWord, fetchFromGroq, groqToSourceTarget } from '../services/dictionaryApi';
+import { translateWord, fetchFromGroq, groqToSourceTarget, type GroqExampleItem } from '../services/dictionaryApi';
 import { getFlashcardDecks, addCardToDeck, type FlashcardDeck } from '../utils/flashcardDecks';
 import { sanitizeForDisplay } from '../utils/sanitize';
 
@@ -29,10 +29,8 @@ function examplesToPairs(arr: string[]): Array<{ original: string; translation?:
   return out.filter((p) => p.original.length > 0);
 }
 
-/** Groq examples [{ original, turkish }] → state formatı */
-function groqExamplesToState(
-  examples: Array<{ original?: string; turkish?: string }>
-): Array<{ original: string; translation?: string }> {
+/** Groq examples (GroqExampleItem[]) → state formatı: original + translation (turkish) */
+function groqExamplesToState(examples: GroqExampleItem[]): Array<{ original: string; translation?: string }> {
   return examples
     .map((ex) => ({
       original: sanitizeForDisplay(ex.original ?? ''),
@@ -216,9 +214,7 @@ export default function Dictionary() {
             if (groq.phonetic) r = { ...r, phonetic: groq.phonetic };
             const pairs =
               Array.isArray(groq.examples) && groq.examples.length > 0
-                ? (groq.examples as Array<{ original?: string; turkish?: string }>)[0]?.turkish !== undefined
-                  ? groqExamplesToState(groq.examples as Array<{ original?: string; turkish?: string }>)
-                  : examplesToPairs(groq.examples as string[])
+                ? groqExamplesToState(groq.examples)
                 : null;
             setGroqExamples(pairs);
             setResult((prev) => (prev && r ? { ...prev, phonetic: r.phonetic ?? prev.phonetic } : prev));
@@ -251,9 +247,7 @@ export default function Dictionary() {
             };
             const pairs =
               Array.isArray(groq.examples) && groq.examples.length > 0
-                ? (groq.examples as Array<{ original?: string; turkish?: string }>)[0]?.turkish !== undefined
-                  ? groqExamplesToState(groq.examples as Array<{ original?: string; turkish?: string }>)
-                  : examplesToPairs(groq.examples as string[])
+                ? groqExamplesToState(groq.examples)
                 : null;
             setGroqExamples(pairs);
             setResult(r);
