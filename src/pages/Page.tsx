@@ -31,6 +31,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useTranslation } from 'react-i18next';
 import EzberMakinesi from '../components/EzberMakinesi';
 import AuthModal from '../components/AuthModal';
+import AccentKeyboard from '../components/AccentKeyboard';
 
 type Mode = 'learning' | 'quiz' | 'review' | 'starred' | 'time-attack' | 'compare';
 type AppMode = 'conjugation' | 'ezber';
@@ -500,6 +501,7 @@ export function Page() {
 
   /** Aktivite haritası (heatmap) modalı açık mı */
   const [showActivityModal, setShowActivityModal] = useState(false);
+  const [tenseDetailModalOpen, setTenseDetailModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [uiLangDropdownOpen, setUiLangDropdownOpen] = useState(false);
   const uiLangDropdownRef = useRef<HTMLDivElement>(null);
@@ -649,6 +651,8 @@ export function Page() {
   const activeQuizInputIndexRef = useRef(0);
   /** Aksan ekledikten sonra imleci doğru yere koymak için (useEffect'te kullanılır) */
   const lastAccentInsertRef = useRef<{ index: number; caretPosition: number } | null>(null);
+  /** Zamana Karşı: aksan tuşu sonrası inputa refocus */
+  const timeAttackInputRef = useRef<HTMLInputElement>(null);
 
   const tenseLabel = tensesForLang.find((t) => t.id === selectedTense)?.label ?? selectedTense;
 
@@ -1257,6 +1261,11 @@ export function Page() {
         setShowActivityModal(false);
         return;
       }
+      if (e.key === 'Escape' && tenseDetailModalOpen) {
+        e.preventDefault();
+        setTenseDetailModalOpen(false);
+        return;
+      }
       if (e.altKey && e.key.toLowerCase() === 'l') {
         e.preventDefault();
         setMode('learning');
@@ -1284,7 +1293,7 @@ export function Page() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [mode, verbKey, resetQuiz, showActivityModal, isMobileMenuOpen]);
+  }, [mode, verbKey, resetQuiz, showActivityModal, tenseDetailModalOpen, isMobileMenuOpen]);
 
   const conjugationsForDisplay = conjugations;
 
@@ -2039,13 +2048,23 @@ export function Page() {
             </div>
           </div>
             </section>
-            {/* Zaman açıklaması kartı — sol panelde */}
+            {/* Zaman açıklaması kartı — sol panelde + Detaylı İncele */}
             {getTenseExplanation(selectedLanguage, selectedTense) && (
-              <div className="rounded-xl bg-blue-900/20 dark:bg-blue-900/30 border border-blue-500/30 dark:border-blue-400/40 p-4 flex items-start gap-3 backdrop-blur-sm transition-all duration-200">
-                <span className="text-xl shrink-0" aria-hidden>ℹ️</span>
-                <p className="text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
-                  {getTenseExplanation(selectedLanguage, selectedTense)}
-                </p>
+              <div className="rounded-xl bg-blue-900/20 dark:bg-blue-900/30 border border-blue-500/30 dark:border-blue-400/40 p-4 flex flex-col gap-0 backdrop-blur-sm transition-all duration-200">
+                <div className="flex items-start gap-3">
+                  <span className="text-xl shrink-0" aria-hidden>ℹ️</span>
+                  <p className="text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
+                    {getTenseExplanation(selectedLanguage, selectedTense)?.shortDesc}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setTenseDetailModalOpen(true)}
+                  className="mt-2 text-sm font-semibold text-indigo-400 hover:text-indigo-300 cursor-pointer flex items-center gap-1 transition-colors w-fit focus:outline-none focus:ring-2 focus:ring-indigo-500/50 rounded"
+                  aria-label="Zaman açıklaması detayı"
+                >
+                  Detaylı İncele ➔
+                </button>
               </div>
             )}
             {/* Tüm Zamanları Göster — sadece fiil sonucu varken göster */}
@@ -2161,25 +2180,28 @@ export function Page() {
 
         {/* Review (Tekrar) modu — Zorlandıklarım */}
         {mode === 'review' && (
-          <section className="mb-4 rounded-2xl bg-white dark:bg-slate-800/80 shadow-md dark:shadow-none border border-slate-200 dark:border-slate-700/50 overflow-hidden backdrop-blur-md transition-colors duration-300">
-            <div className="bg-slate-50/80 dark:bg-slate-700/50 border-b border-slate-100 dark:border-slate-700/50 px-8 py-5 flex flex-wrap items-center justify-between gap-4">
-              <h2 className="font-bold text-slate-800 dark:text-slate-100 text-lg">🧠 Tekrar (Zorlandıklarım)</h2>
+          <section className="relative mb-4 rounded-2xl bg-slate-800/60 dark:bg-slate-800/80 backdrop-blur-sm border border-slate-700 shadow-xl overflow-hidden transition-colors duration-300">
+            <div className="px-6 sm:px-8 py-5 flex items-center justify-between gap-4">
+              <h2 className="font-bold text-slate-200 text-lg">🧠 Tekrar (Zorlandıklarım)</h2>
               <button
                 type="button"
                 onClick={() => { setReviewEntry(null); setMode('quiz'); }}
-                className="rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700/50 text-slate-700 dark:text-slate-200 text-sm font-semibold px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 transition-colors duration-300"
+                className="p-2 rounded-lg text-slate-400 hover:text-white hover:scale-110 active:scale-95 transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                aria-label="Kapat"
               >
-                Geri
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 6L6 18M6 6l12 12" />
+                </svg>
               </button>
             </div>
             {!reviewEntry ? (
-              <div className="p-12 text-center">
-                <p className="text-slate-600 font-medium">Henüz zorlandığınız çekim kaydı yok.</p>
-                <p className="text-slate-500 text-sm mt-1.5">Alıştırma modunda yanlış yaptığınız veya ipucu kullandığınız sorular burada toplanır.</p>
+              <div className="p-8 sm:p-12 text-center">
+                <p className="text-slate-300 font-medium">Henüz zorlandığınız çekim kaydı yok.</p>
+                <p className="text-slate-400 text-sm mt-1.5">Alıştırma modunda yanlış yaptığınız veya ipucu kullandığınız sorular burada toplanır.</p>
                 <button
                   type="button"
                   onClick={() => setMode('quiz')}
-                  className="mt-6 rounded-xl bg-indigo-600 text-white text-sm font-semibold px-5 py-2.5 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                  className="mt-6 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold px-5 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-800"
                 >
                   Alıştırma&apos;ya dön
                 </button>
@@ -2194,50 +2216,65 @@ export function Page() {
                   correctValue = getConjugationForTenseForLang(reviewEntry.verb, reviewEntry.tense, reviewLang)[reviewEntry.pronoun];
                 } catch {
                   return (
-                    <div className="p-8 text-center text-red-600 text-sm">
+                    <div className="p-8 text-center text-red-300 text-sm">
                       Bu fiil yüklenemedi. Listeden çıkarılıyor.
-                      <button type="button" onClick={goToNextReviewQuestion} className="block mx-auto mt-3 text-indigo-600 font-medium">Sonraki</button>
+                      <button type="button" onClick={goToNextReviewQuestion} className="block mx-auto mt-3 text-indigo-400 hover:text-indigo-300 font-medium">Sonraki</button>
                     </div>
                   );
                 }
                 return (
-                  <div className="p-8">
-                    <p className="text-slate-600 text-sm mb-1">
-                      <span className="font-semibold capitalize">{reviewEntry.verb}</span> — {tenseLabel} — <span className="font-medium">{pronounLabel}</span>
+                  <div className="p-6 sm:p-8 pb-20">
+                    <p className="text-slate-300 text-sm mb-1">
+                      <span className="font-semibold capitalize text-slate-200">{reviewEntry.verb}</span>
+                      <span className="text-slate-500 mx-1">—</span>
+                      <span>{tenseLabel}</span>
+                      <span className="text-slate-500 mx-1">—</span>
+                      <span className="font-medium text-slate-200">{pronounLabel}</span>
                     </p>
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-3 mt-4">
-                      <label className="text-slate-700 font-semibold w-20 shrink-0">{pronounLabel}</label>
-                      <div className="flex-1 relative flex items-center">
-                        <input
-                          ref={reviewInputRef}
-                          type="text"
-                          value={reviewAnswer}
-                          onChange={(e) => setReviewAnswer(e.target.value)}
-                          onKeyDown={(e) => e.key === 'Enter' && submitReviewAnswer()}
-                          placeholder="Cevabınız..."
-                          disabled={reviewSubmitted}
-                          className={`flex-1 rounded-xl border px-4 py-3 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 transition-all ${
-                            !reviewSubmitted
-                              ? 'border-slate-200 bg-slate-50 focus:ring-indigo-500 focus:border-indigo-500'
-                              : reviewCorrect
-                                ? 'border-emerald-400 bg-emerald-50/80'
-                                : 'border-red-500 bg-red-50/80'
-                          }`}
+                    <div className="flex flex-col sm:flex-row sm:items-start gap-3 mt-4">
+                      <label className="text-slate-300 font-semibold w-20 shrink-0 pt-2">{pronounLabel}</label>
+                      <div className="flex-1 flex flex-col">
+                        <div className="relative flex items-center">
+                          <input
+                            ref={reviewInputRef}
+                            type="text"
+                            value={reviewAnswer}
+                            onChange={(e) => setReviewAnswer(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && submitReviewAnswer()}
+                            placeholder="Cevabınız..."
+                            disabled={reviewSubmitted}
+                            className={`flex-1 rounded-xl border px-4 py-3 placeholder-slate-500 focus:outline-none focus:ring-2 transition-all ${
+                              !reviewSubmitted
+                                ? 'border-slate-600 bg-slate-900/50 text-slate-200 focus:ring-indigo-500 focus:border-indigo-500'
+                                : reviewCorrect
+                                  ? 'border-emerald-500/60 bg-emerald-500/20 text-slate-200'
+                                  : 'border-red-500/60 bg-red-500/15 text-slate-200'
+                            }`}
                           aria-label={`${pronounLabel} çekimi`}
                         />
                         {reviewSubmitted && reviewCorrect && (
-                          <span className="absolute right-3 text-emerald-600">
+                          <span className="absolute right-3 text-emerald-400">
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                             </svg>
                           </span>
                         )}
                         {reviewSubmitted && !reviewCorrect && (
-                          <span className="absolute right-3 text-red-500">
+                          <span className="absolute right-3 text-red-500 dark:text-red-400">
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                             </svg>
                           </span>
+                        )}
+                        </div>
+                        {!reviewSubmitted && (
+                          <AccentKeyboard
+                            lang={selectedLanguage}
+                            onInsert={(char) => {
+                              setReviewAnswer((prev) => prev + char);
+                              requestAnimationFrame(() => reviewInputRef.current?.focus());
+                            }}
+                          />
                         )}
                       </div>
                       {!reviewSubmitted ? (
@@ -2253,21 +2290,21 @@ export function Page() {
                         <button
                           type="button"
                           onClick={goToNextReviewQuestion}
-                          className="rounded-xl bg-slate-200 text-slate-800 text-sm font-semibold px-5 py-3 hover:bg-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                          className="rounded-xl bg-slate-600 hover:bg-slate-500 text-slate-200 text-sm font-semibold px-5 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-800"
                         >
                           Sonraki
                         </button>
                       )}
                     </div>
                     {reviewSubmitted && !reviewCorrect && (
-                      <p className="mt-3 text-sm text-red-600">
-                        Doğru cevap: <strong>{correctValue}</strong>
+                      <p className="mt-3 text-sm text-red-300">
+                        Doğru cevap: <strong className="text-slate-200">{correctValue}</strong>
                       </p>
                     )}
                   </div>
                 );
-              })()
-            )}
+              })())}
+            <div className="absolute bottom-0 left-0 w-full h-1 bg-slate-700/80" aria-hidden />
           </section>
         )}
 
@@ -2411,29 +2448,39 @@ export function Page() {
                           {' — '}
                           <span>{tensesForLang.find((t) => t.id === timeAttackQuestion.tense)?.label}</span>
                         </p>
-                        <div className="flex flex-col sm:flex-row gap-2 mt-4 max-w-md mx-auto">
-                          <input
-                            type="text"
-                            value={timeAttackInput}
-                            onChange={(e) => setTimeAttackInput(e.target.value)}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') {
-                                e.preventDefault();
-                                submitTimeAttackAnswer();
-                              }
-                            }}
-                            placeholder="Cevabınız..."
-                            className="flex-1 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 px-4 py-3 text-base placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400"
-                            autoComplete="off"
-                            autoFocus
-                          />
-                          <button
+                        <div className="flex flex-col gap-2 mt-4 max-w-md mx-auto">
+                          <div className="flex flex-col sm:flex-row gap-2">
+                            <input
+                              ref={timeAttackInputRef}
+                              type="text"
+                              value={timeAttackInput}
+                              onChange={(e) => setTimeAttackInput(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  submitTimeAttackAnswer();
+                                }
+                              }}
+                              placeholder="Cevabınız..."
+                              className="flex-1 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 px-4 py-3 text-base placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400"
+                              autoComplete="off"
+                              autoFocus
+                            />
+                            <button
                             type="button"
-                            onClick={submitTimeAttackAnswer}
-                            className="rounded-xl bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white font-medium px-5 py-3 transition-colors duration-300"
-                          >
-                            Kontrol
-                          </button>
+                              onClick={submitTimeAttackAnswer}
+                              className="rounded-xl bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white font-medium px-5 py-3 transition-colors duration-300"
+                            >
+                              Kontrol
+                            </button>
+                          </div>
+                          <AccentKeyboard
+                            lang={selectedLanguage}
+                            onInsert={(char) => {
+                              setTimeAttackInput((prev) => prev + char);
+                              requestAnimationFrame(() => timeAttackInputRef.current?.focus());
+                            }}
+                          />
                         </div>
                         {timeAttackFeedback === 'correct' && (
                           <p className="text-center mt-3 text-green-600 dark:text-green-400 font-medium">+2 saniye</p>
@@ -3325,28 +3372,18 @@ export function Page() {
             </ul>
             )}
 
-            {/* Karakter çubuğu — normal akışta, form elemanlarına yapışmıyor */}
-            <div className="relative flex flex-wrap justify-center gap-2 mt-8 pb-4 w-full px-5 sm:px-6 border-t border-slate-100 dark:border-slate-700/50">
-              <div
-                className="flex flex-wrap justify-center gap-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50/80 dark:bg-slate-800/50 px-3 py-2.5 shadow-sm"
-                role="group"
-                aria-label={selectedLanguage === 'es' ? 'İspanyolca özel karakterler' : 'Fransızca aksanlı harfler'}
-              >
-                {(selectedLanguage === 'es'
-                  ? ['á', 'é', 'í', 'ó', 'ú', 'ü', 'ñ', '¿', '¡']
-                  : ['é', 'è', 'ê', 'ç', 'à', 'ù', 'î', 'ô', 'œ', 'æ']
-                ).map((char) => (
-                  <button
-                    key={char}
-                    type="button"
-                    onClick={() => insertAccentChar(char)}
-                    className="min-w-[2rem] px-2 py-1.5 bg-white dark:bg-slate-700/80 hover:bg-slate-100 dark:hover:bg-slate-600 border border-slate-200/80 dark:border-slate-600 rounded-lg text-slate-700 dark:text-slate-200 text-base font-medium shadow-sm transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 dark:focus:ring-indigo-400 focus:ring-offset-1 dark:focus:ring-offset-slate-800"
-                    aria-label={`${char} ekle`}
-                  >
-                    {char}
-                  </button>
-                ))}
-              </div>
+            {/* Sanal aksan klavyesi — input hemen altında, tıklayınca odak korunur (useEffect) */}
+            <div className="flex flex-wrap justify-center w-full px-5 sm:px-6 pt-2 pb-4 border-t border-slate-100 dark:border-slate-700/50">
+              <AccentKeyboard
+                lang={selectedLanguage}
+                onInsert={(char) => {
+                  insertAccentChar(char);
+                  requestAnimationFrame(() => {
+                    const idx = activeQuizInputIndexRef.current;
+                    quizInputRefs.current[idx]?.focus();
+                  });
+                }}
+              />
             </div>
             {/* Aksiyon butonları — en altta, sağa hizalı */}
             <div className="px-5 sm:px-6 pb-6 pt-4 flex flex-wrap justify-end gap-2 border-t border-slate-100 dark:border-slate-700/50">
@@ -3393,6 +3430,67 @@ export function Page() {
           {toastMessage}
         </div>
       )}
+
+      {/* Zaman detay modalı — gramer açıklaması */}
+      {tenseDetailModalOpen && (() => {
+        const detail = getTenseExplanation(selectedLanguage, selectedTense);
+        if (!detail) return null;
+        const flag = selectedLanguage === 'fr' ? '🇫🇷' : '🇪🇸';
+        return (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="tense-detail-modal-title"
+            onClick={() => setTenseDetailModalOpen(false)}
+          >
+            <div
+              className="bg-slate-800 border border-slate-700 rounded-2xl p-6 w-[90%] max-w-lg shadow-2xl relative"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                type="button"
+                onClick={() => setTenseDetailModalOpen(false)}
+                className="absolute right-3 top-3 p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                aria-label="Kapat"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+              <h2 id="tense-detail-modal-title" className="text-xl font-bold text-slate-100 pr-10 flex items-center gap-2">
+                <span>{tenseLabel}</span>
+                <span aria-hidden>{flag}</span>
+              </h2>
+              <div className="mt-5 space-y-4">
+                <section>
+                  <h3 className="text-sm font-semibold text-slate-300 mb-1.5">Ne Zaman Kullanılır?</h3>
+                  <p className="text-slate-200 text-sm leading-relaxed">{detail.longDesc}</p>
+                </section>
+                <section>
+                  <h3 className="text-sm font-semibold text-slate-300 mb-1.5">Kurulum (Matematiği)</h3>
+                  <div className="bg-slate-900/50 p-3 rounded-xl border border-indigo-500/20 text-indigo-200 text-sm leading-relaxed">
+                    {detail.formation}
+                  </div>
+                </section>
+                {detail.examples.length > 0 && (
+                  <section>
+                    <h3 className="text-sm font-semibold text-slate-300 mb-2">Örnekler</h3>
+                    <ul className="space-y-2">
+                      {detail.examples.map((ex, i) => (
+                        <li key={i} className="flex items-start gap-2 text-sm text-slate-200">
+                          <span className="text-indigo-400 mt-0.5">•</span>
+                          <span className="italic">{ex}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Giriş / Kayıt modali (mock — backend bağlanmadan önce sadece UI) */}
       <AuthModal

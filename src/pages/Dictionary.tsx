@@ -8,7 +8,6 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useTranslation } from 'react-i18next';
 import {
   searchDictionary,
-  DIRECTION_LABELS,
   POPULAR_SEARCHES,
   getWordsOfTheDay,
   type DictDirection,
