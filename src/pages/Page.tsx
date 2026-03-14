@@ -1546,6 +1546,12 @@ export function Page() {
               </div>
             )}
           </div>
+          <Link
+            to="/pricing"
+            className="hidden md:inline-flex rounded-lg px-3 py-2 text-sm font-semibold bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-900 hover:from-amber-300 hover:via-yellow-300 hover:to-amber-400 shadow-md shadow-amber-500/25 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 dark:focus:ring-offset-slate-900 shrink-0"
+          >
+            🌟 Pro&apos;ya Geç
+          </Link>
           {isLoggedIn ? (
             <div className="flex items-center gap-2 shrink-0 ml-1 h-9">
               <div className="flex items-center justify-center w-8 h-8 rounded-full bg-indigo-500/80 text-white text-sm font-bold shadow-md" aria-hidden>K</div>
@@ -1627,6 +1633,9 @@ export function Page() {
               }`}
             >
               {t('ogrenme')}
+            </Link>
+            <Link to="/pricing" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-3 px-4 rounded-xl text-left text-base font-semibold bg-gradient-to-r from-amber-400/90 via-yellow-400/90 to-amber-500/90 text-slate-900 border border-amber-400/50 focus:outline-none focus:ring-2 focus:ring-amber-400/50">
+              🌟 Pro&apos;ya Geç
             </Link>
             {!isLoggedIn && (
               <button

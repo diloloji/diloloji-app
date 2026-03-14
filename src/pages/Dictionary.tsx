@@ -12,7 +12,7 @@ import {
   type DictDirection,
   type SearchResult,
 } from '../data/mockDictionary';
-import { fetchFromGroq, groqToSourceTarget, type GroqExampleItem } from '../services/dictionaryApi';
+import { fetchFromGroq, groqToSourceTarget, type GroqExampleItem, type GroqCommonPhrase } from '../services/dictionaryApi';
 import { getFlashcardDecks, addCardToDeck, type FlashcardDeck } from '../utils/flashcardDecks';
 import { sanitizeForDisplay } from '../utils/sanitize';
 
@@ -134,6 +134,7 @@ export default function Dictionary() {
   const [isLoading, setIsLoading] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [groqExamples, setGroqExamples] = useState<Array<{ original: string; translation?: string }> | null>(null);
+  const [groqCommonPhrases, setGroqCommonPhrases] = useState<GroqCommonPhrase[] | null>(null);
 
   useEffect(() => {
     if (!uiLangDropdownOpen) return;
@@ -173,6 +174,7 @@ export default function Dictionary() {
     setIsLoading(true);
     setResult(undefined);
     setGroqExamples(null);
+    setGroqCommonPhrases(null);
     const langLabel = dir === 'tr-fr' || dir === 'fr-tr' ? 'Fransızca' : 'İspanyolca';
     try {
       const groq = await fetchFromGroq(trimmed, langLabel);
@@ -194,6 +196,13 @@ export default function Dictionary() {
             ? groqExamplesToState(groq.examples)
             : null;
         setGroqExamples(pairs);
+        const phrases =
+          Array.isArray(groq.commonPhrases) && groq.commonPhrases.length > 0
+            ? groq.commonPhrases
+                .filter((p): p is GroqCommonPhrase => typeof p?.phrase === 'string' && typeof p?.meaning === 'string')
+                .map((p) => ({ phrase: sanitizeForDisplay(p.phrase), meaning: sanitizeForDisplay(p.meaning) }))
+            : null;
+        setGroqCommonPhrases(phrases);
         setRecentSearches((prev) => {
           const next = [{ query: trimmed, dir }, ...prev.filter((x) => !(x.query === trimmed && x.dir === dir))].slice(0, 5);
           if (typeof window !== 'undefined') {
@@ -208,11 +217,13 @@ export default function Dictionary() {
       } else {
         setResult(null);
         setGroqExamples(null);
+        setGroqCommonPhrases(null);
       }
     } catch (err) {
       console.warn('[Sözlük] Groq istek hatası:', err);
       setResult(null);
       setGroqExamples(null);
+      setGroqCommonPhrases(null);
     } finally {
       setIsLoading(false);
     }
@@ -240,14 +251,13 @@ export default function Dictionary() {
     [query, direction, doSearch]
   );
 
-  const handleSpeak = useCallback(
-    (res: SearchResult) => {
-      const lang = res.lang === 'fr' ? 'fr-FR' : 'es-ES';
-      const wordToSpeak = direction === 'tr-fr' || direction === 'tr-es' ? res.target : res.source;
-      speakWord(wordToSpeak, lang);
-    },
-    [direction]
-  );
+  /** TTS: Hedef dildeki kelimeyi (ekranda büyük yazan) sesli okur; dil selectedLanguage/direction'a göre fr-FR veya es-ES. */
+  const playAudio = useCallback(() => {
+    if (!result) return;
+    const lang: 'fr-FR' | 'es-ES' = result.lang === 'fr' ? 'fr-FR' : 'es-ES';
+    const wordToSpeak = direction === 'tr-fr' || direction === 'tr-es' ? result.target : result.source;
+    speakWord(wordToSpeak, lang);
+  }, [result, direction]);
 
   const handleSearchQuery = useCallback((q: string, dir: DictDirection) => {
     setQuery(q);
@@ -310,6 +320,12 @@ export default function Dictionary() {
               <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-indigo-500 dark:bg-indigo-400" aria-hidden />
             </Link>
             <Link to="/ogrenme" className="relative rounded-lg px-3 py-2 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-800/40 dark:hover:bg-slate-700/40 transition-all duration-300">{t('ogrenme')}</Link>
+            <Link
+              to="/pricing"
+              className="hidden md:inline-flex rounded-lg px-3 py-2 text-sm font-semibold bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-900 hover:from-amber-300 hover:via-yellow-300 hover:to-amber-400 shadow-md shadow-amber-500/25 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 dark:focus:ring-offset-slate-900"
+            >
+              🌟 Pro&apos;ya Geç
+            </Link>
           </nav>
         </div>
         <div className="flex items-center gap-2 shrink-0">
@@ -367,6 +383,9 @@ export default function Dictionary() {
             </Link>
             <Link to="/ogrenme" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-3 px-4 rounded-xl text-left text-base font-medium bg-slate-800/60 dark:bg-slate-800/80 text-slate-200 dark:text-slate-100 hover:bg-slate-700/60 border border-slate-600/50 focus:outline-none focus:ring-2 focus:ring-indigo-500/50">
               {t('ogrenme')}
+            </Link>
+            <Link to="/pricing" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-3 px-4 rounded-xl text-left text-base font-semibold bg-gradient-to-r from-amber-400/90 via-yellow-400/90 to-amber-500/90 text-slate-900 border border-amber-400/50 focus:outline-none focus:ring-2 focus:ring-amber-400/50">
+              🌟 Pro&apos;ya Geç
             </Link>
           </nav>
         </div>
@@ -608,8 +627,8 @@ export default function Dictionary() {
                     </div>
                     <button
                       type="button"
-                      onClick={() => handleSpeak(result)}
-                      className="p-3 rounded-xl bg-slate-100 dark:bg-slate-700/80 text-slate-500 dark:text-slate-400 hover:bg-indigo-500 hover:text-white dark:hover:bg-indigo-500 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shrink-0"
+                      onClick={playAudio}
+                      className="p-3 rounded-xl bg-slate-100 dark:bg-slate-700/80 text-slate-500 dark:text-slate-400 hover:bg-indigo-500 hover:text-white dark:hover:bg-indigo-500 active:scale-95 active:text-blue-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shrink-0"
                       title="Telaffuzu dinle"
                       aria-label="Telaffuzu dinle"
                     >
@@ -698,6 +717,34 @@ export default function Dictionary() {
                   ) : (
                     <p className="text-slate-500 dark:text-slate-400 text-sm italic py-2">
                       Örnekler hazırlanıyor...
+                    </p>
+                  )}
+                </div>
+
+                {/* Sık Kullanılan Kalıplar (collocations) — Groq commonPhrases */}
+                <div className="px-6 sm:px-8 py-5 border-b border-slate-200/80 dark:border-slate-600/60">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">
+                    Sık Kullanılan Kalıplar
+                  </p>
+                  {groqCommonPhrases && groqCommonPhrases.length > 0 ? (
+                    <div className="flex flex-col sm:flex-row flex-wrap gap-3">
+                      {groqCommonPhrases.map((item, i) => (
+                        <div
+                          key={i}
+                          className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 rounded-xl bg-slate-100/80 dark:bg-slate-700/40 border border-slate-200/80 dark:border-slate-600/50 px-4 py-3 min-w-0"
+                        >
+                          <span className="font-semibold text-slate-800 dark:text-slate-100 shrink-0">
+                            {item.phrase}
+                          </span>
+                          <span className="text-sm italic text-slate-500 dark:text-slate-400">
+                            {item.meaning}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-slate-500 dark:text-slate-400 text-sm italic py-2">
+                      Kalıplar hazırlanıyor...
                     </p>
                   )}
                 </div>

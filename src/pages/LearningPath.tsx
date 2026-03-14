@@ -5,7 +5,10 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { BookOpen, PenLine, MessageCircle, BookA } from 'lucide-react';
+import { BookOpen, PenLine, MessageCircle, BookA, X } from 'lucide-react';
+import { getUnitContent } from '../data/learningPathUnits';
+import type { UnitContent, LessonItem } from '../data/learningPathUnits';
+
 type Lang = 'fr' | 'es';
 type Level = 'A1' | 'A2' | 'B1' | 'B2' | 'C1';
 
@@ -13,6 +16,8 @@ type ModuleItem = {
   icon: 'book' | 'pen' | 'message';
   title: string;
   description: string;
+  /** Varsa tıklanınca bu ünite detayı açılır */
+  unitId?: string;
 };
 
 const ICONS = {
@@ -24,6 +29,7 @@ const ICONS = {
 const CURRICULUM: Record<Lang, Record<Level, ModuleItem[]>> = {
   fr: {
     A1: [
+      { icon: 'book', title: 'Ünite 1: Temel Tanışma ve Être Fiili', description: 'Özne zamirleri, être fiili ve kendini tanıtma. İlk adım.', unitId: 'fr_a1_1_u1' },
       { icon: 'book', title: 'Alfabe ve Telaffuz', description: 'Harfler, sesler ve temel okunuş kuralları.' },
       { icon: 'message', title: 'Tanışma (Salutations)', description: 'Selamlaşma ve kendini tanıtma.' },
       { icon: 'pen', title: 'Şahıs Zamirleri', description: 'Je, tu, il/elle ve çoğul zamirler.' },
@@ -122,12 +128,103 @@ const CURRICULUM: Record<Lang, Record<Level, ModuleItem[]>> = {
   },
 };
 
+function UnitDetailPanel({ unit, onClose }: { unit: UnitContent; onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-50 flex flex-col bg-slate-900/98 dark:bg-slate-950/98 backdrop-blur-md">
+      <div className="sticky top-0 z-10 flex items-center justify-between gap-4 border-b border-slate-700/60 bg-slate-900/95 dark:bg-slate-950/95 px-4 py-3">
+        <h2 className="text-lg font-bold text-slate-100 truncate">{unit.title}</h2>
+        <button
+          type="button"
+          onClick={onClose}
+          className="shrink-0 p-2 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-700/80 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+          aria-label="Kapat"
+        >
+          <X className="w-5 h-5" strokeWidth={2} />
+        </button>
+      </div>
+      <div className="flex-1 overflow-y-auto px-4 py-6 pb-24 max-w-3xl mx-auto w-full">
+        {unit.lessons.map((lesson, idx) => (
+          <LessonBlock key={idx} lesson={lesson} index={idx + 1} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function LessonBlock({ lesson, index }: { lesson: LessonItem; index: number }) {
+  return (
+    <section className="mb-10">
+      <h3 className="text-base font-semibold text-indigo-400 dark:text-indigo-300 mb-2">
+        {lesson.lessonTitle}
+      </h3>
+      <div className="rounded-xl bg-slate-800/80 dark:bg-slate-800/80 border border-slate-600/50 p-4 mb-3">
+        <p className="text-sm text-slate-300 dark:text-slate-300 whitespace-pre-wrap font-mono leading-relaxed">
+          {lesson.grammarBlock}
+        </p>
+      </div>
+      <p className="text-slate-300 dark:text-slate-300 text-sm leading-relaxed mb-4">
+        {lesson.content}
+      </p>
+      {lesson.conjugation && lesson.conjugation.length > 0 && (
+        <div className="mb-4 overflow-x-auto">
+          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
+            Çekim tablosu
+          </p>
+          <table className="w-full min-w-[280px] border-collapse rounded-lg overflow-hidden border border-slate-600/50">
+            <thead>
+              <tr className="bg-slate-700/60 text-left">
+                <th className="px-3 py-2 text-xs font-semibold text-slate-300">Özne</th>
+                <th className="px-3 py-2 text-xs font-semibold text-slate-300">Fiil</th>
+                <th className="px-3 py-2 text-xs font-semibold text-slate-300">Telaffuz</th>
+                <th className="px-3 py-2 text-xs font-semibold text-slate-300">Anlam</th>
+              </tr>
+            </thead>
+            <tbody className="text-sm">
+              {lesson.conjugation.map((row, i) => (
+                <tr key={i} className="border-t border-slate-600/50 even:bg-slate-800/40">
+                  <td className="px-3 py-2 font-medium text-slate-100">{row.subject}</td>
+                  <td className="px-3 py-2 text-indigo-300">{row.verb}</td>
+                  <td className="px-3 py-2 text-slate-400 italic">{row.phonetic ?? '—'}</td>
+                  <td className="px-3 py-2 text-slate-400">{row.meaning}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+      {lesson.examples && lesson.examples.length > 0 && (
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
+            Örnek cümleler
+          </p>
+          <ul className="space-y-2">
+            {lesson.examples.map((ex, i) => (
+              <li
+                key={i}
+                className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-3 rounded-lg bg-slate-800/60 dark:bg-slate-800/60 border border-slate-600/40 p-3"
+              >
+                <span className="font-medium text-slate-100">{ex.original}</span>
+                {ex.phonetic && (
+                  <span className="text-xs italic text-slate-500">{ex.phonetic}</span>
+                )}
+                <span className="text-slate-400 text-sm sm:ml-auto">→ {ex.turkish}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </section>
+  );
+}
+
 export default function LearningPath() {
   const [lang, setLang] = useState<Lang>('fr');
   const [level, setLevel] = useState<Level>('A1');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [selectedUnitId, setSelectedUnitId] = useState<string | null>(null);
 
   const modules = CURRICULUM[lang][level];
+  const selectedUnit = selectedUnitId ? getUnitContent(selectedUnitId) : null;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-100 via-indigo-50/20 to-slate-200/80 dark:from-[#0b1220] dark:via-[#0f172a] dark:to-[#1e1b4b] transition-colors duration-500">
@@ -150,6 +247,12 @@ export default function LearningPath() {
             <Link to="/ogrenme" className="relative rounded-lg px-3 py-2 text-sm font-medium text-indigo-500 dark:text-indigo-400 transition-all duration-300" aria-current="page">
               Öğrenme
               <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-indigo-500 dark:bg-indigo-400" aria-hidden />
+            </Link>
+            <Link
+              to="/pricing"
+              className="hidden md:inline-flex rounded-lg px-3 py-2 text-sm font-semibold bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-900 hover:from-amber-300 hover:via-yellow-300 hover:to-amber-400 shadow-md shadow-amber-500/25 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 dark:focus:ring-offset-slate-900"
+            >
+              🌟 Pro&apos;ya Geç
             </Link>
           </nav>
         </div>
@@ -180,6 +283,9 @@ export default function LearningPath() {
               Sözlük
             </Link>
             <Link to="/ogrenme" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-3 px-4 rounded-xl text-left text-base font-medium bg-indigo-500/20 dark:bg-indigo-400/20 text-indigo-700 dark:text-indigo-200 border border-indigo-400/30 focus:outline-none focus:ring-2 focus:ring-indigo-500/50">Öğrenme</Link>
+            <Link to="/pricing" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-3 px-4 rounded-xl text-left text-base font-semibold bg-gradient-to-r from-amber-400/90 via-yellow-400/90 to-amber-500/90 text-slate-900 border border-amber-400/50 focus:outline-none focus:ring-2 focus:ring-amber-400/50">
+              🌟 Pro&apos;ya Geç
+            </Link>
           </nav>
         </div>
       )}
@@ -248,6 +354,7 @@ export default function LearningPath() {
               <button
                 key={`${mod.title}-${i}`}
                 type="button"
+                onClick={() => mod.unitId && setSelectedUnitId(mod.unitId)}
                 className="bg-slate-800/40 dark:bg-slate-800/40 backdrop-blur-sm border border-slate-700 rounded-2xl p-5 hover:border-indigo-500/50 transition-all cursor-pointer group text-left focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 focus:ring-offset-slate-900"
               >
                 <div className="flex flex-col gap-3">
@@ -262,6 +369,11 @@ export default function LearningPath() {
           })}
         </div>
       </main>
+
+      {/* Ünite detay paneli (tam ekran) */}
+      {selectedUnit && (
+        <UnitDetailPanel unit={selectedUnit} onClose={() => setSelectedUnitId(null)} />
+      )}
     </div>
   );
 }
