@@ -1,10 +1,47 @@
 /**
- * Sözlük — MyMemory çeviri API entegrasyonu.
+ * Sözlük — MyMemory çeviri API + Groq kelime analizi.
  * Langpair: hedef dil Türkçe (fr|tr / es|tr); metin Türkçe ise tr|fr veya tr|es.
  */
 
 import type { DictDirection } from '../data/mockDictionary';
 import type { SearchResult } from '../data/mockDictionary';
+
+/** Groq LLM kelime analiz cevabı (JSON). */
+export interface GroqWordAnalysis {
+  phonetic?: string;
+  examples?: string[];
+}
+
+/**
+ * Groq API ile kelime analizi (fonetik + örnek cümleler).
+ * language: "Fransızca" veya "İspanyolca"
+ */
+export const fetchFromGroq = async (word: string, language: string): Promise<GroqWordAnalysis> => {
+  const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'llama-3.3-70b-versatile',
+      messages: [
+        { role: 'system', content: 'Sen profesyonel bir dilbilimci ve sözlük editörüsün. Sadece JSON döndür.' },
+        { role: 'user', content: `${language} '${word}' kelimesini analiz et ve sonucu JSON formatında döndür.` },
+      ],
+      response_format: { type: 'json_object' },
+      temperature: 0.2,
+    }),
+  });
+  const data = await response.json();
+  const raw = data?.choices?.[0]?.message?.content;
+  if (typeof raw !== 'string') return {};
+  try {
+    return JSON.parse(raw) as GroqWordAnalysis;
+  } catch {
+    return {};
+  }
+};
 
 const MYMEMORY_BASE = 'https://api.mymemory.translated.net/get';
 

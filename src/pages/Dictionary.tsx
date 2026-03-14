@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -13,10 +13,21 @@ import {
   type DictDirection,
   type SearchResult,
 } from '../data/mockDictionary';
-import { translateWord } from '../services/dictionaryApi';
+import { translateWord, fetchFromGroq } from '../services/dictionaryApi';
 import { getFlashcardDecks, addCardToDeck, type FlashcardDeck } from '../utils/flashcardDecks';
-import { fetchSentencePairs, findSentencesContainingWord, type SentencePair } from '../data/tatoebaSentences';
 import { sanitizeForDisplay } from '../utils/sanitize';
+
+/** Groq examples string[] → [original, translation] çiftleri */
+function examplesToPairs(arr: string[]): Array<{ original: string; translation?: string }> {
+  const out: Array<{ original: string; translation?: string }> = [];
+  for (let i = 0; i < arr.length; i += 2) {
+    out.push({
+      original: sanitizeForDisplay(arr[i] ?? ''),
+      translation: arr[i + 1] ? sanitizeForDisplay(arr[i + 1]) : undefined,
+    });
+  }
+  return out.filter((p) => p.original.length > 0);
+}
 
 const SITE_URL = 'https://diloloji.com';
 
@@ -126,8 +137,8 @@ export default function Dictionary() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [tatoebaPairsFr, setTatoebaPairsFr] = useState<SentencePair[] | null>(null);
-  const [tatoebaPairsEs, setTatoebaPairsEs] = useState<SentencePair[] | null>(null);
+  const [groqExamples, setGroqExamples] = useState<Array<{ original: string; translation?: string }> | null>(null);
+  const [examplesLoading, setExamplesLoading] = useState(false);
 
   useEffect(() => {
     if (!uiLangDropdownOpen) return;
@@ -151,22 +162,6 @@ export default function Dictionary() {
     return () => document.removeEventListener('mousedown', handle);
   }, [addToSetOpen]);
 
-  /** Tatoeba cümle listelerini yükle (fr-tr ve es-tr); bir kez yüklenir, cache sayesinde tekrar istek atılmaz. */
-  useEffect(() => {
-    let cancelled = false;
-    if (!tatoebaPairsFr) {
-      fetchSentencePairs('fr').then((pairs) => {
-        if (!cancelled) setTatoebaPairsFr(pairs);
-      });
-    }
-    if (!tatoebaPairsEs) {
-      fetchSentencePairs('es').then((pairs) => {
-        if (!cancelled) setTatoebaPairsEs(pairs);
-      });
-    }
-    return () => { cancelled = true; };
-  }, []);
-
   useEffect(() => {
     if (!toastMessage) return;
     const t = setTimeout(() => setToastMessage(null), 3000);
@@ -182,6 +177,8 @@ export default function Dictionary() {
     if (!trimmed) return;
     setIsLoading(true);
     setResult(undefined);
+    setGroqExamples(null);
+    setExamplesLoading(false);
     try {
       let r: SearchResult | null = null;
       try {
@@ -198,6 +195,27 @@ export default function Dictionary() {
           exampleSource: r.exampleSource ? sanitizeForDisplay(r.exampleSource) : undefined,
           exampleTarget: r.exampleTarget ? sanitizeForDisplay(r.exampleTarget) : undefined,
         };
+        const groqKey = import.meta.env.VITE_GROQ_API_KEY;
+        const wordForGroq = dir === 'tr-fr' || dir === 'tr-es' ? r.target : r.source;
+        const langLabel = dir === 'tr-fr' || dir === 'fr-tr' ? 'Fransızca' : 'İspanyolca';
+        if (groqKey && wordForGroq) {
+          setExamplesLoading(true);
+          try {
+            const groq = await fetchFromGroq(wordForGroq, langLabel);
+            if (groq.phonetic) r = { ...r, phonetic: groq.phonetic };
+            if (Array.isArray(groq.examples) && groq.examples.length > 0) {
+              setGroqExamples(examplesToPairs(groq.examples));
+            } else {
+              setGroqExamples(null);
+            }
+          } catch {
+            setGroqExamples(null);
+          } finally {
+            setExamplesLoading(false);
+          }
+        } else {
+          setGroqExamples(null);
+        }
       }
       setResult(r);
       if (r) {
@@ -295,16 +313,6 @@ export default function Dictionary() {
     },
     []
   );
-
-  /** Aranan kelimenin geçtiği ilk 3 Tatoeba cümlesi — dil seçimine göre fr-tr veya es-tr, useMemo ile optimize. */
-  const tatoebaExamples = useMemo(() => {
-    if (!result) return [];
-    const isFrench = direction === 'fr-tr' || direction === 'tr-fr';
-    const pairs = isFrench ? tatoebaPairsFr : tatoebaPairsEs;
-    if (!pairs || pairs.length === 0) return [];
-    const word = isFrench || direction === 'es-tr' ? result.source : result.target;
-    return findSentencesContainingWord(pairs, word, 3);
-  }, [result, direction, tatoebaPairsFr, tatoebaPairsEs]);
 
   return (
     <div className="min-h-screen relative bg-slate-50 dark:bg-transparent transition-colors duration-300">
@@ -699,81 +707,42 @@ export default function Dictionary() {
                   </div>
                 )}
 
-                {/* Örnek cümleler — gri kutu, vurgu, Fiil Lab'da Çöz */}
-                {(result.exampleSource || result.exampleTarget) && (
-                  <div className="px-6 sm:px-8 py-5 border-b border-slate-200/80 dark:border-slate-600/60">
-                    <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">Örnek cümleler</p>
-                    <div className="space-y-4">
-                      {result.exampleSource && (
-                        <div className="rounded-xl bg-slate-100/80 dark:bg-slate-700/40 border border-slate-200/80 dark:border-slate-600/50 p-4">
-                          <p className="text-slate-700 dark:text-slate-200 leading-relaxed">
-                            {highlightWord(result.exampleSource, result.source)}
-                          </p>
-                          {result.type === 'fiil' && result.targetVerb && (() => {
-                            const verbLabLang = direction === 'tr-fr' || direction === 'fr-tr' ? 'fr' : 'es';
-                            return (
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setSelectedLanguage(verbLabLang);
-                                  navigate(`/fiil-laboratuvari?verb=${encodeURIComponent(result.targetVerb!)}&lang=${verbLabLang}`);
-                                }}
-                                className="inline-flex items-center gap-2 mt-3 rounded-lg border border-indigo-500/40 dark:border-indigo-400/50 bg-indigo-500/10 dark:bg-indigo-500/20 px-3 py-2 text-sm font-medium text-indigo-700 dark:text-indigo-300 hover:bg-indigo-500/20 dark:hover:bg-indigo-500/30 transition-colors"
-                              >
-                                Fiil Lab'da Çöz
-                                <span aria-hidden>→</span>
-                              </button>
-                            );
-                          })()}
+                {/* Örnek cümleler — sadece Groq (AI) verisi */}
+                <div className="px-6 sm:px-8 py-5 border-b border-slate-200/80 dark:border-slate-600/60">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">
+                    Örnek cümleler
+                  </p>
+                  {examplesLoading ? (
+                    <div className="space-y-4" aria-busy="true" aria-live="polite">
+                      {[1, 2, 3].map((i) => (
+                        <div key={i} className="rounded-xl bg-slate-100/80 dark:bg-slate-700/40 border border-slate-200/80 dark:border-slate-600/50 p-4 animate-pulse">
+                          <div className="h-4 bg-slate-200/80 dark:bg-slate-600/60 rounded w-full max-w-md mb-3" />
+                          <div className="h-3 bg-slate-200/60 dark:bg-slate-600/40 rounded w-3/4 max-w-sm" />
                         </div>
-                      )}
-                      {result.exampleTarget && (
-                        <div className="rounded-xl bg-slate-100/80 dark:bg-slate-700/40 border border-slate-200/80 dark:border-slate-600/50 p-4">
-                          <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
-                            {highlightWord(result.exampleTarget, result.target)}
-                          </p>
-                          {result.type === 'fiil' && result.targetVerb && (() => {
-                            const verbLabLang = direction === 'tr-fr' || direction === 'fr-tr' ? 'fr' : 'es';
-                            return (
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setSelectedLanguage(verbLabLang);
-                                  navigate(`/fiil-laboratuvari?verb=${encodeURIComponent(result.targetVerb!)}&lang=${verbLabLang}`);
-                                }}
-                                className="inline-flex items-center gap-2 mt-3 rounded-lg border border-indigo-500/40 dark:border-indigo-400/50 bg-indigo-500/10 dark:bg-indigo-500/20 px-3 py-2 text-sm font-medium text-indigo-700 dark:text-indigo-300 hover:bg-indigo-500/20 dark:hover:bg-indigo-500/30 transition-colors"
-                              >
-                                Fiil Lab'da Çöz
-                                <span aria-hidden>→</span>
-                              </button>
-                            );
-                          })()}
-                        </div>
-                      )}
+                      ))}
+                      <p className="text-sm text-slate-500 dark:text-slate-400">Yükleniyor...</p>
                     </div>
-                  </div>
-                )}
-
-                {/* Tatoeba örnek cümleler — aranan kelimenin geçtiği ilk 3 cümle (fr-tr veya es-tr) */}
-                {tatoebaExamples.length > 0 && (
-                  <div className="px-6 sm:px-8 py-5 border-b border-slate-200/80 dark:border-slate-600/60">
-                    <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">
-                      Örnek cümleler (Tatoeba)
-                    </p>
+                  ) : groqExamples && groqExamples.length > 0 ? (
                     <div className="space-y-4">
-                      {tatoebaExamples.map((pair, i) => (
+                      {groqExamples.map((item, i) => (
                         <div key={i} className="rounded-xl bg-slate-100/80 dark:bg-slate-700/40 border border-slate-200/80 dark:border-slate-600/50 p-4">
-                          <p className="text-slate-700 dark:text-slate-200 leading-relaxed">
-                            {highlightWord(sanitizeForDisplay(pair.original), direction === 'fr-tr' || direction === 'es-tr' ? result!.source : result!.target)}
+                          <p className="text-slate-800 dark:text-slate-100 font-semibold leading-relaxed">
+                            {highlightWord(item.original, (direction === 'tr-fr' || direction === 'tr-es') ? result.target : result.source)}
                           </p>
-                          <p className="text-slate-600 dark:text-slate-300 text-sm mt-2 leading-relaxed">
-                            {sanitizeForDisplay(pair.translated)}
-                          </p>
+                          {item.translation && (
+                            <p className="text-slate-500 dark:text-slate-400 text-sm mt-1.5 italic leading-relaxed">
+                              {item.translation}
+                            </p>
+                          )}
                         </div>
                       ))}
                     </div>
-                  </div>
-                )}
+                  ) : (
+                    <p className="text-slate-500 dark:text-slate-400 text-sm italic py-2">
+                      Örnekler hazırlanıyor...
+                    </p>
+                  )}
+                </div>
 
                 {/* İlişkili Denklemler: eş / zıt anlamlılar — tıklanabilir */}
                 {(result.synonyms || result.antonyms) && (
