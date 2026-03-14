@@ -426,7 +426,6 @@ export default function Dictionary() {
                   </button>
                 </div>
               </div>
-            </div>
           </form>
 
           {/* Dil seçici — iOS tarzı segmented control (Fransızca | İspanyolca), arama kutusunun hemen altında */}
