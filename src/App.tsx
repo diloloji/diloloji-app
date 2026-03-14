@@ -4,6 +4,7 @@ import { Page } from './pages/Page';
 import HomePage from './pages/HomePage';
 import Dictionary from './pages/Dictionary';
 import LearningPath from './pages/LearningPath';
+import Pricing from './pages/Pricing';
 import { XpProvider } from './contexts/XpContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -22,6 +23,8 @@ function getPageElement(pathname: string) {
       return <Dictionary />;
     case '/ogrenme':
       return <LearningPath />;
+    case '/fiyatlandirma':
+      return <Pricing />;
     default:
       return <Navigate to="/" replace />;
   }
