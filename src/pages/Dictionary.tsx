@@ -13,11 +13,11 @@ import {
   type DictDirection,
   type SearchResult,
 } from '../data/mockDictionary';
-import { translateWord, fetchFromGroq } from '../services/dictionaryApi';
+import { translateWord, fetchFromGroq, groqToSourceTarget } from '../services/dictionaryApi';
 import { getFlashcardDecks, addCardToDeck, type FlashcardDeck } from '../utils/flashcardDecks';
 import { sanitizeForDisplay } from '../utils/sanitize';
 
-/** Groq examples string[] → [original, translation] çiftleri */
+/** Groq examples string[] → [original, translation] çiftleri (eski format) */
 function examplesToPairs(arr: string[]): Array<{ original: string; translation?: string }> {
   const out: Array<{ original: string; translation?: string }> = [];
   for (let i = 0; i < arr.length; i += 2) {
@@ -27,6 +27,18 @@ function examplesToPairs(arr: string[]): Array<{ original: string; translation?:
     });
   }
   return out.filter((p) => p.original.length > 0);
+}
+
+/** Groq examples [{ original, turkish }] → state formatı */
+function groqExamplesToState(
+  examples: Array<{ original?: string; turkish?: string }>
+): Array<{ original: string; translation?: string }> {
+  return examples
+    .map((ex) => ({
+      original: sanitizeForDisplay(ex.original ?? ''),
+      translation: ex.turkish ? sanitizeForDisplay(ex.turkish) : undefined,
+    }))
+    .filter((p) => p.original.length > 0);
 }
 
 const SITE_URL = 'https://diloloji.com';
@@ -186,6 +198,8 @@ export default function Dictionary() {
         r = null;
       }
       if (!r) r = searchDictionary(trimmed, dir) ?? searchDictionary(trimmed, swapDirection(dir)) ?? null;
+      const groqKey = import.meta.env.VITE_GROQ_API_KEY;
+      const langLabel = dir === 'tr-fr' || dir === 'fr-tr' ? 'Fransızca' : 'İspanyolca';
       if (r) {
         r = {
           ...r,
@@ -194,28 +208,66 @@ export default function Dictionary() {
           exampleSource: r.exampleSource ? sanitizeForDisplay(r.exampleSource) : undefined,
           exampleTarget: r.exampleTarget ? sanitizeForDisplay(r.exampleTarget) : undefined,
         };
-        const groqKey = import.meta.env.VITE_GROQ_API_KEY;
-        const wordForGroq = dir === 'tr-fr' || dir === 'tr-es' ? r.target : r.source;
-        const langLabel = dir === 'tr-fr' || dir === 'fr-tr' ? 'Fransızca' : 'İspanyolca';
         setResult(r);
-        if (groqKey && wordForGroq) {
+        if (groqKey) {
           setExamplesLoading(true);
           try {
-            const groq = await fetchFromGroq(wordForGroq, langLabel);
+            const groq = await fetchFromGroq(trimmed, langLabel);
             if (groq.phonetic) r = { ...r, phonetic: groq.phonetic };
-            if (Array.isArray(groq.examples) && groq.examples.length > 0) {
-              setGroqExamples(examplesToPairs(groq.examples));
-            } else {
-              setGroqExamples(null);
-            }
+            const pairs =
+              Array.isArray(groq.examples) && groq.examples.length > 0
+                ? (groq.examples as Array<{ original?: string; turkish?: string }>)[0]?.turkish !== undefined
+                  ? groqExamplesToState(groq.examples as Array<{ original?: string; turkish?: string }>)
+                  : examplesToPairs(groq.examples as string[])
+                : null;
+            setGroqExamples(pairs);
             setResult((prev) => (prev && r ? { ...prev, phonetic: r.phonetic ?? prev.phonetic } : prev));
-          } catch {
+            console.log('[Sözlük] State güncellendi (çeviri vardı): phonetic →', !!groq.phonetic, '| examples →', pairs?.length ?? 0);
+          } catch (err) {
+            console.warn('[Sözlük] Groq zenginleştirme hatası:', err);
             setGroqExamples(null);
           } finally {
             setExamplesLoading(false);
           }
         } else {
           setGroqExamples(null);
+          setExamplesLoading(false);
+        }
+      } else if (groqKey) {
+        setExamplesLoading(true);
+        try {
+          const groq = await fetchFromGroq(trimmed, langLabel);
+          const st = groqToSourceTarget(groq, dir) ?? (groq.source && groq.target ? { source: groq.source, target: groq.target } : null);
+          if (st) {
+            const lang: 'fr' | 'es' = dir === 'tr-fr' || dir === 'fr-tr' ? 'fr' : 'es';
+            r = {
+              source: sanitizeForDisplay(st.source),
+              target: sanitizeForDisplay(st.target),
+              type: 'kelime',
+              lang,
+              phonetic: groq.phonetic,
+              exampleSource: undefined,
+              exampleTarget: undefined,
+            };
+            const pairs =
+              Array.isArray(groq.examples) && groq.examples.length > 0
+                ? (groq.examples as Array<{ original?: string; turkish?: string }>)[0]?.turkish !== undefined
+                  ? groqExamplesToState(groq.examples as Array<{ original?: string; turkish?: string }>)
+                  : examplesToPairs(groq.examples as string[])
+                : null;
+            setGroqExamples(pairs);
+            setResult(r);
+            console.log('[Sözlük] State güncellendi (Groq fallback): phonetic →', !!groq.phonetic, '| translation →', st.target, '| examples →', pairs?.length ?? 0);
+          } else {
+            setResult(null);
+            setGroqExamples(null);
+            console.warn('[Sözlük] Groq çeviri sonucu boş: word/translation veya source/target dönmedi.');
+          }
+        } catch (err) {
+          console.warn('[Sözlük] Groq fallback çeviri hatası:', err);
+          setResult(null);
+          setGroqExamples(null);
+        } finally {
           setExamplesLoading(false);
         }
       } else {
