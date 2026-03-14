@@ -24,12 +24,11 @@ export interface GroqWordAnalysis {
 }
 
 const GROQ_SYSTEM_MESSAGE =
-  'Sen profesyonel bir dilbilimci ve sözlük editörüsün. Sana verilen kelimeleri her zaman şu JSON formatında cevapla: { "word": "kelime", "phonetic": "/ipa/", "translation": "türkçe anlam", "examples": [{"original": "örnek cümle", "turkish": "çevirisi"}] }. Asla açıklama yapma, sadece geçerli bir JSON objesi döndür.';
+  'Sen profesyonel bir dilbilimci ve sözlük editörüsün. Kullanıcının girdiği kelimenin dilini otomatik algıla ve hedeflenen dile çevir. Cevabını her zaman sadece şu JSON formatında ver, başka açıklama ekleme: { "word": "orijinal kelime", "phonetic": "/ipa telaffuzu/", "translation": "çevirisi", "examples": [ { "original": "hedef dilde örnek cümle", "turkish": "türkçe çevirisi" } ] }. Asla açıklama yapma, sadece geçerli bir JSON objesi döndür.';
 
 /**
- * Groq API ile kelime analizi (llama-3.3-70b-versatile, json_object).
- * Playground'daki sistem mesajı ve formata uyumlu.
- * API Key: .env.local içindeki VITE_GROQ_API_KEY kullanılır (import.meta.env ile).
+ * Groq API ile tek istekte kelime analizi (dil algılama + çeviri + IPA + örnekler).
+ * API Key: .env.local içindeki VITE_GROQ_API_KEY kullanılır.
  */
 export const fetchFromGroq = async (word: string, targetLanguage: string): Promise<GroqWordAnalysis> => {
   const apiKey = import.meta.env.VITE_GROQ_API_KEY;
@@ -38,7 +37,7 @@ export const fetchFromGroq = async (word: string, targetLanguage: string): Promi
     return {};
   }
   console.log('[Sözlük] Aranan kelime:', word, '| Hedef dil:', targetLanguage);
-  const userMessage = `${targetLanguage} '${word}' kelimesini analiz et ve sonucu JSON formatında döndür.`;
+  const userMessage = `Kullanıcı şu kelimeyi girdi: "${word}". Bu kelimenin dilini otomatik algıla ve hedeflenen dile (${targetLanguage}) çevir. Bana her zaman şu JSON formatında cevap ver: { "word": "orijinal kelime", "phonetic": "/ipa telaffuzu/", "translation": "çevirisi", "examples": [ { "original": "hedef dilde örnek cümle", "turkish": "türkçe çevirisi" } ] }`;
   try {
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',

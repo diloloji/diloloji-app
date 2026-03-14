@@ -7,13 +7,12 @@ import { useThemeContext } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTranslation } from 'react-i18next';
 import {
-  searchDictionary,
   POPULAR_SEARCHES,
   getWordsOfTheDay,
   type DictDirection,
   type SearchResult,
 } from '../data/mockDictionary';
-import { translateWord, fetchFromGroq, groqToSourceTarget, type GroqExampleItem } from '../services/dictionaryApi';
+import { fetchFromGroq, groqToSourceTarget, type GroqExampleItem } from '../services/dictionaryApi';
 import { getFlashcardDecks, addCardToDeck, type FlashcardDeck } from '../utils/flashcardDecks';
 import { sanitizeForDisplay } from '../utils/sanitize';
 
@@ -135,7 +134,6 @@ export default function Dictionary() {
   const [isLoading, setIsLoading] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [groqExamples, setGroqExamples] = useState<Array<{ original: string; translation?: string }> | null>(null);
-  const [examplesLoading, setExamplesLoading] = useState(false);
 
   useEffect(() => {
     if (!uiLangDropdownOpen) return;
@@ -175,87 +173,27 @@ export default function Dictionary() {
     setIsLoading(true);
     setResult(undefined);
     setGroqExamples(null);
-    setExamplesLoading(false);
+    const langLabel = dir === 'tr-fr' || dir === 'fr-tr' ? 'Fransızca' : 'İspanyolca';
     try {
-      let r: SearchResult | null = null;
-      try {
-        r = await translateWord(trimmed, dir);
-      } catch {
-        r = null;
-      }
-      if (!r) r = searchDictionary(trimmed, dir) ?? searchDictionary(trimmed, swapDirection(dir)) ?? null;
-      const groqKey = import.meta.env.VITE_GROQ_API_KEY;
-      const langLabel = dir === 'tr-fr' || dir === 'fr-tr' ? 'Fransızca' : 'İspanyolca';
-      if (r) {
-        r = {
-          ...r,
-          source: sanitizeForDisplay(r.source),
-          target: sanitizeForDisplay(r.target),
-          exampleSource: r.exampleSource ? sanitizeForDisplay(r.exampleSource) : undefined,
-          exampleTarget: r.exampleTarget ? sanitizeForDisplay(r.exampleTarget) : undefined,
+      const groq = await fetchFromGroq(trimmed, langLabel);
+      const st = groqToSourceTarget(groq, dir) ?? (groq.word && groq.translation ? { source: groq.word, target: groq.translation } : null);
+      if (st) {
+        const lang: 'fr' | 'es' = dir === 'tr-fr' || dir === 'fr-tr' ? 'fr' : 'es';
+        const r: SearchResult = {
+          source: sanitizeForDisplay(st.source),
+          target: sanitizeForDisplay(st.target),
+          type: 'kelime',
+          lang,
+          phonetic: groq.phonetic ? sanitizeForDisplay(groq.phonetic) : undefined,
+          exampleSource: undefined,
+          exampleTarget: undefined,
         };
         setResult(r);
-        if (groqKey) {
-          setExamplesLoading(true);
-          try {
-            const groq = await fetchFromGroq(trimmed, langLabel);
-            if (groq.phonetic) r = { ...r, phonetic: groq.phonetic };
-            const pairs =
-              Array.isArray(groq.examples) && groq.examples.length > 0
-                ? groqExamplesToState(groq.examples)
-                : null;
-            setGroqExamples(pairs);
-            setResult((prev) => (prev && r ? { ...prev, phonetic: r.phonetic ?? prev.phonetic } : prev));
-            console.log('[Sözlük] State güncellendi (çeviri vardı): phonetic →', !!groq.phonetic, '| examples →', pairs?.length ?? 0);
-          } catch (err) {
-            console.warn('[Sözlük] Groq zenginleştirme hatası:', err);
-            setGroqExamples(null);
-          } finally {
-            setExamplesLoading(false);
-          }
-        } else {
-          setGroqExamples(null);
-          setExamplesLoading(false);
-        }
-      } else if (groqKey) {
-        setExamplesLoading(true);
-        try {
-          const groq = await fetchFromGroq(trimmed, langLabel);
-          const st = groqToSourceTarget(groq, dir) ?? (groq.source && groq.target ? { source: groq.source, target: groq.target } : null);
-          if (st) {
-            const lang: 'fr' | 'es' = dir === 'tr-fr' || dir === 'fr-tr' ? 'fr' : 'es';
-            r = {
-              source: sanitizeForDisplay(st.source),
-              target: sanitizeForDisplay(st.target),
-              type: 'kelime',
-              lang,
-              phonetic: groq.phonetic,
-              exampleSource: undefined,
-              exampleTarget: undefined,
-            };
-            const pairs =
-              Array.isArray(groq.examples) && groq.examples.length > 0
-                ? groqExamplesToState(groq.examples)
-                : null;
-            setGroqExamples(pairs);
-            setResult(r);
-            console.log('[Sözlük] State güncellendi (Groq fallback): phonetic →', !!groq.phonetic, '| translation →', st.target, '| examples →', pairs?.length ?? 0);
-          } else {
-            setResult(null);
-            setGroqExamples(null);
-            console.warn('[Sözlük] Groq çeviri sonucu boş: word/translation veya source/target dönmedi.');
-          }
-        } catch (err) {
-          console.warn('[Sözlük] Groq fallback çeviri hatası:', err);
-          setResult(null);
-          setGroqExamples(null);
-        } finally {
-          setExamplesLoading(false);
-        }
-      } else {
-        setResult(r);
-      }
-      if (r) {
+        const pairs =
+          Array.isArray(groq.examples) && groq.examples.length > 0
+            ? groqExamplesToState(groq.examples)
+            : null;
+        setGroqExamples(pairs);
         setRecentSearches((prev) => {
           const next = [{ query: trimmed, dir }, ...prev.filter((x) => !(x.query === trimmed && x.dir === dir))].slice(0, 5);
           if (typeof window !== 'undefined') {
@@ -267,25 +205,16 @@ export default function Dictionary() {
           }
           return next;
         });
-      }
-    } catch {
-      const fallback = searchDictionary(trimmed, dir) ?? searchDictionary(trimmed, swapDirection(dir)) ?? null;
-      if (fallback) {
-        setResult({
-          ...fallback,
-          source: sanitizeForDisplay(fallback.source),
-          target: sanitizeForDisplay(fallback.target),
-          exampleSource: fallback.exampleSource ? sanitizeForDisplay(fallback.exampleSource) : undefined,
-          exampleTarget: fallback.exampleTarget ? sanitizeForDisplay(fallback.exampleTarget) : undefined,
-        });
       } else {
-        setResult(fallback);
+        setResult(null);
+        setGroqExamples(null);
       }
+    } catch (err) {
+      console.warn('[Sözlük] Groq istek hatası:', err);
+      setResult(null);
       setGroqExamples(null);
-      setExamplesLoading(false);
     } finally {
       setIsLoading(false);
-      setExamplesLoading(false);
     }
   }, []);
 
@@ -550,22 +479,22 @@ export default function Dictionary() {
           <AnimatePresence mode="wait">
             {isLoading && (
               <motion.div
-                key="skeleton"
+                key="loading"
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.25 }}
-                className="bg-slate-800/50 dark:bg-slate-800/50 rounded-xl sm:rounded-2xl h-48 w-full p-6 flex flex-col gap-4 animate-pulse"
+                className="rounded-xl sm:rounded-2xl border border-slate-200/80 dark:border-slate-600/60 bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl p-8 sm:p-12 flex flex-col items-center justify-center gap-6 min-h-[200px]"
                 aria-busy="true"
-                aria-label="Yükleniyor"
+                aria-live="polite"
+                role="status"
               >
-                <div className="h-8 bg-slate-600/50 dark:bg-slate-600/50 rounded-lg w-3/4 max-w-xs" />
-                <div className="h-5 bg-slate-600/40 dark:bg-slate-600/40 rounded w-1/2 max-w-[10rem]" />
-                <div className="h-6 bg-slate-600/40 dark:bg-slate-600/40 rounded-lg w-full max-w-sm mt-2" />
-                <div className="flex gap-2 mt-auto">
-                  <div className="h-8 bg-slate-600/40 dark:bg-slate-600/40 rounded-full w-20" />
-                  <div className="h-8 bg-slate-600/40 dark:bg-slate-600/40 rounded-full w-24" />
+                <div className="flex gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-indigo-500 dark:bg-indigo-400 animate-bounce [animation-delay:0ms]" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-indigo-500 dark:bg-indigo-400 animate-bounce [animation-delay:150ms]" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-indigo-500 dark:bg-indigo-400 animate-bounce [animation-delay:300ms]" />
                 </div>
+                <p className="text-slate-700 dark:text-slate-200 font-medium text-lg">Yapay zeka analiz ediyor...</p>
               </motion.div>
             )}
             {result === undefined && !query.trim() && !isLoading && (
@@ -642,11 +571,10 @@ export default function Dictionary() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.35 }}
-                className="rounded-2xl border border-amber-500/30 dark:border-amber-400/20 bg-amber-500/5 dark:bg-slate-800/80 backdrop-blur-xl p-8 text-center shadow-[0_0_40px_rgba(251,191,36,0.08)] dark:shadow-[0_0_40px_rgba(251,191,36,0.06)]"
+                className="rounded-2xl border border-slate-200/80 dark:border-slate-600/60 bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl p-8 text-center"
               >
-                <p className="text-amber-700 dark:text-amber-300 font-medium text-lg">Veritabanında bu denkleme uygun sonuç çıkmadı</p>
+                <p className="text-slate-600 dark:text-slate-300 font-medium text-lg">Sonuç bulunamadı</p>
                 <p className="text-slate-500 dark:text-slate-400 text-sm mt-2">Farklı bir kelime veya yazım deneyin.</p>
-                <p className="text-4xl mt-4 opacity-60" aria-hidden>∫</p>
               </motion.div>
             ) : !isLoading && result ? (
               <motion.div
@@ -752,17 +680,7 @@ export default function Dictionary() {
                   <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">
                     Örnek cümleler
                   </p>
-                  {examplesLoading ? (
-                    <div className="space-y-4" aria-busy="true" aria-live="polite">
-                      {[1, 2, 3].map((i) => (
-                        <div key={i} className="rounded-xl bg-slate-100/80 dark:bg-slate-700/40 border border-slate-200/80 dark:border-slate-600/50 p-4 animate-pulse">
-                          <div className="h-4 bg-slate-200/80 dark:bg-slate-600/60 rounded w-full max-w-md mb-3" />
-                          <div className="h-3 bg-slate-200/60 dark:bg-slate-600/40 rounded w-3/4 max-w-sm" />
-                        </div>
-                      ))}
-                      <p className="text-sm text-slate-500 dark:text-slate-400">Yükleniyor...</p>
-                    </div>
-                  ) : groqExamples && groqExamples.length > 0 ? (
+                  {groqExamples && groqExamples.length > 0 ? (
                     <div className="space-y-4">
                       {groqExamples.map((item, i) => (
                         <div key={i} className="rounded-xl bg-slate-100/80 dark:bg-slate-700/40 border border-slate-200/80 dark:border-slate-600/50 p-4">
