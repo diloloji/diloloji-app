@@ -8,7 +8,30 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['"DM Sans"', 'system-ui', 'sans-serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        heading: ['Montserrat', 'Inter', 'system-ui', 'sans-serif'],
+      },
+      colors: {
+        night: {
+          950: '#0a0f1a',
+          900: '#0f1623',
+          800: '#151d2e',
+        },
+        accent: {
+          DEFAULT: 'rgb(99 102 241)', // indigo-500, softer in dark
+          soft: 'rgb(129 140 248)',   // indigo-400
+          muted: 'rgba(99, 102, 241, 0.15)',
+        },
+      },
+      borderRadius: {
+        'xl': '1rem',
+        '2xl': '1.25rem',
+        '3xl': '1.5rem',
+      },
+      boxShadow: {
+        'glass': '0 4px 24px -1px rgba(0, 0, 0, 0.1), 0 2px 8px -2px rgba(0, 0, 0, 0.08)',
+        'glass-dark': '0 4px 24px -1px rgba(0, 0, 0, 0.35), 0 2px 8px -2px rgba(0, 0, 0, 0.2)',
+        'glow-soft': '0 0 40px -8px rgba(99, 102, 241, 0.25)',
       },
       keyframes: {
         'combo-in': {
