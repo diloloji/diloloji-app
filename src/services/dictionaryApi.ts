@@ -6,24 +6,39 @@
 import type { DictDirection } from '../data/mockDictionary';
 import type { SearchResult } from '../data/mockDictionary';
 
-/** Groq LLM kelime analiz cevabı (JSON). */
-export interface GroqWordAnalysis {
-  phonetic?: string;
-  examples?: string[];
+/** Groq Playground ile uyumlu tek örnek: original + turkish */
+export interface GroqExampleItem {
+  original: string;
+  turkish: string;
 }
 
+/** Groq LLM kelime analiz cevabı (JSON). word + translation = kart için source/target. */
+export interface GroqWordAnalysis {
+  word?: string;
+  phonetic?: string;
+  translation?: string;
+  examples?: GroqExampleItem[];
+  /** Eski format uyumluluğu (fallback) */
+  source?: string;
+  target?: string;
+}
+
+const GROQ_SYSTEM_MESSAGE =
+  'Sen profesyonel bir dilbilimci ve sözlük editörüsün. Sana verilen kelimeleri her zaman şu JSON formatında cevapla: { "word": "kelime", "phonetic": "/ipa/", "translation": "türkçe anlam", "examples": [{"original": "örnek cümle", "turkish": "çevirisi"}] }. Asla açıklama yapma, sadece geçerli bir JSON objesi döndür.';
+
 /**
- * Groq API ile kelime analizi (fonetik + örnek cümleler).
- * language: "Fransızca" veya "İspanyolca"
- * Anahtar yoksa veya hata olursa boş obje döner; böylece "Yükleniyor" sonsuza kadar kalmaz.
+ * Groq API ile kelime analizi (llama-3.3-70b-versatile, json_object).
+ * Playground'daki sistem mesajı ve formata uyumlu.
+ * API Key: .env.local içindeki VITE_GROQ_API_KEY kullanılır (import.meta.env ile).
  */
-export const fetchFromGroq = async (word: string, language: string): Promise<GroqWordAnalysis> => {
+export const fetchFromGroq = async (word: string, targetLanguage: string): Promise<GroqWordAnalysis> => {
   const apiKey = import.meta.env.VITE_GROQ_API_KEY;
   if (!apiKey || typeof apiKey !== 'string') {
-    console.warn('VITE_GROQ_API_KEY tanımlı değil; Groq isteği atlanıyor.');
+    console.warn('[Sözlük] API Key bulunamadı: VITE_GROQ_API_KEY tanımlı değil (.env.local kontrol edin). Groq isteği atlanıyor.');
     return {};
   }
-  console.log('Groq isteği atılıyor:', word);
+  console.log('[Sözlük] Aranan kelime:', word, '| Hedef dil:', targetLanguage);
+  const userMessage = `${targetLanguage} '${word}' kelimesini analiz et ve sonucu JSON formatında döndür.`;
   try {
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
@@ -34,31 +49,107 @@ export const fetchFromGroq = async (word: string, language: string): Promise<Gro
       body: JSON.stringify({
         model: 'llama-3.3-70b-versatile',
         messages: [
-          { role: 'system', content: 'Sen profesyonel bir dilbilimci ve sözlük editörüsün. Sadece JSON döndür.' },
-          { role: 'user', content: `${language} '${word}' kelimesini analiz et ve sonucu JSON formatında döndür.` },
+          { role: 'system', content: GROQ_SYSTEM_MESSAGE },
+          { role: 'user', content: userMessage },
         ],
         response_format: { type: 'json_object' },
         temperature: 0.2,
+        max_tokens: 1024,
       }),
     });
     if (!response.ok) {
       const errText = await response.text();
-      console.error('Groq hatası:', response.status, errText);
+      console.error('[Sözlük] Groq HTTP hatası:', response.status, errText || response.statusText);
       return {};
     }
     const data = await response.json();
     const raw = data?.choices?.[0]?.message?.content;
-    if (typeof raw !== 'string') return {};
-    try {
-      return JSON.parse(raw) as GroqWordAnalysis;
-    } catch {
+    if (typeof raw !== 'string') {
+      console.warn('[Sözlük] Groq boş veya geçersiz cevap: choices[0].message.content yok veya string değil.');
       return {};
     }
+    const parsed = JSON.parse(raw) as GroqWordAnalysis;
+    console.log('[Sözlük] Groq yanıtı (ham):', {
+      word: parsed.word,
+      phonetic: parsed.phonetic,
+      translation: parsed.translation,
+      examplesCount: Array.isArray(parsed.examples) ? parsed.examples.length : 0,
+    });
+    return parsed;
   } catch (error) {
-    console.error('Groq hatası:', error);
+    if (error instanceof SyntaxError) {
+      console.error('[Sözlük] Groq JSON parse hatası:', error);
+    } else {
+      console.error('[Sözlük] Groq istek hatası:', error);
+    }
     return {};
   }
 };
+
+/** Fiil çevirisi için Groq yanıtı — sadece mastar (-mak/-mek) */
+export interface GroqVerbTranslation {
+  translation?: string;
+}
+
+const GROQ_VERB_TRANSLATION_SYSTEM =
+  'Sen profesyonel bir dilbilimci ve sözlük editörüsün. Sana verilen yabancı dildeki fiilin Türkçe karşılığını kesinlikle mastar halinde (-mak/-mek ekiyle) çevir. Asla isim formu kullanma. Sonucu her zaman şu JSON formatında döndür: { "translation": "çeviri" }';
+
+/**
+ * Fiil Laboratuvarı için Groq ile fiil çevirisi (yalnızca mastar: -mak/-mek).
+ * @param verb - Fiil (örn. penser, hablar)
+ * @param language - "Fransızca" veya "İspanyolca"
+ */
+export async function fetchVerbTranslationFromGroq(
+  verb: string,
+  language: string
+): Promise<GroqVerbTranslation> {
+  const apiKey = import.meta.env.VITE_GROQ_API_KEY;
+  if (!apiKey || typeof apiKey !== 'string') {
+    return {};
+  }
+  const userMessage = `${language} dilindeki "${verb}" fiilini çevir.`;
+  try {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: [
+          { role: 'system', content: GROQ_VERB_TRANSLATION_SYSTEM },
+          { role: 'user', content: userMessage },
+        ],
+        response_format: { type: 'json_object' },
+        temperature: 0.1,
+        max_tokens: 128,
+      }),
+    });
+    if (!response.ok) return {};
+    const data = await response.json();
+    const raw = data?.choices?.[0]?.message?.content;
+    if (typeof raw !== 'string') return {};
+    const parsed = JSON.parse(raw) as GroqVerbTranslation;
+    return parsed;
+  } catch {
+    return {};
+  }
+}
+
+/** Groq word+translation → SearchResult source/target (yön bilgisiyle) */
+export function groqToSourceTarget(
+  groq: GroqWordAnalysis,
+  dir: 'tr-fr' | 'fr-tr' | 'tr-es' | 'es-tr'
+): { source: string; target: string } | null {
+  const word = groq.word?.trim();
+  const translation = groq.translation?.trim();
+  if (!word || !translation) return null;
+  if (dir === 'fr-tr' || dir === 'es-tr') {
+    return { source: word, target: translation };
+  }
+  return { source: translation, target: word };
+}
 
 const MYMEMORY_BASE = 'https://api.mymemory.translated.net/get';
 

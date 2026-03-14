@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useLocation, useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useThemeContext } from '../contexts/ThemeContext';
 import { getTenses, getTenseGroups, getPronouns } from '../data/verbs';
 import type { AppLanguage } from '../data/verbs';
@@ -21,7 +21,7 @@ import { getTranslationOrPlaceholder } from '../data/dictionary';
 import { getVerbExample } from '../data/verbExamples';
 import { getTenseExplanation } from '../data/tenseExplanations';
 import { getVerbMetadata } from '../data/verbMetadata';
-import { translateWord } from '../services/dictionaryApi';
+import { fetchVerbTranslationFromGroq } from '../services/dictionaryApi';
 import { getMistakes, getDueMistakes, addMistake, updateMistakeReview, type MistakeEntry } from '../utils/mistakeBank';
 import { getStarredVerbs, toggleStarredVerb, isStarredVerb } from '../utils/starredVerbs';
 import { getActivityHistory, getLastNDays, addActivityToday } from '../utils/activityHistory';
@@ -29,7 +29,7 @@ import { getFlashcardDecks, addCardToDeck, type FlashcardDeck } from '../utils/f
 import { useXp } from '../contexts/XpContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTranslation } from 'react-i18next';
-import { BookA } from 'lucide-react';
+import { BookA, Info } from 'lucide-react';
 import EzberMakinesi from '../components/EzberMakinesi';
 import AuthModal from '../components/AuthModal';
 import AccentKeyboard from '../components/AccentKeyboard';
@@ -401,6 +401,8 @@ export function Page() {
   /** Öğrenme tablosu: Ezber Modu (Active Recall) — çekimler blur, hover’da netleşir */
   const [activeRecallMode, setActiveRecallMode] = useState(false);
   const [showAllTenses, setShowAllTenses] = useState(false);
+  /** Görünüm modu: 'simple' = sadece fiil başlığı + çekim tablosu; 'detailed' = bilgi kutusu, sekmeler, aksiyonlar */
+  const [viewMode, setViewMode] = useState<'simple' | 'detailed'>('simple');
   const [isReflexive, setIsReflexive] = useState(false);
   const [isNegative, setIsNegative] = useState(false);
   const [copiedRowKey, setCopiedRowKey] = useState<string | null>(null);
@@ -776,7 +778,7 @@ export function Page() {
     verbKeyRef.current = verbKey;
   }, [verbKey]);
 
-  /** Fiil veya dil değişince dictionaryApi ile Türkçe anlamı çek */
+  /** Fiil veya dil değişince Groq ile Türkçe anlamı çek (mastar: -mak/-mek) */
   useEffect(() => {
     if (!verbKey) {
       setTranslation(null);
@@ -784,16 +786,17 @@ export function Page() {
       setIsMeaningLoading(false);
       return;
     }
-    const dir = selectedLanguage === 'fr' ? 'fr-tr' as const : 'es-tr' as const;
+    const langLabel = selectedLanguage === 'fr' ? 'Fransızca' : 'İspanyolca';
     setIsMeaningLoading(true);
     setDynamicMeaning(null);
     setTranslation(null);
     let cancelled = false;
-    translateWord(verbKey, dir)
+    fetchVerbTranslationFromGroq(verbKey, langLabel)
       .then((res) => {
         if (cancelled || verbKeyRef.current !== verbKey) return;
-        if (res?.target) {
-          const text = res.target.charAt(0).toUpperCase() + res.target.slice(1).toLowerCase();
+        const raw = res?.translation?.trim();
+        if (raw) {
+          const text = raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase();
           setDynamicMeaning(text);
           setTranslation(text);
         }
@@ -1786,10 +1789,10 @@ export function Page() {
       })()}
 
       {appMode === 'conjugation' && (
-      <main className="max-w-7xl w-full mx-auto px-4 md:px-8 py-4 pb-24 md:pb-20">
-        <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6 lg:gap-8">
-          {/* Sol sütun: Kontrol paneli (mobilde en üstte) — 4 kolon */}
-          <aside data-print-hide className="flex flex-col gap-4 lg:col-span-4 order-1 print:hidden lg:sticky lg:top-6 lg:self-start">
+      <main className={`max-w-7xl w-full mx-auto px-4 md:px-8 pb-24 md:pb-20 transition-all duration-300 ${viewMode === 'simple' ? 'pt-2' : 'py-4'}`}>
+        <div className={`flex flex-col lg:grid lg:grid-cols-12 lg:items-start transition-all duration-300 ${viewMode === 'simple' ? 'gap-4 lg:gap-6' : 'gap-6 lg:gap-8'}`}>
+          {/* Sol sütun: Kontrol paneli (Basit modda da fiil girişi için görünür) */}
+          <aside data-print-hide className="flex flex-col gap-4 lg:col-span-4 order-1 print:hidden lg:sticky lg:top-6 lg:self-start transition-opacity duration-300">
             {/* Entegre dil seçici — arama alanının hemen üzerinde, segmented control */}
             <section className="relative z-10 shrink-0 w-full">
               <div
@@ -2046,11 +2049,11 @@ export function Page() {
             </label>
           </div>
             </section>
-            {/* Zaman açıklaması kartı — sol panelde + Detaylı İncele */}
-            {getTenseExplanation(selectedLanguage, selectedTense) && (
+            {/* Zaman açıklaması kartı — sadece Detaylı modda */}
+            {viewMode === 'detailed' && getTenseExplanation(selectedLanguage, selectedTense) && (
               <div className="rounded-xl bg-blue-900/20 dark:bg-blue-900/30 border border-blue-500/30 dark:border-blue-400/40 p-4 flex flex-col gap-0 backdrop-blur-sm transition-all duration-200">
                 <div className="flex items-start gap-3">
-                  <span className="text-xl shrink-0" aria-hidden>ℹ️</span>
+                  <Info className="w-5 h-5 shrink-0 text-slate-400 dark:text-slate-500 mt-0.5" strokeWidth={2} aria-hidden />
                   <p className="text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
                     {getTenseExplanation(selectedLanguage, selectedTense)?.shortDesc}
                   </p>
@@ -2065,33 +2068,15 @@ export function Page() {
                 </button>
               </div>
             )}
-            {/* Tüm Zamanları Göster — sadece fiil sonucu varken göster */}
-            {verbKey && conjugations && (
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setShowAllTenses((v) => !v)}
-                  className={`w-full rounded-xl border px-3 py-2.5 text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${
-                    showAllTenses
-                      ? 'border-indigo-400 dark:border-indigo-500 bg-indigo-500/15 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300'
-                      : 'border-slate-200 dark:border-slate-600 bg-slate-50/80 dark:bg-slate-800/60 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700'
-                  }`}
-                  aria-pressed={showAllTenses}
-                  aria-label={showAllTenses ? t('tekli_gorunume_don') : t('tum_zamanlari_goster')}
-                >
-                  {t('tum_zamanlari_goster')}
-                </button>
-              </div>
-            )}
           </aside>
 
-          {/* Sağ sütun: Sekmeler + ana çalışma alanı — 8 kolon (dil değişiminde fade) */}
+          {/* Sağ sütun: Sekmeler + ana çalışma alanı — 8 kolon (Detaylı'da 8, Basit'te 12) */}
           <motion.div
             key={selectedLanguage}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.25, ease: 'easeOut' }}
-            className="flex flex-col gap-4 lg:col-span-8 order-2 print:col-span-12 print:bg-white print:text-black min-w-0"
+            className={`flex flex-col order-2 print:col-span-12 print:bg-white print:text-black min-w-0 transition-all duration-300 ${viewMode === 'simple' ? 'gap-2' : 'gap-4'} lg:col-span-8`}
           >
         {error && (
           <div className="mb-4 rounded-2xl bg-red-50/80 dark:bg-red-500/10 border border-red-200/80 dark:border-red-400/30 px-5 py-3.5 text-red-700 dark:text-red-300 text-sm shadow-sm transition-colors duration-300">
@@ -2335,11 +2320,11 @@ export function Page() {
           </div>
         )}
 
-        {/* Boş durum + Öğrenme/Alıştırma — tek kart, üstte sekmeler */}
+        {/* Boş durum + Öğrenme/Alıştırma — tek kart; Basit modda üst boşluk minimum */}
         {mode !== 'review' && mode !== 'starred' && (
-          <section className="rounded-2xl bg-white dark:bg-slate-800/80 shadow-md dark:shadow-none border border-slate-200 dark:border-slate-700/50 overflow-visible mb-4 mt-6 md:mt-0 backdrop-blur-md transition-colors duration-300 min-h-[400px] print:shadow-none print:border print:border-slate-200">
-            {/* Kart başlığı sekmeleri — mobilde yatay kaydırılabilir, masaüstünde ortalanmış */}
-            <div className="flex justify-start md:justify-center overflow-x-auto overflow-y-hidden scrollbar-hide print:hidden pt-4 pb-3 px-1 -mx-1">
+          <section className={`rounded-2xl bg-white dark:bg-slate-800/80 shadow-md dark:shadow-none border border-slate-200 dark:border-slate-700/50 overflow-visible backdrop-blur-md transition-all duration-300 min-h-[400px] print:shadow-none print:border print:border-slate-200 ${viewMode === 'simple' ? 'mb-4 mt-0 pt-2' : 'mb-4 mt-6 md:mt-0'}`}>
+            {/* Kart başlığı sekmeleri — her zaman görünür (Basit ve Detaylı) */}
+            <div className="flex justify-start md:justify-center overflow-x-auto overflow-y-hidden scrollbar-hide print:hidden pt-3 pb-2 sm:pt-4 sm:pb-3 px-1 -mx-1">
               <div className="flex items-center gap-1 p-1 bg-slate-800/60 backdrop-blur-sm border border-slate-700 rounded-full w-max min-w-0 flex-nowrap shadow-inner" role="tablist" aria-label="Mod">
               <button
                 type="button"
@@ -2392,8 +2377,8 @@ export function Page() {
               </div>
             </div>
 
-            {/* Zamana Karşı (Arcade): HUD + oyun alanı veya sonuç kartı */}
-            {mode === 'time-attack' && (
+            {/* Zamana Karşı (Arcade) — sadece Detaylı modda */}
+            {viewMode === 'detailed' && mode === 'time-attack' && (
               <div className={`p-6 sm:p-8 relative ${timeAttackShake ? 'animate-time-attack-shake' : ''}`}>
                 {timeAttackGameOver ? (
                   <div className="rounded-2xl border border-slate-200/80 dark:border-slate-600/80 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm shadow-xl p-8 max-w-md mx-auto text-center">
@@ -2506,8 +2491,8 @@ export function Page() {
               </div>
             )}
 
-            {/* Kıyaslama: iki zaman seçici + yan yana çekim tablosu */}
-            {mode === 'compare' && (
+            {/* Kıyaslama — sadece Detaylı modda */}
+            {viewMode === 'detailed' && mode === 'compare' && (
               <div className="p-6 sm:p-8">
                 <div className="flex flex-wrap items-end justify-center gap-3 sm:gap-4 mb-8">
                   <div className="w-full sm:w-48 flex-shrink-0 flex flex-col relative" ref={compareDropdown1Ref}>
@@ -2706,7 +2691,7 @@ export function Page() {
               </div>
             )}
 
-        {verbKey && mode === 'learning' && conjugationsForDisplay && (
+        {(verbKey && conjugationsForDisplay && (mode === 'learning' || viewMode === 'simple')) && (
           <div className="print-area">
             {/* Yazdırma çalışma yaprağı — sadece @media print ile görünür */}
             <div className="hidden print:block print:bg-white print:text-black pb-8">
@@ -2803,7 +2788,7 @@ export function Page() {
                 </p>
               </div>
             )}
-            <div className="border-b border-slate-200 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/50 px-5 sm:px-6 py-2 sm:py-3">
+            <div className={`border-b border-slate-200 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/50 px-5 sm:px-6 transition-all duration-300 ${viewMode === 'simple' ? 'py-2 pt-2' : 'py-2 sm:py-3'}`}>
               <div className="flex flex-col md:flex-row flex-wrap items-start md:items-center justify-between gap-1.5 md:gap-x-3 md:gap-y-2 text-center sm:text-left">
                 <div className="flex items-center gap-2 min-w-0 order-1">
                   <h2 className="font-bold text-slate-800 dark:text-slate-100 capitalize text-xl tracking-tight">{verbKey}</h2>
@@ -2832,6 +2817,44 @@ export function Page() {
                   )}
                 </span>
                 <div className="order-3 flex items-center gap-2 shrink-0 print:hidden">
+                  {/* Görünüm modu: Basit | Detaylı */}
+                  <div className="flex items-center rounded-lg border border-slate-200 dark:border-slate-600 bg-slate-100/80 dark:bg-slate-800/60 p-0.5" role="tablist" aria-label="Görünüm modu">
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={viewMode === 'simple'}
+                      onClick={() => setViewMode('simple')}
+                      className={`px-2.5 py-1.5 rounded-md text-xs font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${
+                        viewMode === 'simple'
+                          ? 'bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 shadow-sm'
+                          : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+                      }`}
+                    >
+                      Basit
+                    </button>
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={viewMode === 'detailed'}
+                      onClick={() => setViewMode('detailed')}
+                      className={`px-2.5 py-1.5 rounded-md text-xs font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${
+                        viewMode === 'detailed'
+                          ? 'bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 shadow-sm'
+                          : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+                      }`}
+                    >
+                      Detaylı
+                    </button>
+                  </div>
+                  <AnimatePresence mode="wait">
+                  {viewMode === 'detailed' && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="inline-flex items-center gap-2"
+                  >
                   <span className="inline-flex items-center text-xs font-semibold text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-700/80 border border-slate-200 dark:border-slate-600 px-2.5 py-1 rounded-lg shadow-sm">
                     {tenseLabel}
                   </span>
@@ -2910,32 +2933,43 @@ export function Page() {
                   >
                     <span aria-hidden>🖨️</span>
                   </button>
+                  </motion.div>
+                  )}
+                  </AnimatePresence>
                 </div>
               </div>
-              {/* Form ve kök rozetleri + Kurallı/Düzensiz + Yardımcı fiil + Alternatif formlar — kompakt tek blok */}
+              {/* Rozetler: Basit modda sadece Geçmiş Ortaç + Kurallı/Düzensiz; Detaylı modda tümü */}
               {(() => {
                 const meta = getVerbMetadata(verbKey, selectedLanguage, !isIrregularVerb(verbKey, selectedLanguage));
+                const isSimple = viewMode === 'simple';
                 return (
-                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 pt-2 mt-2 border-t border-slate-200/80 dark:border-slate-600/80">
-                    <span className="inline-flex items-center rounded-lg bg-slate-100/90 dark:bg-slate-800/30 border border-slate-300 dark:border-slate-700 px-2 py-0.5 text-xs font-medium text-slate-600 dark:text-slate-400 cursor-default select-none">
-                      Mastar: <span className="ml-0.5 font-semibold text-slate-800 dark:text-slate-100">{meta.infinitive}</span>
-                    </span>
-                    <span className="inline-flex items-center rounded-lg bg-slate-100/90 dark:bg-slate-800/30 border border-slate-300 dark:border-slate-700 px-2 py-0.5 text-xs font-medium text-slate-600 dark:text-slate-400 cursor-default select-none">
-                      Ulaç: <span className="ml-0.5 font-semibold text-slate-800 dark:text-slate-100">{meta.gerund}</span>
-                    </span>
+                  <div className={`flex flex-wrap items-center gap-x-2 gap-y-1.5 border-t border-slate-200/80 dark:border-slate-600/80 ${isSimple ? 'pt-1.5 mt-1.5' : 'pt-2 mt-2'}`}>
+                    {!isSimple && (
+                      <>
+                        <span className="inline-flex items-center rounded-lg bg-slate-100/90 dark:bg-slate-800/30 border border-slate-300 dark:border-slate-700 px-2 py-0.5 text-xs font-medium text-slate-600 dark:text-slate-400 cursor-default select-none">
+                          Mastar: <span className="ml-0.5 font-semibold text-slate-800 dark:text-slate-100">{meta.infinitive}</span>
+                        </span>
+                        <span className="inline-flex items-center rounded-lg bg-slate-100/90 dark:bg-slate-800/30 border border-slate-300 dark:border-slate-700 px-2 py-0.5 text-xs font-medium text-slate-600 dark:text-slate-400 cursor-default select-none">
+                          Ulaç: <span className="ml-0.5 font-semibold text-slate-800 dark:text-slate-100">{meta.gerund}</span>
+                        </span>
+                      </>
+                    )}
                     <span className="inline-flex items-center rounded-lg bg-slate-100/90 dark:bg-slate-800/30 border border-slate-300 dark:border-slate-700 px-2 py-0.5 text-xs font-medium text-slate-600 dark:text-slate-400 cursor-default select-none">
                       Geçmiş Ortaç: <span className="ml-0.5 font-semibold text-slate-800 dark:text-slate-100">{meta.pastParticiple}</span>
                     </span>
                     <span className={`inline-flex items-center rounded-lg border border-slate-300 dark:border-slate-700 px-2 py-0.5 text-xs font-semibold cursor-default select-none ${meta.isRegular ? 'bg-emerald-500/10 dark:bg-slate-800/30 text-emerald-700 dark:text-emerald-400' : 'bg-amber-500/10 dark:bg-slate-800/30 text-amber-800 dark:text-amber-400'}`}>
                       {meta.isRegular ? 'Kurallı' : 'Düzensiz'}
                     </span>
-                    <span className="inline-flex items-center rounded-lg bg-slate-100/90 dark:bg-slate-800/30 border border-slate-300 dark:border-slate-700 px-2 py-0.5 text-xs font-semibold text-slate-700 dark:text-slate-300 cursor-default select-none">
-                      Auxiliaire: {meta.auxiliary}
-                    </span>
+                    {!isSimple && (
+                      <span className="inline-flex items-center rounded-lg bg-slate-100/90 dark:bg-slate-800/30 border border-slate-300 dark:border-slate-700 px-2 py-0.5 text-xs font-semibold text-slate-700 dark:text-slate-300 cursor-default select-none">
+                        Auxiliaire: {meta.auxiliary}
+                      </span>
+                    )}
                   </div>
                 );
               })()}
-              {/* Alternatif formlar: Dönüşlü / Olumsuz — rozet satırının hemen altında, sıkışık */}
+              {/* Alternatif formlar: Dönüşlü / Olumsuz — sadece Detaylı modda */}
+              {viewMode === 'detailed' && (
               <div className="flex flex-wrap items-center gap-2 mt-1.5 pt-1.5 border-t border-slate-200/80 dark:border-slate-600/80 print:hidden">
                 <span className="text-xs font-medium text-slate-500 dark:text-slate-400 cursor-default">Alternatif formlar:</span>
                 <button
@@ -2959,8 +2993,9 @@ export function Page() {
                   Olumsuz (Negative)
                 </button>
               </div>
+              )}
             </div>
-            {showAllTenses ? (
+            {(viewMode === 'detailed' || viewMode === 'simple') && showAllTenses ? (
               /* Tüm zamanlar — kip (mood) gruplarına göre başlık + kartlar */
               <div className="mt-4 space-y-10">
                 {tenseGroupsForLang.map((group) => {
@@ -2972,7 +3007,7 @@ export function Page() {
                       <h3 className="text-xl font-bold tracking-widest text-slate-400 dark:text-slate-500 text-center my-8">
                         {moodTitle}
                       </h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                      <div className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4">
                         {group.tenseIds.map((tenseId, index) => {
                           const t = tensesForLang.find((x) => x.id === tenseId);
                           if (!t) return null;
@@ -3115,8 +3150,27 @@ export function Page() {
               ))}
             </div>
 
-            {/* Örnek cümle kartı — çekim tablosunun hemen altı, 'Bu fiili biliyorsan' kutusunun üstü */}
-            {(() => {
+            {/* Tüm Zamanları Göster — tek buton; çekim tablosunun altında (mobil + masaüstü) */}
+            {verbKey && conjugations && (
+              <div className="mt-4 mx-4 sm:mx-0">
+                <button
+                  type="button"
+                  onClick={() => setShowAllTenses((v) => !v)}
+                  className={`w-full rounded-xl border px-3 py-2.5 text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${
+                    showAllTenses
+                      ? 'border-indigo-400 dark:border-indigo-500 bg-indigo-500/15 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300'
+                      : 'border-slate-200 dark:border-slate-600 bg-slate-50/80 dark:bg-slate-800/60 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700'
+                  }`}
+                  aria-pressed={showAllTenses}
+                  aria-label={showAllTenses ? t('tekli_gorunume_don') : t('tum_zamanlari_goster')}
+                >
+                  {t('tum_zamanlari_goster')}
+                </button>
+              </div>
+            )}
+
+            {/* Örnek cümle kartı — sadece Detaylı modda */}
+            {viewMode === 'detailed' && (() => {
               const example = getVerbExample(selectedLanguage, verbKey);
               if (!example) return null;
               return (
@@ -3134,8 +3188,8 @@ export function Page() {
               );
             })()}
 
-            {/* Fiil Aileleri: aynı çekim matematiğine sahip fiiller */}
-            {verbFamily.length > 0 && (
+            {/* Fiil Aileleri — sadece Detaylı modda */}
+            {viewMode === 'detailed' && verbFamily.length > 0 && (
               <section className="mx-4 sm:mx-0 mt-6 rounded-xl border border-dashed border-slate-300 dark:border-slate-600 bg-slate-50/60 dark:bg-slate-800/40 backdrop-blur-sm px-4 py-4">
                 <div className="flex items-start gap-3">
                   <span className="text-xl shrink-0 mt-0.5" aria-hidden>💡</span>
@@ -3168,8 +3222,8 @@ export function Page() {
           </div>
         )}
 
-            {/* Quiz modu: başlık (3'lü ortalı) + Liste/Odak toggle altında sağa hizalı */}
-            {verbKey && mode === 'quiz' && conjugationsForDisplay && (
+            {/* Quiz modu (Alıştırma) — sadece Detaylı modda */}
+            {viewMode === 'detailed' && verbKey && mode === 'quiz' && conjugationsForDisplay && (
             <>
             <div className="border-b border-slate-100 dark:border-slate-700/50 px-5 sm:px-6 py-4">
               <div className="flex flex-row flex-wrap items-center justify-between gap-x-4 gap-y-2 text-center sm:text-left">
