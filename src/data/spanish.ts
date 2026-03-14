@@ -9,7 +9,10 @@ export type TenseIdEs =
   | 'presente'
   | 'imperfecto'
   | 'preterito'
+  | 'preterito-perfecto'
+  | 'pluscuamperfecto'
   | 'futuro'
+  | 'futuro-compuesto'
   | 'subjuntivo-presente'
   | 'condicional';
 
@@ -26,7 +29,10 @@ export const TENSES_ES: { id: TenseIdEs; label: string }[] = [
   { id: 'presente', label: 'Presente' },
   { id: 'imperfecto', label: 'Pretérito Imperfecto' },
   { id: 'preterito', label: 'Pretérito Indefinido' },
-  { id: 'futuro', label: 'Futuro' },
+  { id: 'preterito-perfecto', label: 'Pretérito Perfecto (haber + participio)' },
+  { id: 'pluscuamperfecto', label: 'Pluscuamperfecto (había + participio)' },
+  { id: 'futuro', label: 'Futuro Simple' },
+  { id: 'futuro-compuesto', label: 'Futuro Compuesto (habré + participio)' },
   { id: 'condicional', label: 'Condicional' },
   { id: 'subjuntivo-presente', label: 'Subjuntivo Presente' },
 ];
@@ -35,7 +41,7 @@ export const TENSE_GROUPS_ES: { mood: string; label: string; tenseIds: TenseIdEs
   {
     mood: 'indicativo',
     label: 'El Indicativo (Haber Kipi)',
-    tenseIds: ['presente', 'imperfecto', 'preterito', 'futuro', 'condicional'],
+    tenseIds: ['presente', 'imperfecto', 'preterito', 'preterito-perfecto', 'pluscuamperfecto', 'futuro', 'futuro-compuesto', 'condicional'],
   },
   {
     mood: 'subjonctif',

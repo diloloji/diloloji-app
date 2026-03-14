@@ -171,3 +171,4 @@ export function getVerbListForLang(lang: AppLanguage): string[] {
 }
 
 export { findVerbKey, getConjugationForTense, conjugateVerb, isVerbInDict, getVerbList } from './engine';
+export { verifyConjugationMap, isCompoundTense } from './verification';

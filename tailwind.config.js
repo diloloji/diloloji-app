@@ -33,6 +33,18 @@ export default {
           '0%': { opacity: '0', transform: 'translateY(-8px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
+        'float-symbol': {
+          '0%, 100%': { transform: 'translateY(0) scale(1)', opacity: '0.15' },
+          '50%': { transform: 'translateY(-8px) scale(1.05)', opacity: '0.35' },
+        },
+        'glow-green': {
+          '0%, 100%': { boxShadow: '0 0 20px rgba(34, 197, 94, 0.2), 0 0 40px rgba(34, 197, 94, 0.08)' },
+          '50%': { boxShadow: '0 0 32px rgba(34, 197, 94, 0.35), 0 0 60px rgba(34, 197, 94, 0.12)' },
+        },
+        'glow-pink': {
+          '0%, 100%': { boxShadow: '0 0 20px rgba(236, 72, 153, 0.2), 0 0 40px rgba(236, 72, 153, 0.08)' },
+          '50%': { boxShadow: '0 0 32px rgba(236, 72, 153, 0.35), 0 0 60px rgba(236, 72, 153, 0.12)' },
+        },
       },
       animation: {
         'combo-in': 'combo-in 0.35s ease-out forwards',
@@ -40,6 +52,12 @@ export default {
         shake: 'shake 0.2s ease-in-out 2',
         'icon-sway': 'icon-sway 2s ease-in-out infinite',
         'icon-glow': 'icon-glow 2s ease-in-out infinite',
+        'float-symbol': 'float-symbol 6s ease-in-out infinite',
+        'glow-green': 'glow-green 3s ease-in-out infinite',
+        'glow-pink': 'glow-pink 3s ease-in-out infinite',
+      },
+      backgroundImage: {
+        'gradient-landing': 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%)',
       },
     },
   },

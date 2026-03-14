@@ -1,13 +1,17 @@
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Page } from './pages/Page';
 import HomePage from './pages/HomePage';
 import Dictionary from './pages/Dictionary';
 import { XpProvider } from './contexts/XpContext';
+import { LanguageProvider } from './contexts/LanguageContext';
+import ErrorBoundary from './components/ErrorBoundary';
 
 function getPageElement(pathname: string) {
   switch (pathname) {
     case '/':
+      return <Navigate to="/fiil-laboratuvari" replace />;
+    case '/anasayfa':
       return <HomePage />;
     case '/fiil-laboratuvari':
       return <Page />;
@@ -16,7 +20,7 @@ function getPageElement(pathname: string) {
     case '/sozluk':
       return <Dictionary />;
     default:
-      return <HomePage />;
+      return <Navigate to="/fiil-laboratuvari" replace />;
   }
 }
 
@@ -29,7 +33,9 @@ function PageTransition({ pathname }: { pathname: string }) {
       transition={{ duration: 0.3, ease: 'easeOut' }}
       style={{ minHeight: '100vh' }}
     >
-      {getPageElement(pathname)}
+      <ErrorBoundary inline>
+        {getPageElement(pathname)}
+      </ErrorBoundary>
     </motion.div>
   );
 }
@@ -45,13 +51,17 @@ function AnimatedRoutes() {
 
 function App() {
   return (
-    <BrowserRouter>
-      <XpProvider>
-        <Routes>
-          <Route path="*" element={<AnimatedRoutes />} />
-        </Routes>
-      </XpProvider>
-    </BrowserRouter>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <LanguageProvider>
+          <XpProvider>
+            <Routes>
+              <Route path="*" element={<AnimatedRoutes />} />
+            </Routes>
+          </XpProvider>
+        </LanguageProvider>
+      </BrowserRouter>
+    </ErrorBoundary>
   );
 }
 

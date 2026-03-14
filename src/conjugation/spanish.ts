@@ -12,7 +12,10 @@ const TENSE_TO_LIB: Record<TenseIdEs, string> = {
   presente: 'INDICATIVE_PRESENT',
   imperfecto: 'INDICATIVE_IMPERFECT',
   preterito: 'INDICATIVE_PRETERITE',
+  'preterito-perfecto': 'INDICATIVE_PERFECT',
+  pluscuamperfecto: 'INDICATIVE_PLUPERFECT',
   futuro: 'INDICATIVE_FUTURE',
+  'futuro-compuesto': 'INDICATIVE_FUTURE_PERFECT',
   'subjuntivo-presente': 'SUBJUNCTIVE_PRESENT',
   condicional: 'CONDITIONAL_PRESENT',
 };

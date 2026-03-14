@@ -40,6 +40,10 @@ const ES_SUFFIXES: Record<string, string[]> = {
   futuro: ['emos', 'éis', 'án', 'é', 'ás', 'á'],
   condicional: ['íamos', 'íais', 'ían', 'ía', 'ías'],
   'subjuntivo-presente': ['emos', 'éis', 'en', 'amos', 'áis', 'an', 'es', 'as', 'e', 'a'],
+  /* Bileşik zamanlar: participio ekleri (haber + participio); sondan eşleştirme. */
+  'preterito-perfecto': ['ados', 'adas', 'ado', 'ada', 'idos', 'idas', 'ido', 'ida', 'chos', 'chas', 'cho', 'cha', 'tos', 'tas', 'to', 'ta', 'sos', 'sas', 'so', 'sa', 'estos', 'estas', 'esto', 'esta', 'uestos', 'uestas', 'uesto', 'uesta'],
+  pluscuamperfecto: ['ados', 'adas', 'ado', 'ada', 'idos', 'idas', 'ido', 'ida', 'chos', 'chas', 'cho', 'cha', 'tos', 'tas', 'to', 'ta', 'sos', 'sas', 'so', 'sa', 'estos', 'estas', 'esto', 'esta', 'uestos', 'uestas', 'uesto', 'uesta'],
+  'futuro-compuesto': ['ados', 'adas', 'ado', 'ada', 'idos', 'idas', 'ido', 'ida', 'chos', 'chas', 'cho', 'cha', 'tos', 'tas', 'to', 'ta', 'sos', 'sas', 'so', 'sa', 'estos', 'estas', 'esto', 'esta', 'uestos', 'uestas', 'uesto', 'uesta'],
 };
 
 function getSuffixesForTense(tenseId: string, lang: AppLanguage): string[] {

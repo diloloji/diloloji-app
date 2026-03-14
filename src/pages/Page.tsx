@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { useThemeContext } from '../contexts/ThemeContext';
@@ -9,6 +9,7 @@ import type { AppLanguage } from '../data/verbs';
 import {
   getConjugationsForLang,
   getConjugationForTenseForLang,
+  verifyConjugationMap,
   getVerbListForLang,
   findInfinitiveByConjugatedForm,
 } from '../conjugation/helpers';
@@ -25,6 +26,7 @@ import { getMistakes, getDueMistakes, addMistake, updateMistakeReview, type Mist
 import { getStarredVerbs, toggleStarredVerb, isStarredVerb } from '../utils/starredVerbs';
 import { getActivityHistory, getLastNDays, addActivityToday } from '../utils/activityHistory';
 import { useXp } from '../contexts/XpContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import EzberMakinesi from '../components/EzberMakinesi';
 import AuthModal from '../components/AuthModal';
 
@@ -142,6 +144,14 @@ function getHighlightRuns(text: string): { char: string; highlight: boolean }[] 
   return result;
 }
 
+/** Eksik/hatalı çekim için gösterilecek metin (tüm çekim yerlerinde tutarlı). */
+const VERI_MEVCUT_DEGIL = 'Veri Mevcut Değil';
+
+/** Çekim değerinin gösterilebilir olup olmadığını döner. */
+function isConjugationValueMissing(value: string | undefined): boolean {
+  return value == null || String(value).trim() === '';
+}
+
 /** Kök + ek renklendirmeli çekim: kök varsayılan renkte (aksan vurgusu turuncu), ek indigo. */
 function ConjugationWithStemSuffix({
   text,
@@ -152,6 +162,13 @@ function ConjugationWithStemSuffix({
   tenseId: string;
   lang: AppLanguage;
 }) {
+  if (isConjugationValueMissing(text)) {
+    return (
+      <span className="text-amber-600 dark:text-amber-400 italic text-sm" title="Bu şahıs için çekim verisi bulunamadı">
+        {VERI_MEVCUT_DEGIL}
+      </span>
+    );
+  }
   const { stem, suffix } = formatConjugation(text, tenseId, lang);
   const stemRuns = getHighlightRuns(stem);
   return (
@@ -399,17 +416,28 @@ function StarIcon({ filled, className }: { filled?: boolean; className?: string 
 }
 
 export function Page() {
-  /** Seçili dil: fr = Fransızca, es = İspanyolca */
-  const [selectedLanguage, setSelectedLanguage] = useState<AppLanguage>('fr');
-  /** Fiil Laboratuvarı: null = dil seçim ekranı, 'fr'|'es' = laboratuvar açık */
-  const [selectedLabLanguage, setSelectedLabLanguage] = useState<AppLanguage | null>(null);
+  const { selectedLanguage, setSelectedLanguage } = useLanguage();
 
   const tensesForLang = useMemo(() => getTenses(selectedLanguage), [selectedLanguage]);
   const pronounsForLang = useMemo(() => getPronouns(selectedLanguage), [selectedLanguage]);
   const tenseGroupsForLang = useMemo(() => getTenseGroups(selectedLanguage), [selectedLanguage]);
   const pronounIds = useMemo(() => pronounsForLang.map((p) => p.id), [pronounsForLang]);
 
+  /** Çekim map'ini güvenle al; hata/undefined durumunda boş obje döner (render'da throw önlenir). */
+  const getSafeConjugationMap = useCallback(
+    (vKey: string, tenseId: string, lang: AppLanguage): Record<string, string> => {
+      try {
+        const m = getConjugationForTenseForLang(vKey, tenseId, lang);
+        return m && typeof m === 'object' ? m : {};
+      } catch {
+        return {};
+      }
+    },
+    []
+  );
+
   const location = useLocation();
+  const navigate = useNavigate();
   /** Uygulama modu: URL'den türetilir */
   const appMode: AppMode = location.pathname === '/ezber-makinesi' ? 'ezber' : 'conjugation';
 
@@ -542,14 +570,13 @@ export function Page() {
   /** Tema: global context, mounted sonrası butonu göster (hydration uyumu) */
   const { isDark, toggleTheme, mounted: themeMounted } = useThemeContext();
 
-  /** Dil değişince: zamanı ilk zamana al, fiil/sonuçları temizle, quiz cevaplarını yeni zamirlere sıfırla, arama kutusuna odaklan */
+  /** Dil değişince: zamanı güncelle, sonuçları temizle; aranan fiil varsa yeni dilde dene, yoksa alanı boş bırak */
   useEffect(() => {
     const tenses = tensesForLang;
     setSelectedTense(tenses[0].id);
     setCompareTense1(tenses[0]?.id ?? '');
     setCompareTense2(tenses[1]?.id ?? tenses[0]?.id ?? '');
     setVerbKey(null);
-    setVerbInput('');
     setConjugations(null);
     setError('');
     setReverseLookupInfo(null);
@@ -557,6 +584,12 @@ export function Page() {
     setUserAnswers(getInitialUserAnswers(selectedLanguage));
     setQuizFeedback(Object.fromEntries(pronounsForLang.map((p) => [p.id, null as 'correct' | 'wrong' | null])));
     setQuizPasséHint(Object.fromEntries(pronounsForLang.map((p) => [p.id, null as string | null])));
+    const toTry = verbInput.trim();
+    if (toTry) {
+      loadVerbRef.current?.(toTry);
+    } else {
+      setVerbInput('');
+    }
     requestAnimationFrame(() => verbInputRef.current?.focus());
   }, [selectedLanguage]);
 
@@ -570,6 +603,8 @@ export function Page() {
   const verbInputRef = useRef<HTMLInputElement>(null);
   const reviewInputRef = useRef<HTMLInputElement>(null);
   const autocompleteWrapRef = useRef<HTMLDivElement>(null);
+  /** Dil değişiminde mevcut fiili yeni dilde denemek için (effect içinden güncel loadVerb çağrısı) */
+  const loadVerbRef = useRef<((overrideVerb?: string) => void) | null>(null);
   /** Çeviri isteği sırasında güncel fiili takip et (stale response'ları uygulama) */
   const verbKeyRef = useRef<string | null>(null);
   const comboDisplayTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -633,31 +668,42 @@ export function Page() {
     setReverseLookupInfo(null);
     const toLoad = (overrideVerb ?? verbInput).trim();
     try {
-      let result = getConjugationsForLang(toLoad, selectedTense, selectedLanguage);
-      if (result.ok) {
-        if (overrideVerb) setVerbInput(overrideVerb);
-        setVerbKey(result.infinitive);
-        setConjugations(result.conjugations);
-        setError('');
-        return;
+      const result = getConjugationsForLang(toLoad, selectedTense, selectedLanguage);
+      if (result && result.ok) {
+        const conj = result.conjugations;
+        if (conj && typeof conj === 'object' && Object.keys(conj).length > 0) {
+          const verified = verifyConjugationMap(conj, selectedTense, selectedLanguage);
+          if (overrideVerb) setVerbInput(overrideVerb);
+          setVerbKey(result.infinitive);
+          setConjugations(verified);
+          setError('');
+          return;
+        }
       }
       const reverse = findInfinitiveByConjugatedForm(toLoad, selectedLanguage);
       if (reverse) {
-        setVerbInput(reverse.infinitive);
-        setVerbKey(reverse.infinitive);
-        setSelectedTense(reverse.tenseId);
-        const conjugationsMap = getConjugationForTenseForLang(reverse.infinitive, reverse.tenseId, selectedLanguage);
-        setConjugations(conjugationsMap);
-        setReverseLookupInfo({
-          searched: toLoad,
-          infinitive: reverse.infinitive,
-          tenseLabel: reverse.tenseLabel,
-          pronounLabel: PRONOUN_PERSON_LABEL[reverse.pronounId] ?? reverse.pronounLabel,
-        });
-        setError('');
-        return;
+        try {
+          const conjugationsMap = getConjugationForTenseForLang(reverse.infinitive, reverse.tenseId, selectedLanguage);
+          if (conjugationsMap && typeof conjugationsMap === 'object' && Object.keys(conjugationsMap).length > 0) {
+            const verified = verifyConjugationMap(conjugationsMap, reverse.tenseId, selectedLanguage);
+            setVerbInput(reverse.infinitive);
+            setVerbKey(reverse.infinitive);
+            setSelectedTense(reverse.tenseId);
+            setConjugations(verified);
+            setReverseLookupInfo({
+              searched: toLoad,
+              infinitive: reverse.infinitive,
+              tenseLabel: reverse.tenseLabel,
+              pronounLabel: PRONOUN_PERSON_LABEL[reverse.pronounId] ?? reverse.pronounLabel,
+            });
+            setError('');
+            return;
+          }
+        } catch {
+          /* fall through to error */
+        }
       }
-      setError(result.error ?? 'Bu fiil seçili dilde bulunamadı, lütfen yazımı kontrol edin.');
+      setError(result && !result.ok ? (result.error ?? 'Bu fiil seçili dilde bulunamadı, lütfen yazımı kontrol edin.') : 'Bu fiil seçili dilde bulunamadı, lütfen yazımı kontrol edin.');
       setVerbKey(null);
       setConjugations(null);
     } catch {
@@ -667,15 +713,28 @@ export function Page() {
     }
   }, [verbInput, selectedTense, selectedLanguage]);
 
+  loadVerbRef.current = loadVerb;
+
+  /** Sözlükten "Fiil Lab'da Çöz" ile gelen fiili aç */
+  useEffect(() => {
+    const state = location.state as { openVerb?: string } | null;
+    const openVerb = state?.openVerb;
+    if (openVerb && typeof openVerb === 'string' && loadVerbRef.current) {
+      loadVerbRef.current(openVerb.trim());
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state, location.pathname, navigate]);
+
   const pickRandomVerb = useCallback(() => {
     setAutocompleteClosed(true);
     for (let attempt = 0; attempt < 15; attempt++) {
       const v = getRandomVerbForLang(selectedLanguage);
       const result = getConjugationsForLang(v, selectedTense, selectedLanguage);
       if (result.ok) {
+        const verified = verifyConjugationMap(result.conjugations, selectedTense, selectedLanguage);
         setVerbInput(result.infinitive);
         setVerbKey(result.infinitive);
-        setConjugations(result.conjugations);
+        setConjugations(verified);
         setError('');
         return;
       }
@@ -686,7 +745,14 @@ export function Page() {
   useEffect(() => {
     if (!verbKey) return;
     try {
-      setConjugations(getConjugationForTenseForLang(verbKey, selectedTense, selectedLanguage));
+      const next = getConjugationForTenseForLang(verbKey, selectedTense, selectedLanguage);
+      if (next && typeof next === 'object' && Object.keys(next).length > 0) {
+        setConjugations(verifyConjugationMap(next, selectedTense, selectedLanguage));
+      } else {
+        setError('Bu fiil seçili dilde bulunamadı, lütfen yazımı kontrol edin.');
+        setVerbKey(null);
+        setConjugations(null);
+      }
     } catch {
       setError('Bu fiil seçili dilde bulunamadı, lütfen yazımı kontrol edin.');
       setVerbKey(null);
@@ -715,18 +781,29 @@ export function Page() {
       const res = await fetch(
         `https://api.mymemory.translated.net/get?q=${encodeURIComponent(verb)}&langpair=${langPair}`
       );
+      if (!res.ok) {
+        if (verbKeyRef.current === verb) setTranslation(null);
+        return;
+      }
+      const contentType = res.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        if (verbKeyRef.current === verb) setTranslation(null);
+        return;
+      }
       const data = await res.json();
       if (verbKeyRef.current !== verb) return;
-      const raw = data?.responseData?.translatedText;
-      if (raw && typeof raw === 'string') {
+      const responseData = data && typeof data === 'object' ? data.responseData : undefined;
+      const raw = responseData && typeof responseData === 'object' && typeof responseData.translatedText === 'string'
+        ? responseData.translatedText
+        : null;
+      if (raw) {
         const capitalized = raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase();
         setTranslation(capitalized);
       } else {
         setTranslation(null);
       }
     } catch {
-      if (verbKeyRef.current !== verb) return;
-      setTranslation(null);
+      if (verbKeyRef.current === verb) setTranslation(null);
     } finally {
       if (verbKeyRef.current === verb) setIsTranslating(false);
     }
@@ -1659,60 +1736,67 @@ export function Page() {
         );
       })()}
 
-      {/* Fiil Laboratuvarı: Dil seçim ekranı (selectedLabLanguage === null) */}
-      {appMode === 'conjugation' && selectedLabLanguage === null && (
-        <main className="max-w-2xl mx-auto px-4 py-8 pb-20 flex flex-col items-center justify-center min-h-[60vh]">
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100 text-center mb-8">
-            Hangi dilde pratik yapmak istersin?
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full max-w-md">
-            <button
-              type="button"
-              onClick={() => {
-                setSelectedLabLanguage('fr');
-                setSelectedLanguage('fr');
-              }}
-              className="rounded-2xl bg-slate-800/40 dark:bg-slate-800/60 border border-slate-700/50 dark:border-slate-600/50 p-10 flex flex-col items-center justify-center gap-4 transition-all duration-300 hover:scale-105 hover:shadow-[0_0_24px_rgba(59,130,246,0.25)] dark:hover:shadow-[0_0_28px_rgba(96,165,250,0.2)] focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 dark:focus:ring-offset-slate-900"
-              aria-label="Fransızca ile devam et"
-            >
-              <span className="text-6xl sm:text-7xl" aria-hidden>🇫🇷</span>
-              <span className="text-lg font-semibold text-slate-200 dark:text-slate-100">Fransızca</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setSelectedLabLanguage('es');
-                setSelectedLanguage('es');
-              }}
-              className="rounded-2xl bg-slate-800/40 dark:bg-slate-800/60 border border-slate-700/50 dark:border-slate-600/50 p-10 flex flex-col items-center justify-center gap-4 transition-all duration-300 hover:scale-105 hover:shadow-[0_0_24px_rgba(220,38,38,0.2)] dark:hover:shadow-[0_0_28px_rgba(251,191,36,0.15)] focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 dark:focus:ring-offset-slate-900"
-              aria-label="İspanyolca ile devam et"
-            >
-              <span className="text-6xl sm:text-7xl" aria-hidden>🇪🇸</span>
-              <span className="text-lg font-semibold text-slate-200 dark:text-slate-100">İspanyolca</span>
-            </button>
-          </div>
-        </main>
-      )}
-
-      {appMode === 'conjugation' && selectedLabLanguage !== null && (
+      {appMode === 'conjugation' && (
       <main className="max-w-7xl w-full mx-auto px-4 md:px-8 py-4 pb-20">
         <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6 lg:gap-8">
           {/* Sol sütun: Kontrol paneli (mobilde en üstte) — 4 kolon */}
           <aside data-print-hide className="flex flex-col gap-4 lg:col-span-4 order-1 print:hidden">
-            {/* Dil seçimine dön */}
-            <div className="shrink-0">
-              <button
-                type="button"
-                onClick={() => setSelectedLabLanguage(null)}
-                className="text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-1 dark:focus:ring-offset-slate-900 rounded-lg px-2 py-1 -ml-2"
-                aria-label="Dil seçimine dön"
+            {/* Entegre dil seçici — arama alanının hemen üzerinde, segmented control */}
+            <section className="relative z-10 shrink-0 w-full">
+              <div
+                className="grid grid-cols-2 gap-2 w-full p-1 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-600"
+                role="tablist"
+                aria-label="Dil seçin"
               >
-                ← Dil Seçimine Dön
-              </button>
-            </div>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={selectedLanguage === 'fr'}
+                  onClick={() => {
+                    setSelectedLanguage('fr');
+                    setVerbKey(null);
+                    setConjugations(null);
+                    setVerbInput('');
+                    setError('');
+                    if (verbKey) loadVerb(verbKey);
+                  }}
+                  title="Fransızca"
+                  className={`flex items-center justify-center gap-2 w-full rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-1 dark:focus:ring-offset-slate-800 ${
+                    selectedLanguage === 'fr'
+                      ? 'bg-indigo-500 text-white shadow-[0_0_14px_rgba(99,102,241,0.45)] dark:shadow-[0_0_18px_rgba(129,140,248,0.4)] border border-indigo-400/50'
+                      : 'bg-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 hover:bg-slate-200/50 dark:hover:bg-slate-700/50 border border-transparent opacity-70 hover:opacity-90'
+                  }`}
+                >
+                  <span aria-hidden>🇫🇷</span>
+                  Fransızca
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={selectedLanguage === 'es'}
+                  onClick={() => {
+                    setSelectedLanguage('es');
+                    setVerbKey(null);
+                    setConjugations(null);
+                    setVerbInput('');
+                    setError('');
+                    if (verbKey) loadVerb(verbKey);
+                  }}
+                  title="İspanyolca"
+                  className={`flex items-center justify-center gap-2 w-full rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-1 dark:focus:ring-offset-slate-800 ${
+                    selectedLanguage === 'es'
+                      ? 'bg-indigo-500 text-white shadow-[0_0_14px_rgba(99,102,241,0.45)] dark:shadow-[0_0_18px_rgba(129,140,248,0.4)] border border-indigo-400/50'
+                      : 'bg-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 hover:bg-slate-200/50 dark:hover:bg-slate-700/50 border border-transparent opacity-70 hover:opacity-90'
+                  }`}
+                >
+                  <span aria-hidden>🇪🇸</span>
+                  İspanyolca
+                </button>
+              </div>
+            </section>
             {/* Fiil arama + Zaman seçici */}
             <section className="relative z-10 p-5 sm:p-6 rounded-2xl bg-white dark:bg-slate-800/80 shadow-sm border border-slate-100 dark:border-slate-700/50 backdrop-blur-md transition-colors duration-300 shrink-0 overflow-visible" ref={autocompleteWrapRef}>
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-4">
             {/* Fiil girişi — relative + anchor ref (Portal pozisyonu için) */}
             <div className="flex-1 min-w-0 flex flex-col relative">
               <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">Fiil girin</label>
@@ -1916,8 +2000,14 @@ export function Page() {
             </div>
           </aside>
 
-          {/* Sağ sütun: Sekmeler + ana çalışma alanı — 8 kolon */}
-          <div className="flex flex-col gap-4 lg:col-span-8 order-2 print:col-span-12 print:bg-white print:text-black">
+          {/* Sağ sütun: Sekmeler + ana çalışma alanı — 8 kolon (dil değişiminde fade) */}
+          <motion.div
+            key={selectedLanguage}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+            className="flex flex-col gap-4 lg:col-span-8 order-2 print:col-span-12 print:bg-white print:text-black"
+          >
         {error && (
           <div className="mb-4 rounded-2xl bg-red-50/80 dark:bg-red-500/10 border border-red-200/80 dark:border-red-400/30 px-5 py-3.5 text-red-700 dark:text-red-300 text-sm shadow-sm transition-colors duration-300">
             {error}
@@ -1960,9 +2050,10 @@ export function Page() {
                       onClick={() => {
                         const result = getConjugationsForLang(v, selectedTense, selectedLanguage);
                         if (result.ok) {
+                          const verified = verifyConjugationMap(result.conjugations, selectedTense, selectedLanguage);
                           setVerbInput(result.infinitive);
                           setVerbKey(result.infinitive);
-                          setConjugations(result.conjugations);
+                          setConjugations(verified);
                           setError('');
                           setMode('quiz');
                           requestAnimationFrame(() => quizInputRefs.current[0]?.focus());
@@ -1981,9 +2072,10 @@ export function Page() {
                     const v = starredVerbs[Math.floor(Math.random() * starredVerbs.length)];
                     const result = getConjugationsForLang(v, selectedTense, selectedLanguage);
                     if (result.ok) {
+                      const verified = verifyConjugationMap(result.conjugations, selectedTense, selectedLanguage);
                       setVerbInput(result.infinitive);
                       setVerbKey(result.infinitive);
-                      setConjugations(result.conjugations);
+                      setConjugations(verified);
                       setError('');
                       setMode('quiz');
                       requestAnimationFrame(() => quizInputRefs.current[0]?.focus());
@@ -2419,7 +2511,7 @@ export function Page() {
                             <span className="text-slate-600 dark:text-slate-300 font-semibold min-w-[5.5rem]">{label}</span>
                             <span className="text-slate-900 dark:text-slate-100 text-right">
                               <ConjugationWithStemSuffix
-                                text={getConjugationForTenseForLang(verbKey, compareTense1, selectedLanguage)[id] ?? '—'}
+                                text={getSafeConjugationMap(verbKey, compareTense1, selectedLanguage)[id] ?? '—'}
                                 tenseId={compareTense1}
                                 lang={selectedLanguage}
                               />
@@ -2438,7 +2530,7 @@ export function Page() {
                             <span className="text-slate-600 dark:text-slate-300 font-semibold min-w-[5.5rem]">{label}</span>
                             <span className="text-slate-900 dark:text-slate-100 text-right">
                               <ConjugationWithStemSuffix
-                                text={getConjugationForTenseForLang(verbKey, compareTense2, selectedLanguage)[id] ?? '—'}
+                                text={getSafeConjugationMap(verbKey, compareTense2, selectedLanguage)[id] ?? '—'}
                                 tenseId={compareTense2}
                                 lang={selectedLanguage}
                               />
@@ -2617,12 +2709,8 @@ export function Page() {
                         {group.tenseIds.map((tenseId, index) => {
                           const t = tensesForLang.find((x) => x.id === tenseId);
                           if (!t) return null;
-                          let map: Record<string, string>;
-                          try {
-                            map = getConjugationForTenseForLang(verbKey, t.id, selectedLanguage);
-                          } catch {
-                            return null;
-                          }
+                          const map = getSafeConjugationMap(verbKey, t.id, selectedLanguage);
+                          if (!map || Object.keys(map).length === 0) return null;
                           return (
                             <motion.div
                               key={t.id}
@@ -2636,18 +2724,23 @@ export function Page() {
                               </div>
                               <ul className="divide-y divide-slate-700/50 dark:divide-slate-600/50">
                                 {pronounsForLang.map(({ id, label }) => {
-                                  const rawVal = map[id] ?? '—';
-                                  const displayVal = formatConjugationForDisplay(rawVal, id, selectedLanguage, isReflexive, isNegative);
-                                  const fullPhrase = rawVal === '—' ? '' : `${label} ${rawVal}`.trim();
+                                  const rawVal = map[id] ?? '';
+                                  const missing = isConjugationValueMissing(rawVal) || rawVal === '—';
+                                  const displayVal = missing ? '' : formatConjugationForDisplay(rawVal, id, selectedLanguage, isReflexive, isNegative);
+                                  const fullPhrase = missing ? '' : `${label} ${rawVal}`.trim();
                                   const rowKey = `${t.id}-${id}`;
                                   const justCopied = copiedRowKey === rowKey;
                                   return (
                                   <li key={id} className="group flex items-center justify-between gap-2 px-4 py-2 text-sm">
                                     <span className="text-slate-500 dark:text-slate-400 font-medium shrink-0 w-16">{label}</span>
                                     <div className="flex items-center gap-1 text-right min-w-0">
-                                      <span className="text-slate-200 dark:text-slate-100 truncate">
-                                        {displayVal}
-                                      </span>
+                                      {missing ? (
+                                        <span className="text-amber-600 dark:text-amber-400 italic text-sm">{VERI_MEVCUT_DEGIL}</span>
+                                      ) : (
+                                        <span className="text-slate-200 dark:text-slate-100 truncate">
+                                          <ConjugationWithStemSuffix text={displayVal} tenseId={t.id} lang={selectedLanguage} />
+                                        </span>
+                                      )}
                                       {fullPhrase && (
                                         <span className="inline-flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 shrink-0 print:opacity-0 print:!hidden">
                                           <button
@@ -3066,7 +3159,7 @@ export function Page() {
 
           </section>
         )}
-          </div>
+          </motion.div>
         </div>
       </main>
       )}
