@@ -79,7 +79,7 @@ const PLANS: Plan[] = [
     nameEn: 'Pro',
     description: 'En çok tercih edilen',
     monthlyPrice: 99,
-    yearlyPrice: 950,
+    yearlyPrice: 640,
     lifetimePrice: null,
     features: [
       'Sınırsız yapay zeka analizi',
@@ -223,7 +223,7 @@ export default function Pricing() {
                   : 'text-slate-600 dark:text-slate-400'
               }`}
             >
-              {isTr ? 'Yıllık (%20 İndirimli)' : 'Yearly (20% off)'}
+              {isTr ? 'Yıllık (%46 İndirimli)' : 'Yearly (46% off)'}
             </span>
           </div>
         </motion.section>
@@ -244,8 +244,8 @@ export default function Pricing() {
                 : 'one-time'
               : isAnnual
                 ? isTr
-                  ? '/ay (yıllık ödeme)'
-                  : '/mo (billed yearly)'
+                  ? '/yıl'
+                  : '/year'
                 : isTr
                   ? '/ay'
                   : '/mo';
@@ -299,18 +299,32 @@ export default function Pricing() {
 
                   <div className="mb-6">
                     {price !== null && (
-                      <div className="flex items-baseline gap-1 flex-wrap">
-                        <span
-                          className={`text-3xl sm:text-4xl font-bold tabular-nums ${
-                            plan.muted ? 'text-slate-600 dark:text-slate-400' : 'text-slate-900 dark:text-white'
-                          }`}
-                        >
-                          {price === 0 ? (isTr ? 'Ücretsiz' : 'Free') : formatPrice(price)}
-                        </span>
-                        {price !== 0 && (
-                          <span className="text-slate-500 dark:text-slate-400 text-sm font-medium">{priceLabel}</span>
+                      <>
+                        <div className="flex items-baseline gap-1.5 flex-wrap">
+                          <span
+                            className={`text-3xl sm:text-4xl font-bold tabular-nums ${
+                              plan.muted ? 'text-slate-600 dark:text-slate-400' : 'text-slate-900 dark:text-white'
+                            }`}
+                          >
+                            {price === 0
+                              ? (isTr ? 'Ücretsiz' : 'Free')
+                              : (
+                                  <>
+                                    {formatPrice(price)}
+                                    <span className="ml-0.5 font-normal text-2xl sm:text-3xl text-slate-600 dark:text-slate-400">₺</span>
+                                  </>
+                                )}
+                          </span>
+                          {price !== 0 && (
+                            <span className="text-slate-500 dark:text-slate-400 text-sm font-medium">{priceLabel}</span>
+                          )}
+                        </div>
+                        {plan.id === 'pro' && isAnnual && price !== 0 && (
+                          <p className="mt-1.5 text-xs text-slate-400 dark:text-slate-500 font-normal">
+                            {isTr ? 'Aylık sadece ~53₺\'ye denk gelir' : 'Equivalent to ~53₺/month'}
+                          </p>
                         )}
-                      </div>
+                      </>
                     )}
                   </div>
 
