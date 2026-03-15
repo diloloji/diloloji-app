@@ -1342,10 +1342,10 @@ export function Page() {
 
   const SITE_URL = 'https://diloloji.com';
   const isEzber = location.pathname === '/ezber-makinesi';
-  const seoTitle = isEzber ? 'Ezber Makinesi | Diloloji' : 'Fiil Laboratuvarı | Diloloji';
+  const seoTitle = isEzber ? 'Ezber Makinesi | Diloloji' : 'Diloloji Fiil Laboratuvarı: Fransızca ve İspanyolca Fiil Çekimleri';
   const seoDescription = isEzber
     ? 'Fransızca ve İspanyolca fiil çekimlerini ezberleyin. Alıştırma, zamana karşı ve kıyaslama modları ile pratik yapın.'
-    : 'Fransızca ve İspanyolca fiil çekimlerini öğrenin. Tüm zamanlar, mastar, ulaç ve örnek cümlelerle fiil laboratuvarı.';
+    : 'Fransızca fiil çekimleri ve İspanyolca fiil çekimleri. Tüm zamanlar, mastar, ulaç ve örnek cümlelerle interaktif fiil laboratuvarı.';
   const seoUrl = `${SITE_URL}${location.pathname}`;
 
   return (
@@ -2384,7 +2384,7 @@ export function Page() {
               {/* Başlık: Sol Diloloji + logo, Sağ Fiil Çalışma Yaprağı + tarih */}
               <div className="print:flex print:justify-between print:items-start print:border-b print:border-slate-300 print:pb-4 print:mb-6">
                 <div className="print:flex print:items-center print:gap-2">
-                  <img src="/logo.svg" alt="Diloloji" className="print:h-8 print:w-auto" />
+                  <img src="/logo-light.svg" alt="Diloloji" className="print:h-8 print:w-auto" />
                   <span className="print:text-lg print:font-semibold print:text-black">Diloloji</span>
                 </div>
                 <div className="print:text-right">

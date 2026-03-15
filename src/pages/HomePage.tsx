@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import FloatingBackgroundElements from '../components/FloatingBackgroundElements';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import SyntaxFlowHero from '../components/SyntaxFlowHero';
 import { useRef, useState, useCallback, useEffect } from 'react';
 
 const SITE_URL = 'https://diloloji.com';
@@ -269,31 +270,14 @@ export default function HomePage() {
               </Link>
             </motion.div>
           </div>
-          {/* Hero visual — abstract language/math flow */}
+          {/* Hero visual — Syntax Flow (Dilin Matematiği) */}
           <motion.div
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.7, delay: 0.2 }}
-            className="flex-1 max-w-lg mx-auto lg:max-w-none flex items-center justify-center"
-            aria-hidden
+            className="flex-1 flex items-center justify-center"
           >
-            <svg viewBox="0 0 400 280" className="w-full h-auto text-indigo-500/20 dark:text-indigo-400/25" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <linearGradient id="hero-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="rgb(99,102,241)" stopOpacity="0.4" />
-                  <stop offset="100%" stopColor="rgb(129,140,248)" stopOpacity="0.2" />
-                </linearGradient>
-              </defs>
-              {/* Flowing nodes + lines (words → verbs → result) */}
-              <path d="M 40 80 Q 120 40, 200 80 T 360 80" stroke="url(#hero-grad)" strokeWidth="1.5" fill="none" strokeDasharray="4 4" className="animate-[float-symbol_8s_ease-in-out_infinite]" />
-              <path d="M 60 140 Q 180 100, 300 140 T 340 180" stroke="url(#hero-grad)" strokeWidth="1" fill="none" opacity="0.7" />
-              <circle cx="80" cy="80" r="6" fill="currentColor" opacity="0.5" />
-              <circle cx="200" cy="80" r="8" fill="currentColor" opacity="0.6" />
-              <circle cx="320" cy="80" r="6" fill="currentColor" opacity="0.5" />
-              <circle cx="140" cy="140" r="5" fill="currentColor" opacity="0.4" />
-              <circle cx="260" cy="140" r="5" fill="currentColor" opacity="0.4" />
-              <text x="200" y="220" className="fill-slate-400 dark:fill-slate-500 text-sm font-mono" textAnchor="middle">parler → je parle → formül</text>
-            </svg>
+            <SyntaxFlowHero />
           </motion.div>
         </motion.section>
 

@@ -1,9 +1,9 @@
 /**
  * Sözlük — Kelime Analiz Paneli mock verisi.
- * Yön: tr-fr | fr-tr | tr-es | es-tr
+ * Yön: tr-fr | fr-tr | tr-es | es-tr | tr-en | en-tr
  */
 
-export type DictDirection = 'tr-fr' | 'fr-tr' | 'tr-es' | 'es-tr';
+export type DictDirection = 'tr-fr' | 'fr-tr' | 'tr-es' | 'es-tr' | 'tr-en' | 'en-tr';
 
 export type DictionaryEntry = {
   tr: string;
@@ -170,6 +170,9 @@ function matchQuery(word: string, entry: DictionaryEntry, dir: DictDirection): b
   if (dir === 'tr-fr' || dir === 'fr-tr') {
     return normalize(entry.tr) === q || normalize(entry.fr) === q;
   }
+  if (dir === 'tr-en' || dir === 'en-tr') {
+    return normalize(entry.tr) === q; // EN entries not in mock; Groq handles EN
+  }
   return normalize(entry.tr) === q || normalize(entry.es) === q;
 }
 
@@ -192,7 +195,7 @@ function getSourceAndTarget(
 } {
   const base = {
     type: entry.type,
-    targetVerb: entry.type === 'fiil' ? (dir === 'tr-fr' || dir === 'fr-tr' ? entry.fr : entry.es) : undefined,
+    targetVerb: entry.type === 'fiil' ? (dir === 'tr-fr' || dir === 'fr-tr' ? entry.fr : dir === 'tr-en' || dir === 'en-tr' ? entry.fr : entry.es) : undefined,
   };
   switch (dir) {
     case 'tr-fr':
@@ -251,6 +254,22 @@ function getSourceAndTarget(
         prefix: entry.prefixEs,
         root: entry.rootEs,
       };
+    case 'tr-en':
+    case 'en-tr':
+      // Mock entries have no EN; Groq handles EN. Fallback for type safety.
+      return {
+        ...base,
+        source: dir === 'tr-en' ? entry.tr : entry.fr,
+        target: dir === 'tr-en' ? entry.fr : entry.tr,
+        lang: 'en',
+        exampleSource: entry.exampleTr,
+        exampleTarget: entry.exampleFr,
+        phonetic: undefined,
+        synonyms: undefined,
+        antonyms: undefined,
+        prefix: undefined,
+        root: undefined,
+      };
     default:
       return {
         ...base,
@@ -272,7 +291,7 @@ export type SearchResult = {
   source: string;
   target: string;
   type: string;
-  lang: 'fr' | 'es';
+  lang: 'fr' | 'es' | 'en';
   exampleSource?: string;
   exampleTarget?: string;
   phonetic?: string;
@@ -297,9 +316,11 @@ export const DIRECTION_LABELS: Record<DictDirection, string> = {
   'fr-tr': 'FR ➔ TR',
   'tr-es': 'TR ➔ ES',
   'es-tr': 'ES ➔ TR',
+  'tr-en': 'TR ➔ EN',
+  'en-tr': 'EN ➔ TR',
 };
 
-export const DIRECTIONS: DictDirection[] = ['tr-fr', 'fr-tr', 'tr-es', 'es-tr'];
+export const DIRECTIONS: DictDirection[] = ['tr-fr', 'fr-tr', 'tr-es', 'es-tr', 'tr-en', 'en-tr'];
 
 /** Boş durum: popüler aramalar (hedef dilde veya Türkçe) */
 export const POPULAR_SEARCHES: { label: string; query: string; dir: DictDirection }[] = [
@@ -309,6 +330,8 @@ export const POPULAR_SEARCHES: { label: string; query: string; dir: DictDirectio
   { label: 'ir', query: 'ir', dir: 'es-tr' },
   { label: 'manzana', query: 'manzana', dir: 'es-tr' },
   { label: 'refaire', query: 'refaire', dir: 'fr-tr' },
+  { label: 'apple', query: 'apple', dir: 'en-tr' },
+  { label: 'get', query: 'get', dir: 'en-tr' },
 ];
 
 /** Bugünün kelimesi — basit rotasyon (günün tarihine göre) — tek kelime (geriye uyumluluk) */
@@ -317,10 +340,11 @@ export function getWordOfTheDay(): { word: string; dir: DictDirection; label: st
   return { word: fr.word, dir: fr.dir, label: fr.label };
 }
 
-/** Günün kelimeleri — Fransızca + İspanyolca (boş durum ekranı için iki kart) */
+/** Günün kelimeleri — Fransızca + İspanyolca + İngilizce (boş durum ekranı için üç kart) */
 export function getWordsOfTheDay(): {
   fr: { word: string; dir: DictDirection; label: string; translation: string };
   es: { word: string; dir: DictDirection; label: string; translation: string };
+  en: { word: string; dir: DictDirection; label: string; translation: string };
 } {
   const day = typeof window !== 'undefined' ? new Date().getDate() : 1;
   const frItems: { word: string; dir: DictDirection; label: string; translation: string }[] = [
@@ -337,8 +361,16 @@ export function getWordsOfTheDay(): {
     { word: 'rehacer', dir: 'es-tr', label: 'Rehacer', translation: 'yeniden yapmak' },
     { word: 'agua', dir: 'es-tr', label: 'Agua', translation: 'su' },
   ];
+  const enItems: { word: string; dir: DictDirection; label: string; translation: string }[] = [
+    { word: 'apple', dir: 'en-tr', label: 'Apple', translation: 'elma' },
+    { word: 'get', dir: 'en-tr', label: 'Get', translation: 'almak, olmak' },
+    { word: 'run', dir: 'en-tr', label: 'Run', translation: 'koşmak, işletmek' },
+    { word: 'make', dir: 'en-tr', label: 'Make', translation: 'yapmak' },
+    { word: 'water', dir: 'en-tr', label: 'Water', translation: 'su' },
+  ];
   return {
     fr: frItems[day % frItems.length],
     es: esItems[day % esItems.length],
+    en: enItems[day % enItems.length],
   };
 }

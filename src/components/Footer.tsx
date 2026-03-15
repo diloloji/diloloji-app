@@ -5,6 +5,13 @@
 
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useThemeContext } from '../contexts/ThemeContext';
+
+function FooterLogo() {
+  const { isDark, mounted } = useThemeContext();
+  const src = mounted && isDark ? '/logo-dark.svg' : '/logo-light.svg';
+  return <img src={src} alt="Diloloji" className="h-8 w-auto" />;
+}
 
 type FooterLink = { to: string; label: string; external?: boolean };
 
@@ -85,7 +92,7 @@ export default function Footer() {
           {/* Sütun 0: Logo, slogan, sosyal medya — simetrik */}
           <div className="flex flex-col items-start md:items-start">
             <div className="flex items-center gap-2 mb-4">
-              <img src="/logo.svg" alt="Diloloji" className="h-8 w-auto" />
+              <FooterLogo />
             </div>
             <p className="text-slate-500 dark:text-slate-400 text-sm italic mb-5">Dilin matematiğini çöz.</p>
             <div className="flex items-center gap-4">

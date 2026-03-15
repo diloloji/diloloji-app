@@ -1,13 +1,39 @@
 /**
  * Cümle Laboratuvarı — Karmaşık cümleleri formül gibi öğelerine ayırır.
  * Groq ile sözdizimi analizi, renkli bloklar, hover detay.
+ * Kelime bloklarından Ezber Makinesi'ne "Desteye Ekle" (Plus → Check + Toast).
  */
 
-import { useState } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
-import { FlaskConical, Sparkles } from 'lucide-react';
+import { FlaskConical, Sparkles, Plus, Check, Mic } from 'lucide-react';
 import Navbar from '../components/Navbar';
-import { analyzeSentence, type SentenceAnalysisItem } from '../services/dictionaryApi';
+import { analyzeSentence, analyzeShadowing, type SentenceAnalysisItem, type ShadowingResult } from '../services/dictionaryApi';
+import { addWordToLocalDeck } from '../utils/deckManager';
+
+/** Tarayıcı SpeechRecognition API'si */
+function getSpeechRecognition(): typeof SpeechRecognition | null {
+  if (typeof window === 'undefined') return null;
+  const SpeechRecognitionAPI =
+    (window as unknown as { SpeechRecognition?: typeof SpeechRecognition }).SpeechRecognition ||
+    (window as unknown as { webkitSpeechRecognition?: typeof SpeechRecognition }).webkitSpeechRecognition;
+  return SpeechRecognitionAPI || null;
+}
+
+function getRecognitionLang(lang: LangId): string {
+  switch (lang) {
+    case 'Fransızca':
+      return 'fr-FR';
+    case 'İspanyolca':
+      return 'es-ES';
+    case 'İngilizce':
+      return 'en-GB';
+    default:
+      return 'en-GB';
+  }
+}
 
 type LangId = 'Fransızca' | 'İspanyolca' | 'İngilizce';
 
@@ -36,6 +62,44 @@ const EXAMPLE_SENTENCES: Record<LangId, string[]> = {
   ],
 };
 
+/** Günün manşetleri — mock; ileride haber API / RSS bağlanacak */
+type NewsLangId = keyof typeof DAILY_NEWS;
+const DAILY_NEWS = {
+  Fransızca: {
+    source: 'Le Monde',
+    sourceShort: 'LM',
+    flag: '🇫🇷',
+    headlines: [
+      "La réforme des retraites suscite de vives réactions à travers le pays.",
+      "Les négociations climatiques se poursuivent à l'approche du sommet.",
+      "Le gouvernement annonce de nouvelles mesures pour l'emploi des jeunes.",
+      "Une étude révèle l'impact des écrans sur le sommeil des adolescents.",
+    ],
+  },
+  İspanyolca: {
+    source: 'El País',
+    sourceShort: 'EP',
+    flag: '🇪🇸',
+    headlines: [
+      'El presidente anuncia un plan de inversión para la transición energética.',
+      'Los expertos advierten sobre el aumento de la desigualdad en la región.',
+      'La justicia europea falla a favor de la protección de datos personales.',
+      'Miles de personas se manifiestan en favor de la educación pública.',
+    ],
+  },
+  İngilizce: {
+    source: 'BBC',
+    sourceShort: 'BBC',
+    flag: '🇬🇧',
+    headlines: [
+      'Scientists discover new evidence of climate change in the Arctic region.',
+      'The government has announced a major overhaul of the health system.',
+      'International leaders are meeting to discuss security and trade agreements.',
+      'Researchers say the new treatment could transform cancer care for patients.',
+    ],
+  },
+} as const;
+
 function getBlockClasses(type: string | undefined): string {
   const t = (type || '').toLowerCase();
   if (t.includes('verb')) return 'bg-rose-500/20 text-rose-200 border-rose-500/50';
@@ -45,17 +109,80 @@ function getBlockClasses(type: string | undefined): string {
   return 'bg-slate-500/20 text-slate-300 border-slate-500/50';
 }
 
-function WordBlock({ item }: { item: SentenceAnalysisItem }) {
+function WordBlock({
+  item,
+  language,
+  onAddToDeck,
+  isAdded,
+}: {
+  item: SentenceAnalysisItem;
+  language: LangId;
+  onAddToDeck: () => void;
+  isAdded: boolean;
+}) {
   const [showPopover, setShowPopover] = useState(false);
   const classes = getBlockClasses(item.type);
 
+  const handleAddClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (isAdded) return;
+      const translation = item.translation || item.base || item.word;
+      addWordToLocalDeck(item.word, translation, language);
+      onAddToDeck();
+    },
+    [isAdded, item.word, item.translation, item.base, language, onAddToDeck]
+  );
+
   return (
     <span
-      className={`relative inline-flex rounded-lg border px-3 py-1.5 text-sm font-medium transition-all hover:scale-105 ${classes}`}
+      className={`relative inline-flex items-center gap-1 rounded-lg border pl-3 pr-8 py-1.5 text-sm font-medium transition-all hover:scale-105 ${classes}`}
       onMouseEnter={() => setShowPopover(true)}
       onMouseLeave={() => setShowPopover(false)}
     >
       {item.word}
+      {/* Ezber Makinesine Ekle — minimalist + ikonu; tıklanınca Check */}
+      <span className="absolute right-1 top-1/2 -translate-y-1/2" title={isAdded ? 'Ezber Makinesi\'ne eklendi' : 'Ezber Makinesine Ekle'}>
+        <motion.button
+          type="button"
+          onClick={handleAddClick}
+          disabled={isAdded}
+          className={`flex items-center justify-center w-6 h-6 rounded-md border transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-400/50 focus:ring-offset-2 focus:ring-offset-[#0a0e17] ${
+            isAdded
+              ? 'border-emerald-500/40 bg-emerald-500/20 text-emerald-300 cursor-default'
+              : 'border-white/20 bg-white/5 text-slate-400 hover:bg-white/10 hover:text-slate-200 hover:border-white/30'
+          }`}
+          aria-label={isAdded ? 'Ezber Makinesi\'ne eklendi' : 'Ezber Makinesine Ekle'}
+          initial={false}
+          animate={isAdded ? { scale: 1, rotate: 0 } : { scale: 1, rotate: 0 }}
+          whileTap={!isAdded ? { scale: 0.9 } : {}}
+          transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+        >
+          <AnimatePresence mode="wait">
+            {isAdded ? (
+              <motion.span
+                key="check"
+                initial={{ scale: 0.5, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.5, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Check className="w-3.5 h-3.5" strokeWidth={2.5} />
+              </motion.span>
+            ) : (
+              <motion.span
+                key="plus"
+                initial={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.5, opacity: 0 }}
+                transition={{ duration: 0.15 }}
+              >
+                <Plus className="w-3.5 h-3.5" strokeWidth={2.5} />
+              </motion.span>
+            )}
+          </AnimatePresence>
+        </motion.button>
+      </span>
       {showPopover && (item.base || item.grammarDetails || item.translation) && (
         <div
           className="absolute left-1/2 top-full z-50 mt-2 min-w-[200px] max-w-[280px] -translate-x-1/2 rounded-xl border border-white/20 bg-slate-800/95 p-3 shadow-xl backdrop-blur-sm"
@@ -94,19 +221,128 @@ function WordBlock({ item }: { item: SentenceAnalysisItem }) {
 }
 
 export default function SyntaxLab() {
+  const location = useLocation();
   const [sentence, setSentence] = useState('');
   const [language, setLanguage] = useState<LangId>('Fransızca');
   const [items, setItems] = useState<SentenceAnalysisItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [addedKeys, setAddedKeys] = useState<Set<string>>(new Set());
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [isRecording, setIsRecording] = useState(false);
+  const [shadowingResult, setShadowingResult] = useState<ShadowingResult | null>(null);
+  const [shadowingLoading, setShadowingLoading] = useState(false);
+  const [recognizedTranscript, setRecognizedTranscript] = useState('');
+  const recognitionRef = useRef<InstanceType<NonNullable<ReturnType<typeof getSpeechRecognition>>> | null>(null);
+  const transcriptAccumRef = useRef('');
 
   const exampleChips = EXAMPLE_SENTENCES[language];
+
+  useEffect(() => {
+    if (!toastMessage) return;
+    const t = setTimeout(() => setToastMessage(null), 3000);
+    return () => clearTimeout(t);
+  }, [toastMessage]);
+
+  /** YouTube Lab vb. sayfalardan gönderilen cümle: textarea doldurulur ve analiz tetiklenir */
+  useEffect(() => {
+    const state = location.state as { prefillSentence?: string; prefillLanguage?: LangId } | null;
+    const prefill = state?.prefillSentence;
+    if (typeof prefill !== 'string' || !prefill.trim()) return;
+    setSentence(prefill.trim());
+    if (state?.prefillLanguage && LANGUAGES.some((l) => l.id === state.prefillLanguage)) {
+      setLanguage(state.prefillLanguage);
+    }
+    setError(null);
+    setLoading(true);
+    setAddedKeys(new Set());
+    setShadowingResult(null);
+    analyzeSentence(prefill.trim(), state?.prefillLanguage ?? language).then((result) => {
+      setItems(result);
+      setLoading(false);
+      if (result.length === 0) setError('Analiz sonucu alınamadı.');
+    }).catch(() => {
+      setLoading(false);
+      setError('Bir hata oluştu.');
+    });
+  }, [location.state]);
+
+  const handleAddToDeck = useCallback((key: string) => {
+    setAddedKeys((prev) => new Set(prev).add(key));
+    setToastMessage("Kelime Ezber Makinesi'ne gönderildi!");
+  }, []);
+
+  const startStopShadowing = useCallback(async () => {
+    const SpeechRecognitionClass = getSpeechRecognition();
+    if (!SpeechRecognitionClass) {
+      setError('Tarayıcınız ses tanıma desteklemiyor. Chrome veya Edge kullanın.');
+      return;
+    }
+    if (isRecording) {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.stop();
+        } catch {
+          // ignore
+        }
+      }
+      setIsRecording(false);
+      return;
+    }
+    if (!sentence.trim() || items.length === 0) return;
+    setShadowingResult(null);
+    setRecognizedTranscript('');
+    transcriptAccumRef.current = '';
+    const rec = new SpeechRecognitionClass();
+    rec.continuous = true;
+    rec.interimResults = true;
+    rec.lang = getRecognitionLang(language);
+    rec.onresult = (event: SpeechRecognitionEvent) => {
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          transcriptAccumRef.current += transcript;
+          setRecognizedTranscript(transcriptAccumRef.current);
+        }
+      }
+    };
+    rec.onend = async () => {
+      setIsRecording(false);
+      recognitionRef.current = null;
+      const transcript = transcriptAccumRef.current.trim();
+      if (transcript) {
+        setShadowingLoading(true);
+        try {
+          const result = await analyzeShadowing(sentence.trim(), transcript, language, items.map((i) => i.word));
+          setShadowingResult(result ?? null);
+          if (!result) setError('Telaffuz analizi alınamadı.');
+        } finally {
+          setShadowingLoading(false);
+        }
+      }
+    };
+    rec.onerror = () => {
+      setIsRecording(false);
+      recognitionRef.current = null;
+    };
+    try {
+      rec.start();
+      recognitionRef.current = rec;
+      setIsRecording(true);
+    } catch (e) {
+      console.warn('Speech recognition start failed:', e);
+      setIsRecording(false);
+    }
+  }, [isRecording, sentence, items, language]);
 
   const handleAnalyze = async () => {
     const trimmed = sentence.trim();
     if (!trimmed) return;
     setLoading(true);
     setError(null);
+    setAddedKeys(new Set());
+    setShadowingResult(null);
+    setRecognizedTranscript('');
     try {
       const result = await analyzeSentence(trimmed, language);
       setItems(result);
@@ -118,11 +354,31 @@ export default function SyntaxLab() {
     }
   };
 
+  /** Manşet kartına tıklanınca cümleyi yaz ve hemen analiz et */
+  const handleHeadlineClick = useCallback(async (headlineText: string, headlineLang: LangId) => {
+    setLanguage(headlineLang);
+    setSentence(headlineText);
+    setError(null);
+    setAddedKeys(new Set());
+    setShadowingResult(null);
+    setRecognizedTranscript('');
+    setLoading(true);
+    try {
+      const result = await analyzeSentence(headlineText, headlineLang);
+      setItems(result);
+      if (result.length === 0) setError('Analiz sonucu alınamadı.');
+    } catch {
+      setError('Bir hata oluştu.');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#0a0e17] flex flex-col">
       <Helmet>
-        <title>Cümle Laboratuvarı | Diloloji</title>
-        <meta name="description" content="Uzun cümleleri formüllere ayırın, dilin iskeletini görün. Sözdizimi analizi." />
+        <title>İspanyolca ve Fransızca Cümle Analizi | Diloloji Cümle Laboratuvarı</title>
+        <meta name="description" content="Yapay zeka ile İspanyolca cümle analizi, Fransızca cümle analizi ve İngilizce gramer analizi. Sözdizimi, kelime türü ve çeviri. Ücretsiz gramer aracı." />
       </Helmet>
       <Navbar />
 
@@ -168,6 +424,54 @@ export default function SyntaxLab() {
                   </button>
                 );
               })}
+            </div>
+          </div>
+
+          {/* Günün Manşetleri — CANLI badge + yatay kaydırılabilir kartlar */}
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <span
+                className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-red-500 animate-pulse"
+                aria-label="Canlı içerik"
+              >
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
+                </span>
+                CANLI
+              </span>
+              <label className="text-xs font-medium text-slate-500 uppercase tracking-wider">
+                Dünyadan Manşetler
+              </label>
+            </div>
+            <div className="overflow-x-auto overflow-y-hidden -mx-4 px-4 pb-2">
+              <div className="flex gap-3 min-w-max">
+                {(Object.keys(DAILY_NEWS) as NewsLangId[]).map((langId) => {
+                  const news = DAILY_NEWS[langId];
+                  return news.headlines.map((headline, idx) => (
+                    <button
+                      key={`${langId}-${idx}`}
+                      type="button"
+                      onClick={() => handleHeadlineClick(headline, langId)}
+                      disabled={loading}
+                      className="flex-shrink-0 w-[280px] sm:w-[300px] text-left rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm p-4 hover:bg-white/10 hover:border-indigo-400/30 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 focus:ring-offset-[#0a0e17] transition-all group disabled:opacity-50"
+                    >
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-white/10 text-slate-400 group-hover:text-indigo-300 text-xs font-bold" aria-hidden>
+                          {news.sourceShort}
+                        </span>
+                        <span className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">
+                          {news.source}
+                        </span>
+                        <span className="text-sm leading-none" aria-hidden>{news.flag}</span>
+                      </div>
+                      <p className="text-sm font-medium text-slate-200 leading-snug line-clamp-3 group-hover:text-slate-100">
+                        {headline}
+                      </p>
+                    </button>
+                  ));
+                })}
+              </div>
             </div>
           </div>
 
@@ -236,14 +540,126 @@ export default function SyntaxLab() {
             </p>
             <div className="flex flex-wrap gap-2">
               {items.map((item, i) => (
-                <WordBlock key={`${item.word}-${i}`} item={item} />
+                <WordBlock
+                  key={`${item.word}-${i}`}
+                  item={item}
+                  language={language}
+                  onAddToDeck={() => handleAddToDeck(`${i}-${item.word}`)}
+                  isAdded={addedKeys.has(`${i}-${item.word}`)}
+                />
               ))}
             </div>
             <p className="mt-4 text-xs text-slate-500">
-              Fiil: kırmızı · İsim: mavi · Sıfat: sarı · Zamir: mor · Diğer: gri — Detay için üzerine gelin.
+              Fiil: kırmızı · İsim: mavi · Sıfat: sarı · Zamir: mor · Diğer: gri — Detay için üzerine gelin. (+) ile Ezber Makinesi'ne ekleyin.
             </p>
+
+            {/* AI Shadowing — telaffuz kontrolü */}
+            <div className="mt-8 pt-6 border-t border-white/10">
+              <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-3">
+                AI Shadowing
+              </p>
+              <p className="text-slate-400 text-sm mb-4">
+                Cümleyi sesli okuyun, mikrofonla kaydedin. Telaffuzunuz AI ile analiz edilir.
+              </p>
+              <div className="flex flex-wrap items-center gap-3">
+                <motion.button
+                  type="button"
+                  onClick={startStopShadowing}
+                  disabled={shadowingLoading}
+                  className="relative flex items-center justify-center w-12 h-12 rounded-full border border-white/20 bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white hover:border-indigo-400/50 focus:outline-none focus:ring-2 focus:ring-indigo-400/50 focus:ring-offset-2 focus:ring-offset-[#0a0e17] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  aria-label={isRecording ? 'Kaydı durdur' : 'Telaffuzu kaydet'}
+                >
+                  {/* Kayıt sırasında neon pulse halka */}
+                  {isRecording && (
+                    <motion.span
+                      className="absolute inset-0 rounded-full border-2 border-indigo-400/60"
+                      animate={{ scale: [1, 1.4, 1], opacity: [0.6, 0.2, 0.6] }}
+                      transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+                      aria-hidden
+                    />
+                  )}
+                  <Mic className="relative z-10 w-6 h-6" strokeWidth={2} />
+                </motion.button>
+                <span className="text-sm text-slate-500">
+                  {isRecording ? 'Kaydediliyor… Durdurmak için tekrar tıklayın.' : shadowingLoading ? 'Analiz ediliyor…' : 'Mikrofona tıklayıp cümleyi okuyun'}
+                </span>
+              </div>
+
+              {/* Sonuç: kelimeler yeşil/kırmızı alt çizgi + skor ve tavsiye */}
+              <AnimatePresence>
+                {shadowingResult && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    className="mt-6 p-4 rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm"
+                  >
+                    <div className="flex flex-wrap gap-x-2 gap-y-1 mb-4">
+                      {items.map((item, i) => {
+                        const correct = shadowingResult.wordCorrect[i] !== false;
+                        return (
+                          <span
+                            key={`${i}-${item.word}`}
+                            className={`inline-block border-b-2 ${
+                              correct ? 'border-emerald-500/80 text-emerald-200' : 'border-red-500/80 text-red-200'
+                            }`}
+                          >
+                            {item.word}
+                          </span>
+                        );
+                      })}
+                    </div>
+                    <div className="flex flex-wrap items-center gap-4 text-sm">
+                      <span className="font-medium text-slate-300">
+                        Doğallık Skoru: <span className="text-indigo-300 tabular-nums">%{shadowingResult.score}</span>
+                      </span>
+                      <p className="text-slate-400 italic flex-1 min-w-0">
+                        {shadowingResult.advice}
+                      </p>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </section>
         )}
+
+        {/* SEO: Yapay zeka ile gramer analizi — footer öncesi, metin odaklı, ana odağı bozmaz */}
+        <section className="mt-20 sm:mt-24 pt-12 border-t border-white/5" aria-label="Hakkında">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-lg font-semibold text-slate-300 mb-4">
+              Yapay Zeka ile Gramer Analizinin Matematiği
+            </h2>
+            <div className="text-gray-400 leading-relaxed space-y-4 text-sm sm:text-base">
+              <p>
+                <strong className="text-slate-400">İspanyolca cümle analizi</strong> ve <strong className="text-slate-400">Fransızca cümle analizi</strong> artık tek tıkla: Cümle Laboratuvarı, yapay zeka destekli bir gramer analiz aracıdır. Yazdığınız cümleyi anında kelime kelime ve öbek öbek ayırır; her birimin dilbilgisi türünü (fiil, isim, sıfat, zamir, edat vb.), kök veya mastar halini ve Türkçe çevirisini gösterir. Böylece karmaşık <strong className="text-slate-400">Fransızca</strong> veya <strong className="text-slate-400">İspanyolca</strong> cümlelerin yapısını, tıpkı bir formülü parçalara ayırır gibi net biçimde görürsünüz.
+              </p>
+              <p>
+                Araç şu anda <strong className="text-slate-400">Fransızca</strong>, <strong className="text-slate-400">İspanyolca</strong> ve <strong className="text-slate-400">İngilizce</strong> dillerini destekler. Subjonctif, conditionnel, subjuntivo gibi ileri düzey yapılar da dahil olmak üzere; cümle içindeki fiil çekimleri, zamirler ve bağlaçlar otomatik tespit edilir. Bu sayede hem <strong className="text-slate-400">gramer analizi</strong> hem de <strong className="text-slate-400">sözdizimi analizi</strong> tek ekranda bir arada sunulur. Öğrendiğiniz kelimeleri doğrudan Ezber Makinesi destesine ekleyerek kelime dağarcığınızı da güçlendirebilirsiniz.
+              </p>
+              <p>
+                Diloloji Cümle Laboratuvarı, uzun ve karmaşık cümleleri dilin iskeletine indirgeyerek <strong className="text-slate-400">cümle analizi</strong> yapmanızı kolaylaştırır. İster sınav hazırlığı ister günlük okuma pratiği için kullanın; yapay zeka ile gramer analizinin matematiği artık parmaklarınızın ucunda.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Toast: Ezber Makinesi'ne gönderildi — glassmorphism, koyu tema */}
+        <AnimatePresence>
+          {toastMessage && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ duration: 0.25 }}
+              className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] rounded-xl border border-white/10 bg-slate-800/90 backdrop-blur-xl px-5 py-3 shadow-xl text-slate-100 text-sm font-medium"
+              role="status"
+              aria-live="polite"
+            >
+              {toastMessage}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
     </div>
   );

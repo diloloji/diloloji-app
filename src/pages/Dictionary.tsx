@@ -12,7 +12,7 @@ import {
   type DictDirection,
   type SearchResult,
 } from '../data/mockDictionary';
-import { fetchFromGroq, groqToSourceTarget, type GroqExampleItem, type GroqCommonPhrase, type WordMatrix } from '../services/dictionaryApi';
+import { fetchFromGroq, groqToSourceTarget, type GroqExampleItem, type GroqCommonPhrase, type WordMatrix, type GroqEtymology } from '../services/dictionaryApi';
 import { getFlashcardDecks, addCardToDeck, type FlashcardDeck } from '../utils/flashcardDecks';
 import { sanitizeForDisplay } from '../utils/sanitize';
 
@@ -53,12 +53,17 @@ function DictionaryBackground() {
   );
 }
 
-function speakWord(text: string, lang: 'fr-FR' | 'es-ES') {
+function speakWord(text: string, lang: 'fr-FR' | 'es-ES' | 'en-US' | 'en-GB') {
   if (typeof window === 'undefined' || !window.speechSynthesis) return;
   window.speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
   u.lang = lang;
   u.rate = 0.9;
+  if (lang.startsWith('en-')) {
+    const voices = window.speechSynthesis.getVoices();
+    const enVoice = voices.find((v) => v.lang === 'en-GB' || v.lang === 'en-US') ?? voices.find((v) => v.lang.startsWith('en'));
+    if (enVoice) u.voice = enVoice;
+  }
   window.speechSynthesis.speak(u);
 }
 
@@ -72,6 +77,10 @@ function swapDirection(dir: DictDirection): DictDirection {
       return 'es-tr';
     case 'es-tr':
       return 'tr-es';
+    case 'tr-en':
+      return 'en-tr';
+    case 'en-tr':
+      return 'tr-en';
     default:
       return dir;
   }
@@ -115,6 +124,7 @@ export default function Dictionary() {
   useTranslation();
   const { selectedLanguage } = useLanguage();
   const [direction, setDirection] = useState<DictDirection>(selectedLanguage === 'es' ? 'tr-es' : 'tr-fr');
+  const isEnglish = direction === 'tr-en' || direction === 'en-tr';
   const [query, setQuery] = useState('');
   const [result, setResult] = useState<SearchResult | null | undefined>(undefined);
   const [recentSearches, setRecentSearches] = useState<{ query: string; dir: DictDirection }[]>(() => {
@@ -138,6 +148,8 @@ export default function Dictionary() {
   const [groqExamples, setGroqExamples] = useState<Array<{ original: string; translation?: string }> | null>(null);
   const [groqCommonPhrases, setGroqCommonPhrases] = useState<GroqCommonPhrase[] | null>(null);
   const [groqWordMatrix, setGroqWordMatrix] = useState<WordMatrix | null>(null);
+  const [groqEtymology, setGroqEtymology] = useState<GroqEtymology | null>(null);
+  const [groqSemanticShift, setGroqSemanticShift] = useState<string | null>(null);
   const [isFavourite, setIsFavourite] = useState(false);
 
   useEffect(() => {
@@ -158,8 +170,8 @@ export default function Dictionary() {
   }, [toastMessage]);
 
   const pageUrl = `${SITE_URL}/sozluk`;
-  const pageTitle = 'Sözlük | Diloloji';
-  const pageDescription = 'Kelime Analiz Paneli — Fransızca ve İspanyolca kelime anlamları, örnek cümleler ve ilişkili denklemler.';
+  const pageTitle = 'Diloloji Sözlük: İspanyolca, Fransızca ve İngilizce Kelime Analizi';
+  const pageDescription = 'İspanyolca, Fransızca ve İngilizce kelime analizi, anlam, IPA telaffuz ve phrasal verb. Ücretsiz çeviri ve kelime öğrenme araçları.';
 
   const doSearch = useCallback(async (q: string, dir: DictDirection) => {
     const trimmed = sanitizeForDisplay(q);
@@ -169,12 +181,14 @@ export default function Dictionary() {
     setGroqExamples(null);
     setGroqCommonPhrases(null);
     setGroqWordMatrix(null);
-    const langLabel = dir === 'tr-fr' || dir === 'fr-tr' ? 'Fransızca' : 'İspanyolca';
+    setGroqEtymology(null);
+    setGroqSemanticShift(null);
+    const langLabel = dir === 'tr-fr' || dir === 'fr-tr' ? 'Fransızca' : dir === 'tr-en' || dir === 'en-tr' ? 'İngilizce' : 'İspanyolca';
     try {
       const groq = await fetchFromGroq(trimmed, langLabel);
       const st = groqToSourceTarget(groq, dir) ?? (groq.word && groq.translation ? { source: groq.word, target: groq.translation } : null);
       if (st) {
-        const lang: 'fr' | 'es' = dir === 'tr-fr' || dir === 'fr-tr' ? 'fr' : 'es';
+        const lang: 'fr' | 'es' | 'en' = dir === 'tr-fr' || dir === 'fr-tr' ? 'fr' : dir === 'tr-en' || dir === 'en-tr' ? 'en' : 'es';
         const r: SearchResult = {
           source: sanitizeForDisplay(st.source),
           target: sanitizeForDisplay(st.target),
@@ -202,6 +216,12 @@ export default function Dictionary() {
         } else {
           setGroqWordMatrix(null);
         }
+        if (groq.etymology && typeof groq.etymology === 'object' && typeof groq.etymology.root === 'string') {
+          setGroqEtymology(groq.etymology);
+        } else {
+          setGroqEtymology(null);
+        }
+        setGroqSemanticShift(typeof groq.semanticShift === 'string' && groq.semanticShift.trim() ? groq.semanticShift.trim() : null);
         setRecentSearches((prev) => {
           const next = [{ query: trimmed, dir }, ...prev.filter((x) => !(x.query === trimmed && x.dir === dir))].slice(0, 5);
           if (typeof window !== 'undefined') {
@@ -218,6 +238,8 @@ export default function Dictionary() {
         setGroqExamples(null);
         setGroqCommonPhrases(null);
         setGroqWordMatrix(null);
+        setGroqEtymology(null);
+        setGroqSemanticShift(null);
       }
     } catch (err) {
       console.warn('[Sözlük] Groq istek hatası:', err);
@@ -225,6 +247,8 @@ export default function Dictionary() {
       setGroqExamples(null);
       setGroqCommonPhrases(null);
       setGroqWordMatrix(null);
+      setGroqEtymology(null);
+      setGroqSemanticShift(null);
     } finally {
       setIsLoading(false);
     }
@@ -252,12 +276,13 @@ export default function Dictionary() {
     [query, direction, doSearch]
   );
 
-  /** TTS: Hedef dildeki kelimeyi (ekranda büyük yazan) sesli okur; dil selectedLanguage/direction'a göre fr-FR veya es-ES. */
+  /** TTS: Hedef dildeki kelimeyi sesli okur; İngilizce seçiliyse en-US/en-GB, yoksa fr-FR veya es-ES. */
   const playAudio = useCallback(() => {
     if (!result) return;
-    const lang: 'fr-FR' | 'es-ES' = result.lang === 'fr' ? 'fr-FR' : 'es-ES';
-    const wordToSpeak = direction === 'tr-fr' || direction === 'tr-es' ? result.target : result.source;
-    speakWord(wordToSpeak, lang);
+    const ttsLang: 'fr-FR' | 'es-ES' | 'en-US' | 'en-GB' =
+      result.lang === 'en' ? 'en-GB' : result.lang === 'fr' ? 'fr-FR' : 'es-ES';
+    const wordToSpeak = direction === 'tr-fr' || direction === 'tr-es' || direction === 'tr-en' ? result.target : result.source;
+    speakWord(wordToSpeak, ttsLang);
   }, [result, direction]);
 
   const handleSearchQuery = useCallback((q: string, dir: DictDirection) => {
@@ -310,7 +335,7 @@ export default function Dictionary() {
 
       <main className="relative z-10 max-w-3xl mx-auto px-4 md:px-8 py-10 sm:py-14 pb-24">
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="max-w-2xl mx-auto">
-          {/* Dil seçici — arama kutusunun hemen üstünde, pill segmented control */}
+          {/* Dil seçici — arama kutusunun hemen üstünde, pill segmented control (Fransızca, İspanyolca, İngilizce) */}
           <div className="flex justify-center mb-4" role="tablist" aria-label="Sözlük dili">
             <motion.div
               layout
@@ -322,7 +347,7 @@ export default function Dictionary() {
                 role="tab"
                 aria-selected={direction === 'tr-fr' || direction === 'fr-tr'}
                 onClick={() => setDirection(direction === 'tr-fr' || direction === 'fr-tr' ? swapDirection(direction) : 'tr-fr')}
-                className={`relative flex items-center justify-center gap-1.5 px-4 py-2 rounded-full text-xs font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 focus:ring-offset-slate-50 dark:focus:ring-offset-night-950 min-w-[100px] ${direction === 'tr-fr' || direction === 'fr-tr' ? 'text-white' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-400'}`}
+                className={`relative flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 rounded-full text-xs font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 focus:ring-offset-slate-50 dark:focus:ring-offset-night-950 min-w-[90px] sm:min-w-[100px] ${direction === 'tr-fr' || direction === 'fr-tr' ? 'text-white' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-400'}`}
               >
                 {(direction === 'tr-fr' || direction === 'fr-tr') && (
                   <motion.span
@@ -333,14 +358,15 @@ export default function Dictionary() {
                   />
                 )}
                 <span className="relative z-10" aria-hidden>🇫🇷</span>
-                <span className="relative z-10">Fransızca</span>
+                <span className="relative z-10 hidden sm:inline">Fransızca</span>
+                <span className="relative z-10 sm:hidden">FR</span>
               </button>
               <button
                 type="button"
                 role="tab"
                 aria-selected={direction === 'tr-es' || direction === 'es-tr'}
                 onClick={() => setDirection(direction === 'tr-es' || direction === 'es-tr' ? swapDirection(direction) : 'tr-es')}
-                className={`relative flex items-center justify-center gap-1.5 px-4 py-2 rounded-full text-xs font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 focus:ring-offset-slate-50 dark:focus:ring-offset-night-950 min-w-[100px] ${direction === 'tr-es' || direction === 'es-tr' ? 'text-white' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-400'}`}
+                className={`relative flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 rounded-full text-xs font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 focus:ring-offset-slate-50 dark:focus:ring-offset-night-950 min-w-[90px] sm:min-w-[100px] ${direction === 'tr-es' || direction === 'es-tr' ? 'text-white' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-400'}`}
               >
                 {(direction === 'tr-es' || direction === 'es-tr') && (
                   <motion.span
@@ -351,7 +377,27 @@ export default function Dictionary() {
                   />
                 )}
                 <span className="relative z-10" aria-hidden>🇪🇸</span>
-                <span className="relative z-10">İspanyolca</span>
+                <span className="relative z-10 hidden sm:inline">İspanyolca</span>
+                <span className="relative z-10 sm:hidden">ES</span>
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={isEnglish}
+                onClick={() => setDirection(isEnglish ? swapDirection(direction) : 'tr-en')}
+                className={`relative flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 rounded-full text-xs font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 focus:ring-offset-slate-50 dark:focus:ring-offset-night-950 min-w-[90px] sm:min-w-[100px] ${isEnglish ? 'text-white' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-400'}`}
+              >
+                {isEnglish && (
+                  <motion.span
+                    layoutId="dict-lang-pill"
+                    className="absolute inset-0 rounded-full bg-indigo-500/90 dark:bg-indigo-500"
+                    transition={{ type: 'spring', bounce: 0.2, duration: 0.4 }}
+                    style={{ zIndex: 0 }}
+                  />
+                )}
+                <span className="relative z-10" aria-hidden>🇬🇧</span>
+                <span className="relative z-10 hidden sm:inline">İngilizce</span>
+                <span className="relative z-10 sm:hidden">EN</span>
               </button>
             </motion.div>
           </div>
@@ -368,7 +414,7 @@ export default function Dictionary() {
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder={direction === 'tr-fr' || direction === 'fr-tr' ? 'Fransızca veya Türkçe kelime...' : 'İspanyolca veya Türkçe kelime...'}
+                  placeholder={isEnglish ? 'İngilizce veya Türkçe kelime...' : direction === 'tr-fr' || direction === 'fr-tr' ? 'Fransızca veya Türkçe kelime...' : 'İspanyolca veya Türkçe kelime...'}
                   className="flex-1 min-w-0 bg-transparent border-0 py-3 text-xl sm:text-2xl text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none"
                   aria-label={direction.startsWith('tr') ? 'Hangi kelimenin anlamına bakalım?' : 'Arama'}
                 />
@@ -438,12 +484,12 @@ export default function Dictionary() {
                 transition={{ duration: 0.3 }}
                 className="space-y-12 mt-16 sm:mt-20"
               >
-                {/* Günün Kelimeleri — minimal: ikon + kelime + anlam, ince üst çizgi */}
+                {/* Günün Kelimeleri — minimal: ikon + kelime + anlam (FR, ES, EN) */}
                 <div className="pt-8 border-t border-slate-200/50 dark:border-white/10">
                   <h2 className="text-[11px] font-medium uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-5 text-center">Günün Kelimeleri</h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-6">
                     {(() => {
-                      const { fr, es } = getWordsOfTheDay();
+                      const { fr, es, en } = getWordsOfTheDay();
                       return (
                         <>
                           <motion.button
@@ -472,6 +518,20 @@ export default function Dictionary() {
                             <div className="min-w-0">
                               <p className="font-bold text-slate-900 dark:text-slate-100 text-lg">{es.label}</p>
                               <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">{es.translation}</p>
+                            </div>
+                          </motion.button>
+                          <motion.button
+                            type="button"
+                            initial={{ opacity: 0, y: 8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.3, delay: 0.15 }}
+                            onClick={() => handleSearchQuery(en.word, en.dir)}
+                            className="group flex items-start gap-3 text-left focus:outline-none focus:ring-0 rounded-lg py-1 -mx-1 hover:bg-white/5 dark:hover:bg-white/5 transition-colors duration-200"
+                          >
+                            <span className="text-xl mt-0.5 opacity-70 group-hover:opacity-100 transition-opacity" aria-hidden>🌟</span>
+                            <div className="min-w-0">
+                              <p className="font-bold text-slate-900 dark:text-slate-100 text-lg">{en.label}</p>
+                              <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">{en.translation}</p>
                             </div>
                           </motion.button>
                         </>
@@ -562,7 +622,9 @@ export default function Dictionary() {
                   </button>
                 </div>
                 {result.phonetic && (
-                  <p className="mt-1 text-base text-slate-500 dark:text-slate-400 font-mono">{result.phonetic}</p>
+                  <p className={`mt-1 font-mono text-slate-500 dark:text-slate-400 ${result.lang === 'en' ? 'text-sm tracking-wide' : 'text-base'}`}>
+                    {result.phonetic}
+                  </p>
                 )}
                 <p className="mt-2 text-xl sm:text-2xl font-medium text-indigo-600 dark:text-indigo-400">
                   {result.target}
@@ -629,7 +691,7 @@ export default function Dictionary() {
                           className="pl-4 border-l-2 border-indigo-500/60 dark:border-indigo-400/50 py-0.5"
                         >
                           <p className="text-slate-900 dark:text-slate-100 leading-relaxed">
-                            {highlightWord(item.original, (direction === 'tr-fr' || direction === 'tr-es') ? result.target : result.source)}
+                            {highlightWord(item.original, (direction === 'tr-fr' || direction === 'tr-es' || direction === 'tr-en') ? result.target : result.source)}
                           </p>
                           {item.translation && (
                             <p className="text-gray-400 dark:text-slate-500 text-sm mt-1 leading-relaxed">
@@ -683,11 +745,11 @@ export default function Dictionary() {
                   </div>
                 </div>
 
-                {/* Sık Kullanılan Kalıplar — minimal */}
+                {/* Sık Kullanılan Kalıplar / Yaygın Kullanımlar (EN: phrasal verbs) — minimal */}
                 {groqCommonPhrases && groqCommonPhrases.length > 0 && (
                   <div className="mt-8 pt-6 border-t border-slate-200/60 dark:border-white/10">
                     <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500 dark:text-slate-500 mb-3">
-                      Sık Kullanılan Kalıplar
+                      {result.lang === 'en' ? 'Yaygın Kullanımlar' : 'Sık Kullanılan Kalıplar'}
                     </p>
                     <div className="space-y-2">
                       {groqCommonPhrases.map((item, i) => (
@@ -696,6 +758,100 @@ export default function Dictionary() {
                           <span className="text-slate-500 dark:text-slate-400 italic ml-2">{item.meaning}</span>
                         </p>
                       ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Etimoloji Dedektifi — köken + görsel ağaç + eğlenceli bilgi */}
+                {(groqEtymology?.root || groqSemanticShift) && (
+                  <div className="mt-8 pt-6 border-t border-slate-200/60 dark:border-white/10">
+                    <div
+                      className="relative rounded-2xl border border-amber-200/30 dark:border-amber-900/50 overflow-hidden"
+                      style={{
+                        background: 'linear-gradient(135deg, rgba(254,243,199,0.12) 0%, rgba(253,230,138,0.06) 50%, rgba(251,191,36,0.08) 100%)',
+                        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05), 0 1px 2px rgba(0,0,0,0.04)',
+                      }}
+                    >
+                      {/* Laboratuvar grid / parşömen dokusu */}
+                      <div className="absolute inset-0 opacity-[0.04] dark:opacity-[0.06] pointer-events-none" aria-hidden>
+                        <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                          <defs>
+                            <pattern id="etym-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+                              <path d="M 24 0 L 0 0 0 24" fill="none" stroke="currentColor" strokeWidth="0.4" />
+                            </pattern>
+                          </defs>
+                          <rect width="100%" height="100%" fill="url(#etym-grid)" className="text-amber-800 dark:text-amber-600" />
+                        </svg>
+                      </div>
+                      <div className="relative p-5 sm:p-6">
+                        <p className="text-[11px] font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-400/90 mb-4">
+                          Etimoloji Dedektifi
+                        </p>
+
+                        {/* Görsel soy ağacı: kök merkez, dallar = akraba kelimeler */}
+                        {groqEtymology?.root && (
+                          <div className="mb-6">
+                            <div className="relative flex flex-col items-center min-h-[140px]">
+                              {/* Üst satır: akraba kelimeler (dalların uçları) */}
+                              {groqEtymology.connections.length > 0 && (
+                                <>
+                                  <div className="flex flex-wrap justify-center gap-4 sm:gap-6 mb-2">
+                                    {groqEtymology.connections.map((conn, i) => (
+                                      <motion.div
+                                        key={i}
+                                        initial={{ opacity: 0, y: 6 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: i * 0.1, duration: 0.3 }}
+                                        className="flex flex-col items-center rounded-lg border border-slate-200/60 dark:border-white/10 bg-white/60 dark:bg-slate-800/60 px-3 py-2 shadow-sm"
+                                      >
+                                        <span className="text-[10px] font-medium uppercase text-amber-600 dark:text-amber-500/80">
+                                          {conn.lang === 'Fr' ? '🇫🇷 Fr' : conn.lang === 'Es' ? '🇪🇸 Es' : conn.lang === 'En' ? '🇬🇧 En' : conn.lang}
+                                        </span>
+                                        <span className="text-sm font-semibold text-slate-800 dark:text-slate-200 mt-0.5">
+                                          {conn.word}
+                                        </span>
+                                        {conn.relation && (
+                                          <span className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 max-w-[100px] text-center leading-tight line-clamp-2">
+                                            {conn.relation}
+                                          </span>
+                                        )}
+                                      </motion.div>
+                                    ))}
+                                  </div>
+                                  {/* Dal çizgileri: köke doğru (dekoratif) */}
+                                  <div className="w-0.5 h-4 rounded-full bg-gradient-to-b from-amber-400/40 to-amber-500/50 dark:from-amber-500/30 dark:to-amber-600/40" aria-hidden />
+                                </>
+                              )}
+                              {/* Merkez: kök */}
+                              <motion.div
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ duration: 0.35 }}
+                                className="rounded-xl bg-amber-500/25 dark:bg-amber-600/30 border-2 border-amber-400/50 dark:border-amber-500/50 px-5 py-3 shadow-md mt-1"
+                              >
+                                <span className="text-[10px] font-semibold uppercase tracking-wider text-amber-800 dark:text-amber-200/90 block text-center">
+                                  Köken
+                                </span>
+                                <span className="text-lg font-bold text-amber-900 dark:text-amber-100 block text-center mt-1">
+                                  {groqEtymology.root}
+                                </span>
+                              </motion.div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Eğlenceli Bilgi: anlam kayması */}
+                        {groqSemanticShift && (
+                          <div className="rounded-xl bg-white/50 dark:bg-slate-800/50 border border-slate-200/50 dark:border-white/10 p-4">
+                            <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
+                              Eğlenceli Bilgi
+                            </p>
+                            <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed italic">
+                              {groqSemanticShift}
+                            </p>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 )}

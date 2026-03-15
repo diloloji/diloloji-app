@@ -11,7 +11,7 @@
   "lang": "tr",
   "icons": [
     {
-      "src": "/logo.svg",
+      "src": "/logo-light.svg",
       "type": "image/svg+xml",
       "sizes": "any",
       "purpose": "any"
