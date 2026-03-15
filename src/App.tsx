@@ -10,6 +10,7 @@ import SyntaxLab from './pages/SyntaxLab';
 import Profile from './pages/Profile';
 import Leaderboard from './pages/Leaderboard';
 import Pricing from './pages/Pricing';
+import YouTubeLab from './pages/YouTubeLab';
 import { XpProvider } from './contexts/XpContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -35,6 +36,8 @@ function getPageElement(pathname: string) {
     case '/syntax-lab':
     case '/cumle-analizi':
       return <SyntaxLab />;
+    case '/youtube-lab':
+      return <YouTubeLab />;
     case '/profil':
       return <Profile />;
     case '/leaderboard':
