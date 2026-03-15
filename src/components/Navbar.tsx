@@ -99,12 +99,12 @@ export default function Navbar({ onLoginClick, onLogoutClick, isLoggedIn, printH
         data-print-hide={printHide ? true : undefined}
         className="sticky top-0 z-50 w-full bg-white/80 dark:bg-[#0a0e17]/80 backdrop-blur-md border-b border-slate-200/50 dark:border-white/5 transition-all duration-300 print:hidden"
       >
-        <div className="flex items-center justify-between w-full max-w-7xl mx-auto px-4 h-16 gap-4">
-          {/* Sol — Logo */}
+        <div className="flex items-center justify-between w-full max-w-7xl mx-auto pl-1 pr-4 h-16 gap-4">
+          {/* Sol — Logo (sadece ikon), sola yaslı */}
           <div className="flex items-center shrink-0 min-w-0">
             <Link
               to="/"
-              className="flex items-center gap-2 transition-opacity hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 dark:focus:ring-offset-[#0a0e17] rounded-lg"
+              className="flex items-center transition-opacity hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 dark:focus:ring-offset-[#0a0e17] rounded-lg"
               aria-label="Ana sayfa"
             >
               <img
@@ -112,9 +112,6 @@ export default function Navbar({ onLoginClick, onLogoutClick, isLoggedIn, printH
                 alt="Diloloji"
                 className="h-8 sm:h-9 w-auto shrink-0"
               />
-              <span className="font-bold text-slate-800 dark:text-white text-sm uppercase tracking-wider hidden sm:inline whitespace-nowrap">
-                Diloloji
-              </span>
             </Link>
           </div>
 
