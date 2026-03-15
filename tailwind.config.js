@@ -44,6 +44,11 @@ export default {
           '25%': { transform: 'translateX(-5px)' },
           '75%': { transform: 'translateX(5px)' },
         },
+        'combo-wiggle': {
+          '0%, 100%': { transform: 'translateX(0)' },
+          '25%': { transform: 'translateX(-2px)' },
+          '75%': { transform: 'translateX(2px)' },
+        },
         'icon-sway': {
           '0%, 100%': { transform: 'rotate(-3deg)' },
           '50%': { transform: 'rotate(3deg)' },
@@ -78,6 +83,7 @@ export default {
         'menu-in': 'menu-in 0.2s ease-out forwards',
         'slide-in-right': 'slide-in-right 0.25s ease-out forwards',
         shake: 'shake 0.2s ease-in-out 2',
+        'combo-wiggle': 'combo-wiggle 0.4s ease-in-out infinite',
         'icon-sway': 'icon-sway 2s ease-in-out infinite',
         'icon-glow': 'icon-glow 2s ease-in-out infinite',
         'float-symbol': 'float-symbol 6s ease-in-out infinite',

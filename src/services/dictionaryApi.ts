@@ -53,17 +53,23 @@ export interface GroqWordAnalysis {
   etymology?: GroqEtymology;
   /** Anlam kayması: 1-2 cümlelik eğlenceli bilgi (örn. 14. yüzyılda şu anlama geliyordu) */
   semanticShift?: string;
+  /** Eş anlamlılar — hedef dilde, virgülle ayrılmış */
+  synonyms?: string;
+  /** Zıt anlamlılar — hedef dilde, virgülle ayrılmış */
+  antonyms?: string;
+  /** CEFR seviye: A1, A2, B1, B2, C1, C2 */
+  level?: string;
   /** Eski format uyumluluğu (fallback) */
   source?: string;
   target?: string;
 }
 
 const GROQ_SYSTEM_MESSAGE =
-  'Sen profesyonel bir dilbilimci ve sözlük editörüsün. Kullanıcının girdiği kelimenin dilini otomatik algıla ve hedeflenen dile çevir. Kullanıcının arattığı kelimenin dilbilgisi türü ne olursa olsun, o kelimenin kökünden türeyen diğer temel formları da bul: İsim (noun), Fiil (verb), Sıfat (adjective), Zarf (adverb). Bulunmayan formlar için null dön. EK OLARAK: (1) Aratılan kelimenin Latince veya Proto-Hint-Avrupa (PIE) kökenini bul; bu kökten türeyen ve Fransızca, İspanyolca, İngilizce dillerinde hâlâ kullanılan akraba kelimeleri (cognates) "etymology" objesinde dön: { "root": "Latince veya PIE kökü", "connections": [ { "lang": "Fr" veya "Es" veya "En", "word": "o dildeki kelime", "relation": "kısa ilişki açıklaması" } ] }. (2) Kelimenin yüzyıllar içindeki anlam kaymasını (semantic shift) 1-2 cümleyle "semanticShift" alanında yaz (örn: "Bu kelime 14. yüzyılda aslında X anlamına geliyordu; zamanla Y anlamını kazanmıştır."). Cevabını her zaman sadece şu JSON formatında ver: { "word", "phonetic", "translation", "examples", "commonPhrases", "wordMatrix", "etymology": { "root", "connections": [{ "lang", "word", "relation" }] }, "semanticShift": "1-2 cümle" }. Asla açıklama ekleme, sadece geçerli JSON döndür.';
+  'Sen profesyonel bir dilbilimci ve sözlük editörüsün. Kullanıcının girdiği kelimenin dilini otomatik algıla ve hedeflenen dile çevir. Kullanıcının arattığı kelimenin dilbilgisi türü ne olursa olsun, o kelimenin kökünden türeyen diğer temel formları da bul: İsim (noun), Fiil (verb), Sıfat (adjective), Zarf (adverb). Bulunmayan formlar için null dön. KRİTİK KURAL — Kelime matrisi (wordMatrix: noun, verb, adjective, adverb) KESİNLİKLE kullanıcının seçtiği hedef dilde (İspanyolca, Fransızca veya İngilizce) olmalıdır; asla Türkçe kelime kullanma. Örnek: Kullanıcı Türkçe "Eğitim" kelimesini İspanyolca aratıyorsa matris şöyle olmalıdır: İsim: educación, Fiil: educar, Sıfat: educativo, Zarf: educativamente. EK OLARAK: (1) Aratılan kelimenin Latince veya Proto-Hint-Avrupa (PIE) kökenini bul; bu kökten türeyen ve Fransızca, İspanyolca, İngilizce dillerinde hâlâ kullanılan akraba kelimeleri (cognates) "etymology" objesinde dön: { "root": "Latince veya PIE kökü", "connections": [ { "lang": "Fr" veya "Es" veya "En", "word": "o dildeki kelime", "relation": "kısa ilişki açıklaması" } ] }. (2) Kelimenin yüzyıllar içindeki anlam kaymasını (semantic shift) 1-2 cümleyle "semanticShift" alanında yaz (örn: "Bu kelime 14. yüzyılda aslında X anlamına geliyordu; zamanla Y anlamını kazanmıştır."). (3) Eş anlamlıları "synonyms", zıt anlamlıları "antonyms" (hedef dilde, virgülle ayrılmış) dön. (4) Kelimenin CEFR seviyesini "level" alanında ver: A1, A2, B1, B2, C1 veya C2. Cevabını her zaman sadece şu JSON formatında ver: { "word", "phonetic", "translation", "examples", "commonPhrases", "wordMatrix", "etymology": { "root", "connections": [{ "lang", "word", "relation" }] }, "semanticShift", "synonyms", "antonyms", "level" }. Asla açıklama ekleme, sadece geçerli JSON döndür.';
 
 /** İngilizce için ek kurallar: IPA zorunlu, fiil ise 2-3 phrasal verb commonPhrases içinde. */
 const GROQ_SYSTEM_MESSAGE_EN =
-  'Sen profesyonel bir dilbilimci ve sözlük editörüsün. Hedef dil İngilizce veya Türkçe; kullanıcının girdiği kelimenin dilini otomatik algıla ve hedeflenen dile çevir. ÖNEMLİ — İngilizce: (1) IPA telaffuzu (phonetic) zorunlu. (2) Fiil ise commonPhrases içinde 2-3 phrasal verb. (3) etymology: aratılan kelimenin Latince veya PIE kökünü bul; Fransızca, İspanyolca, İngilizce akraba kelimeleri (cognates) connections listesinde dön: { "root": "köken", "connections": [ { "lang": "Fr|Es|En", "word": "kelime", "relation": "kısa açıklama" } ] }. (4) semanticShift: anlam kaymasını 1-2 cümle (Türkçe). Cevabı şu JSON ile ver: { "word", "phonetic", "translation", "examples", "commonPhrases", "wordMatrix", "etymology", "semanticShift" }. Sadece geçerli JSON döndür.';
+  'Sen profesyonel bir dilbilimci ve sözlük editörüsün. Hedef dil İngilizce veya Türkçe; kullanıcının girdiği kelimenin dilini otomatik algıla ve hedeflenen dile çevir. KRİTİK KURAL — Kelime matrisi (wordMatrix: noun, verb, adjective, adverb) KESİNLİKLE hedef dilde (İngilizce veya Türkçe) olmalıdır; asla diğer dilde kelime kullanma. Örnek: Türkçe "Eğitim" İngilizce aranıyorsa: noun: education, verb: educate, adjective: educational, adverb: educationally. ÖNEMLİ — İngilizce: (1) IPA telaffuzu (phonetic) zorunlu. (2) Fiil ise commonPhrases içinde 2-3 phrasal verb. (3) etymology: aratılan kelimenin Latince veya PIE kökünü bul; Fransızca, İspanyolca, İngilizce akraba kelimeleri (cognates) connections listesinde dön: { "root": "köken", "connections": [ { "lang": "Fr|Es|En", "word": "kelime", "relation": "kısa açıklama" } ] }. (4) semanticShift: anlam kaymasını 1-2 cümle (Türkçe). (5) synonyms ve antonyms: eş ve zıt anlamlılar (hedef dilde, virgülle ayrılmış). (6) level: CEFR seviyesi (A1, A2, B1, B2, C1 veya C2). Cevabı şu JSON ile ver: { "word", "phonetic", "translation", "examples", "commonPhrases", "wordMatrix", "etymology", "semanticShift", "synonyms", "antonyms", "level" }. Sadece geçerli JSON döndür.';
 
 /**
  * Groq API ile tek istekte kelime analizi (dil algılama + çeviri + IPA + örnekler).
@@ -137,6 +143,17 @@ export const fetchFromGroq = async (word: string, targetLanguage: string): Promi
     }
     if (parsed.semanticShift !== undefined && typeof parsed.semanticShift !== 'string') {
       parsed.semanticShift = parsed.semanticShift != null ? String(parsed.semanticShift) : undefined;
+    }
+    const rawGroq = parsed as unknown as Record<string, unknown>;
+    if (rawGroq.synonyms !== undefined) {
+      parsed.synonyms = Array.isArray(rawGroq.synonyms)
+        ? (rawGroq.synonyms as string[]).join(', ')
+        : typeof rawGroq.synonyms === 'string' ? rawGroq.synonyms : undefined;
+    }
+    if (rawGroq.antonyms !== undefined) {
+      parsed.antonyms = Array.isArray(rawGroq.antonyms)
+        ? (rawGroq.antonyms as string[]).join(', ')
+        : typeof rawGroq.antonyms === 'string' ? rawGroq.antonyms : undefined;
     }
     console.log('[Sözlük] Groq yanıtı (ham):', {
       word: parsed.word,

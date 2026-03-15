@@ -33,10 +33,50 @@ import EzberMakinesi from '../components/EzberMakinesi';
 import AuthModal from '../components/AuthModal';
 import Navbar from '../components/Navbar';
 import AccentKeyboard from '../components/AccentKeyboard';
+import PronunciationButton from '../components/PronunciationButton';
 import { sanitizeForDisplay } from '../utils/sanitize';
 
 type Mode = 'learning' | 'quiz' | 'review' | 'starred' | 'time-attack' | 'compare';
 type AppMode = 'conjugation' | 'ezber';
+
+/** Zamana Karşı skor kaydı (localStorage). */
+interface TimeAttackScoreEntry {
+  score: number;
+  combo: number;
+  date: string;
+  verb: string;
+  tense: string;
+  lang: 'fr' | 'es';
+}
+
+const TIME_ATTACK_STORAGE_KEY = 'diloloji-time-attack-scores';
+const TIME_ATTACK_MAX_ENTRIES = 50;
+
+function getTimeAttackScores(): TimeAttackScoreEntry[] {
+  try {
+    const raw = localStorage.getItem(TIME_ATTACK_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as TimeAttackScoreEntry[];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveTimeAttackScore(entry: TimeAttackScoreEntry): { highScore: number; lastFive: TimeAttackScoreEntry[] } {
+  const list = getTimeAttackScores();
+  const prevBest = list.length > 0 ? Math.max(...list.map((e) => e.score)) : 0;
+  list.push(entry);
+  const trimmed = list.slice(-TIME_ATTACK_MAX_ENTRIES);
+  try {
+    localStorage.setItem(TIME_ATTACK_STORAGE_KEY, JSON.stringify(trimmed));
+  } catch {
+    /* ignore */
+  }
+  const highScore = trimmed.length > 0 ? Math.max(...trimmed.map((e) => e.score)) : 0;
+  const lastFive = [...trimmed].reverse().slice(0, 5);
+  return { highScore, lastFive };
+}
 
 /** Zamir id → Türkçe şahıs açıklaması (tersine arama bilgi kartı için) */
 const PRONOUN_PERSON_LABEL: Record<string, string> = {
@@ -111,6 +151,7 @@ function normalizeAnswer(s: string): string {
     .toLowerCase()
     .replace(/\s+/g, ' ')
     .replace(/['']/g, "'")
+    .normalize('NFC')
     .trim();
 }
 
@@ -118,24 +159,81 @@ function normalizeAnswer(s: string): string {
 function stripPronounPrefix(normalizedCorrect: string): string {
   return normalizedCorrect
     .replace(
-      /^(j'|je |tu |il\/elle |il |elle |nous |vous |ils\/elles |ils |elles )/i,
+      /^(j'|je |tu |il\/elle |il |elle |nous |vous |ils\/elles |ils |elles |yo |tú |él\/ella |él |ella |nosotros |vosotros |ellos\/ellas |ellos |ellas )/i,
       ''
     )
     .trim();
 }
 
+function levenshteinDistance(a: string, b: string): number {
+  const m = a.length;
+  const n = b.length;
+  const dp: number[][] = Array.from({ length: m + 1 }, () => Array(n + 1).fill(0));
+  for (let i = 0; i <= m; i++) dp[i][0] = i;
+  for (let j = 0; j <= n; j++) dp[0][j] = j;
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      dp[i][j] = Math.min(
+        dp[i - 1][j] + 1,
+        dp[i][j - 1] + 1,
+        dp[i - 1][j - 1] + cost
+      );
+    }
+  }
+  return dp[m][n];
+}
+
+export type AnswerCheckResult = 'correct' | 'wrong' | 'typo';
+
 /**
- * Esnek doğrulama: Kullanıcı cevabı (boşlukları silinmiş, küçük harf) şunlardan
- * HERHANGİ BİRİNE uyuyorsa DOĞRU kabul edilir:
- * - Sadece çekimlenmiş fiil (örn. 'finit', 'suis', 'allé')
- * - Zamir ile birlikte (örn. 'il finit', 'j'aime', 'il/elle finit')
+ * Akıllı cevap kontrolü: normalize + tam eşleşme veya 1 karakter farkı (typo).
+ * typo = sarı uyarı, yanlış sayılmaz, bir sonraki soruda tekrar sorulur.
  */
-function checkOne(user: string, correct: string): boolean {
+function checkAnswer(user: string, correct: string): AnswerCheckResult {
   const a = normalizeAnswer(user);
-  if (a === '') return false;
+  if (a === '') return 'wrong';
   const fullNorm = normalizeAnswer(correct);
   const verbOnly = stripPronounPrefix(fullNorm);
-  return a === verbOnly || a === fullNorm;
+  if (a === verbOnly || a === fullNorm) return 'correct';
+  const distVerb = levenshteinDistance(a, verbOnly);
+  const distFull = levenshteinDistance(a, fullNorm);
+  if (distVerb === 1 || distFull === 1) return 'typo';
+  return 'wrong';
+}
+
+/** checkAnswer ile uyumlu boolean (mevcut kullanımlar için). */
+function checkOne(user: string, correct: string): boolean {
+  return checkAnswer(user, correct) === 'correct';
+}
+
+/** İki metin arasındaki farkları vurgulamak için segment listesi (kıyaslama modu). */
+function getDiffSegments(a: string, b: string): { a: { text: string; highlight: boolean }[]; b: { text: string; highlight: boolean }[] } {
+  let i = 0;
+  while (i < a.length && i < b.length && a[i] === b[i]) i++;
+  const prefixLen = i;
+  let j = 0;
+  while (
+    j < a.length - j &&
+    j < b.length - j &&
+    a[a.length - 1 - j] === b[b.length - 1 - j]
+  )
+    j++;
+  const suffixLen = j;
+  const aPrefix = a.slice(0, prefixLen);
+  const aMiddle = a.slice(prefixLen, a.length - suffixLen);
+  const aSuffix = suffixLen > 0 ? a.slice(-suffixLen) : '';
+  const bPrefix = b.slice(0, prefixLen);
+  const bMiddle = b.slice(prefixLen, b.length - suffixLen);
+  const bSuffix = suffixLen > 0 ? b.slice(-suffixLen) : '';
+  const seg = (prefix: string, middle: string, suffix: string) => {
+    const out: { text: string; highlight: boolean }[] = [];
+    if (prefix) out.push({ text: prefix, highlight: false });
+    if (middle) out.push({ text: middle, highlight: true });
+    if (suffix) out.push({ text: suffix, highlight: false });
+    return out;
+  };
+  return { a: seg(aPrefix, aMiddle, aSuffix), b: seg(bPrefix, bMiddle, bSuffix) };
 }
 
 /** Düzenli kökten sapan harfler: aksanlı ve özel karakterler (ç, œ, æ). Her karakter için highlight mı döner. */
@@ -383,7 +481,7 @@ export function Page() {
   const [selectedTense, setSelectedTense] = useState<string>(() => getTenses('fr')[0].id);
   const [mode, setMode] = useState<Mode>('learning');
   const [userAnswers, setUserAnswers] = useState<Record<string, string>>(() => getInitialUserAnswers('fr'));
-  const [quizFeedback, setQuizFeedback] = useState<Record<string, 'correct' | 'wrong' | null>>(() =>
+  const [quizFeedback, setQuizFeedback] = useState<Record<string, 'correct' | 'wrong' | 'typo' | null>>(() =>
     Object.fromEntries(getPronouns('fr').map((p) => [p.id, null as 'correct' | 'wrong' | null]))
   );
   /** Passé Composé için özel ipuçları (Fransızca); İspanyolca için boş kullanılabilir */
@@ -401,6 +499,13 @@ export function Page() {
   /** Öğrenme tablosu: Ezber Modu (Active Recall) — çekimler blur, hover’da netleşir */
   const [activeRecallMode, setActiveRecallMode] = useState(false);
   const [showAllTenses, setShowAllTenses] = useState(false);
+  const allTensesSectionRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (showAllTenses) {
+      const t = setTimeout(() => allTensesSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 150);
+      return () => clearTimeout(t);
+    }
+  }, [showAllTenses]);
   /** Görünüm modu: 'simple' = sadece fiil başlığı + çekim tablosu; 'detailed' = bilgi kutusu, sekmeler, aksiyonlar */
   const [viewMode, setViewMode] = useState<'simple' | 'detailed'>('simple');
   const [isReflexive, setIsReflexive] = useState(false);
@@ -441,11 +546,18 @@ export function Page() {
   const [timeAttackCorrectCount, setTimeAttackCorrectCount] = useState(0);
   const [timeAttackMaxCombo, setTimeAttackMaxCombo] = useState(1);
   const [timeAttackGameOver, setTimeAttackGameOver] = useState(false);
+  /** Oyun bittiğinde localStorage'dan okunan: kişisel rekor, son 5 skor, yeni rekor mu */
+  const [timeAttackHighScore, setTimeAttackHighScore] = useState(0);
+  const [timeAttackLastScores, setTimeAttackLastScores] = useState<TimeAttackScoreEntry[]>([]);
+  const [timeAttackIsNewRecord, setTimeAttackIsNewRecord] = useState(false);
+  const [timeAttackComboToast, setTimeAttackComboToast] = useState<number | null>(null);
+  const timeAttackComboToastRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [timeAttackFeedback, setTimeAttackFeedback] = useState<'correct' | 'wrong' | null>(null);
   const [timeAttackPointsFlash, setTimeAttackPointsFlash] = useState<number | null>(null);
   const [timeAttackShake, setTimeAttackShake] = useState(false);
   const timeAttackTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const timeAttackXpAwardedRef = useRef(false);
+  const timeAttackSaveDoneRef = useRef(false);
 
   /** Zamana Karşı bittiğinde bir kez XP ver (skor/10); tekrar oynayınca sıfırla */
   useEffect(() => {
@@ -460,8 +572,34 @@ export function Page() {
     }
   }, [timeAttackGameOver, timeAttackScore, addXP]);
 
+  /** Zamana Karşı bittiğinde bir kez skoru localStorage'a yaz; kişisel rekor ve son 5'i state'e al */
+  useEffect(() => {
+    if (!timeAttackGameOver || timeAttackSaveDoneRef.current) return;
+    timeAttackSaveDoneRef.current = true;
+    const list = getTimeAttackScores();
+    const prevBest = list.length > 0 ? Math.max(...list.map((e) => e.score)) : 0;
+    const entry: TimeAttackScoreEntry = {
+      score: timeAttackScore,
+      combo: timeAttackMaxCombo,
+      date: new Date().toISOString(),
+      verb: timeAttackQuestion?.verbKey ?? '',
+      tense: timeAttackQuestion?.tense ?? '',
+      lang: selectedLanguage,
+    };
+    const { highScore, lastFive } = saveTimeAttackScore(entry);
+    setTimeAttackHighScore(highScore);
+    setTimeAttackLastScores(lastFive);
+    setTimeAttackIsNewRecord(timeAttackScore >= prevBest && timeAttackScore > 0);
+  }, [timeAttackGameOver, timeAttackScore, timeAttackMaxCombo, timeAttackQuestion, selectedLanguage]);
+
+  useEffect(() => {
+    if (!timeAttackGameOver) timeAttackSaveDoneRef.current = false;
+  }, [timeAttackGameOver]);
+
   /** Zaman/Kip custom dropdown: açık/kapalı + tıklama dışı kapatma */
   const [tenseDropdownOpen, setTenseDropdownOpen] = useState(false);
+  /** Mobilde sol panel (fiil seçimi) varsayılan kapalı; Fiil Seç ile açılır, fiil seçilince kapanır */
+  const [leftPanelOpen, setLeftPanelOpen] = useState(false);
   const tenseDropdownRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!tenseDropdownOpen) return;
@@ -532,7 +670,7 @@ export function Page() {
     setDynamicMeaning(null);
     setIsMeaningLoading(false);
     setUserAnswers(getInitialUserAnswers(selectedLanguage));
-    setQuizFeedback(Object.fromEntries(pronounsForLang.map((p) => [p.id, null as 'correct' | 'wrong' | null])));
+    setQuizFeedback(Object.fromEntries(pronounsForLang.map((p) => [p.id, null as 'correct' | 'wrong' | 'typo' | null])));
     setQuizPasséHint(Object.fromEntries(pronounsForLang.map((p) => [p.id, null as string | null])));
     requestAnimationFrame(() => verbInputRef.current?.focus());
   }, [selectedLanguage]);
@@ -623,6 +761,7 @@ export function Page() {
           if (overrideVerb) setVerbInput(sanitizeForDisplay(overrideVerb));
           setVerbKey(result.infinitive);
           setConjugations(verified);
+          setLeftPanelOpen(false);
           if (langOverride) setSelectedLanguage(langOverride);
           setError('');
           return;
@@ -638,6 +777,7 @@ export function Page() {
             setVerbKey(reverse.infinitive);
             setSelectedTense(reverse.tenseId);
             setConjugations(verified);
+            setLeftPanelOpen(false);
             if (langOverride) setSelectedLanguage(langOverride);
             setReverseLookupInfo({
               searched: toLoad,
@@ -723,9 +863,10 @@ export function Page() {
         setVerbInput(safeInfinitive);
         setVerbKey(safeInfinitive);
         setConjugations(verified);
+        setLeftPanelOpen(false);
         setError('');
         setUserAnswers(getInitialUserAnswers(selectedLanguage));
-        setQuizFeedback({ je: null, tu: null, il: null, nous: null, vous: null, ils: null });
+        setQuizFeedback({ je: null, tu: null, il: null, nous: null, vous: null, ils: null } as Record<string, 'correct' | 'wrong' | 'typo' | null>);
         setQuizPasséHint({ je: null, tu: null, il: null, nous: null, vous: null, ils: null });
         setShowHints(false);
         setShowCongrats(false);
@@ -736,6 +877,14 @@ export function Page() {
     }
     setError('Yeni rastgele fiil seçilemedi. Lütfen tekrar deneyin.');
   }, [selectedTense, selectedLanguage, verbKey]);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 768px)');
+    const handler = () => setLeftPanelOpen(mq.matches);
+    handler();
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
 
   useEffect(() => {
     if (!verbKey) return;
@@ -798,7 +947,7 @@ export function Page() {
   // Yeni fiil yüklendiğinde quiz cevaplarını ve ipucunu sıfırla (doğru cevaplar kütüphaneden gelen conjugations ile güncellenir)
   useEffect(() => {
     setUserAnswers(getInitialUserAnswers(selectedLanguage));
-    setQuizFeedback(Object.fromEntries(pronounsForLang.map((p) => [p.id, null as 'correct' | 'wrong' | null])));
+    setQuizFeedback(Object.fromEntries(pronounsForLang.map((p) => [p.id, null as 'correct' | 'wrong' | 'typo' | null])));
     setQuizPasséHint(Object.fromEntries(pronounsForLang.map((p) => [p.id, null as string | null])));
     setShowHints(false);
     setShowCongrats(false);
@@ -981,15 +1130,24 @@ export function Page() {
     const isCorrect = checkOne(timeAttackInput.trim(), correct);
     setTimeAttackFeedback(isCorrect ? 'correct' : 'wrong');
     if (isCorrect) {
+      const nextCombo = timeAttackCombo + 1;
       const points = 10 * timeAttackCombo;
       setTimeAttackScore((s) => s + points);
       setTimeAttackCombo((c) => c + 1);
       setTimeAttackCorrectCount((n) => n + 1);
-      setTimeAttackMaxCombo((m) => Math.max(m, timeAttackCombo + 1));
+      setTimeAttackMaxCombo((m) => Math.max(m, nextCombo));
       setTimeAttackPointsFlash(points);
       setTimeout(() => setTimeAttackPointsFlash(null), 600);
       setTimeAttackTimeLeft((t) => t + 2);
       addActivityToday(1);
+      if (nextCombo >= 5) {
+        if (timeAttackComboToastRef.current) clearTimeout(timeAttackComboToastRef.current);
+        setTimeAttackComboToast(nextCombo);
+        timeAttackComboToastRef.current = setTimeout(() => {
+          setTimeAttackComboToast(null);
+          timeAttackComboToastRef.current = null;
+        }, 2000);
+      }
     } else {
       setTimeAttackLives((l) => {
         const next = l - 1;
@@ -1049,13 +1207,13 @@ export function Page() {
       setTimeout(() => setQuizEmptyShake(null), 500);
       return;
     }
-    const next: Record<string, 'correct' | 'wrong' | null> = {};
+    const next: Record<string, 'correct' | 'wrong' | 'typo' | null> = {};
     const nextHints: Record<string, string | null> = Object.fromEntries(pronounIds.map((p) => [p, null]));
     pronounIds.forEach((pronoun) => {
       const user = userAnswers[pronoun];
       const correct = conjugations[pronoun];
-      const isCorrect = user.trim() === '' ? null : checkOne(user, correct);
-      next[pronoun] = isCorrect === null ? null : isCorrect ? 'correct' : 'wrong';
+      const result = user.trim() === '' ? null : checkAnswer(user, correct);
+      next[pronoun] = result;
       if (next[pronoun] === 'wrong' && selectedLanguage === 'fr' && selectedTense === 'passe-compose' && verbKey) {
         nextHints[pronoun] = checkPasséComposéLogic(user, correct, pronoun as import('../data/verbs').Pronoun, verbKey);
       }
@@ -1104,7 +1262,7 @@ export function Page() {
 
   const resetQuiz = useCallback(() => {
     setUserAnswers(getInitialUserAnswers(selectedLanguage));
-    setQuizFeedback({ je: null, tu: null, il: null, nous: null, vous: null, ils: null });
+    setQuizFeedback({ je: null, tu: null, il: null, nous: null, vous: null, ils: null } as Record<string, 'correct' | 'wrong' | 'typo' | null>);
     setQuizPasséHint({ je: null, tu: null, il: null, nous: null, vous: null, ils: null });
     setShowHints(false);
     setShowCongrats(false);
@@ -1246,9 +1404,15 @@ export function Page() {
       const user = userRaw.trim();
       if (!user) return;
       const correct = conjugationsForDisplay[pronoun];
-      const isCorrect = checkOne(userRaw, correct);
-      setQuizFeedback((prev) => ({ ...prev, [pronoun]: isCorrect ? 'correct' : 'wrong' }));
-      if (!isCorrect) {
+      const result = checkAnswer(userRaw, correct);
+      setQuizFeedback((prev) => ({ ...prev, [pronoun]: result }));
+      if (result === 'typo') {
+        if (selectedLanguage === 'fr' && selectedTense === 'passe-compose' && verbKey) {
+          setQuizPasséHint((prev) => ({ ...prev, [pronoun]: null }));
+        }
+        return;
+      }
+      if (result === 'wrong') {
         setCombo(0);
         if (verbKey) addToMistakeBank(verbKey, selectedTense, pronoun);
         if (selectedLanguage === 'fr' && selectedTense === 'passe-compose' && verbKey) {
@@ -1286,7 +1450,7 @@ export function Page() {
       const allFilled = pronounIds.every((p) => userAnswers[p].trim() !== '');
       const allCorrect =
         allFilled &&
-        pronounIds.every((p) => checkOne(userAnswers[p], conjugationsForDisplay[p]));
+        pronounIds.every((p) => checkAnswer(userAnswers[p], conjugationsForDisplay[p]) === 'correct');
       if (allCorrect) setShowCongrats(true);
       else if (currentIndex < pronounIds.length - 1)
         requestAnimationFrame(() => quizInputRefs.current[currentIndex + 1]?.focus());
@@ -1306,9 +1470,15 @@ export function Page() {
       return;
     }
     const correct = conjugationsForDisplay[pronoun];
-    const isCorrect = checkOne(userRaw, correct);
-    setQuizFeedback((prev) => ({ ...prev, [pronoun]: isCorrect ? 'correct' : 'wrong' }));
-    if (!isCorrect) {
+    const result = checkAnswer(userRaw, correct);
+    setQuizFeedback((prev) => ({ ...prev, [pronoun]: result }));
+    if (result === 'typo') {
+      if (selectedLanguage === 'fr' && selectedTense === 'passe-compose' && verbKey) {
+        setQuizPasséHint((prev) => ({ ...prev, [pronoun]: null }));
+      }
+      return;
+    }
+    if (result === 'wrong') {
       setCombo(0);
       if (verbKey) addToMistakeBank(verbKey, selectedTense, pronoun);
       if (selectedLanguage === 'fr' && selectedTense === 'passe-compose' && verbKey) {
@@ -1476,9 +1646,30 @@ export function Page() {
 
       {appMode === 'conjugation' && (
       <main className={`max-w-7xl w-full mx-auto px-4 md:px-8 pb-24 md:pb-20 transition-all duration-300 ${viewMode === 'simple' ? 'pt-2' : 'py-4'}`}>
-        <div className={`flex flex-col lg:grid lg:grid-cols-12 lg:items-start transition-all duration-300 ${viewMode === 'simple' ? 'gap-4 lg:gap-6' : 'gap-6 lg:gap-8'}`}>
-          {/* Sol sütun: Kontrol paneli (Basit modda da fiil girişi için görünür) */}
-          <aside data-print-hide className="flex flex-col gap-4 lg:col-span-4 order-1 print:hidden lg:sticky lg:top-6 lg:self-start transition-opacity duration-300">
+        <div className={`flex flex-col md:grid md:grid-cols-12 md:items-start transition-all duration-300 ${viewMode === 'simple' ? 'gap-4 md:gap-6' : 'gap-6 md:gap-8'}`}>
+          {/* Sol sütun: Kontrol paneli — mobilde accordion, md+ iki kolon */}
+          <aside data-print-hide className="flex flex-col gap-4 md:col-span-4 order-1 print:hidden md:sticky md:top-6 md:self-start transition-opacity duration-300">
+            <details
+              className="group/details md:contents"
+              open={leftPanelOpen}
+              onClick={(e) => {
+                const t = e.target as HTMLElement;
+                if (t.tagName === 'SUMMARY') e.preventDefault();
+              }}
+            >
+              <summary
+                className="md:hidden list-none cursor-pointer rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-100/80 dark:bg-slate-800/80 px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 flex items-center justify-between"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setLeftPanelOpen((o) => !o);
+                }}
+                role="button"
+                aria-expanded={leftPanelOpen}
+              >
+                ⚙ Fiil Seç
+                <span className={`inline-block transition-transform duration-200 ${leftPanelOpen ? 'rotate-180' : ''}`} aria-hidden>▼</span>
+              </summary>
+            <div className="flex flex-col gap-4">
             {/* Entegre dil seçici — arama alanının hemen üzerinde, segmented control */}
             <section className="relative z-10 shrink-0 w-full">
               <div
@@ -1586,6 +1777,7 @@ export function Page() {
                   aria-expanded={autocompleteSuggestions.length > 0 && !autocompleteClosed}
                   aria-controls="autocomplete-list"
                   id="verb-input"
+                  autoFocus
                 />
                 <button
                   type="button"
@@ -1735,25 +1927,38 @@ export function Page() {
             </label>
           </div>
             </section>
-            {/* Zaman açıklaması kartı — sadece Detaylı modda */}
+            {/* Zaman açıklaması kartı — compact, seçilen zamana göre güncellenir */}
             {viewMode === 'detailed' && getTenseExplanation(selectedLanguage, selectedTense) && (
-              <div className="rounded-xl bg-blue-900/20 dark:bg-blue-900/30 border border-blue-500/30 dark:border-blue-400/40 p-4 flex flex-col gap-0 backdrop-blur-sm transition-all duration-200">
-                <div className="flex items-start gap-3">
-                  <Info className="w-5 h-5 shrink-0 text-slate-400 dark:text-slate-500 mt-0.5" strokeWidth={2} aria-hidden />
-                  <p className="text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
+              <div className="rounded-lg bg-blue-900/15 dark:bg-blue-900/25 border border-blue-500/25 dark:border-blue-400/30 px-3 py-2.5 flex flex-col gap-1.5 backdrop-blur-sm transition-all duration-200">
+                <div className="flex items-start gap-2">
+                  <Info className="w-4 h-4 shrink-0 text-slate-400 dark:text-slate-500 mt-0.5" strokeWidth={2} aria-hidden />
+                  <p className="text-xs text-slate-700 dark:text-slate-200 leading-snug">
                     {getTenseExplanation(selectedLanguage, selectedTense)?.shortDesc}
                   </p>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setTenseDetailModalOpen(true)}
-                  className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-full bg-blue-600/30 border border-blue-500/40 text-blue-200 hover:bg-blue-600/50 transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
-                  aria-label="Zaman açıklaması detayı"
-                >
-                  Detaylı İncele ➔
-                </button>
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setTenseDetailModalOpen(true)}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-full bg-blue-600/30 border border-blue-500/40 text-blue-200 hover:bg-blue-600/50 transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                    aria-label="Zaman açıklaması detayı (modal)"
+                  >
+                    Detaylı İncele
+                  </button>
+                  <Link
+                    to={`/ogrenme#zaman-${selectedTense}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-full bg-slate-600/30 dark:bg-slate-500/30 border border-slate-500/40 dark:border-slate-400/40 text-slate-200 dark:text-slate-200 hover:bg-slate-600/50 dark:hover:bg-slate-500/50 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                    aria-label="Zaman anlatım sayfası (yeni sekme)"
+                  >
+                    Yeni sekmede aç ➔
+                  </Link>
+                </div>
               </div>
             )}
+            </div>
+            </details>
           </aside>
 
           {/* Sağ sütun: Sekmeler + ana çalışma alanı — 8 kolon (Detaylı'da 8, Basit'te 12) */}
@@ -1762,7 +1967,7 @@ export function Page() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.25, ease: 'easeOut' }}
-            className={`flex flex-col order-2 print:col-span-12 print:bg-white print:text-black min-w-0 transition-all duration-300 ${viewMode === 'simple' ? 'gap-2' : 'gap-4'} lg:col-span-8`}
+            className={`flex flex-col order-2 print:col-span-12 print:bg-white print:text-black min-w-0 transition-all duration-300 ${viewMode === 'simple' ? 'gap-2' : 'gap-4'} md:col-span-8`}
           >
         {error && (
           <div className="mb-4 rounded-2xl bg-red-50/80 dark:bg-red-500/10 border border-red-200/80 dark:border-red-400/30 px-5 py-3.5 text-red-700 dark:text-red-300 text-sm shadow-sm transition-colors duration-300">
@@ -2068,21 +2273,43 @@ export function Page() {
               <div className={`p-6 sm:p-8 relative ${timeAttackShake ? 'animate-time-attack-shake' : ''}`}>
                 {timeAttackGameOver ? (
                   <div className="rounded-2xl border border-slate-200/80 dark:border-slate-600/80 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm shadow-xl p-8 max-w-md mx-auto text-center">
-                    <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-6">Oyun Bitti!</h2>
+                    <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-2">Oyun Bitti!</h2>
+                    {timeAttackIsNewRecord && (
+                      <p className="text-amber-600 dark:text-amber-400 font-bold text-lg animate-pulse mb-4">🏆 Yeni Rekor!</p>
+                    )}
                     <dl className="space-y-3 text-left max-w-xs mx-auto">
                       <div className="flex justify-between">
-                        <dt className="text-slate-500 dark:text-slate-400">Toplam Skorun</dt>
+                        <dt className="text-slate-500 dark:text-slate-400">Bu oturumun skoru</dt>
                         <dd className="font-bold text-slate-800 dark:text-slate-100 tabular-nums">{timeAttackScore}</dd>
                       </div>
                       <div className="flex justify-between">
-                        <dt className="text-slate-500 dark:text-slate-400">En Yüksek Kombon</dt>
+                        <dt className="text-slate-500 dark:text-slate-400">Kişisel rekor</dt>
+                        <dd className="font-bold text-indigo-600 dark:text-indigo-400 tabular-nums">{timeAttackHighScore}</dd>
+                      </div>
+                      <div className="flex justify-between">
+                        <dt className="text-slate-500 dark:text-slate-400">En yüksek kombon</dt>
                         <dd className="font-bold text-orange-500 dark:text-orange-400">x{timeAttackMaxCombo}</dd>
                       </div>
                       <div className="flex justify-between">
-                        <dt className="text-slate-500 dark:text-slate-400">Doğru Bilinen Fiil Sayısı</dt>
+                        <dt className="text-slate-500 dark:text-slate-400">Doğru bilinen fiil sayısı</dt>
                         <dd className="font-bold text-slate-800 dark:text-slate-100 tabular-nums">{timeAttackCorrectCount}</dd>
                       </div>
                     </dl>
+                    {timeAttackLastScores.length > 0 && (
+                      <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-600 text-left">
+                        <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">Son 5 skor</p>
+                        <ul className="space-y-1 text-sm text-slate-700 dark:text-slate-300">
+                          {timeAttackLastScores.map((e, i) => (
+                            <li key={i} className="flex justify-between gap-2">
+                              <span className="tabular-nums font-medium">{e.score}</span>
+                              <span className="text-slate-500 dark:text-slate-400 truncate">
+                                {new Date(e.date).toLocaleDateString('tr-TR')} · x{e.combo}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                     <button
                       type="button"
                       onClick={restartTimeAttack}
@@ -2104,7 +2331,15 @@ export function Page() {
                           SKOR: <span className="text-indigo-600 dark:text-indigo-400 tabular-nums">{timeAttackScore}</span>
                         </span>
                         <span className="text-slate-400 dark:text-slate-500">|</span>
-                        <span className={`text-sm font-bold ${timeAttackCombo > 3 ? 'text-orange-500 dark:text-orange-400 scale-110' : 'text-slate-600 dark:text-slate-300'}`}>
+                        <span
+                          className={`text-sm font-bold ${
+                            timeAttackCombo >= 5
+                              ? 'text-red-400 dark:text-red-400 animate-pulse'
+                              : timeAttackCombo >= 3
+                                ? 'text-orange-400 dark:text-orange-400 animate-combo-wiggle'
+                                : 'text-slate-600 dark:text-slate-300'
+                          }`}
+                        >
                           x{timeAttackCombo} COMBO 🔥
                         </span>
                       </div>
@@ -2116,6 +2351,16 @@ export function Page() {
                         ))}
                       </div>
                     </div>
+                    {timeAttackComboToast !== null && (
+                      <div
+                        className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
+                        aria-live="polite"
+                      >
+                        <div className="bg-red-500/90 dark:bg-red-600/90 text-white text-4xl sm:text-5xl font-black px-8 py-6 rounded-2xl shadow-2xl animate-pulse border-4 border-red-400 dark:border-red-300">
+                          x{timeAttackComboToast} COMBO! 🔥
+                        </div>
+                      </div>
+                    )}
                     {timeAttackPointsFlash !== null && (
                       <p className="text-center text-2xl font-bold text-green-500 dark:text-green-400 animate-pulse mb-2">
                         +{timeAttackPointsFlash}
@@ -2291,10 +2536,20 @@ export function Page() {
                     </div>
                   </div>
                 </div>
+                {compareTense1 === compareTense2 && (
+                  <div className="rounded-xl border border-amber-300/80 dark:border-amber-500/50 bg-amber-50/80 dark:bg-amber-900/20 px-4 py-3 text-amber-800 dark:text-amber-200 text-sm font-medium mb-4">
+                    Aynı zamanı seçtiniz, farklı bir zaman seçin.
+                  </div>
+                )}
                 {!verbKey ? (
                   <div className="text-center py-8 rounded-2xl bg-white/5 dark:bg-slate-800/30 border border-slate-200/30 dark:border-slate-600/30">
                     <p className="text-slate-600 dark:text-slate-300 font-medium">Karşılaştırmak için önce bir fiil girin</p>
                     <p className="text-slate-500 dark:text-slate-400 text-sm mt-1.5">Yukarıdaki arama alanına fiil yazıp &quot;Göster&quot;e tıklayın.</p>
+                  </div>
+                ) : compareTense1 === compareTense2 ? (
+                  <div className="text-center py-8 rounded-2xl bg-white/5 dark:bg-slate-800/30 border border-slate-200/30 dark:border-slate-600/30">
+                    <p className="text-slate-600 dark:text-slate-300 font-medium">Farklı bir zaman seçin</p>
+                    <p className="text-slate-500 dark:text-slate-400 text-sm mt-1.5">İki dropdown'dan farklı zamanlar seçerek karşılaştırma yapabilirsiniz.</p>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -2303,18 +2558,27 @@ export function Page() {
                         {tensesForLang.find((t) => t.id === compareTense1)?.label ?? '—'}
                       </h3>
                       <ul className="space-y-3">
-                        {pronounsForLang.map(({ id, label }) => (
-                          <li key={id} className="flex items-center justify-between gap-4">
-                            <span className="text-slate-600 dark:text-slate-300 font-semibold min-w-[5.5rem]">{label}</span>
-                            <span className="text-slate-900 dark:text-slate-100 text-right">
-                              <ConjugationWithStemSuffix
-                                text={getSafeConjugationMap(verbKey, compareTense1, selectedLanguage)[id] ?? '—'}
-                                tenseId={compareTense1}
-                                lang={selectedLanguage}
-                              />
-                            </span>
-                          </li>
-                        ))}
+                        {pronounsForLang.map(({ id, label }) => {
+                          const text1 = getSafeConjugationMap(verbKey, compareTense1, selectedLanguage)[id] ?? '—';
+                          const text2 = getSafeConjugationMap(verbKey, compareTense2, selectedLanguage)[id] ?? '—';
+                          const { a: segA, b: segB } = getDiffSegments(text1, text2);
+                          return (
+                            <li key={id} className="flex items-center justify-between gap-4">
+                              <span className="text-slate-600 dark:text-slate-300 font-semibold min-w-[5.5rem]">{label}</span>
+                              <span className="text-slate-900 dark:text-slate-100 text-right">
+                                {segA.map((s, i) =>
+                                  s.highlight ? (
+                                    <mark key={i} className="bg-amber-300/70 dark:bg-amber-500/40 rounded px-0.5">
+                                      {s.text}
+                                    </mark>
+                                  ) : (
+                                    <span key={i}>{s.text}</span>
+                                  )
+                                )}
+                              </span>
+                            </li>
+                          );
+                        })}
                       </ul>
                     </div>
                     <div className="rounded-2xl bg-white/5 dark:bg-slate-800/30 border border-slate-200/30 dark:border-slate-600/30 md:border-l md:border-l-slate-300/70 dark:md:border-l-slate-600/70 p-6">
@@ -2322,18 +2586,27 @@ export function Page() {
                         {tensesForLang.find((t) => t.id === compareTense2)?.label ?? '—'}
                       </h3>
                       <ul className="space-y-3">
-                        {pronounsForLang.map(({ id, label }) => (
-                          <li key={id} className="flex items-center justify-between gap-4">
-                            <span className="text-slate-600 dark:text-slate-300 font-semibold min-w-[5.5rem]">{label}</span>
-                            <span className="text-slate-900 dark:text-slate-100 text-right">
-                              <ConjugationWithStemSuffix
-                                text={getSafeConjugationMap(verbKey, compareTense2, selectedLanguage)[id] ?? '—'}
-                                tenseId={compareTense2}
-                                lang={selectedLanguage}
-                              />
-                            </span>
-                          </li>
-                        ))}
+                        {pronounsForLang.map(({ id, label }) => {
+                          const text1 = getSafeConjugationMap(verbKey, compareTense1, selectedLanguage)[id] ?? '—';
+                          const text2 = getSafeConjugationMap(verbKey, compareTense2, selectedLanguage)[id] ?? '—';
+                          const { b: segB } = getDiffSegments(text1, text2);
+                          return (
+                            <li key={id} className="flex items-center justify-between gap-4">
+                              <span className="text-slate-600 dark:text-slate-300 font-semibold min-w-[5.5rem]">{label}</span>
+                              <span className="text-slate-900 dark:text-slate-100 text-right">
+                                {segB.map((s, i) =>
+                                  s.highlight ? (
+                                    <mark key={i} className="bg-amber-300/70 dark:bg-amber-500/40 rounded px-0.5">
+                                      {s.text}
+                                    </mark>
+                                  ) : (
+                                    <span key={i}>{s.text}</span>
+                                  )
+                                )}
+                              </span>
+                            </li>
+                          );
+                        })}
                       </ul>
                     </div>
                   </div>
@@ -2691,8 +2964,14 @@ export function Page() {
               )}
             </div>
             {(viewMode === 'detailed' || viewMode === 'simple') && showAllTenses ? (
-              /* Tüm zamanlar — kip (mood) gruplarına göre başlık + kartlar */
-              <div className="mt-4 space-y-10">
+              /* Tüm zamanlar — kip (mood) gruplarına göre başlık + kartlar; smooth açılış */
+              <motion.div
+                ref={allTensesSectionRef}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, ease: 'easeOut' }}
+                className="mt-4 space-y-10"
+              >
                 {tenseGroupsForLang.map((group) => {
                   const moodTitle = selectedLanguage === 'fr'
                     ? (group.mood === 'indicatif' ? 'INDICATIF (Haber)' : group.mood === 'subjonctif' ? 'SUBJONCTIF (Dilek-Şart)' : group.mood === 'conditionnel' ? 'CONDITIONNEL (Koşul)' : group.mood === 'imperatif' ? 'IMPÉRATIF (Emir)' : group.label)
@@ -2780,7 +3059,7 @@ export function Page() {
                     </section>
                   );
                 })}
-              </div>
+              </motion.div>
             ) : (
             <>
             {/* İki sütun: tekil (Je, Tu, Il) | çoğul (Nous, Vous, Ils) — dikey alan yarıya iner */}
@@ -2827,15 +3106,11 @@ export function Page() {
                             >
                               {justCopied ? <CheckIcon className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> : <ClipboardIcon className="w-4 h-4" />}
                             </button>
-                            <button
-                              type="button"
-                              onClick={() => speakConjugation(fullPhrase, selectedLanguage)}
-                              className="p-1.5 rounded-full bg-slate-800/40 text-slate-400 hover:text-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 transition-colors duration-200"
-                              title={selectedLanguage === 'es' ? 'Dinle (İspanyolca)' : 'Dinle (Fransızca)'}
-                              aria-label={`${fullPhrase} dinle`}
-                            >
-                              <SpeakerIcon className="w-4 h-4" />
-                            </button>
+                            <PronunciationButton
+                              word={fullPhrase}
+                              lang={selectedLanguage === 'fr' ? 'fr-FR' : 'es-ES'}
+                              size="sm"
+                            />
                           </span>
                         </div>
                       </li>
@@ -2850,7 +3125,9 @@ export function Page() {
               <div className="mt-4 mx-4 sm:mx-0">
                 <button
                   type="button"
-                  onClick={() => setShowAllTenses((v) => !v)}
+                  onClick={() => {
+                    setShowAllTenses((v) => !v);
+                  }}
                   className={`w-full rounded-xl border px-3 py-2.5 text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${
                     showAllTenses
                       ? 'border-indigo-400 dark:border-indigo-500 bg-indigo-500/15 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300'
@@ -2871,9 +3148,14 @@ export function Page() {
               return (
                 <div className="mx-4 sm:mx-0 mt-4 rounded-xl bg-indigo-900/20 dark:bg-indigo-900/30 border border-indigo-500/30 dark:border-indigo-400/40 p-4 flex items-start gap-3 backdrop-blur-sm transition-all duration-200">
                   <span className="text-xl shrink-0" aria-hidden>💡</span>
-                  <div className="min-w-0">
-                    <p className="text-lg italic text-slate-800 dark:text-indigo-100">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-lg italic text-slate-800 dark:text-indigo-100 flex items-center gap-2 flex-wrap">
                       {example.sentence}
+                      <PronunciationButton
+                        word={example.sentence}
+                        lang={selectedLanguage === 'fr' ? 'fr-FR' : 'es-ES'}
+                        size="sm"
+                      />
                     </p>
                     <p className="mt-1 text-sm text-slate-500 dark:text-indigo-300/90">
                       {example.translation}
@@ -2961,6 +3243,24 @@ export function Page() {
                   {tenseLabel}
                 </span>
               </div>
+              {/* İlerleme: X / 6 çekim + progress bar */}
+              {(() => {
+                const answeredCount = pronounIds.filter((p) => quizFeedback[p] !== null).length;
+                const total = pronounIds.length;
+                const progressPct = total ? (answeredCount / total) * 100 : 0;
+                return (
+                  <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-700/50">
+                    <div className="flex items-center justify-between gap-2 mb-1.5">
+                      <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
+                        {answeredCount} / {total} çekim
+                      </span>
+                    </div>
+                    <div className="h-1.5 w-full rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden" role="progressbar" aria-valuenow={answeredCount} aria-valuemin={0} aria-valuemax={total}>
+                      <div className="h-full bg-indigo-500 dark:bg-indigo-400 rounded-full transition-all duration-300" style={{ width: `${progressPct}%` }} />
+                    </div>
+                  </div>
+                );
+              })()}
               <div className="flex justify-end mt-3 pt-3 border-t border-slate-100 dark:border-slate-700/50">
                 <div className="flex bg-slate-200/80 dark:bg-slate-800/80 backdrop-blur-sm border border-slate-300 dark:border-slate-700 rounded-full p-1" role="group" aria-label="Alıştırma görünümü">
                   <button type="button" onClick={() => setQuizLayout('list')} className={`flex items-center justify-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium transition-all duration-300 ${quizLayout === 'list' ? 'bg-indigo-600 text-white shadow-md' : 'bg-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white'}`} aria-pressed={quizLayout === 'list'}>
@@ -2972,6 +3272,64 @@ export function Page() {
                 </div>
               </div>
             </div>
+
+            {/* Liste modu: tüm çekimler kontrol edildi ama hepsi doğru değil — özet + Tekrar Çalış */}
+            {quizLayout === 'list' && conjugationsForDisplay && (() => {
+              const allAnswered = pronounIds.every((p) => quizFeedback[p] !== null);
+              const allCorrect = pronounIds.every((p) => quizFeedback[p] === 'correct');
+              const correctCount = pronounIds.filter((p) => quizFeedback[p] === 'correct').length;
+              const wrongCount = pronounIds.filter((p) => quizFeedback[p] === 'wrong').length;
+              const typoCount = pronounIds.filter((p) => quizFeedback[p] === 'typo').length;
+              const toRedo = pronounIds.filter((p) => quizFeedback[p] === 'wrong' || quizFeedback[p] === 'typo');
+              if (!allAnswered || allCorrect) return null;
+              return (
+                <div className="mx-4 sm:mx-6 mb-6 rounded-xl border border-amber-200/80 dark:border-amber-500/30 bg-amber-50/80 dark:bg-amber-900/20 p-5" role="region" aria-label="Alıştırma özeti">
+                  <h3 className="font-bold text-slate-800 dark:text-slate-100 text-lg mb-3">📋 Özet</h3>
+                  <p className="text-sm text-slate-600 dark:text-slate-300 mb-4">
+                    <span className="text-emerald-600 dark:text-emerald-400 font-medium">{correctCount} doğru</span>
+                    {wrongCount > 0 && <>, <span className="text-red-600 dark:text-red-400 font-medium">{wrongCount} yanlış</span></>}
+                    {typoCount > 0 && <>, <span className="text-amber-600 dark:text-amber-400 font-medium">{typoCount} neredeyse</span></>}
+                  </p>
+                  {toRedo.length > 0 && (
+                    <>
+                      <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">Yanlış / neredeyse yapılanlar:</p>
+                      <ul className="space-y-1.5 mb-4">
+                        {toRedo.map((p) => {
+                          const label = pronounsForLang.find((x) => x.id === p)?.label ?? p;
+                          const correctVal = conjugationsForDisplay[p];
+                          return (
+                            <li key={p} className="text-sm text-slate-700 dark:text-slate-200 flex items-center gap-2">
+                              <span className="font-medium shrink-0">{label}:</span>
+                              <span className="text-red-600 dark:text-red-400 line-through">{userAnswers[p] || '—'}</span>
+                              <span className="text-slate-500 dark:text-slate-400">→</span>
+                              <span className="font-medium text-emerald-700 dark:text-emerald-300">{correctVal}</span>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setQuizFeedback((prev) => ({
+                            ...prev,
+                            ...Object.fromEntries(toRedo.map((p) => [p, null])),
+                          }));
+                          setUserAnswers((prev) => ({
+                            ...prev,
+                            ...Object.fromEntries(toRedo.map((p) => [p, ''])),
+                          }));
+                          const firstIdx = pronounIds.indexOf(toRedo[0]);
+                          if (firstIdx !== -1) requestAnimationFrame(() => quizInputRefs.current[firstIdx]?.focus());
+                        }}
+                        className="rounded-xl bg-amber-600 dark:bg-amber-500 text-white font-semibold px-4 py-2.5 hover:bg-amber-700 dark:hover:bg-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-colors"
+                      >
+                        Tekrar Çalış (sadece yanlışlar)
+                      </button>
+                    </>
+                  )}
+                </div>
+              );
+            })()}
 
             {/* Odak modu: tüm şahıslar tamamlandı */}
             {quizLayout === 'focus' && currentFocusIndex >= pronounIds.length && (
@@ -3019,7 +3377,9 @@ export function Page() {
                           ? 'border-emerald-400 dark:border-emerald-500/60 bg-emerald-50/80 dark:bg-emerald-500/20 text-slate-800 dark:text-slate-100 focus:ring-emerald-500/30 dark:focus:ring-emerald-400/30'
                           : feedback === 'wrong'
                             ? 'border-red-500 dark:border-red-400/60 bg-red-50/80 dark:bg-red-500/15 text-slate-800 dark:text-slate-100 focus:ring-red-500/20 dark:focus:ring-red-400/30'
-                            : 'bg-slate-100/90 dark:bg-slate-900/50 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:border-indigo-500'
+                            : feedback === 'typo'
+                              ? 'border-amber-400 dark:border-amber-500/60 bg-amber-50/80 dark:bg-amber-500/15 text-slate-800 dark:text-slate-100 focus:ring-amber-500/30 dark:focus:ring-amber-400/30'
+                              : 'bg-slate-100/90 dark:bg-slate-900/50 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:border-indigo-500'
                       }`}
                       aria-label={`${label} çekimi`}
                     />
@@ -3036,6 +3396,11 @@ export function Page() {
                           <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                       </span>
+                    )}
+                    {feedback === 'typo' && (
+                      <p className="absolute left-0 right-0 -bottom-6 text-center text-sm text-amber-700 dark:text-amber-300 font-medium">
+                        Neredeyse! Doğrusu: <strong>{correctValue}</strong>
+                      </p>
                     )}
                   </div>
                   {showHints && (
@@ -3084,7 +3449,9 @@ export function Page() {
                               ? 'border-emerald-400 dark:border-emerald-500/60 bg-emerald-50/80 dark:bg-emerald-500/20 text-slate-800 dark:text-slate-100 focus:ring-emerald-500/30 dark:focus:ring-emerald-400/30'
                               : feedback === 'wrong'
                                 ? 'border-red-500 dark:border-red-400/60 bg-red-50/80 dark:bg-red-500/15 text-slate-800 dark:text-slate-100 focus:ring-red-500/20 dark:focus:ring-red-400/30'
-                                : 'bg-slate-100/90 dark:bg-slate-900/50 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:border-indigo-500'
+                                : feedback === 'typo'
+                                  ? 'border-amber-400 dark:border-amber-500/60 bg-amber-50/80 dark:bg-amber-500/15 text-slate-800 dark:text-slate-100 focus:ring-amber-500/30 dark:focus:ring-amber-400/30'
+                                  : 'bg-slate-100/90 dark:bg-slate-900/50 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:border-indigo-500'
                           }`}
                           aria-label={`${label} çekimi`}
                         />
@@ -3115,6 +3482,11 @@ export function Page() {
                         )}
                       </div>
                     </div>
+                    {!showHints && feedback === 'typo' && (
+                      <p className="mt-1.5 text-sm text-amber-700 dark:text-amber-300 font-medium pl-0 sm:pl-[7.5rem]">
+                        Neredeyse! Doğrusu: <strong>{correctValue}</strong>
+                      </p>
+                    )}
                     {showHints && (
                       <p className="mt-1.5 text-sm text-slate-500 dark:text-slate-400 pl-0 sm:pl-[7.5rem]">
                         Doğru: <span className="font-medium text-slate-700 dark:text-slate-200">{correctValue}</span>

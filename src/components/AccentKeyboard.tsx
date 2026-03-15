@@ -27,7 +27,8 @@ export default function AccentKeyboard({ lang, onInsert, className = '' }: Accen
           key={char}
           type="button"
           onClick={() => onInsert(char)}
-          className="text-sm min-w-[2.25rem] min-h-[2.25rem] flex items-center justify-center bg-slate-800/50 dark:bg-slate-700/50 hover:bg-slate-700 dark:hover:bg-slate-600 text-slate-300 dark:text-slate-300 rounded-lg px-2.5 py-1.5 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+          className="text-base min-w-[2.75rem] min-h-[2.75rem] sm:min-w-[2.25rem] sm:min-h-[2.25rem] flex items-center justify-center bg-slate-800/50 dark:bg-slate-700/50 hover:bg-slate-700 dark:hover:bg-slate-600 text-slate-300 dark:text-slate-300 rounded-lg px-2.5 py-1.5 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/50 touch-manipulation"
+          style={{ minWidth: '44px', minHeight: '44px' }}
           aria-label={`${char} ekle`}
         >
           {char}

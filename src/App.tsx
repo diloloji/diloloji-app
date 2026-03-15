@@ -13,7 +13,10 @@ import Pricing from './pages/Pricing';
 import YouTubeLab from './pages/YouTubeLab';
 import { XpProvider } from './contexts/XpContext';
 import { LanguageProvider } from './contexts/LanguageContext';
+import { OnboardingProvider, useOnboarding } from './contexts/OnboardingContext';
 import ErrorBoundary from './components/ErrorBoundary';
+import OnboardingWizard from './components/OnboardingWizard';
+import BottomNav from './components/BottomNav';
 
 function getPageElement(pathname: string) {
   switch (pathname) {
@@ -76,16 +79,29 @@ function AnimatedRoutes() {
   );
 }
 
+function AppContent() {
+  const { isCompleted } = useOnboarding();
+  return (
+    <>
+      <Routes>
+        <Route path="*" element={<AnimatedRoutes />} />
+      </Routes>
+      {!isCompleted && <OnboardingWizard />}
+      <BottomNav />
+    </>
+  );
+}
+
 function App() {
   return (
     <ErrorBoundary>
       <BrowserRouter>
         <LanguageProvider>
-          <XpProvider>
-            <Routes>
-              <Route path="*" element={<AnimatedRoutes />} />
-            </Routes>
-          </XpProvider>
+          <OnboardingProvider>
+            <XpProvider>
+              <AppContent />
+            </XpProvider>
+          </OnboardingProvider>
         </LanguageProvider>
       </BrowserRouter>
     </ErrorBoundary>
