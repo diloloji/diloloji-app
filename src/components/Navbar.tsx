@@ -81,13 +81,17 @@ export default function Navbar({ onLoginClick, onLogoutClick, isLoggedIn, printH
   const closeHamburger = () => setHamburgerOpen(false);
   const isActive = (path: string) => location.pathname === path;
 
+  const langLabel = (lng: string) =>
+    lng === 'tr' ? 'Türkçe' : lng === 'en' ? 'English' : lng === 'fr' ? 'Français' : 'Español';
+  const currentLang = (i18n.language || 'tr').slice(0, 2);
+
   return (
     <>
       <header
         data-print-hide={printHide ? true : undefined}
         className="sticky top-0 z-50 w-full bg-white/80 dark:bg-[#0a0e17]/80 backdrop-blur-md border-b border-slate-200/50 dark:border-white/5 transition-all duration-300 print:hidden"
       >
-        <div className="flex items-center justify-between w-full max-w-7xl mx-auto px-4 h-16">
+        <div className="flex items-center justify-between w-full max-w-7xl mx-auto px-4 h-16 gap-4">
           {/* Sol — Logo */}
           <div className="flex items-center shrink-0 min-w-0">
             <Link
@@ -95,26 +99,29 @@ export default function Navbar({ onLoginClick, onLogoutClick, isLoggedIn, printH
               className="flex items-center gap-2 transition-opacity hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 dark:focus:ring-offset-[#0a0e17] rounded-lg"
               aria-label="Ana sayfa"
             >
-              <img src="/logo.svg" alt="Diloloji" className="h-8 sm:h-9 w-auto shrink-0" />
+              <img
+                src={mounted && isDark ? '/logo-dark.svg' : '/logo-light.svg'}
+                alt="Diloloji"
+                className="h-8 sm:h-9 w-auto shrink-0"
+              />
               <span className="font-bold text-slate-800 dark:text-white text-sm uppercase tracking-wider hidden sm:inline whitespace-nowrap">
                 Diloloji
               </span>
             </Link>
           </div>
 
-          {/* Orta — Ana linkler (sadece xl ve üzeri; sıkışmayı önlemek için) */}
+          {/* Orta — Sadece 4 ana link (lg ve üzeri) */}
           <nav
-            className="hidden xl:flex items-center gap-6 flex-1 justify-center min-w-0"
+            className="hidden lg:flex items-center justify-center flex-1 min-w-0 gap-6"
             role="navigation"
             aria-label="Ana menü"
           >
-            {NAV_LINKS.map(({ to, labelKey, icon: Icon }) => {
+            {MAIN_LINKS.map(({ to, labelKey }) => {
               const active = isActive(to);
               return (
                 <Link
                   key={to}
                   to={to}
-                  className={`rounded-lg px-2 py-1.5 text-sm font-medium whitespace-nowrap transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 dark:focus:ring-offset-[#0a0e17] flex items-center gap-1.5 shrink-0 ${
                   className={`text-sm font-medium whitespace-nowrap rounded-lg px-2 py-1.5 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 dark:focus:ring-offset-[#0a0e17] shrink-0 ${
                     active
                       ? 'text-indigo-600 dark:text-white bg-indigo-500/10 dark:bg-indigo-500/15'
