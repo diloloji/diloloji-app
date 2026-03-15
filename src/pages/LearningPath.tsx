@@ -3,13 +3,14 @@
  */
 
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { BookOpen, PenLine, MessageCircle, BookA, X } from 'lucide-react';
+import { BookOpen, PenLine, MessageCircle, X } from 'lucide-react';
+import Navbar from '../components/Navbar';
+import LessonView from '../components/LessonView';
 import { getUnitContent } from '../data/learningPathUnits';
 import type { UnitContent, LessonItem } from '../data/learningPathUnits';
 
-type Lang = 'fr' | 'es';
+type Lang = 'fr' | 'es' | 'en' | 'de';
 type Level = 'A1' | 'A2' | 'B1' | 'B2' | 'C1';
 
 type ModuleItem = {
@@ -126,9 +127,43 @@ const CURRICULUM: Record<Lang, Record<Level, ModuleItem[]>> = {
       { icon: 'message', title: 'Sosyopolitik Tartışmalar', description: 'İspanyol dünyasındaki güncel olayları analiz etme yetkinliği. Tartışmayı yürütün.' },
     ],
   },
+  en: {
+    A1: [
+      { icon: 'book', title: 'Ünite 1: Temel Tanışma ve To Be Fiili', description: 'Özne zamirleri (I, you, he/she/it), am/is/are formülü ve günlük selamlaşmalar. İngilizcenin matematiği.', unitId: 'en_a1_1_u1' },
+      { icon: 'book', title: 'Alfabe ve Telaffuz', description: 'Harfler, sesler ve vurgu. İngilizce dinleme-alıştırma.' },
+      { icon: 'pen', title: 'Articles (a, an, the)', description: 'Belirsiz ve belirli tanımlık. Tekil/çoğul isimler.' },
+      { icon: 'message', title: 'Günlük İfadeler', description: 'Thank you, Please, Sorry ve sık kullanılan kalıplar.' },
+    ],
+    A2: [{ icon: 'book', title: 'Yakında', description: 'İngilizce A2 müfredatı üzerinde çalışıyoruz.' }],
+    B1: [{ icon: 'book', title: 'Yakında', description: 'İngilizce B1 müfredatı üzerinde çalışıyoruz.' }],
+    B2: [{ icon: 'book', title: 'Yakında', description: 'İngilizce B2 müfredatı üzerinde çalışıyoruz.' }],
+    C1: [{ icon: 'book', title: 'Yakında', description: 'İngilizce C1 müfredatı üzerinde çalışıyoruz.' }],
+  },
+  de: {
+    A1: [
+      { icon: 'book', title: 'Ünite 1: Tanışma ve Sein (Olmak) Fiili', description: 'Şahıs zamirleri (ich, du, er/sie/es), Sein formülü ve der/die/das ile ilk temas. Almancanın kurallı yapısı.', unitId: 'de_a1_1_u1' },
+      { icon: 'book', title: 'Alfabe ve Telaffuz', description: 'Ä, ö, ü, ß sesleri. Almanca okunuş kuralları.' },
+      { icon: 'pen', title: 'Sayılar ve Selamlaşma', description: 'Eins, zwei, drei… Guten Tag, Auf Wiedersehen.' },
+      { icon: 'message', title: 'Günlük Kalıplar', description: 'Bitte, Danke, Entschuldigung.' },
+    ],
+    A2: [{ icon: 'book', title: 'Yakında', description: 'Almanca A2 müfredatı üzerinde çalışıyoruz.' }],
+    B1: [{ icon: 'book', title: 'Yakında', description: 'Almanca B1 müfredatı üzerinde çalışıyoruz.' }],
+    B2: [{ icon: 'book', title: 'Yakında', description: 'Almanca B2 müfredatı üzerinde çalışıyoruz.' }],
+    C1: [{ icon: 'book', title: 'Yakında', description: 'Almanca C1 müfredatı üzerinde çalışıyoruz.' }],
+  },
 };
 
-function UnitDetailPanel({ unit, onClose }: { unit: UnitContent; onClose: () => void }) {
+function UnitDetailPanel({
+  unit,
+  lang,
+  onClose,
+  onOpenLesson,
+}: {
+  unit: UnitContent;
+  lang: Lang;
+  onClose: () => void;
+  onOpenLesson: (lessonIndex: number) => void;
+}) {
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-slate-900/98 dark:bg-slate-950/98 backdrop-blur-md">
       <div className="sticky top-0 z-10 flex items-center justify-between gap-4 border-b border-slate-700/60 bg-slate-900/95 dark:bg-slate-950/95 px-4 py-3">
@@ -144,19 +179,32 @@ function UnitDetailPanel({ unit, onClose }: { unit: UnitContent; onClose: () => 
       </div>
       <div className="flex-1 overflow-y-auto px-4 py-6 pb-24 max-w-3xl mx-auto w-full">
         {unit.lessons.map((lesson, idx) => (
-          <LessonBlock key={idx} lesson={lesson} />
+          <LessonBlock
+            key={idx}
+            lesson={lesson}
+            onStartLesson={() => onOpenLesson(idx)}
+          />
         ))}
       </div>
     </div>
   );
 }
 
-function LessonBlock({ lesson }: { lesson: LessonItem }) {
+function LessonBlock({ lesson, onStartLesson }: { lesson: LessonItem; onStartLesson: () => void }) {
   return (
     <section className="mb-10">
-      <h3 className="text-base font-semibold text-indigo-400 dark:text-indigo-300 mb-2">
-        {lesson.lessonTitle}
-      </h3>
+      <div className="flex items-start justify-between gap-3 mb-2">
+        <h3 className="text-base font-semibold text-indigo-400 dark:text-indigo-300">
+          {lesson.lessonTitle}
+        </h3>
+        <button
+          type="button"
+          onClick={onStartLesson}
+          className="shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium bg-indigo-600 text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 focus:ring-offset-slate-900 transition-colors"
+        >
+          Dersi aç
+        </button>
+      </div>
       <div className="rounded-xl bg-slate-800/80 dark:bg-slate-800/80 border border-slate-600/50 p-4 mb-3">
         <p className="text-sm text-slate-300 dark:text-slate-300 whitespace-pre-wrap font-mono leading-relaxed">
           {lesson.grammarBlock}
@@ -220,11 +268,13 @@ function LessonBlock({ lesson }: { lesson: LessonItem }) {
 export default function LearningPath() {
   const [lang, setLang] = useState<Lang>('fr');
   const [level, setLevel] = useState<Level>('A1');
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [selectedUnitId, setSelectedUnitId] = useState<string | null>(null);
+  /** İnteraktif ders ekranı: ünite + ders indeksi. Açıkken unit panel kapanır. */
+  const [selectedLesson, setSelectedLesson] = useState<{ unitId: string; lessonIndex: number } | null>(null);
 
   const modules = CURRICULUM[lang][level];
   const selectedUnit = selectedUnitId ? getUnitContent(selectedUnitId) : null;
+  const lessonViewUnit = selectedLesson ? getUnitContent(selectedLesson.unitId) : null;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-100 via-indigo-50/20 to-slate-200/80 dark:from-[#0a0f1a] dark:via-[#0f1623] dark:to-[#151d2e] transition-colors duration-500">
@@ -233,62 +283,7 @@ export default function LearningPath() {
         <meta name="description" content="Fransızca ve İspanyolca A1–C1 müfredat yol haritası." />
       </Helmet>
 
-      <header className="sticky top-0 z-20 w-full flex justify-between items-center py-3 px-4 sm:px-5 bg-white/70 dark:bg-night-950/80 backdrop-blur-md border-b border-slate-200/50 dark:border-white/5 transition-all duration-300">
-        <div className="flex items-center gap-2 sm:gap-3">
-          <Link to="/" className="flex items-center gap-2 sm:gap-3 shrink-0 transition-all duration-300 hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 rounded-lg" aria-label="Ana sayfa">
-            <img src="/logo.svg" alt="Diloloji" className="h-8 sm:h-10 w-auto" />
-            <span className="font-semibold text-slate-700 dark:text-slate-200 text-sm md:hidden">Diloloji</span>
-            <span className="text-slate-400 dark:text-slate-500 text-xs italic hidden md:inline opacity-60">Dilin matematiğini çöz.</span>
-          </Link>
-          <nav className="ml-4 md:ml-6 hidden md:flex items-center gap-0.5" role="tablist">
-            <Link to="/fiil-laboratuvari" className="relative rounded-lg px-3 py-2 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-800/40 dark:hover:bg-slate-700/40 transition-all duration-300">Fiil Laboratuvarı</Link>
-            <Link to="/ezber-makinesi" className="relative rounded-lg px-3 py-2 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-800/40 dark:hover:bg-slate-700/40 transition-all duration-300">Ezber Makinesi</Link>
-            <Link to="/sozluk" className="relative rounded-lg px-3 py-2 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-800/40 dark:hover:bg-slate-700/40 transition-all duration-300">Sözlük</Link>
-            <Link to="/ogrenme" className="relative rounded-lg px-3 py-2 text-sm font-medium text-indigo-500 dark:text-indigo-400 transition-all duration-300" aria-current="page">
-              Öğrenme
-              <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-indigo-500 dark:bg-indigo-400" aria-hidden />
-            </Link>
-            <Link
-              to="/pricing"
-              className="hidden md:inline-flex rounded-lg px-3 py-2 text-sm font-semibold bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-900 hover:from-amber-300 hover:via-yellow-300 hover:to-amber-400 shadow-md shadow-amber-500/25 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 dark:focus:ring-offset-slate-900"
-            >
-              🌟 Pro&apos;ya Geç
-            </Link>
-          </nav>
-        </div>
-        <button
-          type="button"
-          onClick={() => setIsMobileMenuOpen((o) => !o)}
-          className="md:hidden h-9 w-9 flex items-center justify-center rounded-lg text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-800/40 dark:hover:bg-slate-700/40 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shrink-0"
-          aria-expanded={isMobileMenuOpen}
-          aria-label={isMobileMenuOpen ? 'Menüyü kapat' : 'Menüyü aç'}
-        >
-          <span className="text-lg leading-none" aria-hidden>☰</span>
-        </button>
-      </header>
-
-      {isMobileMenuOpen && (
-        <div
-          className="fixed inset-0 top-[52px] z-40 bg-slate-900/95 dark:bg-slate-950/95 backdrop-blur-md md:hidden animate-menu-in"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Navigasyon menüsü"
-          onClick={() => setIsMobileMenuOpen(false)}
-        >
-          <nav className="flex flex-col p-4 pt-6 gap-1 max-w-md mx-auto" onClick={(e) => e.stopPropagation()}>
-            <Link to="/fiil-laboratuvari" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-3 px-4 rounded-xl text-left text-base font-medium bg-slate-800/60 dark:bg-slate-800/80 text-slate-200 dark:text-slate-100 hover:bg-slate-700/60 border border-slate-600/50 focus:outline-none focus:ring-2 focus:ring-indigo-500/50">Fiil Laboratuvarı</Link>
-            <Link to="/ezber-makinesi" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-3 px-4 rounded-xl text-left text-base font-medium bg-slate-800/60 dark:bg-slate-800/80 text-slate-200 dark:text-slate-100 hover:bg-slate-700/60 border border-slate-600/50 focus:outline-none focus:ring-2 focus:ring-indigo-500/50">Ezber Makinesi</Link>
-            <Link to="/sozluk" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-3 px-4 rounded-xl text-left text-base font-medium bg-slate-800/60 dark:bg-slate-800/80 text-slate-200 dark:text-slate-100 hover:bg-slate-700/60 border border-slate-600/50 flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-indigo-500/50">
-              <BookA className="w-4 h-4 shrink-0" strokeWidth={2} aria-hidden />
-              Sözlük
-            </Link>
-            <Link to="/ogrenme" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-3 px-4 rounded-xl text-left text-base font-medium bg-indigo-500/20 dark:bg-indigo-400/20 text-indigo-700 dark:text-indigo-200 border border-indigo-400/30 focus:outline-none focus:ring-2 focus:ring-indigo-500/50">Öğrenme</Link>
-            <Link to="/pricing" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-3 px-4 rounded-xl text-left text-base font-semibold bg-gradient-to-r from-amber-400/90 via-yellow-400/90 to-amber-500/90 text-slate-900 border border-amber-400/50 focus:outline-none focus:ring-2 focus:ring-amber-400/50">
-              🌟 Pro&apos;ya Geç
-            </Link>
-          </nav>
-        </div>
-      )}
+      <Navbar />
 
       <main className="relative z-10 max-w-5xl mx-auto px-4 md:px-8 py-8 pb-24">
         <div className="text-center mb-8">
@@ -316,12 +311,36 @@ export default function LearningPath() {
               role="tab"
               aria-selected={lang === 'es'}
               onClick={() => setLang('es')}
-              className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer flex items-center gap-2 ${
+              className={`px-4 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer flex items-center gap-2 ${
                 lang === 'es' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10' : 'bg-transparent text-slate-400 hover:text-slate-200'
               }`}
             >
               <span aria-hidden>🇪🇸</span>
               İspanyolca
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={lang === 'en'}
+              onClick={() => setLang('en')}
+              className={`px-4 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer flex items-center gap-2 ${
+                lang === 'en' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10' : 'bg-transparent text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <span aria-hidden>🇬🇧</span>
+              İngilizce
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={lang === 'de'}
+              onClick={() => setLang('de')}
+              className={`px-4 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer flex items-center gap-2 ${
+                lang === 'de' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10' : 'bg-transparent text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <span aria-hidden>🇩🇪</span>
+              Almanca
             </button>
           </div>
         </div>
@@ -370,9 +389,28 @@ export default function LearningPath() {
         </div>
       </main>
 
-      {/* Ünite detay paneli (tam ekran) */}
-      {selectedUnit && (
-        <UnitDetailPanel unit={selectedUnit} onClose={() => setSelectedUnitId(null)} />
+      {/* Ünite detay paneli (tam ekran) — ders ekranı kapalıyken */}
+      {selectedUnit && !selectedLesson && (
+        <UnitDetailPanel
+          unit={selectedUnit}
+          lang={lang}
+          onClose={() => setSelectedUnitId(null)}
+          onOpenLesson={(lessonIndex) => {
+            setSelectedUnitId(null);
+            setSelectedLesson({ unitId: selectedUnit.id, lessonIndex });
+          }}
+        />
+      )}
+
+      {/* İnteraktif ders ekranı (tam ekran, z-50, arka plan #0a0e17) */}
+      {lessonViewUnit && selectedLesson && (
+        <LessonView
+          unit={lessonViewUnit}
+          lessonIndex={selectedLesson.lessonIndex}
+          lang={lang}
+          onClose={() => setSelectedLesson(null)}
+          onComplete={() => setSelectedLesson(null)}
+        />
       )}
     </div>
   );

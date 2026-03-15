@@ -2,9 +2,9 @@ import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion, useInView } from 'framer-motion';
 import { Cpu, Brain, Activity, BookA, FlaskConical, GraduationCap, Search } from 'lucide-react';
-import { useThemeContext } from '../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import FloatingBackgroundElements from '../components/FloatingBackgroundElements';
+import Navbar from '../components/Navbar';
 import { useRef, useState, useCallback, useEffect } from 'react';
 
 const SITE_URL = 'https://diloloji.com';
@@ -197,28 +197,14 @@ function useCountUp(target: number, inView: boolean, durationMs = 1800) {
 }
 
 export default function HomePage() {
-  const { isDark, toggleTheme, mounted } = useThemeContext();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [mouse, setMouse] = useState({ x: 0, y: 0 });
-  const [uiLangDropdownOpen, setUiLangDropdownOpen] = useState(false);
-  const uiLangDropdownRef = useRef<HTMLDivElement>(null);
   const statsRef = useRef<HTMLDivElement>(null);
   const statsInView = useInView(statsRef, { once: true, amount: 0.3 });
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     setMouse({ x: e.clientX, y: e.clientY });
   }, []);
-
-  useEffect(() => {
-    if (!uiLangDropdownOpen) return;
-    const handle = (e: MouseEvent) => {
-      if (uiLangDropdownRef.current && !uiLangDropdownRef.current.contains(e.target as Node)) {
-        setUiLangDropdownOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handle);
-    return () => document.removeEventListener('mousedown', handle);
-  }, [uiLangDropdownOpen]);
 
   return (
     <div
@@ -236,48 +222,7 @@ export default function HomePage() {
       </Helmet>
       <BackgroundWithPattern mouseX={mouse.x} mouseY={mouse.y} />
 
-      <header className="relative z-20 w-full flex justify-between items-center py-3 px-4 sm:px-6 lg:px-8 bg-white/70 dark:bg-night-950/80 backdrop-blur-md border-b border-slate-200/50 dark:border-white/5 sticky top-0 transition-all duration-300">
-        <Link to="/" className="min-w-0 flex items-center gap-2 sm:gap-3 shrink-0 transition-all duration-300 hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 rounded-xl" aria-label="Ana sayfa">
-          <img src="/logo.svg" alt="Diloloji" className="h-8 sm:h-10 w-auto shrink-0" />
-          <span className="text-slate-400 dark:text-slate-500 text-xs italic hidden sm:inline shrink-0 opacity-60">Dilin matematiğini çöz.</span>
-        </Link>
-        <nav className="flex items-center gap-1 sm:gap-2">
-          <div className="hidden sm:flex items-center gap-0.5 rounded-xl border border-transparent dark:border-white/5 px-1 py-0.5">
-            <Link to="/sozluk" className="rounded-lg px-3 py-2 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50">
-              {t('sozluk')}
-            </Link>
-            <Link to="/ogrenme" className="rounded-lg px-3 py-2 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50">
-              {t('ogrenme')}
-            </Link>
-          </div>
-          <Link
-            to="/pricing"
-            className="rounded-xl px-4 py-2.5 text-sm font-semibold bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-900 hover:from-amber-300 hover:via-yellow-300 hover:to-amber-400 shadow-lg shadow-amber-500/30 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-slate-100 dark:focus:ring-offset-night-950 hover:shadow-amber-500/40"
-          >
-            🌟 Pro&apos;ya Geç
-          </Link>
-          <div className="relative shrink-0" ref={uiLangDropdownRef}>
-            <button type="button" onClick={() => setUiLangDropdownOpen((o) => !o)} className="h-9 flex items-center justify-center gap-1 rounded-lg px-2 text-slate-400 dark:text-slate-500 hover:text-indigo-500 dark:hover:text-indigo-400 hover:bg-slate-800/40 dark:hover:bg-slate-700/40 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50" title={t('arayuz_dili')} aria-label={t('dil_secin')} aria-expanded={uiLangDropdownOpen} aria-haspopup="listbox">
-              <span className="text-base w-5 h-5 inline-flex items-center justify-center leading-none" aria-hidden>🌐</span>
-              <span className="text-xs font-medium uppercase tabular-nums">{['tr', 'en', 'fr', 'es'].includes((i18n.language || 'tr').slice(0, 2)) ? (i18n.language || 'tr').slice(0, 2).toUpperCase() : 'TR'}</span>
-            </button>
-            {uiLangDropdownOpen && (
-              <div role="listbox" aria-label={t('dil_secin')} className="absolute right-0 top-full mt-1.5 w-max min-w-[120px] rounded-xl border border-slate-200 dark:border-slate-600 bg-white/95 dark:bg-slate-800/95 backdrop-blur-md shadow-xl py-1 z-50">
-                {(['tr', 'en', 'fr', 'es'] as const).map((lng) => (
-                  <button key={lng} type="button" role="option" aria-selected={i18n.language === lng} onClick={() => { i18n.changeLanguage(lng); setUiLangDropdownOpen(false); }} className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-all duration-300 flex items-center gap-2 whitespace-nowrap ${i18n.language === lng ? 'bg-indigo-500/15 text-indigo-700 dark:text-indigo-200' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/80'}`}>
-                    {t(lng === 'tr' ? 'lang_turkce' : lng === 'en' ? 'lang_english' : lng === 'fr' ? 'lang_francais' : 'lang_espanol')}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-          {mounted && (
-            <button type="button" onClick={toggleTheme} className="h-9 w-9 flex items-center justify-center rounded-lg text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-800/40 dark:hover:bg-slate-700/40 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50" title={isDark ? 'Açık mod' : 'Karanlık mod'} aria-label={isDark ? 'Açık moda geç' : 'Karanlık moda geç'}>
-              <span className="text-base w-5 h-5 inline-flex items-center justify-center leading-none" aria-hidden>{isDark ? '☀️' : '🌙'}</span>
-            </button>
-          )}
-        </nav>
-      </header>
+      <Navbar />
 
       <main className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 lg:py-28">
         {/* Hero — minimalist, prestigious */}
@@ -289,7 +234,7 @@ export default function HomePage() {
         >
           <div className="flex-1 text-center lg:text-left">
             <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900 dark:text-white mb-4">
-              Diloloji: Dilin Matematiğini Çöz
+              Dilin Matematiğini Keşfedin.
             </h1>
             <motion.p
               initial={{ opacity: 0, y: 8 }}
@@ -297,7 +242,7 @@ export default function HomePage() {
               transition={{ duration: 0.5, delay: 0.15 }}
               className="text-lg sm:text-xl text-slate-600 dark:text-slate-300 max-w-xl mx-auto lg:mx-0 mb-8 leading-relaxed"
             >
-              Yapay zeka destekli analizlerle dilin kalbine inin.
+              Yapay zeka ile kelimelerin ve fiillerin kalbine inin, dilleri analitik bir yaklaşımla çözün.
             </motion.p>
             <motion.div
               initial={{ opacity: 0, y: 8 }}

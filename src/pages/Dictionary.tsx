@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Volume2, X, BookA } from 'lucide-react';
-import { useThemeContext } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTranslation } from 'react-i18next';
+import Navbar from '../components/Navbar';
 import {
   POPULAR_SEARCHES,
   getWordsOfTheDay,
@@ -32,7 +32,7 @@ function DictionaryBackground() {
   return (
     <>
       <div
-        className="absolute inset-0 bg-gradient-to-br from-[#0a0f1a] via-[#0f1623] via-40% to-[#151d2e] to-[#1e293b] transition-colors duration-500 dark:from-[#0a0f1a] dark:via-[#0f1623] dark:via-[#151d2e] dark:to-[#1e293b] opacity-0 dark:opacity-100"
+        className="absolute inset-0 bg-gradient-to-br from-[#0a0e17] via-[#0d1117] via-40% to-[#151d2e] to-[#1e293b] transition-colors duration-500 dark:from-[#0a0e17] dark:via-[#0d1117] dark:via-[#151d2e] dark:to-[#1e293b] opacity-0 dark:opacity-100"
         aria-hidden
       />
       <div
@@ -106,11 +106,8 @@ function typeBadgeClass(type: string): string {
 }
 
 export default function Dictionary() {
-  const { isDark, toggleTheme, mounted } = useThemeContext();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { selectedLanguage } = useLanguage();
-  const [uiLangDropdownOpen, setUiLangDropdownOpen] = useState(false);
-  const uiLangDropdownRef = useRef<HTMLDivElement>(null);
   const [direction, setDirection] = useState<DictDirection>(selectedLanguage === 'es' ? 'tr-es' : 'tr-fr');
   const [query, setQuery] = useState('');
   const [result, setResult] = useState<SearchResult | null | undefined>(undefined);
@@ -132,20 +129,8 @@ export default function Dictionary() {
   const addToSetRef = useRef<HTMLDivElement>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [groqExamples, setGroqExamples] = useState<Array<{ original: string; translation?: string }> | null>(null);
   const [groqCommonPhrases, setGroqCommonPhrases] = useState<GroqCommonPhrase[] | null>(null);
-
-  useEffect(() => {
-    if (!uiLangDropdownOpen) return;
-    const handle = (e: MouseEvent) => {
-      if (uiLangDropdownRef.current && !uiLangDropdownRef.current.contains(e.target as Node)) {
-        setUiLangDropdownOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handle);
-    return () => document.removeEventListener('mousedown', handle);
-  }, [uiLangDropdownOpen]);
 
   useEffect(() => {
     if (!addToSetOpen) return;
@@ -305,117 +290,78 @@ export default function Dictionary() {
         <meta property="og:type" content="website" />
       </Helmet>
       <DictionaryBackground />
-      <header className="relative z-20 w-full flex justify-between items-center py-3 px-4 sm:px-5 bg-white/70 dark:bg-night-950/80 backdrop-blur-md border-b border-slate-200/50 dark:border-white/5 sticky top-0 z-50 transition-all duration-300">
-        <div className="min-w-0 flex items-center gap-2 sm:gap-3 flex-1">
-          <Link to="/" className="flex items-center gap-2 sm:gap-3 shrink-0 transition-all duration-300 hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 rounded-lg" aria-label="Ana sayfa">
-            <img src="/logo.svg" alt="Diloloji" className="h-8 sm:h-10 w-auto shrink-0" />
-            <span className="font-semibold text-slate-700 dark:text-slate-200 text-sm md:hidden shrink-0">Diloloji</span>
-            <span className="text-slate-400 dark:text-slate-500 text-xs italic hidden md:inline shrink-0 opacity-60">Dilin matematiğini çöz.</span>
-          </Link>
-          <nav className="ml-4 md:ml-6 hidden md:flex items-center gap-0.5" role="tablist">
-            <Link to="/fiil-laboratuvari" className="relative rounded-lg px-3 py-2 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-800/40 dark:hover:bg-slate-700/40 transition-all duration-300">Fiil Laboratuvarı</Link>
-            <Link to="/ezber-makinesi" className="relative rounded-lg px-3 py-2 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-800/40 dark:hover:bg-slate-700/40 transition-all duration-300">Ezber Makinesi</Link>
-            <Link to="/sozluk" className="relative rounded-lg px-3 py-2 text-sm font-medium text-indigo-500 dark:text-indigo-400 transition-all duration-300">
-              Sözlük
-              <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-indigo-500 dark:bg-indigo-400" aria-hidden />
-            </Link>
-            <Link to="/ogrenme" className="relative rounded-lg px-3 py-2 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-800/40 dark:hover:bg-slate-700/40 transition-all duration-300">{t('ogrenme')}</Link>
-            <Link
-              to="/pricing"
-              className="hidden md:inline-flex rounded-lg px-3 py-2 text-sm font-semibold bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-900 hover:from-amber-300 hover:via-yellow-300 hover:to-amber-400 shadow-md shadow-amber-500/25 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 dark:focus:ring-offset-slate-900"
-            >
-              🌟 Pro&apos;ya Geç
-            </Link>
-          </nav>
-        </div>
-        <div className="flex items-center gap-2 shrink-0">
-          <div className="relative shrink-0" ref={uiLangDropdownRef}>
-            <button type="button" onClick={() => setUiLangDropdownOpen((o) => !o)} className="h-9 flex items-center justify-center gap-1 rounded-lg px-2 text-slate-400 dark:text-slate-500 hover:text-indigo-500 dark:hover:text-indigo-400 hover:bg-slate-800/40 dark:hover:bg-slate-700/40 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50" title={t('arayuz_dili')} aria-label={t('dil_secin')} aria-expanded={uiLangDropdownOpen} aria-haspopup="listbox">
-              <span className="text-base w-5 h-5 inline-flex items-center justify-center leading-none" aria-hidden>🌐</span>
-              <span className="text-xs font-medium uppercase tabular-nums">{['tr', 'en', 'fr', 'es'].includes((i18n.language || 'tr').slice(0, 2)) ? (i18n.language || 'tr').slice(0, 2).toUpperCase() : 'TR'}</span>
-            </button>
-            {uiLangDropdownOpen && (
-              <div role="listbox" aria-label={t('dil_secin')} className="absolute right-0 top-full mt-1.5 w-max min-w-[120px] rounded-xl border border-slate-200 dark:border-slate-600 bg-white/95 dark:bg-slate-800/95 backdrop-blur-md shadow-xl py-1 z-50">
-                {(['tr', 'en', 'fr', 'es'] as const).map((lng) => (
-                  <button key={lng} type="button" role="option" aria-selected={i18n.language === lng} onClick={() => { i18n.changeLanguage(lng); setUiLangDropdownOpen(false); }} className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-all duration-300 flex items-center gap-2 whitespace-nowrap ${i18n.language === lng ? 'bg-indigo-500/15 text-indigo-700 dark:text-indigo-200' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/80'}`}>
-                    {t(lng === 'tr' ? 'lang_turkce' : lng === 'en' ? 'lang_english' : lng === 'fr' ? 'lang_francais' : 'lang_espanol')}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-          {mounted && (
-            <button type="button" onClick={toggleTheme} className="h-9 w-9 flex items-center justify-center rounded-lg text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-800/40 dark:hover:bg-slate-700/40 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50" aria-label={isDark ? 'Açık moda geç' : 'Karanlık moda geç'}>
-              <span className="text-base w-5 h-5 inline-flex items-center justify-center leading-none" aria-hidden>{isDark ? '☀️' : '🌙'}</span>
-            </button>
-          )}
-          <button
-            type="button"
-            onClick={() => setIsMobileMenuOpen((o) => !o)}
-            className="md:hidden h-9 w-9 flex items-center justify-center rounded-lg text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-800/40 dark:hover:bg-slate-700/40 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shrink-0"
-            aria-expanded={isMobileMenuOpen}
-            aria-label={isMobileMenuOpen ? 'Menüyü kapat' : 'Menüyü aç'}
-          >
-            <span className="text-lg leading-none" aria-hidden>☰</span>
-          </button>
-        </div>
-      </header>
+      <Navbar />
 
-      {/* Mobil hamburger menü paneli — Sözlük sayfasında da tüm sayfalara link */}
-      {isMobileMenuOpen && (
-        <div
-          className="fixed inset-0 top-[52px] z-40 bg-slate-900/95 dark:bg-slate-950/95 backdrop-blur-md md:hidden animate-menu-in"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Navigasyon menüsü"
-          onClick={() => setIsMobileMenuOpen(false)}
-        >
-          <nav className="flex flex-col p-4 pt-6 gap-1 max-w-md mx-auto" onClick={(e) => e.stopPropagation()}>
-            <Link to="/fiil-laboratuvari" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-3 px-4 rounded-xl text-left text-base font-medium bg-slate-800/60 dark:bg-slate-800/80 text-slate-200 dark:text-slate-100 hover:bg-slate-700/60 border border-slate-600/50 focus:outline-none focus:ring-2 focus:ring-indigo-500/50">
-              {t('fiil_laboratuvari')}
-            </Link>
-            <Link to="/ezber-makinesi" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-3 px-4 rounded-xl text-left text-base font-medium bg-slate-800/60 dark:bg-slate-800/80 text-slate-200 dark:text-slate-100 hover:bg-slate-700/60 border border-slate-600/50 focus:outline-none focus:ring-2 focus:ring-indigo-500/50">
-              {t('ezber_makinesi')}
-            </Link>
-            <Link to="/sozluk" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-3 px-4 rounded-xl text-left text-base font-medium bg-indigo-500/20 dark:bg-indigo-400/20 text-indigo-700 dark:text-indigo-200 border border-indigo-400/30 flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-indigo-500/50">
-              <BookA className="w-4 h-4 shrink-0" strokeWidth={2} aria-hidden />
-              {t('sozluk')}
-            </Link>
-            <Link to="/ogrenme" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-3 px-4 rounded-xl text-left text-base font-medium bg-slate-800/60 dark:bg-slate-800/80 text-slate-200 dark:text-slate-100 hover:bg-slate-700/60 border border-slate-600/50 focus:outline-none focus:ring-2 focus:ring-indigo-500/50">
-              {t('ogrenme')}
-            </Link>
-            <Link to="/pricing" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-3 px-4 rounded-xl text-left text-base font-semibold bg-gradient-to-r from-amber-400/90 via-yellow-400/90 to-amber-500/90 text-slate-900 border border-amber-400/50 focus:outline-none focus:ring-2 focus:ring-amber-400/50">
-              🌟 Pro&apos;ya Geç
-            </Link>
-          </nav>
-        </div>
-      )}
-
-      <main className="relative z-10 max-w-3xl mx-auto px-4 md:px-8 py-8 pb-24">
+      <main className="relative z-10 max-w-3xl mx-auto px-4 md:px-8 py-10 sm:py-14 pb-24">
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="max-w-2xl mx-auto">
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100 mb-2 text-center">Kelime Analiz Paneli</h1>
-          <p className="text-slate-500 dark:text-slate-400 text-sm text-center mb-6">Anlam, örnek cümleler ve ilişkili denklemler</p>
+          {/* Dil seçici — arama kutusunun hemen üstünde, pill segmented control */}
+          <div className="flex justify-center mb-4" role="tablist" aria-label="Sözlük dili">
+            <motion.div
+              layout
+              className="inline-flex rounded-full bg-white/10 dark:bg-white/5 backdrop-blur-sm p-0.5 border border-slate-200/30 dark:border-white/10"
+              style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}
+            >
+              <button
+                type="button"
+                role="tab"
+                aria-selected={direction === 'tr-fr' || direction === 'fr-tr'}
+                onClick={() => setDirection(direction === 'tr-fr' || direction === 'fr-tr' ? swapDirection(direction) : 'tr-fr')}
+                className={`relative flex items-center justify-center gap-1.5 px-4 py-2 rounded-full text-xs font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 focus:ring-offset-slate-50 dark:focus:ring-offset-night-950 min-w-[100px] ${direction === 'tr-fr' || direction === 'fr-tr' ? 'text-white' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-400'}`}
+              >
+                {(direction === 'tr-fr' || direction === 'fr-tr') && (
+                  <motion.span
+                    layoutId="dict-lang-pill"
+                    className="absolute inset-0 rounded-full bg-indigo-500/90 dark:bg-indigo-500"
+                    transition={{ type: 'spring', bounce: 0.2, duration: 0.4 }}
+                    style={{ zIndex: 0 }}
+                  />
+                )}
+                <span className="relative z-10" aria-hidden>🇫🇷</span>
+                <span className="relative z-10">Fransızca</span>
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={direction === 'tr-es' || direction === 'es-tr'}
+                onClick={() => setDirection(direction === 'tr-es' || direction === 'es-tr' ? swapDirection(direction) : 'tr-es')}
+                className={`relative flex items-center justify-center gap-1.5 px-4 py-2 rounded-full text-xs font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 focus:ring-offset-slate-50 dark:focus:ring-offset-night-950 min-w-[100px] ${direction === 'tr-es' || direction === 'es-tr' ? 'text-white' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-400'}`}
+              >
+                {(direction === 'tr-es' || direction === 'es-tr') && (
+                  <motion.span
+                    layoutId="dict-lang-pill"
+                    className="absolute inset-0 rounded-full bg-indigo-500/90 dark:bg-indigo-500"
+                    transition={{ type: 'spring', bounce: 0.2, duration: 0.4 }}
+                    style={{ zIndex: 0 }}
+                  />
+                )}
+                <span className="relative z-10" aria-hidden>🇪🇸</span>
+                <span className="relative z-10">İspanyolca</span>
+              </button>
+            </motion.div>
+          </div>
 
-          {/* Arama çubuğu — temizle (X) + bayrak ikonu */}
-          <form onSubmit={handleSearch} className="mb-8">
-            <div className="relative rounded-xl border border-slate-200/70 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-sm shadow-glass dark:shadow-glass-dark overflow-hidden flex items-center h-12">
-                <span className="pl-4 text-2xl shrink-0" aria-hidden title={direction.startsWith('fr') ? 'Fransızca' : 'İspanyolca'}>
-                  {direction === 'tr-fr' || direction === 'fr-tr' ? '🇫🇷' : '🇪🇸'}
-                </span>
+          {/* Hero arama kutusu — underline / hafif glow, büyük yazı, odak parlama */}
+          <form onSubmit={handleSearch} className="mb-4">
+            <motion.div
+              className="relative rounded-xl bg-white/30 dark:bg-white/5 backdrop-blur-sm overflow-hidden border-b-2 border-slate-200/60 dark:border-white/10 focus-within:border-indigo-400 dark:focus-within:border-indigo-500 focus-within:shadow-[0_0_0_3px_rgba(99,102,241,0.15)] dark:focus-within:shadow-[0_0_0_3px_rgba(99,102,241,0.2)] transition-all duration-300"
+              initial={false}
+              animate={{ boxShadow: undefined }}
+            >
+              <div className="flex items-center min-h-[72px] sm:min-h-[80px] px-4 sm:px-5">
                 <input
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder={direction === 'tr-fr' || direction === 'fr-tr' ? 'Fransızca veya Türkçe bir kelime arat...' : 'İspanyolca veya Türkçe bir kelime arat...'}
-                  className="flex-1 min-w-0 min-h-0 h-full bg-transparent border-0 py-0 pl-2 pr-12 text-base text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-0"
+                  placeholder={direction === 'tr-fr' || direction === 'fr-tr' ? 'Fransızca veya Türkçe kelime...' : 'İspanyolca veya Türkçe kelime...'}
+                  className="flex-1 min-w-0 bg-transparent border-0 py-3 text-2xl sm:text-3xl text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-0"
                   aria-label={direction.startsWith('tr') ? 'Hangi kelimenin anlamına bakalım?' : 'Arama'}
                 />
-                <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                <div className="flex items-center gap-1 ml-2">
                   {query.length > 0 && (
                     <button
                       type="button"
                       onClick={() => { setQuery(''); setResult(undefined); }}
-                      className="p-2 rounded-lg text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                      className="p-2 rounded-lg text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-white/20 dark:hover:bg-white/10 transition-colors"
                       aria-label="Temizle"
                     >
                       <X className="w-5 h-5" strokeWidth={2} />
@@ -426,55 +372,13 @@ export default function Dictionary() {
                   </button>
                 </div>
               </div>
+            </motion.div>
           </form>
 
-          {/* Dil seçici — iOS tarzı segmented control (Fransızca | İspanyolca), arama kutusunun hemen altında */}
-          <div className="flex items-center gap-2 mb-6" role="tablist" aria-label="Sözlük dili">
-            <div className="flex w-full bg-slate-800/60 backdrop-blur-sm border border-slate-700 rounded-full p-1">
-              <button
-                type="button"
-                role="tab"
-                aria-selected={direction === 'tr-fr' || direction === 'fr-tr'}
-                onClick={() => setDirection(direction === 'tr-fr' || direction === 'fr-tr' ? swapDirection(direction) : 'tr-fr')}
-                className={`flex-1 flex items-center justify-center gap-2 px-6 py-2.5 rounded-full transition-all duration-300 ease-in-out text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 focus:ring-offset-slate-900 ${
-                  direction === 'tr-fr' || direction === 'fr-tr'
-                    ? 'bg-indigo-600 text-white shadow-md'
-                    : 'bg-transparent text-slate-400 hover:text-white'
-                }`}
-              >
-                <span aria-hidden>🇫🇷</span>
-                Fransızca
-              </button>
-              <button
-                type="button"
-                role="tab"
-                aria-selected={direction === 'tr-es' || direction === 'es-tr'}
-                onClick={() => setDirection(direction === 'tr-es' || direction === 'es-tr' ? swapDirection(direction) : 'tr-es')}
-                className={`flex-1 flex items-center justify-center gap-2 px-6 py-2.5 rounded-full transition-all duration-300 ease-in-out text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 focus:ring-offset-slate-900 ${
-                  direction === 'tr-es' || direction === 'es-tr'
-                    ? 'bg-indigo-600 text-white shadow-md'
-                    : 'bg-transparent text-slate-400 hover:text-white'
-                }`}
-              >
-                <span aria-hidden>🇪🇸</span>
-                İspanyolca
-              </button>
-            </div>
-            <button
-              type="button"
-              onClick={() => setDirection(swapDirection(direction))}
-              className="shrink-0 p-2.5 rounded-full bg-slate-800/60 dark:bg-slate-700/80 border border-slate-700 text-slate-400 hover:text-white hover:border-slate-600 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
-              title="Yönü değiştir (TR↔FR / TR↔ES)"
-              aria-label="Yönü değiştir"
-            >
-              <span className="text-lg" aria-hidden>⇄</span>
-            </button>
-          </div>
-
-          {/* Arama Geçmişi — tıklanabilir chips */}
+          {/* Son aramalar — küçük, kenarlıksız, çok hafif arka plan */}
           {recentSearches.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-4 mb-6">
-              <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 self-center mr-1">Son aramalar:</span>
+            <div className="flex flex-wrap gap-2 mt-6 mb-2">
+              <span className="text-[11px] font-medium uppercase tracking-wider text-slate-400 dark:text-slate-500 self-center mr-1">Son aramalar</span>
               {recentSearches.map(({ query: q, dir }) => (
                 <button
                   key={`${dir}-${q}`}
@@ -484,7 +388,7 @@ export default function Dictionary() {
                     setDirection(dir);
                     doSearch(q, dir);
                   }}
-                  className="px-3 py-1 rounded-full text-sm font-medium bg-slate-200/80 dark:bg-slate-800/50 hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-500/80 text-slate-700 dark:text-slate-200 transition-colors border border-slate-200/80 dark:border-slate-600/50"
+                  className="px-2.5 py-1 rounded-md text-xs font-medium bg-white/5 dark:bg-white/5 text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-white/10 dark:hover:bg-white/10 transition-colors"
                 >
                   {q}
                 </button>
@@ -501,7 +405,7 @@ export default function Dictionary() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.25 }}
-                className="rounded-xl sm:rounded-2xl border border-slate-200/80 dark:border-slate-600/60 bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl p-8 sm:p-12 flex flex-col items-center justify-center gap-6 min-h-[200px]"
+                className="mt-16 sm:mt-20 rounded-xl sm:rounded-2xl border border-slate-200/80 dark:border-slate-600/60 bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl p-8 sm:p-12 flex flex-col items-center justify-center gap-6 min-h-[200px]"
                 aria-busy="true"
                 aria-live="polite"
                 role="status"
@@ -521,57 +425,59 @@ export default function Dictionary() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.3 }}
-                className="space-y-8"
+                className="space-y-12 mt-16 sm:mt-20"
               >
-                {/* Günün Kelimeleri — iki kart (FR + ES) */}
-                <div>
-                  <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-4 text-center">Günün Kelimeleri</h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Günün Kelimeleri — minimal: ikon + kelime + anlam, ince üst çizgi */}
+                <div className="pt-8 border-t border-slate-200/50 dark:border-white/10">
+                  <h2 className="text-[11px] font-medium uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-5 text-center">Günün Kelimeleri</h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
                     {(() => {
                       const { fr, es } = getWordsOfTheDay();
                       return (
                         <>
                           <motion.button
                             type="button"
-                            initial={{ opacity: 0, y: 12 }}
+                            initial={{ opacity: 0, y: 8 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.3, delay: 0.05 }}
                             onClick={() => handleSearchQuery(fr.word, fr.dir)}
-                            className="rounded-2xl bg-white/70 dark:bg-slate-800/60 backdrop-blur-xl border border-slate-200/80 dark:border-slate-600/60 p-6 shadow-lg hover:shadow-xl hover:border-indigo-300/50 dark:hover:border-indigo-500/40 transition-all duration-200 text-left focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 dark:focus:ring-offset-slate-800"
+                            className="group flex items-start gap-3 text-left focus:outline-none focus:ring-0 rounded-lg py-1 -mx-1 hover:bg-white/5 dark:hover:bg-white/5 transition-colors duration-200"
                           >
-                            <span className="text-2xl mb-2 block" aria-hidden>🌟</span>
-                            <p className="text-lg font-bold text-slate-900 dark:text-slate-100">{fr.label}</p>
-                            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{fr.translation}</p>
-                            <p className="text-xs text-indigo-600 dark:text-indigo-400 mt-2">🇫🇷 Fransızca</p>
+                            <span className="text-xl mt-0.5 opacity-70 group-hover:opacity-100 transition-opacity" aria-hidden>🌟</span>
+                            <div className="min-w-0">
+                              <p className="font-bold text-slate-900 dark:text-slate-100 text-lg">{fr.label}</p>
+                              <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">{fr.translation}</p>
+                            </div>
                           </motion.button>
                           <motion.button
                             type="button"
-                            initial={{ opacity: 0, y: 12 }}
+                            initial={{ opacity: 0, y: 8 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.3, delay: 0.1 }}
                             onClick={() => handleSearchQuery(es.word, es.dir)}
-                            className="rounded-2xl bg-white/70 dark:bg-slate-800/60 backdrop-blur-xl border border-slate-200/80 dark:border-slate-600/60 p-6 shadow-lg hover:shadow-xl hover:border-indigo-300/50 dark:hover:border-indigo-500/40 transition-all duration-200 text-left focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 dark:focus:ring-offset-slate-800"
+                            className="group flex items-start gap-3 text-left focus:outline-none focus:ring-0 rounded-lg py-1 -mx-1 hover:bg-white/5 dark:hover:bg-white/5 transition-colors duration-200"
                           >
-                            <span className="text-2xl mb-2 block" aria-hidden>🌟</span>
-                            <p className="text-lg font-bold text-slate-900 dark:text-slate-100">{es.label}</p>
-                            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{es.translation}</p>
-                            <p className="text-xs text-indigo-600 dark:text-indigo-400 mt-2">🇪🇸 İspanyolca</p>
+                            <span className="text-xl mt-0.5 opacity-70 group-hover:opacity-100 transition-opacity" aria-hidden>🌟</span>
+                            <div className="min-w-0">
+                              <p className="font-bold text-slate-900 dark:text-slate-100 text-lg">{es.label}</p>
+                              <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">{es.translation}</p>
+                            </div>
                           </motion.button>
                         </>
                       );
                     })()}
                   </div>
                 </div>
-                {/* Popüler Aramalar */}
-                <div className="rounded-2xl bg-white/60 dark:bg-slate-800/50 backdrop-blur-xl border border-slate-200/80 dark:border-slate-600/60 p-6 shadow-lg">
-                  <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-4">Popüler Aramalar</h2>
+                {/* Popüler Aramalar — hafif chip tarzı */}
+                <div className="pt-6 border-t border-slate-200/50 dark:border-white/10">
+                  <h2 className="text-[11px] font-medium uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-4">Popüler Aramalar</h2>
                   <div className="flex flex-wrap gap-2">
                     {POPULAR_SEARCHES.map(({ label, query: q, dir }) => (
                       <button
                         key={`${dir}-${q}`}
                         type="button"
                         onClick={() => handleSearchQuery(q, dir)}
-                        className="rounded-xl px-4 py-2.5 text-sm font-medium bg-slate-100 dark:bg-slate-700/80 text-slate-700 dark:text-slate-200 hover:bg-indigo-100 dark:hover:bg-indigo-500/20 hover:text-indigo-700 dark:hover:text-indigo-300 border border-slate-200 dark:border-slate-600 transition-colors"
+                        className="rounded-md px-2.5 py-1 text-xs font-medium bg-white/5 dark:bg-white/5 text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-white/10 dark:hover:bg-white/10 transition-colors"
                       >
                         {label}
                       </button>
@@ -588,7 +494,7 @@ export default function Dictionary() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.35 }}
-                className="rounded-2xl border border-slate-200/80 dark:border-slate-600/60 bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl p-8 text-center"
+                className="mt-16 sm:mt-20 rounded-2xl border border-slate-200/80 dark:border-slate-600/60 bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl p-8 text-center"
               >
                 <p className="text-slate-600 dark:text-slate-300 font-medium text-lg">Sonuç bulunamadı</p>
                 <p className="text-slate-500 dark:text-slate-400 text-sm mt-2">Farklı bir kelime veya yazım deneyin.</p>
@@ -601,7 +507,7 @@ export default function Dictionary() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 12 }}
                 transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                className="rounded-2xl backdrop-blur-md bg-white/70 dark:bg-white/[0.07] border border-slate-200/70 dark:border-white/10 shadow-glass dark:shadow-glass-dark overflow-hidden relative"
+                className="mt-16 sm:mt-20 rounded-2xl backdrop-blur-md bg-white/70 dark:bg-white/[0.07] border border-slate-200/70 dark:border-white/10 shadow-glass dark:shadow-glass-dark overflow-hidden relative"
               >
                 <button
                   type="button"

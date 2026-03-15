@@ -145,6 +145,70 @@ export async function fetchVerbTranslationFromGroq(
   }
 }
 
+/** Cümle Laboratuvarı — kelime/öbek analiz öğesi */
+export interface SentenceAnalysisItem {
+  word: string;
+  base?: string;
+  type?: string;
+  grammarDetails?: string;
+  translation?: string;
+}
+
+const GROQ_SENTENCE_ANALYSIS_SYSTEM =
+  'Sen bir profesyonel dilbilimcisin. Kullanıcının verdiği cümleyi kelime kelime veya öbek öbek analiz et. Sonucu sadece şu JSON formatında dön (başka metin ekleme): { "items": [ { "word": "orijinal kelime veya öbek", "base": "mastar/kök hali", "type": "verb | noun | adjective | pronoun | preposition | article | adverb | conjunction | determiner | other", "grammarDetails": "zaman kipi, çoğul/tekil, cinsiyet vb. detaylar", "translation": "türkçe anlamı" } ] }. type alanında İngilizce dilbilgisi terimlerini kullan.';
+
+/**
+ * Cümle Laboratuvarı — Groq ile cümle sözdizimi analizi.
+ * @param sentence - Analiz edilecek cümle
+ * @param language - "Fransızca" veya "İspanyolca" vb.
+ */
+export async function analyzeSentence(
+  sentence: string,
+  language: string
+): Promise<SentenceAnalysisItem[]> {
+  const apiKey = import.meta.env.VITE_GROQ_API_KEY;
+  if (!apiKey || typeof apiKey !== 'string') {
+    console.warn('[Cümle Lab] VITE_GROQ_API_KEY tanımlı değil.');
+    return [];
+  }
+  const trimmed = sentence.trim();
+  if (!trimmed) return [];
+
+  try {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: [
+          { role: 'system', content: GROQ_SENTENCE_ANALYSIS_SYSTEM },
+          { role: 'user', content: `Şu ${language} cümleyi analiz et ve her kelime/öbek için word, base, type, grammarDetails, translation alanlarını doldur. Cümle: "${trimmed}"` },
+        ],
+        response_format: { type: 'json_object' },
+        temperature: 0.2,
+        max_tokens: 2048,
+      }),
+    });
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error('[Cümle Lab] Groq HTTP:', response.status, errText);
+      return [];
+    }
+    const data = await response.json();
+    const raw = data?.choices?.[0]?.message?.content;
+    if (typeof raw !== 'string') return [];
+    const parsed = JSON.parse(raw) as { items?: SentenceAnalysisItem[] };
+    const items = Array.isArray(parsed?.items) ? parsed.items : [];
+    return items.filter((x) => x && typeof x.word === 'string');
+  } catch (e) {
+    console.error('[Cümle Lab] Groq istek hatası:', e);
+    return [];
+  }
+}
+
 /** Groq word+translation → SearchResult source/target (yön bilgisiyle) */
 export function groqToSourceTarget(
   groq: GroqWordAnalysis,
