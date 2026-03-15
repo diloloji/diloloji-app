@@ -15,27 +15,56 @@ import {
   type YouTubeVocabularyItem,
 } from '../services/dictionaryApi';
 
-/** YouTube URL'den video ID çıkarır */
+const VIDEO_ID_REGEX = /[a-zA-Z0-9_-]{11}/;
+
+/** YouTube URL'den video ID çıkarır (watch, shorts, embed, youtu.be, list= içeren linkler). */
 function extractVideoId(url: string): string | null {
   const trimmed = (url || '').trim();
   if (!trimmed) return null;
-  const patterns = [
-    /(?:youtube\.com\/watch\?v=)([a-zA-Z0-9_-]{11})/,
-    /(?:youtu\.be\/)([a-zA-Z0-9_-]{11})/,
-    /(?:youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
-  ];
-  for (const re of patterns) {
-    const m = trimmed.match(re);
-    if (m) return m[1];
-  }
+  // Bare 11-character video ID
   if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) return trimmed;
+  try {
+    const u = new URL(trimmed.startsWith('http') ? trimmed : `https://${trimmed}`);
+    const host = u.hostname.replace(/^www\./, '');
+    // youtu.be/VIDEO_ID veya youtu.be/VIDEO_ID?si=...
+    if (host === 'youtu.be') {
+      const id = u.pathname.slice(1).split('/')[0];
+      if (VIDEO_ID_REGEX.test(id)) return id;
+      return null;
+    }
+    if (host !== 'youtube.com' && host !== 'm.youtube.com') return null;
+    // /watch?v=VIDEO_ID veya /watch?list=...&v=VIDEO_ID
+    const v = u.searchParams.get('v');
+    if (v && VIDEO_ID_REGEX.test(v)) return v;
+    // /shorts/VIDEO_ID
+    const shortsMatch = u.pathname.match(/^\/shorts\/([a-zA-Z0-9_-]{11})/);
+    if (shortsMatch) return shortsMatch[1];
+    // /embed/VIDEO_ID
+    const embedMatch = u.pathname.match(/^\/embed\/([a-zA-Z0-9_-]{11})/);
+    if (embedMatch) return embedMatch[1];
+    // /v/VIDEO_ID (eski format)
+    const vMatch = u.pathname.match(/^\/v\/([a-zA-Z0-9_-]{11})/);
+    if (vMatch) return vMatch[1];
+  } catch {
+    // URL parse hatası; regex fallback
+    const patterns = [
+      /(?:youtube\.com\/watch\?)(?:[^&]*&)*v=([a-zA-Z0-9_-]{11})/,
+      /(?:youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/,
+      /(?:youtu\.be\/)([a-zA-Z0-9_-]{11})/,
+      /(?:youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
+    ];
+    for (const re of patterns) {
+      const m = trimmed.match(re);
+      if (m) return m[1];
+    }
+  }
   return null;
 }
 
-/** Mock: Altyazı metni döndürür. İleride gerçek API/RSS bağlanacak. */
+/** Altyazı metni sağlar. Gerçek altyazı API bağlandığında bu fonksiyon güncellenecek. */
 async function fetchSubtitlesMock(_videoId: string): Promise<string> {
-  await new Promise((r) => setTimeout(r, 600));
-  return `Scientists have discovered that climate change is affecting the Arctic region more quickly than they had expected. The research team has been studying the ice sheets for over a decade. If the trend continues, sea levels could rise significantly. Many governments are now taking action to reduce carbon emissions. The report suggests that we need to invest in renewable energy sources.`;
+  await new Promise((r) => setTimeout(r, 400));
+  return 'Sample transcript for language analysis. Replace this with real captions when a subtitle API is connected. The quick brown fox jumps over the lazy dog. Learning grammar and vocabulary from video content helps improve language skills.';
 }
 
 function formatTimestamp(seconds: number): string {
@@ -54,7 +83,7 @@ export default function YouTubeLab() {
   const [analysis, setAnalysis] = useState<YouTubeAnalysisResult | null>(null);
 
   const embedUrl = videoId
-    ? `https://www.youtube.com/embed/${videoId}?autoplay=0${embedStart != null ? `&start=${embedStart}` : ''}`
+    ? `https://www.youtube.com/embed/${videoId}?autoplay=0&rel=0${embedStart != null ? `&start=${Math.floor(embedStart)}` : ''}`
     : null;
 
   const handleAnalyze = useCallback(async () => {
@@ -118,17 +147,20 @@ export default function YouTubeLab() {
             value={urlInput}
             onChange={(e) => { setError(null); setUrlInput(e.target.value); }}
             placeholder="YouTube URL veya video ID yapıştırın..."
-            className="flex-1 min-w-0 rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-transparent"
+            className="flex-1 min-w-0 rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent"
             aria-label="YouTube URL"
           />
           <button
             type="button"
             onClick={handleAnalyze}
             disabled={loading}
-            className="flex items-center justify-center gap-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-semibold px-5 py-3 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 focus:ring-offset-[#0a0e17] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="flex items-center justify-center gap-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-5 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 focus:ring-offset-[#0a0e17] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {loading ? (
-              <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              <>
+                <span className="inline-block w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" aria-hidden />
+                <span className="text-sm">Analiz ediliyor...</span>
+              </>
             ) : (
               <>
                 <Send className="w-4 h-4" strokeWidth={2} />
@@ -148,21 +180,27 @@ export default function YouTubeLab() {
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
             {/* Sol — Video oynatıcı */}
             <div className="lg:col-span-2">
-              <div className="rounded-xl overflow-hidden border border-white/10 bg-black aspect-video">
+              <div className="rounded-xl overflow-hidden border border-white/10 bg-black aspect-video min-h-[200px]">
                 <iframe
-                  key={embedStart ?? 0}
+                  key={`${videoId}-${embedStart ?? 0}`}
                   src={embedUrl ?? ''}
                   title="YouTube video"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
-                  className="w-full h-full"
+                  className="w-full h-full min-h-[200px] aspect-video"
                 />
               </div>
             </div>
 
             {/* Sağ — Gramer ve Kelime Notları */}
             <div className="lg:col-span-3 space-y-6 overflow-y-auto max-h-[calc(100vh-320px)] lg:max-h-[70vh]">
-              {analysis ? (
+              {loading ? (
+                <div className="rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm p-8 flex flex-col items-center justify-center gap-4 text-slate-400">
+                  <span className="inline-block w-10 h-10 border-2 border-indigo-500/30 border-t-indigo-400 rounded-full animate-spin" aria-hidden />
+                  <p className="text-sm">Video analiz ediliyor...</p>
+                  <p className="text-xs text-slate-500">Gramer ve kelime notları hazırlanıyor.</p>
+                </div>
+              ) : analysis ? (
                 <>
                   <section className="rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm p-4">
                     <h2 className="text-sm font-semibold text-slate-200 mb-3 uppercase tracking-wider">
@@ -174,7 +212,7 @@ export default function YouTubeLab() {
                           <button
                             type="button"
                             onClick={() => handleSeek(item.timestampSeconds)}
-                            className="text-red-400 hover:text-red-300 font-mono text-xs mr-2 focus:outline-none focus:ring-2 focus:ring-red-500/50 rounded"
+                            className="text-indigo-400 hover:text-indigo-300 font-mono text-xs mr-2 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 rounded"
                           >
                             {formatTimestamp(item.timestampSeconds)}
                           </button>
@@ -197,7 +235,7 @@ export default function YouTubeLab() {
                           <button
                             type="button"
                             onClick={() => handleSeek(item.timestampSeconds)}
-                            className="text-red-400 hover:text-red-300 font-mono text-xs focus:outline-none focus:ring-2 focus:ring-red-500/50 rounded"
+                            className="text-indigo-400 hover:text-indigo-300 font-mono text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/50 rounded"
                           >
                             {formatTimestamp(item.timestampSeconds)}
                           </button>
@@ -222,7 +260,7 @@ export default function YouTubeLab() {
                           <button
                             type="button"
                             onClick={() => handleSeek(s.timestampSeconds)}
-                            className="text-red-400 hover:text-red-300 font-mono text-xs shrink-0 mt-0.5 focus:outline-none focus:ring-2 focus:ring-red-500/50 rounded"
+                            className="text-indigo-400 hover:text-indigo-300 font-mono text-xs shrink-0 mt-0.5 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 rounded"
                           >
                             {formatTimestamp(s.timestampSeconds)}
                           </button>
@@ -241,9 +279,10 @@ export default function YouTubeLab() {
                     </ul>
                   </section>
                 </>
-              ) : !loading && (
-                <div className="rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm p-6 text-center text-slate-500 text-sm">
-                  Analiz sonuçları burada görünecek. Önce bir YouTube URL girin ve Analiz Et’e tıklayın.
+              ) : (
+                <div className="rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm p-8 text-center text-slate-500">
+                  <p className="text-sm font-medium text-slate-400 mb-1">Video analiz edildikten sonra burada görünecek</p>
+                  <p className="text-xs">Gramer yapıları, anahtar kelimeler ve örnek cümleler analiz tamamlanınca listelenecek.</p>
                 </div>
               )}
             </div>
