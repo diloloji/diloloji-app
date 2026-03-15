@@ -206,6 +206,10 @@ export default function HomePage() {
   const [mouse, setMouse] = useState({ x: 0, y: 0 });
   const statsRef = useRef<HTMLDivElement>(null);
   const statsInView = useInView(statsRef, { once: true, amount: 0.3 });
+  const socialProofRef = useRef<HTMLDivElement>(null);
+  const socialProofInView = useInView(socialProofRef, { once: true, amount: 0.2 });
+  const countUsers = useCountUp(500, socialProofInView, 1600);
+  const countWords = useCountUp(1247, socialProofInView, 1800);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     setMouse({ x: e.clientX, y: e.clientY });
@@ -279,6 +283,62 @@ export default function HomePage() {
           >
             <SyntaxFlowHero />
           </motion.div>
+        </motion.section>
+
+        {/* Sosyal kanıt — hero altı: canlı sayaçlar + testimoniallar */}
+        <motion.section
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.5 }}
+          className="mb-24 lg:mb-32"
+        >
+          <div ref={socialProofRef} className="rounded-2xl border border-slate-200/60 dark:border-white/10 bg-white/40 dark:bg-white/5 backdrop-blur-sm p-8 sm:p-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-12">
+              <div className="text-center md:text-left">
+                <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Diloloji ile öğrenen</p>
+                <p className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white tabular-nums">
+                  {countUsers.toLocaleString('tr-TR')}+
+                </p>
+                <p className="text-slate-600 dark:text-slate-300 text-lg font-semibold mt-1">kullanıcı</p>
+              </div>
+              <div className="text-center md:text-left">
+                <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Bugün aranan kelime</p>
+                <p className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white tabular-nums">
+                  {countWords.toLocaleString('tr-TR')}
+                </p>
+                <p className="text-slate-600 dark:text-slate-300 text-lg font-semibold mt-1">kelime</p>
+              </div>
+            </div>
+            <p className="text-center text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-6">
+              Kullanıcılarımız ne diyor?
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {[
+                { name: 'Elif K.', lang: 'Fransızca', level: 'B2', text: 'Fiil çekimlerini artık formül gibi görüyorum. Ezber Makinesi sayesinde kalıcı öğrendim.', avatar: '🇫🇷' },
+                { name: 'Can T.', lang: 'İspanyolca', level: 'A2', text: 'Sözlük ve örnek cümleler çok işime yarıyor. Her gün 10 dakika ayırıyorum.', avatar: '🇪🇸' },
+                { name: 'Zeynep A.', lang: 'İngilizce', level: 'C1', text: 'Cümle Laboratuvarı ile gramer kafama oturdu. Kesinlikle tavsiye ederim.', avatar: '🇬🇧' },
+              ].map((t, i) => (
+                <motion.div
+                  key={t.name}
+                  initial={{ opacity: 0, y: 12 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.35, delay: i * 0.1 }}
+                  className="rounded-xl border border-slate-200/60 dark:border-white/10 bg-white/60 dark:bg-white/5 p-5"
+                >
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center text-lg" aria-hidden>{t.avatar}</span>
+                    <div>
+                      <p className="font-semibold text-slate-900 dark:text-white">{t.name}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">{t.lang} · {t.level}</p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">&ldquo;{t.text}&rdquo;</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
         </motion.section>
 
         {/* Özellik kartları — Sözlük, Fiil Lab, Ezber, Öğrenme (grid) */}

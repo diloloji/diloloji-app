@@ -301,6 +301,8 @@ export type SearchResult = {
   root?: string;
   /** Fiil ise hedef dilde mastar (Fiil Lab'a gönderilecek) */
   targetVerb?: string;
+  /** CEFR seviye: A1, A2, B1, B2, C1, C2 */
+  level?: string;
 };
 
 export function searchDictionary(query: string, direction: DictDirection): SearchResult | null {
@@ -338,6 +340,41 @@ export const POPULAR_SEARCHES: { label: string; query: string; dir: DictDirectio
 export function getWordOfTheDay(): { word: string; dir: DictDirection; label: string } {
   const { fr } = getWordsOfTheDay();
   return { word: fr.word, dir: fr.dir, label: fr.label };
+}
+
+/** Autocomplete için kelime + anlam listesi (yöne göre). Mock + popüler + günün kelimesi. */
+export function getAutocompleteWords(dir: DictDirection): { word: string; meaning: string }[] {
+  const out: { word: string; meaning: string }[] = [];
+  const seen = new Set<string>();
+
+  function add(word: string, meaning: string) {
+    const k = word.trim().toLowerCase();
+    if (!k || seen.has(k)) return;
+    seen.add(k);
+    out.push({ word: word.trim(), meaning: meaning.trim() || '—' });
+  }
+
+  ENTRIES.forEach((e) => {
+    if (dir === 'tr-fr' || dir === 'fr-tr') {
+      add(e.fr, e.tr);
+      add(e.tr, e.fr);
+    }
+    if (dir === 'tr-es' || dir === 'es-tr') {
+      add(e.es, e.tr);
+      add(e.tr, e.es);
+    }
+    if (dir === 'tr-en' || dir === 'en-tr') {
+      add(e.tr, e.fr);
+    }
+  });
+
+  POPULAR_SEARCHES.filter((x) => x.dir === dir).forEach((x) => add(x.query, x.label));
+  const { fr, es, en } = getWordsOfTheDay();
+  if (dir === 'fr-tr' || dir === 'tr-fr') add(fr.word, fr.translation);
+  if (dir === 'es-tr' || dir === 'tr-es') add(es.word, es.translation);
+  if (dir === 'en-tr' || dir === 'tr-en') add(en.word, en.translation);
+
+  return out;
 }
 
 /** Günün kelimeleri — Fransızca + İspanyolca + İngilizce (boş durum ekranı için üç kart) */

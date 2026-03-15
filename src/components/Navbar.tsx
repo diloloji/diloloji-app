@@ -97,7 +97,7 @@ export default function Navbar({ onLoginClick, onLogoutClick, isLoggedIn, printH
     <>
       <header
         data-print-hide={printHide ? true : undefined}
-        className="sticky top-0 z-50 w-full bg-white/80 dark:bg-[#0a0e17]/80 backdrop-blur-md border-b border-slate-200/50 dark:border-white/5 transition-all duration-300 print:hidden"
+        className="sticky top-0 z-50 w-full bg-white/80 dark:bg-[#05080f]/80 backdrop-blur-md border-b border-slate-200/50 dark:border-white/5 transition-all duration-300 print:hidden"
       >
         <div className="flex items-center justify-between w-full max-w-7xl mx-auto pl-1 pr-4 h-16 gap-4">
           {/* Sol — Logo (sadece ikon), sola yaslı */}
@@ -130,7 +130,7 @@ export default function Navbar({ onLoginClick, onLogoutClick, isLoggedIn, printH
                   className={`text-sm font-medium whitespace-nowrap rounded-lg px-2 py-1.5 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 dark:focus:ring-offset-[#0a0e17] shrink-0 ${
                     active
                       ? 'text-indigo-600 dark:text-white bg-indigo-500/10 dark:bg-indigo-500/15'
-                      : 'text-gray-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10'
+                      : 'text-gray-400 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-colors duration-200'
                   }`}
                   aria-current={active ? 'page' : undefined}
                 >
@@ -141,27 +141,27 @@ export default function Navbar({ onLoginClick, onLogoutClick, isLoggedIn, printH
           </nav>
 
           {/* Sağ — Giriş Yap, Pro'ya Geç, Hamburger (shrink-0) */}
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-3 shrink-0">
             {!resolvedLoggedIn && (
               <button
                 type="button"
                 onClick={openLoginModal}
                 aria-label="Oturum aç"
-                className="h-9 px-3 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 border border-slate-300/50 dark:border-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shrink-0 whitespace-nowrap"
+                className="px-5 py-2.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-white bg-slate-100/80 dark:bg-white/5 hover:bg-slate-200/80 dark:hover:bg-white/10 border border-slate-200/50 dark:border-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shrink-0 whitespace-nowrap"
               >
                 Giriş Yap
               </button>
             )}
             <Link
               to="/pricing"
-              className="h-9 px-3 rounded-lg text-sm font-semibold bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-900 hover:from-amber-300 hover:via-yellow-300 hover:to-amber-400 shadow-md shadow-amber-500/25 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 dark:focus:ring-offset-[#0a0e17] flex items-center shrink-0 whitespace-nowrap"
+              className="px-5 py-2.5 rounded-lg text-sm font-medium bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-900 hover:from-amber-300 hover:via-yellow-300 hover:to-amber-400 shadow-md shadow-amber-500/25 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 dark:focus:ring-offset-[#0a0e17] flex items-center shrink-0 whitespace-nowrap"
             >
               🌟 Pro&apos;ya Geç
             </Link>
             <button
               type="button"
               onClick={() => setHamburgerOpen((o) => !o)}
-              className="h-9 w-9 flex items-center justify-center rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shrink-0"
+              className="h-10 w-10 flex items-center justify-center rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shrink-0"
               aria-expanded={hamburgerOpen}
               aria-label={hamburgerOpen ? 'Menüyü kapat' : 'Menüyü aç'}
             >

@@ -2,28 +2,40 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Volume2, X, Search, Star } from 'lucide-react';
+import { X, Search, Star, Plus } from 'lucide-react';
+import PronunciationButton from '../components/PronunciationButton';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTranslation } from 'react-i18next';
 import Navbar from '../components/Navbar';
 import {
   POPULAR_SEARCHES,
   getWordsOfTheDay,
+  getAutocompleteWords,
   type DictDirection,
   type SearchResult,
 } from '../data/mockDictionary';
+import { getVerbListForLang } from '../conjugation/helpers';
+import { getTranslationOrPlaceholder } from '../data/dictionary';
 import { fetchFromGroq, groqToSourceTarget, type GroqExampleItem, type GroqCommonPhrase, type WordMatrix, type GroqEtymology } from '../services/dictionaryApi';
 import { getFlashcardDecks, addCardToDeck, type FlashcardDeck } from '../utils/flashcardDecks';
 import { sanitizeForDisplay } from '../utils/sanitize';
 
-/** Groq examples (GroqExampleItem[]) → state formatı: original + translation (turkish) */
-function groqExamplesToState(examples: GroqExampleItem[]): Array<{ original: string; translation?: string }> {
+/** Örnek cümle: cümle, çeviri, CEFR seviye (badge renkleri için). */
+export interface ExampleSentence {
+  sentence: string;
+  translation: string;
+  level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
+}
+
+/** Groq examples (GroqExampleItem[]) → state formatı: original + translation + level (varsayılan B1). */
+function groqExamplesToState(examples: GroqExampleItem[]): ExampleSentence[] {
   return examples
     .map((ex) => ({
-      original: sanitizeForDisplay(ex.original ?? ''),
-      translation: ex.turkish ? sanitizeForDisplay(ex.turkish) : undefined,
+      sentence: sanitizeForDisplay(ex.original ?? ''),
+      translation: ex.turkish ? sanitizeForDisplay(ex.turkish) : '',
+      level: (ex as GroqExampleItem & { level?: string }).level as ExampleSentence['level'] | undefined || 'B1',
     }))
-    .filter((p) => p.original.length > 0);
+    .filter((p) => p.sentence.length > 0) as ExampleSentence[];
 }
 
 const SITE_URL = 'https://diloloji.com';
@@ -51,20 +63,6 @@ function DictionaryBackground() {
       </div>
     </>
   );
-}
-
-function speakWord(text: string, lang: 'fr-FR' | 'es-ES' | 'en-US' | 'en-GB') {
-  if (typeof window === 'undefined' || !window.speechSynthesis) return;
-  window.speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = lang;
-  u.rate = 0.9;
-  if (lang.startsWith('en-')) {
-    const voices = window.speechSynthesis.getVoices();
-    const enVoice = voices.find((v) => v.lang === 'en-GB' || v.lang === 'en-US') ?? voices.find((v) => v.lang.startsWith('en'));
-    if (enVoice) u.voice = enVoice;
-  }
-  window.speechSynthesis.speak(u);
 }
 
 function swapDirection(dir: DictDirection): DictDirection {
@@ -105,17 +103,19 @@ function highlightWord(sentence: string, word: string): React.ReactNode {
   );
 }
 
-/** "kelime (anlam)" formatını ayırır; parantez yoksa tümü word. */
+/** "kelime (anlam)" formatını ayırır; parantez yoksa tümü word. Boş veya '-' değeri null döner. */
 function parseWordMatrixEntry(value: string | null): { word: string; meaning: string } | null {
   if (!value || typeof value !== 'string') return null;
   const trimmed = value.trim();
-  if (!trimmed) return null;
+  if (!trimmed || trimmed === '-' || /^-+$/.test(trimmed)) return null;
   const open = trimmed.indexOf(' (');
   if (open === -1) return { word: trimmed, meaning: '' };
   const close = trimmed.lastIndexOf(')');
   if (close === -1 || close <= open) return { word: trimmed, meaning: '' };
+  const word = trimmed.slice(0, open).trim();
+  if (!word || word === '-') return null;
   return {
-    word: trimmed.slice(0, open).trim(),
+    word,
     meaning: trimmed.slice(open + 2, close).trim(),
   };
 }
@@ -145,7 +145,14 @@ export default function Dictionary() {
   const addToSetRef = useRef<HTMLDivElement>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [groqExamples, setGroqExamples] = useState<Array<{ original: string; translation?: string }> | null>(null);
+  const [autocompleteOpen, setAutocompleteOpen] = useState(false);
+  const [autocompleteSelectedIndex, setAutocompleteSelectedIndex] = useState(0);
+  const [debouncedQuery, setDebouncedQuery] = useState('');
+  const autocompleteListRef = useRef<HTMLUListElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const searchFormRef = useRef<HTMLFormElement>(null);
+  const [groqExamples, setGroqExamples] = useState<ExampleSentence[] | null>(null);
+  const [exampleDisplayCount, setExampleDisplayCount] = useState(3);
   const [groqCommonPhrases, setGroqCommonPhrases] = useState<GroqCommonPhrase[] | null>(null);
   const [groqWordMatrix, setGroqWordMatrix] = useState<WordMatrix | null>(null);
   const [groqEtymology, setGroqEtymology] = useState<GroqEtymology | null>(null);
@@ -169,9 +176,111 @@ export default function Dictionary() {
     return () => clearTimeout(t);
   }, [toastMessage]);
 
-  const pageUrl = `${SITE_URL}/sozluk`;
-  const pageTitle = 'Diloloji Sözlük: İspanyolca, Fransızca ve İngilizce Kelime Analizi';
-  const pageDescription = 'İspanyolca, Fransızca ve İngilizce kelime analizi, anlam, IPA telaffuz ve phrasal verb. Ücretsiz çeviri ve kelime öğrenme araçları.';
+  const autocompleteFullList = useMemo(() => {
+    const mock = getAutocompleteWords(direction);
+    const lang: 'fr' | 'es' =
+      direction === 'tr-fr' || direction === 'fr-tr' ? 'fr'
+      : direction === 'tr-es' || direction === 'es-tr' ? 'es'
+      : null;
+    if (lang) {
+      const verbs = getVerbListForLang(lang);
+      const seen = new Set(mock.map((x) => x.word.toLowerCase()));
+      verbs.forEach((v) => {
+        if (!seen.has(v.toLowerCase())) {
+          mock.push({ word: v, meaning: getTranslationOrPlaceholder(v, lang) });
+          seen.add(v.toLowerCase());
+        }
+      });
+    }
+    return mock;
+  }, [direction]);
+
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedQuery(query.trim()), 300);
+    return () => clearTimeout(t);
+  }, [query]);
+
+  const autocompleteSuggestions = useMemo(() => {
+    const q = debouncedQuery.toLowerCase();
+    if (!q) return [];
+    return autocompleteFullList
+      .filter((x) => x.word.toLowerCase().startsWith(q) || x.word.toLowerCase().includes(q))
+      .slice(0, 8);
+  }, [autocompleteFullList, debouncedQuery]);
+
+  useEffect(() => {
+    setAutocompleteSelectedIndex(0);
+  }, [autocompleteSuggestions.length]);
+
+  useEffect(() => {
+    if (!autocompleteOpen || autocompleteSuggestions.length === 0) return;
+    const el = autocompleteListRef.current;
+    const child = el?.children[autocompleteSelectedIndex] as HTMLElement | undefined;
+    child?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }, [autocompleteOpen, autocompleteSelectedIndex, autocompleteSuggestions.length]);
+
+  useEffect(() => {
+    if (!autocompleteOpen) return;
+    const handle = (e: MouseEvent) => {
+      if (searchFormRef.current && !searchFormRef.current.contains(e.target as Node)) {
+        setAutocompleteOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handle);
+    return () => document.removeEventListener('mousedown', handle);
+  }, [autocompleteOpen]);
+
+  useEffect(() => {
+    if (!result) return;
+    const handle = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setResult(null);
+        return;
+      }
+      if (e.key === 's' || e.key === 'S') {
+        if (!e.ctrlKey && !e.metaKey && !e.altKey) {
+          e.preventDefault();
+          setAddToSetOpen((o) => !o);
+        }
+        return;
+      }
+      if (e.key === 'p' || e.key === 'P') {
+        if (!e.ctrlKey && !e.metaKey && !e.altKey) {
+          e.preventDefault();
+          const text = direction === 'tr-fr' || direction === 'tr-es' || direction === 'tr-en' ? result.target : result.source;
+          const lang = result.lang === 'fr' ? 'fr-FR' : result.lang === 'es' ? 'es-ES' : 'en-US';
+          if (typeof window !== 'undefined' && window.speechSynthesis) {
+            const u = new SpeechSynthesisUtterance(text);
+            u.lang = lang;
+            window.speechSynthesis.cancel();
+            window.speechSynthesis.speak(u);
+          }
+        }
+      }
+    };
+    window.addEventListener('keydown', handle);
+    return () => window.removeEventListener('keydown', handle);
+  }, [result, direction]);
+
+  const langSlug = result?.lang === 'fr' ? 'fransizca' : result?.lang === 'es' ? 'ispanyolca' : 'ingilizce';
+  const pageUrl = result
+    ? `${SITE_URL}/sozluk/${langSlug}/${encodeURIComponent(result.source)}`
+    : `${SITE_URL}/sozluk`;
+  const pageTitle = result
+    ? `${result.target} Türkçe anlamı - Diloloji`
+    : 'Diloloji Sözlük: İspanyolca, Fransızca ve İngilizce Kelime Analizi';
+  const pageDescription = result
+    ? `${result.source} kelimesinin Türkçe karşılığı: ${result.target}. ${result.phonetic ? 'IPA: ' + result.phonetic + '. ' : ''}Diloloji sözlük.`
+    : 'İspanyolca, Fransızca ve İngilizce kelime analizi, anlam, IPA telaffuz ve phrasal verb. Ücretsiz çeviri ve kelime öğrenme araçları.';
+  const jsonLd = result
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'DefinedTerm',
+        name: result.source,
+        description: result.target,
+        inDefinedTermSet: { '@type': 'DefinedTermSet', name: 'Diloloji Sözlük' },
+      }
+    : null;
 
   const doSearch = useCallback(async (q: string, dir: DictDirection) => {
     const trimmed = sanitizeForDisplay(q);
@@ -197,6 +306,14 @@ export default function Dictionary() {
           phonetic: groq.phonetic ? sanitizeForDisplay(groq.phonetic) : undefined,
           exampleSource: undefined,
           exampleTarget: undefined,
+          synonyms: groq.synonyms ? sanitizeForDisplay(groq.synonyms) : undefined,
+          antonyms: groq.antonyms ? sanitizeForDisplay(groq.antonyms) : undefined,
+          level: groq.level ? sanitizeForDisplay(groq.level) : undefined,
+          targetVerb:
+            groq.wordMatrix?.verb &&
+            st.source.trim().toLowerCase() === groq.wordMatrix.verb.trim().toLowerCase()
+              ? sanitizeForDisplay(st.source)
+              : undefined,
         };
         setResult(r);
         const pairs =
@@ -204,6 +321,7 @@ export default function Dictionary() {
             ? groqExamplesToState(groq.examples)
             : null;
         setGroqExamples(pairs);
+        setExampleDisplayCount(3);
         const phrases =
           Array.isArray(groq.commonPhrases) && groq.commonPhrases.length > 0
             ? groq.commonPhrases
@@ -276,15 +394,6 @@ export default function Dictionary() {
     [query, direction, doSearch]
   );
 
-  /** TTS: Hedef dildeki kelimeyi sesli okur; İngilizce seçiliyse en-US/en-GB, yoksa fr-FR veya es-ES. */
-  const playAudio = useCallback(() => {
-    if (!result) return;
-    const ttsLang: 'fr-FR' | 'es-ES' | 'en-US' | 'en-GB' =
-      result.lang === 'en' ? 'en-GB' : result.lang === 'fr' ? 'fr-FR' : 'es-ES';
-    const wordToSpeak = direction === 'tr-fr' || direction === 'tr-es' || direction === 'tr-en' ? result.target : result.source;
-    speakWord(wordToSpeak, ttsLang);
-  }, [result, direction]);
-
   const handleSearchQuery = useCallback((q: string, dir: DictDirection) => {
     setQuery(q);
     setDirection(dir);
@@ -329,6 +438,11 @@ export default function Dictionary() {
         <meta property="og:description" content={pageDescription} />
         <meta property="og:url" content={pageUrl} />
         <meta property="og:type" content="website" />
+        {jsonLd && (
+          <script type="application/ld+json">
+            {JSON.stringify(jsonLd)}
+          </script>
+        )}
       </Helmet>
       <DictionaryBackground />
       <Navbar />
@@ -402,26 +516,68 @@ export default function Dictionary() {
             </motion.div>
           </div>
 
-          {/* Command Bar — sayfa ortasında yüzen, ince border + derin gölge */}
-          <form onSubmit={handleSearch} className="mb-4">
+          {/* Command Bar — sayfa ortasında yüzen, ince border + derin gölge + autocomplete */}
+          <form ref={searchFormRef} onSubmit={handleSearch} className="mb-4 relative">
             <motion.div
-              className="relative rounded-2xl bg-white/10 dark:bg-white/5 backdrop-blur-xl border border-white/5 shadow-2xl overflow-hidden focus-within:ring-2 focus-within:ring-indigo-500/30 focus-within:border-indigo-500/20 transition-all duration-300"
+              className="relative rounded-2xl bg-white/10 dark:bg-white/5 backdrop-blur-xl border border-white/5 shadow-2xl overflow-visible focus-within:ring-2 focus-within:ring-indigo-500/30 focus-within:border-indigo-500/20 transition-all duration-300"
               initial={false}
             >
               <div className="flex items-center min-h-[64px] sm:min-h-[72px] px-4 sm:px-5 gap-3">
                 <Search className="w-5 h-5 sm:w-6 sm:h-6 text-slate-400 dark:text-slate-500 shrink-0" strokeWidth={2} aria-hidden />
                 <input
+                  ref={searchInputRef}
                   type="text"
                   value={query}
-                  onChange={(e) => setQuery(e.target.value)}
+                  onChange={(e) => {
+                    setQuery(e.target.value);
+                    setAutocompleteOpen(true);
+                  }}
+                  onFocus={() => debouncedQuery.trim().length >= 1 && setAutocompleteOpen(true)}
+                  onKeyDown={(e) => {
+                    if (!autocompleteOpen || autocompleteSuggestions.length === 0) {
+                      if (e.key === 'Escape') setAutocompleteOpen(false);
+                      return;
+                    }
+                    if (e.key === 'ArrowDown') {
+                      e.preventDefault();
+                      setAutocompleteSelectedIndex((i) => Math.min(i + 1, autocompleteSuggestions.length));
+                      return;
+                    }
+                    if (e.key === 'ArrowUp') {
+                      e.preventDefault();
+                      setAutocompleteSelectedIndex((i) => Math.max(i - 1, 0));
+                      return;
+                    }
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      if (autocompleteSelectedIndex < autocompleteSuggestions.length) {
+                        const sel = autocompleteSuggestions[autocompleteSelectedIndex];
+                        if (sel) {
+                          handleSearchQuery(sel.word, direction);
+                          setAutocompleteOpen(false);
+                        }
+                      } else {
+                        handleSearchQuery(query.trim(), direction);
+                        setAutocompleteOpen(false);
+                      }
+                      return;
+                    }
+                    if (e.key === 'Escape') {
+                      e.preventDefault();
+                      setAutocompleteOpen(false);
+                    }
+                  }}
                   placeholder={isEnglish ? 'İngilizce veya Türkçe kelime...' : direction === 'tr-fr' || direction === 'fr-tr' ? 'Fransızca veya Türkçe kelime...' : 'İspanyolca veya Türkçe kelime...'}
                   className="flex-1 min-w-0 bg-transparent border-0 py-3 text-xl sm:text-2xl text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none"
                   aria-label={direction.startsWith('tr') ? 'Hangi kelimenin anlamına bakalım?' : 'Arama'}
+                  aria-autocomplete="list"
+                  aria-expanded={autocompleteOpen && autocompleteSuggestions.length > 0}
+                  aria-controls="dict-autocomplete-list"
                 />
                 {query.length > 0 && (
                   <button
                     type="button"
-                    onClick={() => { setQuery(''); setResult(undefined); }}
+                    onClick={() => { setQuery(''); setResult(undefined); setAutocompleteOpen(false); }}
                     className="p-2 rounded-full text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-white/10 transition-colors shrink-0"
                     aria-label="Temizle"
                   >
@@ -430,26 +586,93 @@ export default function Dictionary() {
                 )}
               </div>
             </motion.div>
+            {autocompleteOpen && debouncedQuery.trim().length >= 1 && (
+              <ul
+                id="dict-autocomplete-list"
+                ref={autocompleteListRef}
+                role="listbox"
+                className="absolute left-0 right-0 top-full mt-1 z-50 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 shadow-xl overflow-hidden max-h-72 overflow-y-auto"
+              >
+                {autocompleteSuggestions.map((item, i) => (
+                  <li
+                    key={`${item.word}-${i}`}
+                    role="option"
+                    aria-selected={i === autocompleteSelectedIndex}
+                    className={`flex items-center justify-between gap-2 px-4 py-3 text-left cursor-pointer transition-colors ${
+                      i === autocompleteSelectedIndex ? 'bg-indigo-500/15 dark:bg-indigo-500/25 text-indigo-700 dark:text-indigo-200' : 'hover:bg-slate-100 dark:hover:bg-slate-700/50 text-slate-800 dark:text-slate-200'
+                    }`}
+                    onMouseEnter={() => setAutocompleteSelectedIndex(i)}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      handleSearchQuery(item.word, direction);
+                      setAutocompleteOpen(false);
+                    }}
+                  >
+                    <span className="font-medium truncate">{item.word}</span>
+                    <span className="text-slate-500 dark:text-slate-400 text-sm truncate shrink-0">— {item.meaning}</span>
+                  </li>
+                ))}
+                <li
+                  role="option"
+                  aria-selected={autocompleteSuggestions.length === autocompleteSelectedIndex}
+                  className="flex items-center justify-between gap-2 px-4 py-3 text-left cursor-pointer border-t border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-800/80 hover:bg-indigo-500/10 dark:hover:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 font-medium"
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    handleSearchQuery(query.trim(), direction);
+                    setAutocompleteOpen(false);
+                  }}
+                >
+                  Tüm sonuçları göster →
+                </li>
+              </ul>
+            )}
           </form>
 
-          {/* Son aramalar — küçük, kenarlıksız, çok hafif arka plan */}
+          {/* Son aramalar — dil bayrağı + kelime, tek tek silinebilir */}
           {recentSearches.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-6 mb-2">
+            <div className="flex flex-wrap items-center gap-2 mt-6 mb-2">
               <span className="text-[11px] font-medium uppercase tracking-wider text-slate-400 dark:text-slate-500 self-center mr-1">Son aramalar</span>
-              {recentSearches.map(({ query: q, dir }) => (
-                <button
-                  key={`${dir}-${q}`}
-                  type="button"
-                  onClick={() => {
-                    setQuery(q);
-                    setDirection(dir);
-                    doSearch(q, dir);
-                  }}
-                  className="px-2.5 py-1 rounded-md text-xs font-medium bg-white/5 dark:bg-white/5 text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-white/10 dark:hover:bg-white/10 transition-colors"
-                >
-                  {q}
-                </button>
-              ))}
+              {recentSearches.map(({ query: q, dir }) => {
+                const flag = dir === 'tr-fr' || dir === 'fr-tr' ? '🇫🇷' : dir === 'tr-es' || dir === 'es-tr' ? '🇪🇸' : '🇬🇧';
+                return (
+                  <span
+                    key={`${dir}-${q}`}
+                    className="inline-flex items-center gap-1 rounded-md bg-white/5 dark:bg-white/5 border border-slate-200/50 dark:border-slate-600/50 overflow-hidden"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setQuery(q);
+                        setDirection(dir);
+                        doSearch(q, dir);
+                      }}
+                      className="px-2.5 py-1 text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-white/10 dark:hover:bg-white/10 transition-colors text-left"
+                    >
+                      <span aria-hidden>{flag}</span>
+                      <span className="ml-1">{q}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setRecentSearches((prev) => {
+                          const next = prev.filter((x) => !(x.query === q && x.dir === dir));
+                          try {
+                            window.localStorage.setItem('dictionary_recent', JSON.stringify(next));
+                          } catch {
+                            // ignore
+                          }
+                          return next;
+                        });
+                      }}
+                      className="p-1 text-slate-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-white/10 dark:hover:bg-white/10 transition-colors"
+                      aria-label={`${q} aramasını sil`}
+                    >
+                      <X className="w-3.5 h-3.5" strokeWidth={2} />
+                    </button>
+                  </span>
+                );
+              })}
             </div>
           )}
 
@@ -492,48 +715,69 @@ export default function Dictionary() {
                       const { fr, es, en } = getWordsOfTheDay();
                       return (
                         <>
-                          <motion.button
-                            type="button"
+                          <motion.div
                             initial={{ opacity: 0, y: 8 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.3, delay: 0.05 }}
-                            onClick={() => handleSearchQuery(fr.word, fr.dir)}
-                            className="group flex items-start gap-3 text-left focus:outline-none focus:ring-0 rounded-lg py-1 -mx-1 hover:bg-white/5 dark:hover:bg-white/5 transition-colors duration-200"
+                            className="relative group flex items-start gap-3 text-left rounded-lg py-1 -mx-1 hover:bg-white/5 dark:hover:bg-white/5 transition-colors duration-200"
                           >
-                            <span className="text-xl mt-0.5 opacity-70 group-hover:opacity-100 transition-opacity" aria-hidden>🌟</span>
-                            <div className="min-w-0">
-                              <p className="font-bold text-slate-900 dark:text-slate-100 text-lg">{fr.label}</p>
-                              <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">{fr.translation}</p>
-                            </div>
-                          </motion.button>
-                          <motion.button
-                            type="button"
+                            <span className="absolute top-0 right-0 z-10" onClick={(e) => e.stopPropagation()}>
+                              <PronunciationButton word={fr.label} lang="fr-FR" size="sm" />
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => handleSearchQuery(fr.word, fr.dir)}
+                              className="flex items-start gap-3 text-left w-full focus:outline-none focus:ring-0 rounded-lg"
+                            >
+                              <span className="text-xl mt-0.5 opacity-70 group-hover:opacity-100 transition-opacity" aria-hidden>🌟</span>
+                              <div className="min-w-0 pr-10">
+                                <p className="font-bold text-slate-900 dark:text-slate-100 text-lg">{fr.label}</p>
+                                <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">{fr.translation}</p>
+                              </div>
+                            </button>
+                          </motion.div>
+                          <motion.div
                             initial={{ opacity: 0, y: 8 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.3, delay: 0.1 }}
-                            onClick={() => handleSearchQuery(es.word, es.dir)}
-                            className="group flex items-start gap-3 text-left focus:outline-none focus:ring-0 rounded-lg py-1 -mx-1 hover:bg-white/5 dark:hover:bg-white/5 transition-colors duration-200"
+                            className="relative group flex items-start gap-3 text-left rounded-lg py-1 -mx-1 hover:bg-white/5 dark:hover:bg-white/5 transition-colors duration-200"
                           >
-                            <span className="text-xl mt-0.5 opacity-70 group-hover:opacity-100 transition-opacity" aria-hidden>🌟</span>
-                            <div className="min-w-0">
-                              <p className="font-bold text-slate-900 dark:text-slate-100 text-lg">{es.label}</p>
-                              <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">{es.translation}</p>
-                            </div>
-                          </motion.button>
-                          <motion.button
-                            type="button"
+                            <span className="absolute top-0 right-0 z-10" onClick={(e) => e.stopPropagation()}>
+                              <PronunciationButton word={es.label} lang="es-ES" size="sm" />
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => handleSearchQuery(es.word, es.dir)}
+                              className="flex items-start gap-3 text-left w-full focus:outline-none focus:ring-0 rounded-lg"
+                            >
+                              <span className="text-xl mt-0.5 opacity-70 group-hover:opacity-100 transition-opacity" aria-hidden>🌟</span>
+                              <div className="min-w-0 pr-10">
+                                <p className="font-bold text-slate-900 dark:text-slate-100 text-lg">{es.label}</p>
+                                <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">{es.translation}</p>
+                              </div>
+                            </button>
+                          </motion.div>
+                          <motion.div
                             initial={{ opacity: 0, y: 8 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.3, delay: 0.15 }}
-                            onClick={() => handleSearchQuery(en.word, en.dir)}
-                            className="group flex items-start gap-3 text-left focus:outline-none focus:ring-0 rounded-lg py-1 -mx-1 hover:bg-white/5 dark:hover:bg-white/5 transition-colors duration-200"
+                            className="relative group flex items-start gap-3 text-left rounded-lg py-1 -mx-1 hover:bg-white/5 dark:hover:bg-white/5 transition-colors duration-200"
                           >
-                            <span className="text-xl mt-0.5 opacity-70 group-hover:opacity-100 transition-opacity" aria-hidden>🌟</span>
-                            <div className="min-w-0">
-                              <p className="font-bold text-slate-900 dark:text-slate-100 text-lg">{en.label}</p>
-                              <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">{en.translation}</p>
-                            </div>
-                          </motion.button>
+                            <span className="absolute top-0 right-0 z-10" onClick={(e) => e.stopPropagation()}>
+                              <PronunciationButton word={en.label} lang="en-US" size="sm" />
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => handleSearchQuery(en.word, en.dir)}
+                              className="flex items-start gap-3 text-left w-full focus:outline-none focus:ring-0 rounded-lg"
+                            >
+                              <span className="text-xl mt-0.5 opacity-70 group-hover:opacity-100 transition-opacity" aria-hidden>🌟</span>
+                              <div className="min-w-0 pr-10">
+                                <p className="font-bold text-slate-900 dark:text-slate-100 text-lg">{en.label}</p>
+                                <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">{en.translation}</p>
+                              </div>
+                            </button>
+                          </motion.div>
                         </>
                       );
                     })()}
@@ -579,28 +823,33 @@ export default function Dictionary() {
                 transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
                 className="mt-14 sm:mt-18"
               >
-                {/* Üst satır: Kapat + Favori yıldızı */}
-                <div className="flex items-center justify-end gap-1 mb-2">
-                  <button
-                    type="button"
-                    onClick={() => setIsFavourite((f) => !f)}
-                    className="p-2 rounded-full text-slate-400 dark:text-slate-500 hover:text-amber-500 dark:hover:text-amber-400 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500/50"
-                    aria-label={isFavourite ? 'Favorilerden çıkar' : 'Favorilere ekle'}
-                  >
-                    <Star
-                      className={`w-5 h-5 ${isFavourite ? 'fill-amber-400 text-amber-400 dark:fill-amber-500 dark:text-amber-500' : 'fill-none'}`}
-                      strokeWidth={2}
-                      aria-hidden
-                    />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setResult(null)}
-                    className="p-2 rounded-full text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
-                    aria-label="Kapat"
-                  >
-                    <X className="w-5 h-5" strokeWidth={2} />
-                  </button>
+                {/* Üst satır: Kapat + Favori yıldızı + klavye ipucu */}
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <p className="text-[10px] text-slate-400 dark:text-slate-500 opacity-60" aria-hidden>
+                    [Esc] kapat · [S] kaydet · [P] seslendir
+                  </p>
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => setIsFavourite((f) => !f)}
+                      className="p-2 rounded-full text-slate-400 dark:text-slate-500 hover:text-amber-500 dark:hover:text-amber-400 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+                      aria-label={isFavourite ? 'Favorilerden çıkar' : 'Favorilere ekle'}
+                    >
+                      <Star
+                        className={`w-5 h-5 ${isFavourite ? 'fill-amber-400 text-amber-400 dark:fill-amber-500 dark:text-amber-500' : 'fill-none'}`}
+                        strokeWidth={2}
+                        aria-hidden
+                      />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setResult(null)}
+                      className="p-2 rounded-full text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                      aria-label="Kapat"
+                    >
+                      <X className="w-5 h-5" strokeWidth={2} />
+                    </button>
+                  </div>
                 </div>
 
                 {/* Kelime başlığı: çok büyük + tür (küçük italik gri) + ses + anlam */}
@@ -611,15 +860,28 @@ export default function Dictionary() {
                   <span className="text-xs sm:text-sm font-medium italic text-slate-400 dark:text-slate-500">
                     {result.type}
                   </span>
-                  <button
-                    type="button"
-                    onClick={playAudio}
-                    className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/10 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:text-indigo-500 dark:hover:text-indigo-400 hover:scale-110 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shrink-0"
-                    title="Telaffuzu dinle"
-                    aria-label="Telaffuzu dinle"
-                  >
-                    <Volume2 className="w-4 h-4" strokeWidth={2} />
-                  </button>
+                  {/* CEFR seviye badge: A1/A2 yeşil, B1/B2 sarı, C1/C2 kırmızı */}
+                  {result.level && (
+                    <span
+                      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold border ${
+                        /^A[12]$/i.test(result.level)
+                          ? 'bg-green-900/80 text-green-300 dark:bg-green-900/60 dark:text-green-300 border-green-500/40'
+                          : /^B[12]$/i.test(result.level)
+                            ? 'bg-yellow-900/80 text-yellow-300 dark:bg-yellow-900/60 dark:text-yellow-300 border-yellow-500/40'
+                            : /^C[12]$/i.test(result.level)
+                              ? 'bg-red-900/80 text-red-300 dark:bg-red-900/60 dark:text-red-300 border-red-500/40'
+                              : 'bg-slate-700/60 text-slate-300 border-slate-500/40'
+                      }`}
+                      title="Kelime seviyesi (A1–C2)"
+                    >
+                      {result.level.toUpperCase()}
+                    </span>
+                  )}
+                  <PronunciationButton
+                    word={direction === 'tr-fr' || direction === 'tr-es' || direction === 'tr-en' ? result.target : result.source}
+                    lang={result.lang === 'en' ? 'en-US' : result.lang === 'fr' ? 'fr-FR' : 'es-ES'}
+                    size="md"
+                  />
                 </div>
                 {result.phonetic && (
                   <p className={`mt-1 font-mono text-slate-500 dark:text-slate-400 ${result.lang === 'en' ? 'text-sm tracking-wide' : 'text-base'}`}>
@@ -630,17 +892,31 @@ export default function Dictionary() {
                   {result.target}
                 </p>
 
-                {/* Set'e Ekle (ikincil) */}
+                {/* Fiil Laboratuvarında Aç — sadece fiilse */}
+                {result.targetVerb && (
+                  <Link
+                    to={`/fiil-laboratuvari?verb=${encodeURIComponent(result.targetVerb)}&lang=${result.lang}`}
+                    className="mt-4 inline-flex items-center gap-2 rounded-lg border border-indigo-300/60 dark:border-indigo-500/50 bg-indigo-50/80 dark:bg-indigo-500/15 px-3 py-2 text-sm font-medium text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-500/25 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                  >
+                    <span aria-hidden>⚗</span>
+                    Fiil Laboratuvarında Aç →
+                  </Link>
+                )}
+                {/* Set'e Ekle — transparan çerçeveli buton + Plus ikonu */}
                 <div className="relative mt-4 inline-block" ref={addToSetRef}>
                   <button
                     type="button"
                     onClick={() => setAddToSetOpen((o) => !o)}
-                    className="text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-2 py-1"
+                    className="inline-flex items-center gap-2 rounded-lg border border-slate-300/60 dark:border-white/10 bg-transparent dark:bg-white/5 px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100/80 dark:hover:bg-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 dark:focus:ring-offset-[#0a0e17]"
                   >
+                    <Plus className="w-4 h-4 shrink-0" strokeWidth={2} aria-hidden />
                     Set&apos;e Ekle
                   </button>
                   {addToSetOpen && (
-                    <div className="absolute left-0 top-full mt-1 min-w-[12rem] rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 shadow-xl py-2 z-50 max-h-64 overflow-y-auto">
+                    <div className="absolute left-0 top-full mt-1 min-w-[14rem] rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 shadow-xl py-2 z-50 max-h-72 overflow-y-auto">
+                      <p className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-700">
+                        Hangi sete ekleyeceksiniz?
+                      </p>
                       {mockDecksIfEmpty.length === 0 ? (
                         <p className="px-4 py-3 text-sm text-slate-500 dark:text-slate-400">Henüz set yok.</p>
                       ) : (
@@ -655,15 +931,15 @@ export default function Dictionary() {
                           </button>
                         ))
                       )}
-                      {decks.length === 0 && (
+                      <div className="border-t border-slate-100 dark:border-slate-700 mt-1 pt-1">
                         <Link
                           to="/ezber-makinesi"
                           className="block px-4 py-2.5 text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:bg-indigo-500/10"
                           onClick={() => setAddToSetOpen(false)}
                         >
-                          Ezber Makinesi’nde set oluştur →
+                          + Yeni Set Oluştur
                         </Link>
-                      )}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -678,29 +954,48 @@ export default function Dictionary() {
                   </p>
                 )}
 
-                {/* Örnek cümleler — blockquote: sol şerit, kutu yok */}
+                {/* Örnek Cümleler — seviye badge, italik cümle (mavi/mor), çeviri, Daha Fazla Göster */}
                 {groqExamples && groqExamples.length > 0 && (
                   <div className="mt-8">
                     <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500 dark:text-slate-500 mb-3">
-                      Örnek cümleler
+                      Örnek Cümleler
                     </p>
                     <div className="space-y-4">
-                      {groqExamples.map((item, i) => (
-                        <blockquote
-                          key={i}
-                          className="pl-4 border-l-2 border-indigo-500/60 dark:border-indigo-400/50 py-0.5"
-                        >
-                          <p className="text-slate-900 dark:text-slate-100 leading-relaxed">
-                            {highlightWord(item.original, (direction === 'tr-fr' || direction === 'tr-es' || direction === 'tr-en') ? result.target : result.source)}
-                          </p>
-                          {item.translation && (
-                            <p className="text-gray-400 dark:text-slate-500 text-sm mt-1 leading-relaxed">
-                              {item.translation}
-                            </p>
-                          )}
-                        </blockquote>
-                      ))}
+                      {groqExamples.slice(0, exampleDisplayCount).map((item, i) => {
+                        const levelClass =
+                          item.level === 'A1' || item.level === 'A2'
+                            ? 'bg-green-900/80 text-green-300 dark:bg-green-900/60 dark:text-green-300'
+                            : item.level === 'B1' || item.level === 'B2'
+                              ? 'bg-yellow-900/80 text-yellow-300 dark:bg-yellow-900/60 dark:text-yellow-300'
+                              : 'bg-red-900/80 text-red-300 dark:bg-red-900/60 dark:text-red-300';
+                        return (
+                          <div key={i} className="flex gap-3">
+                            <span className={`shrink-0 rounded px-2 py-0.5 text-xs font-bold ${levelClass}`}>
+                              {item.level}
+                            </span>
+                            <blockquote className="flex-1 min-w-0 border-l-2 border-indigo-500/60 dark:border-indigo-400/50 pl-3 py-0.5">
+                              <p className="text-indigo-700 dark:text-indigo-300 italic leading-relaxed">
+                                {highlightWord(item.sentence, (direction === 'tr-fr' || direction === 'tr-es' || direction === 'tr-en') ? result.target : result.source)}
+                              </p>
+                              {item.translation && (
+                                <p className="text-slate-500 dark:text-slate-400 text-sm mt-1 leading-relaxed">
+                                  {item.translation}
+                                </p>
+                              )}
+                            </blockquote>
+                          </div>
+                        );
+                      })}
                     </div>
+                    {groqExamples.length > exampleDisplayCount && (
+                      <button
+                        type="button"
+                        onClick={() => setExampleDisplayCount((c) => Math.min(c + 3, groqExamples.length))}
+                        className="mt-3 text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:underline focus:outline-none focus:ring-2 focus:ring-indigo-500/50 rounded"
+                      >
+                        Daha Fazla Göster
+                      </button>
+                    )}
                   </div>
                 )}
 
@@ -709,7 +1004,7 @@ export default function Dictionary() {
                   <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500 dark:text-slate-500 mb-3">
                     Kelime Matrisi
                   </p>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 border border-slate-200/50 dark:border-white/10 rounded-lg divide-x divide-y divide-slate-200/50 dark:divide-white/10">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2 border border-slate-200/50 dark:border-white/10 rounded-lg divide-x divide-y divide-slate-200/50 dark:divide-white/10">
                     {[
                       { key: 'noun', letter: 'N', label: 'İsim', value: groqWordMatrix?.noun ?? null },
                       { key: 'verb', letter: 'V', label: 'Fiil', value: groqWordMatrix?.verb ?? null },
@@ -717,11 +1012,11 @@ export default function Dictionary() {
                       { key: 'adverb', letter: 'Adv', label: 'Zarf', value: groqWordMatrix?.adverb ?? null },
                     ].map(({ key, letter, label, value }) => {
                       const parsed = parseWordMatrixEntry(value);
-                      const isEmpty = !parsed || !parsed.word;
+                      const isEmpty = !parsed || !parsed.word || parsed.word === '-';
                       return (
                         <div
                           key={key}
-                          className={`p-3 ${isEmpty ? 'opacity-50' : ''}`}
+                          className={`p-3 transition-opacity ${isEmpty ? 'opacity-50' : ''}`}
                         >
                           <p className="text-[10px] font-medium uppercase tracking-wider text-slate-400 dark:text-slate-500 flex items-center gap-1.5">
                             <span className="w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold bg-slate-200/50 dark:bg-white/10 text-slate-500 dark:text-slate-400">
@@ -795,7 +1090,7 @@ export default function Dictionary() {
                               {/* Üst satır: akraba kelimeler (dalların uçları) */}
                               {groqEtymology.connections.length > 0 && (
                                 <>
-                                  <div className="flex flex-wrap justify-center gap-4 sm:gap-6 mb-2">
+                                  <div className="flex flex-col md:flex-row justify-center gap-3 mb-2">
                                     {groqEtymology.connections.map((conn, i) => (
                                       <motion.div
                                         key={i}
@@ -856,34 +1151,55 @@ export default function Dictionary() {
                   </div>
                 )}
 
-                {/* İlişkili: eş / zıt */}
+                {/* Eş anlamlılar / Zıt anlamlılar — tıklanınca o kelimeyi ara */}
                 {(result.synonyms || result.antonyms) && (
-                  <div className="mt-8 pt-6 border-t border-slate-200/60 dark:border-white/10">
-                    <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500 dark:text-slate-500 mb-2">
-                      İlişkili
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {result.synonyms && result.synonyms !== '—' && result.synonyms.split(/[,;]/).map((s) => s.trim()).filter(Boolean).map((word) => (
-                        <button
-                          key={word}
-                          type="button"
-                          onClick={() => handleSearchQuery(word, direction)}
-                          className="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:underline focus:outline-none"
-                        >
-                          {word}
-                        </button>
-                      ))}
-                      {result.antonyms && result.antonyms !== '—' && result.antonyms.split(/[,;]/).map((s) => s.trim()).filter(Boolean).map((word) => (
-                        <button
-                          key={word}
-                          type="button"
-                          onClick={() => handleSearchQuery(word, direction)}
-                          className="text-sm font-medium text-slate-500 dark:text-slate-400 hover:underline focus:outline-none"
-                        >
-                          {word}
-                        </button>
-                      ))}
-                    </div>
+                  <div className="mt-8 pt-6 border-t border-slate-200/60 dark:border-white/10 space-y-4">
+                    {result.synonyms && result.synonyms !== '—' && (() => {
+                      const words = result.synonyms!.split(/[,;]/).map((s) => s.trim()).filter(Boolean);
+                      if (words.length === 0) return null;
+                      return (
+                        <div>
+                          <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500 dark:text-slate-500 mb-2">
+                            Eş anlamlılar
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            {words.map((word) => (
+                              <button
+                                key={word}
+                                type="button"
+                                onClick={() => handleSearchQuery(word, direction)}
+                                className="rounded-full border border-indigo-300/60 dark:border-indigo-500/50 bg-indigo-50/80 dark:bg-indigo-500/15 px-3 py-1.5 text-sm font-medium text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-500/25 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                              >
+                                {word}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })()}
+                    {result.antonyms && result.antonyms !== '—' && (() => {
+                      const words = result.antonyms!.split(/[,;]/).map((s) => s.trim()).filter(Boolean);
+                      if (words.length === 0) return null;
+                      return (
+                        <div>
+                          <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500 dark:text-slate-500 mb-2">
+                            Zıt anlamlılar
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            {words.map((word) => (
+                              <button
+                                key={word}
+                                type="button"
+                                onClick={() => handleSearchQuery(word, direction)}
+                                className="rounded-full border border-slate-300/60 dark:border-slate-500/50 bg-slate-100/80 dark:bg-slate-600/30 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600/50 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-500/50"
+                              >
+                                {word}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })()}
                   </div>
                 )}
               </motion.div>
