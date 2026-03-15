@@ -7,8 +7,8 @@ import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { Check, Sparkles } from 'lucide-react';
-import { useThemeContext } from '../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
+import Navbar from '../components/Navbar';
 
 const SITE_URL = 'https://diloloji.com';
 
@@ -118,7 +118,6 @@ function formatPrice(value: number): string {
 }
 
 export default function Pricing() {
-  const { isDark, toggleTheme, mounted } = useThemeContext();
   const { t, i18n } = useTranslation();
   const [isAnnual, setIsAnnual] = useState(true);
   const isTr = (i18n.language || 'tr').startsWith('tr');
@@ -132,51 +131,7 @@ export default function Pricing() {
       </Helmet>
       <PricingBackground />
 
-      <header className="relative z-20 w-full flex justify-between items-center py-3 px-4 sm:px-6 lg:px-8 bg-white/70 dark:bg-night-950/80 border-b border-slate-200/50 dark:border-white/5 sticky top-0 backdrop-blur-md transition-all duration-300">
-        <Link
-          to="/"
-          className="min-w-0 flex items-center gap-2 sm:gap-3 shrink-0 transition-all duration-300 hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 rounded-xl"
-          aria-label={isTr ? 'Ana sayfa' : 'Home'}
-        >
-          <img src="/logo.svg" alt="Diloloji" className="h-8 sm:h-10 w-auto shrink-0" />
-          <span className="text-slate-400 dark:text-slate-500 text-xs italic hidden sm:inline shrink-0 opacity-60">
-            {isTr ? 'Dilin matematiğini çöz.' : 'Solve the math of language.'}
-          </span>
-        </Link>
-        <nav className="flex items-center gap-2">
-          <Link
-            to="/sozluk"
-            className="rounded-lg px-3 py-2 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-800/40 dark:hover:bg-slate-700/40 transition-all duration-300"
-          >
-            {t('sozluk')}
-          </Link>
-          <Link
-            to="/ogrenme"
-            className="rounded-lg px-3 py-2 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-800/40 dark:hover:bg-slate-700/40 transition-all duration-300"
-          >
-            {t('ogrenme')}
-          </Link>
-          <Link
-            to="/pricing"
-            className="rounded-lg px-3 py-2 text-sm font-semibold bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-900 hover:from-amber-300 hover:via-yellow-300 hover:to-amber-400 shadow-md shadow-amber-500/25 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-slate-100 dark:focus:ring-offset-slate-900"
-          >
-            🌟 Pro&apos;ya Geç
-          </Link>
-          {mounted && (
-            <button
-              type="button"
-              onClick={toggleTheme}
-              className="h-9 w-9 flex items-center justify-center rounded-lg text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-800/40 dark:hover:bg-slate-700/40 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
-              title={isDark ? (isTr ? 'Açık mod' : 'Light mode') : isTr ? 'Karanlık mod' : 'Dark mode'}
-              aria-label={isDark ? (isTr ? 'Açık moda geç' : 'Switch to light') : isTr ? 'Karanlık moda geç' : 'Switch to dark'}
-            >
-              <span className="text-base w-5 h-5 inline-flex items-center justify-center leading-none" aria-hidden>
-                {isDark ? '☀️' : '🌙'}
-              </span>
-            </button>
-          )}
-        </nav>
-      </header>
+      <Navbar />
 
       <main className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
         {/* Başlık */}

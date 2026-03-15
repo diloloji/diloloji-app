@@ -4,6 +4,11 @@ import { Page } from './pages/Page';
 import HomePage from './pages/HomePage';
 import Dictionary from './pages/Dictionary';
 import LearningPath from './pages/LearningPath';
+import MemorizationMachine from './pages/MemorizationMachine';
+import Roleplay from './pages/Roleplay';
+import SyntaxLab from './pages/SyntaxLab';
+import Profile from './pages/Profile';
+import Leaderboard from './pages/Leaderboard';
 import Pricing from './pages/Pricing';
 import { XpProvider } from './contexts/XpContext';
 import { LanguageProvider } from './contexts/LanguageContext';
@@ -18,11 +23,20 @@ function getPageElement(pathname: string) {
     case '/fiil-laboratuvari':
       return <Page />;
     case '/ezber-makinesi':
-      return <Page />;
+      return <MemorizationMachine />;
     case '/sozluk':
       return <Dictionary />;
     case '/ogrenme':
       return <LearningPath />;
+    case '/simulator':
+      return <Roleplay />;
+    case '/syntax-lab':
+    case '/cumle-analizi':
+      return <SyntaxLab />;
+    case '/profil':
+      return <Profile />;
+    case '/leaderboard':
+      return <Leaderboard />;
     case '/fiyatlandirma':
     case '/pricing':
     case '/paketler':
