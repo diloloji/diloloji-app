@@ -18,6 +18,14 @@ export interface GroqCommonPhrase {
   meaning: string;
 }
 
+/** Kelime Matrisi: aranan kelimenin isim, fiil, sıfat, zarf formları (ve anlamı). Bulunmayan form null. */
+export interface WordMatrix {
+  noun: string | null;
+  verb: string | null;
+  adjective: string | null;
+  adverb: string | null;
+}
+
 /** Groq LLM kelime analiz cevabı (JSON). word + translation = kart için source/target. */
 export interface GroqWordAnalysis {
   word?: string;
@@ -26,13 +34,15 @@ export interface GroqWordAnalysis {
   examples?: GroqExampleItem[];
   /** Günlük hayatta sık kullanılan kalıplar / collocations */
   commonPhrases?: GroqCommonPhrase[];
+  /** Kelime Matrisi: isim, fiil, sıfat, zarf formları (hedef dilde kelime ve anlamı; yoksa null) */
+  wordMatrix?: WordMatrix;
   /** Eski format uyumluluğu (fallback) */
   source?: string;
   target?: string;
 }
 
 const GROQ_SYSTEM_MESSAGE =
-  'Sen profesyonel bir dilbilimci ve sözlük editörüsün. Kullanıcının girdiği kelimenin dilini otomatik algıla ve hedeflenen dile çevir. Cevabını her zaman sadece şu JSON formatında ver, başka açıklama ekleme: { "word": "orijinal kelime", "phonetic": "/ipa telaffuzu/", "translation": "çevirisi", "examples": [ { "original": "hedef dilde örnek cümle", "turkish": "türkçe çevirisi" } ], "commonPhrases": [ { "phrase": "hedef dildeki kalıp", "meaning": "türkçe anlamı" } ] }. Ayrıca bu kelimenin günlük hayatta en çok kullanıldığı 3 popüler kalıbı veya deyimi (collocations) commonPhrases dizisi içinde döndür. Asla açıklama yapma, sadece geçerli bir JSON objesi döndür.';
+  'Sen profesyonel bir dilbilimci ve sözlük editörüsün. Kullanıcının girdiği kelimenin dilini otomatik algıla ve hedeflenen dile çevir. Kullanıcının arattığı kelimenin dilbilgisi türü ne olursa olsun, o kelimenin kökünden türeyen diğer temel formları da bul: İsim (noun), Fiil (verb), Sıfat (adjective), Zarf (adverb). Bulunmayan formlar için null dön. Cevabını her zaman sadece şu JSON formatında ver, başka açıklama ekleme: { "word": "orijinal kelime", "phonetic": "/ipa telaffuzu/", "translation": "çevirisi", "examples": [ { "original": "hedef dilde örnek cümle", "turkish": "türkçe çevirisi" } ], "commonPhrases": [ { "phrase": "hedef dildeki kalıp", "meaning": "türkçe anlamı" } ], "wordMatrix": { "noun": "isim hali ve (anlamı)", "verb": "fiil hali ve (anlamı)", "adjective": "sıfat hali ve (anlamı)", "adverb": "zarf hali ve (anlamı)" } }. wordMatrix alanında: hedef dildeki kelime formunu ve parantez içinde Türkçe anlamını ver (örn. "beauté (güzellik)"); o form yoksa null yaz. Ayrıca commonPhrases içinde bu kelimenin günlük hayatta en çok kullanıldığı 3 popüler kalıbı döndür. Asla açıklama yapma, sadece geçerli bir JSON objesi döndür.';
 
 /**
  * Groq API ile tek istekte kelime analizi (dil algılama + çeviri + IPA + örnekler).
@@ -45,7 +55,7 @@ export const fetchFromGroq = async (word: string, targetLanguage: string): Promi
     return {};
   }
   console.log('[Sözlük] Aranan kelime:', word, '| Hedef dil:', targetLanguage);
-  const userMessage = `Kullanıcı şu kelimeyi girdi: "${word}". Bu kelimenin dilini otomatik algıla ve hedeflenen dile (${targetLanguage}) çevir. Bana her zaman şu JSON formatında cevap ver: { "word": "orijinal kelime", "phonetic": "/ipa telaffuzu/", "translation": "çevirisi", "examples": [ { "original": "hedef dilde örnek cümle", "turkish": "türkçe çevirisi" } ], "commonPhrases": [ { "phrase": "hedef dildeki kalıp", "meaning": "türkçe anlamı" } ] }. commonPhrases içinde bu kelimenin günlük hayatta en çok kullanıldığı 3 popüler kalıbı veya deyimi döndür.`;
+  const userMessage = `Kullanıcı şu kelimeyi girdi: "${word}". Bu kelimenin dilini otomatik algıla ve hedeflenen dile (${targetLanguage}) çevir. Bu kelimenin kökünden türeyen isim, fiil, sıfat ve zarf formlarını wordMatrix içinde ver; yoksa null yaz. Cevabı şu JSON formatında ver: { "word": "orijinal kelime", "phonetic": "/ipa telaffuzu/", "translation": "çevirisi", "examples": [ { "original": "hedef dilde örnek cümle", "turkish": "türkçe çevirisi" } ], "commonPhrases": [ { "phrase": "hedef dildeki kalıp", "meaning": "türkçe anlamı" } ], "wordMatrix": { "noun": "isim ve (anlamı) veya null", "verb": "fiil ve (anlamı) veya null", "adjective": "sıfat ve (anlamı) veya null", "adverb": "zarf ve (anlamı) veya null" } }. commonPhrases içinde 3 popüler kalıbı da döndür.`;
   try {
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
@@ -61,7 +71,7 @@ export const fetchFromGroq = async (word: string, targetLanguage: string): Promi
         ],
         response_format: { type: 'json_object' },
         temperature: 0.2,
-        max_tokens: 1024,
+        max_tokens: 1280,
       }),
     });
     if (!response.ok) {
@@ -76,12 +86,22 @@ export const fetchFromGroq = async (word: string, targetLanguage: string): Promi
       return {};
     }
     const parsed = JSON.parse(raw) as GroqWordAnalysis;
+    if (parsed.wordMatrix && typeof parsed.wordMatrix === 'object') {
+      const wm = parsed.wordMatrix as unknown as Record<string, unknown>;
+      parsed.wordMatrix = {
+        noun: typeof wm.noun === 'string' ? wm.noun : null,
+        verb: typeof wm.verb === 'string' ? wm.verb : null,
+        adjective: typeof wm.adjective === 'string' ? wm.adjective : null,
+        adverb: typeof wm.adverb === 'string' ? wm.adverb : null,
+      };
+    }
     console.log('[Sözlük] Groq yanıtı (ham):', {
       word: parsed.word,
       phonetic: parsed.phonetic,
       translation: parsed.translation,
       examplesCount: Array.isArray(parsed.examples) ? parsed.examples.length : 0,
       commonPhrasesCount: Array.isArray(parsed.commonPhrases) ? parsed.commonPhrases.length : 0,
+      wordMatrix: parsed.wordMatrix ?? null,
     });
     return parsed;
   } catch (error) {

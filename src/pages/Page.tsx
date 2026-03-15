@@ -1363,6 +1363,7 @@ export function Page() {
         printHide
         isLoggedIn={isLoggedIn}
         onLoginClick={() => setShowAuthModal(true)}
+        onLogoutClick={() => setIsLoggedIn(false)}
         rightExtra={isLoggedIn ? (
           <>
             <button type="button" onClick={() => setShowActivityModal(true)} className="flex items-center gap-0.5 text-[10px] uppercase tracking-wider text-slate-400 dark:text-slate-500 tabular-nums hover:text-amber-600 dark:hover:text-amber-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-1.5 py-1" title="Aktivite haritası" aria-label="Puan ve aktivite haritası">

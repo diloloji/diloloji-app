@@ -1,9 +1,10 @@
 /**
- * İnteraktif Ders Ekranı — Tam ekran odak modu, TTS örnekler, ilerleme çubuğu, tamamla + konfeti.
+ * İnteraktif Ders Ekranı — Focus Mode: tam ekran, ilerleme çubuğu, cam efektli teori, sticky tamamla butonu.
  */
 
 import { useCallback } from 'react';
 import { X, Volume2 } from 'lucide-react';
+import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import { useXp } from '../contexts/XpContext';
 import type { UnitContent, LessonExample } from '../data/learningPathUnits';
@@ -69,28 +70,28 @@ export default function LessonView({ unit, lessonIndex, lang, onClose, onComplet
 
   return (
     <div
-      className="fixed inset-0 z-50 flex flex-col bg-[#0a0e17]"
+      className="fixed inset-0 z-[100] flex flex-col bg-[#05080f]"
       role="dialog"
       aria-modal="true"
       aria-label="İnteraktif ders"
     >
-      {/* Üst bar: Çıkış + İlerleme çubuğu */}
-      <header className="sticky top-0 z-10 flex items-center gap-4 border-b border-white/10 bg-[#0a0e17]/95 backdrop-blur-sm px-4 py-3">
+      {/* Üst bar: X (Kapat) + ortada ince parlayan ilerleme çubuğu */}
+      <header className="sticky top-0 z-10 flex items-center gap-4 border-b border-white/10 bg-[#05080f]/95 backdrop-blur-sm px-4 py-3">
         <button
           type="button"
           onClick={onClose}
           className="shrink-0 p-2 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
-          aria-label="Çıkış"
+          aria-label="Kapat"
         >
           <X className="w-5 h-5" strokeWidth={2} />
         </button>
-        <div className="flex-1 flex flex-col gap-1.5 min-w-0">
-          <p className="text-xs font-medium text-slate-500 truncate">
+        <div className="flex-1 flex flex-col gap-2 min-w-0 max-w-md mx-auto">
+          <p className="text-xs font-medium text-slate-500 truncate text-center">
             Ders {lessonIndex + 1} / {totalLessons}
           </p>
-          <div className="h-2 rounded-full bg-white/10 overflow-hidden">
+          <div className="h-1.5 rounded-full bg-white/10 overflow-hidden shadow-inner">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-amber-400 transition-all duration-500 ease-out"
+              className="h-full rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-400 transition-all duration-500 ease-out shadow-[0_0_12px_rgba(99,102,241,0.5)]"
               style={{ width: `${progressPercent}%` }}
               role="progressbar"
               aria-valuenow={lessonIndex + 1}
@@ -101,34 +102,35 @@ export default function LessonView({ unit, lessonIndex, lang, onClose, onComplet
         </div>
       </header>
 
-      {/* İçerik alanı — ortada, max-w-2xl */}
-      <div className="flex-1 overflow-y-auto px-4 py-6 pb-28">
-        <div className="max-w-2xl mx-auto w-full space-y-8">
-          <h1 className="text-xl font-bold text-slate-100">
+      {/* İçerik — aşağıdan yukarı süzülme animasyonu */}
+      <div className="flex-1 overflow-y-auto">
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          className="max-w-2xl mx-auto px-6 py-12 pb-32"
+        >
+          <h1 className="text-2xl font-bold text-slate-100 mb-8">
             {lesson.lessonTitle}
           </h1>
 
-          {/* Teori / Formül kutusu — kod editörü hissi */}
-          <div className="rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm overflow-hidden">
-            <div className="px-4 py-3 border-b border-white/10">
-              <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-                Formül / Kural
-              </span>
-            </div>
-            <pre className="p-4 text-sm text-slate-200 font-mono leading-relaxed whitespace-pre-wrap">
+          {/* Teori kutusu — cam efektli, gramer açıklaması */}
+          <div className="rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm p-6 mb-8">
+            <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3">
+              Formül / Kural
+            </p>
+            <pre className="text-sm text-slate-200 font-mono leading-relaxed whitespace-pre-wrap mb-4">
               {lesson.grammarBlock}
             </pre>
+            <p className="text-slate-300 text-sm leading-relaxed">
+              {lesson.content}
+            </p>
           </div>
-
-          {/* Açıklama metni */}
-          <p className="text-slate-300 text-sm leading-relaxed">
-            {lesson.content}
-          </p>
 
           {/* Çekim tablosu (varsa) */}
           {lesson.conjugation && lesson.conjugation.length > 0 && (
-            <div className="rounded-xl bg-white/5 border border-white/10 overflow-hidden">
-              <div className="px-4 py-3 border-b border-white/10">
+            <div className="rounded-2xl bg-white/5 border border-white/10 overflow-hidden mb-8">
+              <div className="px-5 py-3 border-b border-white/10">
                 <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
                   Çekim tablosu
                 </span>
@@ -158,15 +160,15 @@ export default function LessonView({ unit, lessonIndex, lang, onClose, onComplet
             </div>
           )}
 
-          {/* Örnek cümleler — kartlar + TTS */}
+          {/* Örnek cümleler — büyük font, ses ikonu yanında, Türkçe alt satırda soluk italik */}
           {lesson.examples && lesson.examples.length > 0 && (
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3">
+              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-4">
                 Örnek cümleler
               </p>
-              <ul className="space-y-3">
+              <ul className="space-y-5">
                 {lesson.examples.map((ex, i) => (
-                  <ExampleCard
+                  <ExampleRow
                     key={i}
                     example={ex}
                     onSpeak={() => speakExample(ex.original, lang)}
@@ -175,26 +177,28 @@ export default function LessonView({ unit, lessonIndex, lang, onClose, onComplet
               </ul>
             </div>
           )}
-        </div>
+        </motion.div>
       </div>
 
-      {/* Sticky alt: Dersi Tamamla butonu */}
-      <div className="sticky bottom-0 left-0 right-0 z-10 p-4 bg-[#0a0e17]/90 backdrop-blur-sm border-t border-white/10">
+      {/* Sticky alt: Dersi Tamamla — Indigo/Purple gradient, parlayan */}
+      <div className="sticky bottom-0 left-0 right-0 z-10 p-4 bg-[#05080f]/95 backdrop-blur-sm border-t border-white/10">
         <div className="max-w-2xl mx-auto w-full">
-          <button
+          <motion.button
             type="button"
             onClick={handleComplete}
-            className="w-full py-4 px-6 rounded-2xl font-bold text-slate-900 bg-gradient-to-r from-emerald-400 via-amber-400 to-amber-500 hover:from-emerald-300 hover:via-amber-300 hover:to-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-[#0a0e17] transition-all duration-200 shadow-lg shadow-amber-500/25"
+            className="w-full py-4 px-6 rounded-2xl font-bold text-white bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-600 hover:from-indigo-400 hover:via-purple-400 hover:to-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 focus:ring-offset-[#05080f] transition-all duration-300 shadow-lg shadow-purple-500/30 hover:shadow-purple-500/40 hover:brightness-110"
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.99 }}
           >
             Dersi Tamamla (+50 XP)
-          </button>
+          </motion.button>
         </div>
       </div>
     </div>
   );
 }
 
-function ExampleCard({
+function ExampleRow({
   example,
   onSpeak,
 }: {
@@ -202,24 +206,24 @@ function ExampleCard({
   onSpeak: () => void;
 }) {
   return (
-    <li className="flex flex-col sm:flex-row sm:items-center gap-2 rounded-xl bg-white/5 border border-white/10 p-4 hover:border-white/20 transition-colors">
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className="font-medium text-slate-100">{example.original}</span>
-          <button
-            type="button"
-            onClick={onSpeak}
-            className="shrink-0 p-1.5 rounded-lg text-slate-400 hover:text-amber-400 hover:bg-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400/50"
-            aria-label="Sesli oku"
-          >
-            <Volume2 className="w-5 h-5" strokeWidth={2} />
-          </button>
-        </div>
-        {example.phonetic && (
-          <p className="text-xs italic text-slate-500 mt-0.5">{example.phonetic}</p>
-        )}
-        <p className="text-sm text-slate-500 mt-1.5">{example.turkish}</p>
+    <li className="flex flex-col gap-1 border-b border-white/5 pb-5 last:border-0 last:pb-0">
+      <div className="flex items-center gap-3 flex-wrap">
+        <span className="text-xl font-medium text-slate-100">{example.original}</span>
+        <button
+          type="button"
+          onClick={onSpeak}
+          className="shrink-0 p-2 rounded-full text-slate-400 hover:text-indigo-400 hover:bg-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+          aria-label="Sesli oku"
+        >
+          <Volume2 className="w-5 h-5" strokeWidth={2} />
+        </button>
       </div>
+      {example.phonetic && (
+        <p className="text-sm italic text-slate-500">{example.phonetic}</p>
+      )}
+      <p className="text-sm text-slate-500 dark:text-slate-400 italic">
+        {example.turkish}
+      </p>
     </li>
   );
 }

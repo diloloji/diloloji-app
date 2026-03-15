@@ -20,6 +20,8 @@ function getPageElement(pathname: string) {
       return <HomePage />;
     case '/anasayfa':
       return <Navigate to="/" replace />;
+    case '/login':
+      return <Navigate to="/" replace />;
     case '/fiil-laboratuvari':
       return <Page />;
     case '/ezber-makinesi':

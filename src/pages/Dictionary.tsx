@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Volume2, X } from 'lucide-react';
+import { Volume2, X, Search, Star } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTranslation } from 'react-i18next';
 import Navbar from '../components/Navbar';
@@ -12,7 +12,7 @@ import {
   type DictDirection,
   type SearchResult,
 } from '../data/mockDictionary';
-import { fetchFromGroq, groqToSourceTarget, type GroqExampleItem, type GroqCommonPhrase } from '../services/dictionaryApi';
+import { fetchFromGroq, groqToSourceTarget, type GroqExampleItem, type GroqCommonPhrase, type WordMatrix } from '../services/dictionaryApi';
 import { getFlashcardDecks, addCardToDeck, type FlashcardDeck } from '../utils/flashcardDecks';
 import { sanitizeForDisplay } from '../utils/sanitize';
 
@@ -96,13 +96,19 @@ function highlightWord(sentence: string, word: string): React.ReactNode {
   );
 }
 
-/** Tür etiketi rengi */
-function typeBadgeClass(type: string): string {
-  const t = type.toLowerCase();
-  if (t.includes('fiil')) return 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-400/40';
-  if (t.includes('isim') || t.includes('ad')) return 'bg-blue-500/20 text-blue-700 dark:text-blue-300 border-blue-400/40';
-  if (t.includes('sıfat') || t.includes('adjective')) return 'bg-amber-500/20 text-amber-700 dark:text-amber-300 border-amber-400/40';
-  return 'bg-slate-500/20 text-slate-700 dark:text-slate-300 border-slate-400/40';
+/** "kelime (anlam)" formatını ayırır; parantez yoksa tümü word. */
+function parseWordMatrixEntry(value: string | null): { word: string; meaning: string } | null {
+  if (!value || typeof value !== 'string') return null;
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  const open = trimmed.indexOf(' (');
+  if (open === -1) return { word: trimmed, meaning: '' };
+  const close = trimmed.lastIndexOf(')');
+  if (close === -1 || close <= open) return { word: trimmed, meaning: '' };
+  return {
+    word: trimmed.slice(0, open).trim(),
+    meaning: trimmed.slice(open + 2, close).trim(),
+  };
 }
 
 export default function Dictionary() {
@@ -131,6 +137,8 @@ export default function Dictionary() {
   const [isLoading, setIsLoading] = useState(false);
   const [groqExamples, setGroqExamples] = useState<Array<{ original: string; translation?: string }> | null>(null);
   const [groqCommonPhrases, setGroqCommonPhrases] = useState<GroqCommonPhrase[] | null>(null);
+  const [groqWordMatrix, setGroqWordMatrix] = useState<WordMatrix | null>(null);
+  const [isFavourite, setIsFavourite] = useState(false);
 
   useEffect(() => {
     if (!addToSetOpen) return;
@@ -160,6 +168,7 @@ export default function Dictionary() {
     setResult(undefined);
     setGroqExamples(null);
     setGroqCommonPhrases(null);
+    setGroqWordMatrix(null);
     const langLabel = dir === 'tr-fr' || dir === 'fr-tr' ? 'Fransızca' : 'İspanyolca';
     try {
       const groq = await fetchFromGroq(trimmed, langLabel);
@@ -188,6 +197,11 @@ export default function Dictionary() {
                 .map((p) => ({ phrase: sanitizeForDisplay(p.phrase), meaning: sanitizeForDisplay(p.meaning) }))
             : null;
         setGroqCommonPhrases(phrases);
+        if (groq.wordMatrix && typeof groq.wordMatrix === 'object') {
+          setGroqWordMatrix(groq.wordMatrix);
+        } else {
+          setGroqWordMatrix(null);
+        }
         setRecentSearches((prev) => {
           const next = [{ query: trimmed, dir }, ...prev.filter((x) => !(x.query === trimmed && x.dir === dir))].slice(0, 5);
           if (typeof window !== 'undefined') {
@@ -203,12 +217,14 @@ export default function Dictionary() {
         setResult(null);
         setGroqExamples(null);
         setGroqCommonPhrases(null);
+        setGroqWordMatrix(null);
       }
     } catch (err) {
       console.warn('[Sözlük] Groq istek hatası:', err);
       setResult(null);
       setGroqExamples(null);
       setGroqCommonPhrases(null);
+      setGroqWordMatrix(null);
     } finally {
       setIsLoading(false);
     }
@@ -340,37 +356,32 @@ export default function Dictionary() {
             </motion.div>
           </div>
 
-          {/* Hero arama kutusu — underline / hafif glow, büyük yazı, odak parlama */}
+          {/* Command Bar — sayfa ortasında yüzen, ince border + derin gölge */}
           <form onSubmit={handleSearch} className="mb-4">
             <motion.div
-              className="relative rounded-xl bg-white/30 dark:bg-white/5 backdrop-blur-sm overflow-hidden border-b-2 border-slate-200/60 dark:border-white/10 focus-within:border-indigo-400 dark:focus-within:border-indigo-500 focus-within:shadow-[0_0_0_3px_rgba(99,102,241,0.15)] dark:focus-within:shadow-[0_0_0_3px_rgba(99,102,241,0.2)] transition-all duration-300"
+              className="relative rounded-2xl bg-white/10 dark:bg-white/5 backdrop-blur-xl border border-white/5 shadow-2xl overflow-hidden focus-within:ring-2 focus-within:ring-indigo-500/30 focus-within:border-indigo-500/20 transition-all duration-300"
               initial={false}
-              animate={{ boxShadow: undefined }}
             >
-              <div className="flex items-center min-h-[72px] sm:min-h-[80px] px-4 sm:px-5">
+              <div className="flex items-center min-h-[64px] sm:min-h-[72px] px-4 sm:px-5 gap-3">
+                <Search className="w-5 h-5 sm:w-6 sm:h-6 text-slate-400 dark:text-slate-500 shrink-0" strokeWidth={2} aria-hidden />
                 <input
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder={direction === 'tr-fr' || direction === 'fr-tr' ? 'Fransızca veya Türkçe kelime...' : 'İspanyolca veya Türkçe kelime...'}
-                  className="flex-1 min-w-0 bg-transparent border-0 py-3 text-2xl sm:text-3xl text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-0"
+                  className="flex-1 min-w-0 bg-transparent border-0 py-3 text-xl sm:text-2xl text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none"
                   aria-label={direction.startsWith('tr') ? 'Hangi kelimenin anlamına bakalım?' : 'Arama'}
                 />
-                <div className="flex items-center gap-1 ml-2">
-                  {query.length > 0 && (
-                    <button
-                      type="button"
-                      onClick={() => { setQuery(''); setResult(undefined); }}
-                      className="p-2 rounded-lg text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-white/20 dark:hover:bg-white/10 transition-colors"
-                      aria-label="Temizle"
-                    >
-                      <X className="w-5 h-5" strokeWidth={2} />
-                    </button>
-                  )}
-                  <button type="submit" disabled={isLoading} className="p-2.5 rounded-xl text-slate-400 dark:text-slate-500 hover:text-indigo-500 dark:hover:text-indigo-400 hover:bg-indigo-500/10 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed" aria-label="Ara">
-                    <span className="text-xl" aria-hidden>🔍</span>
+                {query.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => { setQuery(''); setResult(undefined); }}
+                    className="p-2 rounded-full text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-white/10 transition-colors shrink-0"
+                    aria-label="Temizle"
+                  >
+                    <X className="w-5 h-5" strokeWidth={2} />
                   </button>
-                </div>
+                )}
               </div>
             </motion.div>
           </form>
@@ -502,168 +513,206 @@ export default function Dictionary() {
             ) : !isLoading && result ? (
               <motion.div
                 key="result"
-                layoutId="dict-result-card"
-                initial={{ opacity: 0, y: 28 }}
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 12 }}
-                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                className="mt-16 sm:mt-20 rounded-2xl backdrop-blur-md bg-white/70 dark:bg-white/[0.07] border border-slate-200/70 dark:border-white/10 shadow-glass dark:shadow-glass-dark overflow-hidden relative"
+                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                className="mt-14 sm:mt-18"
               >
-                <button
-                  type="button"
-                  onClick={() => setResult(null)}
-                  className="absolute top-2 right-2 z-10 p-2 rounded-lg text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-200/80 dark:hover:bg-slate-700/80 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
-                  aria-label="Kapat"
-                >
-                  <X className="w-5 h-5" strokeWidth={2} />
-                </button>
-                {/* Başlık: Kelime + fonetik (sadece gerçek IPA varsa) + TTS */}
-                <div className="p-6 sm:p-8 border-b border-slate-200/80 dark:border-slate-600/60">
-                  <div className="flex flex-wrap items-start justify-between gap-4">
-                    <div className="min-w-0">
-                      <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-slate-100 capitalize tracking-tight">
-                        {result.source}
-                      </h2>
-                      {result.phonetic && (
-                        <p className="mt-1 text-lg text-slate-500 dark:text-slate-400 font-mono">{result.phonetic}</p>
-                      )}
-                      <p className="mt-2 text-xl font-semibold text-indigo-600 dark:text-indigo-400">{result.target}</p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={playAudio}
-                      className="p-3 rounded-xl bg-slate-100 dark:bg-slate-700/80 text-slate-500 dark:text-slate-400 hover:bg-indigo-500 hover:text-white dark:hover:bg-indigo-500 active:scale-95 active:text-blue-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shrink-0"
-                      title="Telaffuzu dinle"
-                      aria-label="Telaffuzu dinle"
-                    >
-                      <Volume2 className="w-6 h-6" strokeWidth={2} />
-                    </button>
-                  </div>
-                  {/* Tür etiketleri + Set'e Ekle */}
-                  <div className="flex flex-wrap items-center justify-between gap-4 mt-4">
-                    <div className="flex flex-wrap gap-2">
-                      <span className={`inline-flex items-center rounded-lg border px-3 py-1 text-xs font-medium ${typeBadgeClass(result.type)}`}>
-                        {result.type}
-                      </span>
-                    </div>
-                    <div className="relative shrink-0" ref={addToSetRef}>
-                      <button
-                        type="button"
-                        onClick={() => setAddToSetOpen((o) => !o)}
-                        className="flex items-center gap-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 dark:bg-indigo-500 dark:hover:bg-indigo-400 text-white px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 dark:focus:ring-offset-slate-800"
-                      >
-                        <span aria-hidden>➕</span>
-                        Set&apos;e Ekle
-                      </button>
-                      {addToSetOpen && (
-                        <div className="absolute right-0 top-full mt-2 min-w-[12rem] rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 shadow-xl py-2 z-50 max-h-64 overflow-y-auto">
-                          {mockDecksIfEmpty.length === 0 ? (
-                            <p className="px-4 py-3 text-sm text-slate-500 dark:text-slate-400">Henüz set yok.</p>
-                          ) : (
-                            mockDecksIfEmpty.map((deck) => (
-                              <button
-                                key={deck.id}
-                                type="button"
-                                onClick={() => handleAddToSet(deck.id, deck.title, result)}
-                                className="w-full text-left px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-indigo-500/15 dark:hover:bg-indigo-500/20 transition-colors"
-                              >
-                                {deck.title}
-                              </button>
-                            ))
-                          )}
-                          {decks.length === 0 && (
-                            <Link
-                              to="/ezber-makinesi"
-                              className="block px-4 py-2.5 text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:bg-indigo-500/10"
-                              onClick={() => setAddToSetOpen(false)}
-                            >
-                              Ezber Makinesi’nde set oluştur →
-                            </Link>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  </div>
+                {/* Üst satır: Kapat + Favori yıldızı */}
+                <div className="flex items-center justify-end gap-1 mb-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsFavourite((f) => !f)}
+                    className="p-2 rounded-full text-slate-400 dark:text-slate-500 hover:text-amber-500 dark:hover:text-amber-400 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+                    aria-label={isFavourite ? 'Favorilerden çıkar' : 'Favorilere ekle'}
+                  >
+                    <Star
+                      className={`w-5 h-5 ${isFavourite ? 'fill-amber-400 text-amber-400 dark:fill-amber-500 dark:text-amber-500' : 'fill-none'}`}
+                      strokeWidth={2}
+                      aria-hidden
+                    />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setResult(null)}
+                    className="p-2 rounded-full text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                    aria-label="Kapat"
+                  >
+                    <X className="w-5 h-5" strokeWidth={2} />
+                  </button>
                 </div>
 
-                {/* Kelime formülü: önek + kök */}
+                {/* Kelime başlığı: çok büyük + tür (küçük italik gri) + ses + anlam */}
+                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                  <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 dark:text-slate-100 capitalize tracking-tight">
+                    {result.source}
+                  </h2>
+                  <span className="text-xs sm:text-sm font-medium italic text-slate-400 dark:text-slate-500">
+                    {result.type}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={playAudio}
+                    className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/10 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:text-indigo-500 dark:hover:text-indigo-400 hover:scale-110 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shrink-0"
+                    title="Telaffuzu dinle"
+                    aria-label="Telaffuzu dinle"
+                  >
+                    <Volume2 className="w-4 h-4" strokeWidth={2} />
+                  </button>
+                </div>
+                {result.phonetic && (
+                  <p className="mt-1 text-base text-slate-500 dark:text-slate-400 font-mono">{result.phonetic}</p>
+                )}
+                <p className="mt-2 text-xl sm:text-2xl font-medium text-indigo-600 dark:text-indigo-400">
+                  {result.target}
+                </p>
+
+                {/* Set'e Ekle (ikincil) */}
+                <div className="relative mt-4 inline-block" ref={addToSetRef}>
+                  <button
+                    type="button"
+                    onClick={() => setAddToSetOpen((o) => !o)}
+                    className="text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-2 py-1"
+                  >
+                    Set&apos;e Ekle
+                  </button>
+                  {addToSetOpen && (
+                    <div className="absolute left-0 top-full mt-1 min-w-[12rem] rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 shadow-xl py-2 z-50 max-h-64 overflow-y-auto">
+                      {mockDecksIfEmpty.length === 0 ? (
+                        <p className="px-4 py-3 text-sm text-slate-500 dark:text-slate-400">Henüz set yok.</p>
+                      ) : (
+                        mockDecksIfEmpty.map((deck) => (
+                          <button
+                            key={deck.id}
+                            type="button"
+                            onClick={() => handleAddToSet(deck.id, deck.title, result)}
+                            className="w-full text-left px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-indigo-500/15 dark:hover:bg-indigo-500/20 transition-colors"
+                          >
+                            {deck.title}
+                          </button>
+                        ))
+                      )}
+                      {decks.length === 0 && (
+                        <Link
+                          to="/ezber-makinesi"
+                          className="block px-4 py-2.5 text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:bg-indigo-500/10"
+                          onClick={() => setAddToSetOpen(false)}
+                        >
+                          Ezber Makinesi’nde set oluştur →
+                        </Link>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* Kelime formülü */}
                 {(result.prefix || result.root) && (
-                  <div className="px-6 sm:px-8 py-4 bg-slate-50/80 dark:bg-slate-800/40 border-b border-slate-200/80 dark:border-slate-600/60">
-                    <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Kelime formülü</p>
-                    <p className="text-slate-700 dark:text-slate-200 font-medium">
-                      {result.prefix && <span className="text-indigo-600 dark:text-indigo-400">{result.prefix}</span>}
-                      {result.prefix && result.root && ' + '}
-                      {result.root && <span>{result.root}</span>}
-                    </p>
-                  </div>
+                  <p className="mt-4 text-sm text-slate-600 dark:text-slate-400">
+                    <span className="text-slate-500 dark:text-slate-500">Formül:</span>{' '}
+                    {result.prefix && <span className="text-indigo-600 dark:text-indigo-400">{result.prefix}</span>}
+                    {result.prefix && result.root && ' + '}
+                    {result.root && <span>{result.root}</span>}
+                  </p>
                 )}
 
-                {/* Örnek cümleler — sadece Groq (AI) verisi */}
-                <div className="px-6 sm:px-8 py-5 border-b border-slate-200/80 dark:border-slate-600/60">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">
-                    Örnek cümleler
-                  </p>
-                  {groqExamples && groqExamples.length > 0 ? (
+                {/* Örnek cümleler — blockquote: sol şerit, kutu yok */}
+                {groqExamples && groqExamples.length > 0 && (
+                  <div className="mt-8">
+                    <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500 dark:text-slate-500 mb-3">
+                      Örnek cümleler
+                    </p>
                     <div className="space-y-4">
                       {groqExamples.map((item, i) => (
-                        <div key={i} className="rounded-xl bg-slate-50/80 dark:bg-white/5 border border-slate-200/60 dark:border-white/10 p-4">
-                          <p className="text-slate-800 dark:text-slate-100 font-semibold leading-relaxed">
+                        <blockquote
+                          key={i}
+                          className="pl-4 border-l-2 border-indigo-500/60 dark:border-indigo-400/50 py-0.5"
+                        >
+                          <p className="text-slate-900 dark:text-slate-100 leading-relaxed">
                             {highlightWord(item.original, (direction === 'tr-fr' || direction === 'tr-es') ? result.target : result.source)}
                           </p>
                           {item.translation && (
-                            <p className="text-slate-500 dark:text-slate-400 text-sm mt-1.5 italic leading-relaxed">
+                            <p className="text-gray-400 dark:text-slate-500 text-sm mt-1 leading-relaxed">
                               {item.translation}
                             </p>
                           )}
-                        </div>
+                        </blockquote>
                       ))}
                     </div>
-                  ) : (
-                    <p className="text-slate-500 dark:text-slate-400 text-sm italic py-2">
-                      Örnekler hazırlanıyor...
-                    </p>
-                  )}
-                </div>
+                  </div>
+                )}
 
-                {/* Sık Kullanılan Kalıplar (collocations) — Groq commonPhrases */}
-                <div className="px-6 sm:px-8 py-5 border-b border-slate-200/80 dark:border-slate-600/60">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">
-                    Sık Kullanılan Kalıplar
+                {/* Kelime Matrisi — arka plansız, ince ayırıcı, simetrik grid; N V A Adv */}
+                <div className="mt-8 pt-6 border-t border-slate-200/60 dark:border-white/10">
+                  <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500 dark:text-slate-500 mb-3">
+                    Kelime Matrisi
                   </p>
-                  {groqCommonPhrases && groqCommonPhrases.length > 0 ? (
-                    <div className="flex flex-col sm:flex-row flex-wrap gap-3">
-                      {groqCommonPhrases.map((item, i) => (
+                  <div className="grid grid-cols-2 sm:grid-cols-4 border border-slate-200/50 dark:border-white/10 rounded-lg divide-x divide-y divide-slate-200/50 dark:divide-white/10">
+                    {[
+                      { key: 'noun', letter: 'N', label: 'İsim', value: groqWordMatrix?.noun ?? null },
+                      { key: 'verb', letter: 'V', label: 'Fiil', value: groqWordMatrix?.verb ?? null },
+                      { key: 'adjective', letter: 'A', label: 'Sıfat', value: groqWordMatrix?.adjective ?? null },
+                      { key: 'adverb', letter: 'Adv', label: 'Zarf', value: groqWordMatrix?.adverb ?? null },
+                    ].map(({ key, letter, label, value }) => {
+                      const parsed = parseWordMatrixEntry(value);
+                      const isEmpty = !parsed || !parsed.word;
+                      return (
                         <div
-                          key={i}
-                          className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 rounded-xl bg-slate-50/80 dark:bg-white/5 border border-slate-200/60 dark:border-white/10 px-4 py-3 min-w-0"
+                          key={key}
+                          className={`p-3 ${isEmpty ? 'opacity-50' : ''}`}
                         >
-                          <span className="font-semibold text-slate-800 dark:text-slate-100 shrink-0">
-                            {item.phrase}
-                          </span>
-                          <span className="text-sm italic text-slate-500 dark:text-slate-400">
-                            {item.meaning}
-                          </span>
+                          <p className="text-[10px] font-medium uppercase tracking-wider text-slate-400 dark:text-slate-500 flex items-center gap-1.5">
+                            <span className="w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold bg-slate-200/50 dark:bg-white/10 text-slate-500 dark:text-slate-400">
+                              {letter}
+                            </span>
+                            {label}
+                          </p>
+                          {isEmpty ? (
+                            <p className="text-xs text-slate-400 dark:text-slate-500 italic mt-0.5">—</p>
+                          ) : (
+                            <>
+                              <p className="font-semibold text-slate-900 dark:text-slate-100 text-sm mt-0.5">{parsed.word}</p>
+                              {parsed.meaning && (
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{parsed.meaning}</p>
+                              )}
+                            </>
+                          )}
                         </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-slate-500 dark:text-slate-400 text-sm italic py-2">
-                      Kalıplar hazırlanıyor...
-                    </p>
-                  )}
+                      );
+                    })}
+                  </div>
                 </div>
 
-                {/* İlişkili Denklemler: eş / zıt anlamlılar — tıklanabilir */}
+                {/* Sık Kullanılan Kalıplar — minimal */}
+                {groqCommonPhrases && groqCommonPhrases.length > 0 && (
+                  <div className="mt-8 pt-6 border-t border-slate-200/60 dark:border-white/10">
+                    <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500 dark:text-slate-500 mb-3">
+                      Sık Kullanılan Kalıplar
+                    </p>
+                    <div className="space-y-2">
+                      {groqCommonPhrases.map((item, i) => (
+                        <p key={i} className="text-sm">
+                          <span className="font-medium text-slate-800 dark:text-slate-200">{item.phrase}</span>
+                          <span className="text-slate-500 dark:text-slate-400 italic ml-2">{item.meaning}</span>
+                        </p>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* İlişkili: eş / zıt */}
                 {(result.synonyms || result.antonyms) && (
-                  <div className="px-6 sm:px-8 py-5">
-                    <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">İlişkili denklemler</p>
+                  <div className="mt-8 pt-6 border-t border-slate-200/60 dark:border-white/10">
+                    <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500 dark:text-slate-500 mb-2">
+                      İlişkili
+                    </p>
                     <div className="flex flex-wrap gap-2">
                       {result.synonyms && result.synonyms !== '—' && result.synonyms.split(/[,;]/).map((s) => s.trim()).filter(Boolean).map((word) => (
                         <button
                           key={word}
                           type="button"
                           onClick={() => handleSearchQuery(word, direction)}
-                          className="rounded-lg px-3 py-1.5 text-sm font-medium bg-indigo-500/15 dark:bg-indigo-500/25 text-indigo-700 dark:text-indigo-300 border border-indigo-400/30 hover:bg-indigo-500/25 dark:hover:bg-indigo-500/35 transition-colors"
+                          className="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:underline focus:outline-none"
                         >
                           {word}
                         </button>
@@ -673,7 +722,7 @@ export default function Dictionary() {
                           key={word}
                           type="button"
                           onClick={() => handleSearchQuery(word, direction)}
-                          className="rounded-lg px-3 py-1.5 text-sm font-medium bg-slate-200/80 dark:bg-slate-600/50 text-slate-700 dark:text-slate-300 border border-slate-300/50 dark:border-slate-500/50 hover:bg-slate-300/80 dark:hover:bg-slate-600/70 transition-colors"
+                          className="text-sm font-medium text-slate-500 dark:text-slate-400 hover:underline focus:outline-none"
                         >
                           {word}
                         </button>
