@@ -182,7 +182,7 @@ function getSourceAndTarget(
 ): {
   source: string;
   target: string;
-  lang: 'fr' | 'es';
+  lang: 'fr' | 'es' | 'en';
   exampleSource?: string;
   exampleTarget?: string;
   phonetic?: string;
