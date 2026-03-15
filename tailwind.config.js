@@ -56,6 +56,10 @@ export default {
           '0%': { opacity: '0', transform: 'translateY(-8px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
+        'slide-in-right': {
+          '0%': { transform: 'translateX(100%)' },
+          '100%': { transform: 'translateX(0)' },
+        },
         'float-symbol': {
           '0%, 100%': { transform: 'translateY(0) scale(1)', opacity: '0.15' },
           '50%': { transform: 'translateY(-8px) scale(1.05)', opacity: '0.35' },
@@ -72,6 +76,7 @@ export default {
       animation: {
         'combo-in': 'combo-in 0.35s ease-out forwards',
         'menu-in': 'menu-in 0.2s ease-out forwards',
+        'slide-in-right': 'slide-in-right 0.25s ease-out forwards',
         shake: 'shake 0.2s ease-in-out 2',
         'icon-sway': 'icon-sway 2s ease-in-out infinite',
         'icon-glow': 'icon-glow 2s ease-in-out infinite',

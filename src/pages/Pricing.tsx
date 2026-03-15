@@ -142,7 +142,7 @@ export default function Pricing() {
           className="text-center mb-10 sm:mb-14"
         >
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-slate-900 dark:text-white mb-4">
-            {isTr ? 'Dilin Matematiğini Sınırları Kaldırarak Çözün' : 'Solve the Math of Language — Without Limits'}
+            {isTr ? 'Sınırları Kaldırın, Akıcı Konuşun.' : 'Remove the Limits, Speak Fluently.'}
           </h1>
           <p className="text-slate-600 dark:text-slate-400 text-base sm:text-lg max-w-xl mx-auto mb-8">
             {isTr ? 'İhtiyacınıza uygun planı seçin, hemen başlayın.' : 'Choose the plan that fits you and get started.'}
@@ -195,8 +195,8 @@ export default function Pricing() {
                   : plan.monthlyPrice;
             const priceLabel = isLifetime
               ? isTr
-                ? 'tek seferlik'
-                : 'one-time'
+                ? 'Bir daha asla ödeme yapmayın'
+                : 'Pay once, never again'
               : isAnnual
                 ? isTr
                   ? '/yıl'
@@ -215,7 +215,7 @@ export default function Pricing() {
                   plan.muted
                     ? 'border-slate-300/60 dark:border-slate-600/50 text-slate-700 dark:text-slate-300'
                     : plan.popular
-                      ? 'border-transparent ring-2 ring-indigo-400/80 dark:ring-indigo-400/70 shadow-[0_0_32px_rgba(99,102,241,0.25)] dark:shadow-[0_0_40px_rgba(99,102,241,0.2)] scale-105 z-10'
+                      ? 'border-transparent ring-2 ring-indigo-400/80 dark:ring-indigo-400/70 shadow-[0_0_30px_rgba(79,70,229,0.15)] dark:shadow-[0_0_40px_rgba(79,70,229,0.18)] md:scale-[1.03] md:-translate-y-4 z-10'
                       : 'border-white/20 dark:border-white/10'
                 }`}
               >
@@ -270,10 +270,15 @@ export default function Pricing() {
                                   </>
                                 )}
                           </span>
-                          {price !== 0 && (
+                          {price !== 0 && !isLifetime && (
                             <span className="text-slate-500 dark:text-slate-400 text-sm font-medium">{priceLabel}</span>
                           )}
                         </div>
+                        {isLifetime && price !== 0 && (
+                          <p className="mt-1.5 text-sm text-slate-500 dark:text-slate-400 font-normal">
+                            {priceLabel}
+                          </p>
+                        )}
                         {plan.id === 'pro' && isAnnual && price !== 0 && (
                           <p className="mt-1.5 text-xs text-slate-400 dark:text-slate-500 font-normal">
                             {isTr ? 'Aylık sadece ~53₺\'ye denk gelir' : 'Equivalent to ~53₺/month'}
@@ -283,9 +288,12 @@ export default function Pricing() {
                     )}
                   </div>
 
-                  <ul className="space-y-3 flex-1 mb-8">
+                  <ul className="space-y-3 flex-1 mb-6">
                     {plan.features.map((feature, i) => (
-                      <li key={i} className="flex items-start gap-3 text-sm text-slate-600 dark:text-slate-300">
+                      <li
+                        key={i}
+                        className={`flex items-start gap-3 text-sm ${plan.muted ? 'text-gray-400 dark:text-slate-500' : 'text-slate-600 dark:text-slate-300'}`}
+                      >
                         <span className="shrink-0 w-5 h-5 rounded-full bg-emerald-500/20 dark:bg-emerald-500/25 flex items-center justify-center mt-0.5">
                           <Check className="w-3 h-3 text-emerald-600 dark:text-emerald-400" strokeWidth={2.5} />
                         </span>
@@ -295,16 +303,22 @@ export default function Pricing() {
                   </ul>
 
                   <Link
-                    to={plan.id === 'basic' ? '/sozluk' : '/'}
-                    className={`w-full inline-flex items-center justify-center rounded-xl py-3.5 px-4 text-base font-semibold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-100 dark:focus:ring-offset-slate-900 ${
-                      plan.muted
-                        ? 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-600'
-                        : plan.popular
-                          ? 'bg-indigo-500 hover:bg-indigo-600 text-white focus:ring-indigo-500 shadow-lg shadow-indigo-500/25'
-                          : 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 focus:ring-indigo-500'
-                    }`}
+                    to={plan.id === 'basic' ? '/sozluk' : '/pricing'}
+                    className={
+                      plan.id === 'basic'
+                        ? 'mt-auto w-full inline-flex items-center justify-center rounded-xl py-3.5 px-4 text-base font-semibold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-100 dark:focus:ring-offset-slate-900 border-2 border-slate-300 dark:border-slate-500 bg-transparent text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 focus:ring-indigo-500'
+                        : plan.id === 'pro'
+                          ? 'mt-auto w-full inline-flex items-center justify-center rounded-xl py-3.5 px-4 text-base font-semibold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-100 dark:focus:ring-offset-slate-900 bg-gradient-to-r from-indigo-500 to-indigo-600 dark:from-indigo-500 dark:to-indigo-600 text-white shadow-lg shadow-indigo-500/25 hover:brightness-110 focus:ring-indigo-500'
+                          : 'mt-auto w-full inline-flex items-center justify-center rounded-xl py-3.5 px-4 text-base font-semibold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-100 dark:focus:ring-offset-slate-900 bg-slate-800 dark:bg-slate-700 text-white hover:bg-slate-700 dark:hover:bg-slate-600 focus:ring-indigo-500'
+                    }
                   >
-                    {isTr ? plan.cta : plan.ctaEn ?? plan.cta}
+                    {plan.id === 'basic'
+                      ? (isTr ? 'Ücretsiz Başla' : 'Start for Free')
+                      : plan.id === 'pro'
+                        ? (isTr ? "Pro'ya Geç" : "Go Pro")
+                        : isTr
+                          ? 'Ömür Boyu Sahip Ol'
+                          : 'Get Lifetime Access'}
                   </Link>
                 </div>
               </motion.article>
