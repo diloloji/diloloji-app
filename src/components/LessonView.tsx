@@ -6,7 +6,7 @@ import { useCallback } from 'react';
 import { X, Volume2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useXp } from '../contexts/XpContext';
-import type { UnitContent, LessonItem, LessonExample } from '../data/learningPathUnits';
+import type { UnitContent, LessonExample } from '../data/learningPathUnits';
 
 export type LessonViewLang = 'fr' | 'es' | 'en' | 'de';
 
@@ -169,7 +169,6 @@ export default function LessonView({ unit, lessonIndex, lang, onClose, onComplet
                   <ExampleCard
                     key={i}
                     example={ex}
-                    lang={lang}
                     onSpeak={() => speakExample(ex.original, lang)}
                   />
                 ))}
@@ -197,11 +196,9 @@ export default function LessonView({ unit, lessonIndex, lang, onClose, onComplet
 
 function ExampleCard({
   example,
-  lang,
   onSpeak,
 }: {
   example: LessonExample;
-  lang: LessonViewLang;
   onSpeak: () => void;
 }) {
   return (

@@ -28,7 +28,7 @@ import { getFlashcardDecks, addCardToDeck, type FlashcardDeck } from '../utils/f
 import { useXp } from '../contexts/XpContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTranslation } from 'react-i18next';
-import { BookA, Info } from 'lucide-react';
+import { Info } from 'lucide-react';
 import EzberMakinesi from '../components/EzberMakinesi';
 import AuthModal from '../components/AuthModal';
 import Navbar from '../components/Navbar';
@@ -364,7 +364,7 @@ export function Page() {
   const appMode: AppMode = location.pathname === '/ezber-makinesi' ? 'ezber' : 'conjugation';
 
   const { addXP, level } = useXp();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   const [verbInput, setVerbInput] = useState('');
   const [verbKey, setVerbKey] = useState<string | null>(null);
@@ -1225,7 +1225,7 @@ export function Page() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [mode, verbKey, resetQuiz, showActivityModal, tenseDetailModalOpen, isMobileMenuOpen]);
+  }, [mode, verbKey, resetQuiz, showActivityModal, tenseDetailModalOpen]);
 
   const conjugationsForDisplay = conjugations;
 
