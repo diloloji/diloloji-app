@@ -13,12 +13,51 @@ import Navbar from '../components/Navbar';
 import { analyzeSentence, analyzeShadowing, type SentenceAnalysisItem, type ShadowingResult } from '../services/dictionaryApi';
 import { addWordToLocalDeck } from '../utils/deckManager';
 
+declare global {
+  interface Window {
+    webkitSpeechRecognition?: new () => SpeechRecognitionInstance;
+    SpeechRecognition?: new () => SpeechRecognitionInstance;
+  }
+}
+
+interface SpeechRecognitionInstance {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  start: () => void;
+  stop: () => void;
+  onresult: ((event: SpeechRecognitionResultEvent) => void) | null;
+  onend: (() => void) | null;
+  onerror: (() => void) | null;
+}
+
+interface SpeechRecognitionResultEvent {
+  resultIndex: number;
+  results: SpeechRecognitionResultList;
+}
+
+interface SpeechRecognitionResultList {
+  length: number;
+  item(index: number): SpeechRecognitionResult;
+  [index: number]: SpeechRecognitionResult;
+}
+
+interface SpeechRecognitionResult {
+  length: number;
+  item(index: number): SpeechRecognitionAlternative;
+  [index: number]: SpeechRecognitionAlternative;
+  isFinal: boolean;
+}
+
+interface SpeechRecognitionAlternative {
+  transcript: string;
+  confidence: number;
+}
+
 /** Tarayıcı SpeechRecognition API'si */
-function getSpeechRecognition(): typeof SpeechRecognition | null {
+function getSpeechRecognition(): (new () => SpeechRecognitionInstance) | null {
   if (typeof window === 'undefined') return null;
-  const SpeechRecognitionAPI =
-    (window as unknown as { SpeechRecognition?: typeof SpeechRecognition }).SpeechRecognition ||
-    (window as unknown as { webkitSpeechRecognition?: typeof SpeechRecognition }).webkitSpeechRecognition;
+  const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
   return SpeechRecognitionAPI || null;
 }
 
@@ -232,8 +271,8 @@ export default function SyntaxLab() {
   const [isRecording, setIsRecording] = useState(false);
   const [shadowingResult, setShadowingResult] = useState<ShadowingResult | null>(null);
   const [shadowingLoading, setShadowingLoading] = useState(false);
-  const [recognizedTranscript, setRecognizedTranscript] = useState('');
-  const recognitionRef = useRef<InstanceType<NonNullable<ReturnType<typeof getSpeechRecognition>>> | null>(null);
+  const [_recognizedTranscript, setRecognizedTranscript] = useState('');
+  const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
   const transcriptAccumRef = useRef('');
 
   const exampleChips = EXAMPLE_SENTENCES[language];
@@ -297,7 +336,7 @@ export default function SyntaxLab() {
     rec.continuous = true;
     rec.interimResults = true;
     rec.lang = getRecognitionLang(language);
-    rec.onresult = (event: SpeechRecognitionEvent) => {
+    rec.onresult = (event: SpeechRecognitionResultEvent) => {
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const transcript = event.results[i][0].transcript;
         if (event.results[i].isFinal) {

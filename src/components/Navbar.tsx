@@ -6,6 +6,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import type { LucideIcon } from 'lucide-react';
 import { Menu, X, User, LogOut, Sun, Moon, Languages } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useThemeContext } from '../contexts/ThemeContext';
@@ -18,13 +19,20 @@ const MAIN_LINKS = [
   { to: '/ogrenme', labelKey: 'ogrenme' },
 ] as const;
 
-const HAMBURGER_LINKS = [
+type HamburgerLinkItem = {
+  to: string;
+  labelKey: string;
+  labelFallback: string;
+  icon?: LucideIcon;
+};
+
+const HAMBURGER_LINKS: HamburgerLinkItem[] = [
   { to: '/syntax-lab', labelKey: 'syntax_lab', labelFallback: 'Cümle Laboratuvarı' },
   { to: '/youtube-lab', labelKey: 'youtube_lab', labelFallback: 'YouTube Lab' },
   { to: '/simulator', labelKey: 'simulator', labelFallback: 'Simülatör' },
   { to: '/leaderboard', labelKey: 'leaderboard', labelFallback: 'Ligler' },
   { to: '/profil', labelKey: 'profil', labelFallback: 'Profil', icon: User },
-] as const;
+];
 
 export type NavbarProps = {
   rightExtra?: React.ReactNode;

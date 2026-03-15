@@ -116,7 +116,7 @@ export default function YouTubeLab() {
           <input
             type="text"
             value={urlInput}
-            onChange={(e) => setError(null) || setUrlInput(e.target.value)}
+            onChange={(e) => { setError(null); setUrlInput(e.target.value); }}
             placeholder="YouTube URL veya video ID yapıştırın..."
             className="flex-1 min-w-0 rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-transparent"
             aria-label="YouTube URL"
