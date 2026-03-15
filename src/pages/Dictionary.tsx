@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Volume2, X, BookA } from 'lucide-react';
+import { Volume2, X } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTranslation } from 'react-i18next';
 import Navbar from '../components/Navbar';
@@ -106,7 +106,7 @@ function typeBadgeClass(type: string): string {
 }
 
 export default function Dictionary() {
-  const { t } = useTranslation();
+  useTranslation();
   const { selectedLanguage } = useLanguage();
   const [direction, setDirection] = useState<DictDirection>(selectedLanguage === 'es' ? 'tr-es' : 'tr-fr');
   const [query, setQuery] = useState('');

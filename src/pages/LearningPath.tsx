@@ -155,12 +155,10 @@ const CURRICULUM: Record<Lang, Record<Level, ModuleItem[]>> = {
 
 function UnitDetailPanel({
   unit,
-  lang,
   onClose,
   onOpenLesson,
 }: {
   unit: UnitContent;
-  lang: Lang;
   onClose: () => void;
   onOpenLesson: (lessonIndex: number) => void;
 }) {
@@ -393,7 +391,6 @@ export default function LearningPath() {
       {selectedUnit && !selectedLesson && (
         <UnitDetailPanel
           unit={selectedUnit}
-          lang={lang}
           onClose={() => setSelectedUnitId(null)}
           onOpenLesson={(lessonIndex) => {
             setSelectedUnitId(null);

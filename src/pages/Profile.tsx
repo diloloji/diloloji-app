@@ -116,7 +116,7 @@ export default function Profile() {
           <div className="flex gap-1 items-start">
             {/* Gün etiketleri */}
             <div className="flex flex-col gap-0.5 pt-2 pr-1 text-[10px] text-slate-500">
-              {DAY_NAMES.map((name, i) => (
+              {DAY_NAMES.map((name) => (
                 <span key={name} className="h-3 flex items-center justify-end" style={{ height: 14 }}>
                   {name}
                 </span>

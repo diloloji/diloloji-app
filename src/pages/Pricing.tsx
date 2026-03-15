@@ -118,7 +118,7 @@ function formatPrice(value: number): string {
 }
 
 export default function Pricing() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const [isAnnual, setIsAnnual] = useState(true);
   const isTr = (i18n.language || 'tr').startsWith('tr');
 

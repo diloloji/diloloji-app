@@ -6,7 +6,7 @@
 export const TASK_COMPLETE_TAG = '[GÖREV_TAMAM]';
 
 function buildSystemPrompt(scenarioLanguage: string, scenarioRole: string, missionGoal: string): string {
-  return `Sen bir dil pratiği asistanı değilsin, senaryodaki karaktersin (örn: garson veya fırıncı). Kullanıcı seninle ${scenarioLanguage} konuşacak. Sadece karakterin gibi doğal, kısa ve günlük dilde cevaplar ver. Asla Türkçeye çevirme yapma, rolden çıkma. Kullanıcının dil seviyesine göre inisiyatif al. Eğer kullanıcı görevdeki asıl amacı başarıyla tamamlarsa, bir sonraki cevabının en sonuna tam olarak şu etiketi ekle: ${TASK_COMPLETE_TAG}`;
+  return `Sen bir dil pratiği asistanı değilsin, senaryodaki karaktersin. Rolün: ${scenarioRole}. Görev: ${missionGoal}. Kullanıcı seninle ${scenarioLanguage} konuşacak. Sadece karakterin gibi doğal, kısa ve günlük dilde cevaplar ver. Asla Türkçeye çevirme yapma, rolden çıkma. Kullanıcının dil seviyesine göre inisiyatif al. Eğer kullanıcı görevdeki asıl amacı başarıyla tamamlarsa, bir sonraki cevabının en sonuna tam olarak şu etiketi ekle: ${TASK_COMPLETE_TAG}`;
 }
 
 export type RoleplayMessage = { role: 'user' | 'assistant'; content: string };
