@@ -65,7 +65,6 @@ function getTimeAttackScores(): TimeAttackScoreEntry[] {
 
 function saveTimeAttackScore(entry: TimeAttackScoreEntry): { highScore: number; lastFive: TimeAttackScoreEntry[] } {
   const list = getTimeAttackScores();
-  const prevBest = list.length > 0 ? Math.max(...list.map((e) => e.score)) : 0;
   list.push(entry);
   const trimmed = list.slice(-TIME_ATTACK_MAX_ENTRIES);
   try {
@@ -1647,29 +1646,20 @@ export function Page() {
       {appMode === 'conjugation' && (
       <main className={`max-w-7xl w-full mx-auto px-4 md:px-8 pb-24 md:pb-20 transition-all duration-300 ${viewMode === 'simple' ? 'pt-2' : 'py-4'}`}>
         <div className={`flex flex-col md:grid md:grid-cols-12 md:items-start transition-all duration-300 ${viewMode === 'simple' ? 'gap-4 md:gap-6' : 'gap-6 md:gap-8'}`}>
-          {/* Sol sütun: Kontrol paneli — mobilde accordion, md+ iki kolon */}
+          {/* Sol sütun: Kontrol paneli — mobilde toggle ile aç/kapa, desktop'ta her zaman görünür */}
           <aside data-print-hide className="flex flex-col gap-4 md:col-span-4 order-1 print:hidden md:sticky md:top-6 md:self-start transition-opacity duration-300">
-            <details
-              className="group/details md:contents"
-              open={leftPanelOpen}
-              onClick={(e) => {
-                const t = e.target as HTMLElement;
-                if (t.tagName === 'SUMMARY') e.preventDefault();
-              }}
+            {/* Mobilde: Fiil Seç toggle; desktop'ta gizli (panel aşağıda her zaman gösterilir) */}
+            <button
+              type="button"
+              className="md:hidden list-none cursor-pointer rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-100/80 dark:bg-slate-800/80 px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 flex items-center justify-between w-full"
+              onClick={() => setLeftPanelOpen((o) => !o)}
+              aria-expanded={leftPanelOpen}
             >
-              <summary
-                className="md:hidden list-none cursor-pointer rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-100/80 dark:bg-slate-800/80 px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 flex items-center justify-between"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setLeftPanelOpen((o) => !o);
-                }}
-                role="button"
-                aria-expanded={leftPanelOpen}
-              >
-                ⚙ Fiil Seç
-                <span className={`inline-block transition-transform duration-200 ${leftPanelOpen ? 'rotate-180' : ''}`} aria-hidden>▼</span>
-              </summary>
-            <div className="flex flex-col gap-4">
+              ⚙ Fiil Seç
+              <span className={`inline-block transition-transform duration-200 ${leftPanelOpen ? 'rotate-180' : ''}`} aria-hidden>▼</span>
+            </button>
+            {/* Panel içeriği: mobilde sadece leftPanelOpen iken, desktop'ta (md:) her zaman görünür */}
+            <div className={leftPanelOpen ? 'flex flex-col gap-4' : 'hidden md:flex md:flex-col md:gap-4'}>
             {/* Entegre dil seçici — arama alanının hemen üzerinde, segmented control */}
             <section className="relative z-10 shrink-0 w-full">
               <div
@@ -1958,7 +1948,6 @@ export function Page() {
               </div>
             )}
             </div>
-            </details>
           </aside>
 
           {/* Sağ sütun: Sekmeler + ana çalışma alanı — 8 kolon (Detaylı'da 8, Basit'te 12) */}
@@ -2561,7 +2550,7 @@ export function Page() {
                         {pronounsForLang.map(({ id, label }) => {
                           const text1 = getSafeConjugationMap(verbKey, compareTense1, selectedLanguage)[id] ?? '—';
                           const text2 = getSafeConjugationMap(verbKey, compareTense2, selectedLanguage)[id] ?? '—';
-                          const { a: segA, b: segB } = getDiffSegments(text1, text2);
+                          const { a: segA, b: _segB } = getDiffSegments(text1, text2);
                           return (
                             <li key={id} className="flex items-center justify-between gap-4">
                               <span className="text-slate-600 dark:text-slate-300 font-semibold min-w-[5.5rem]">{label}</span>

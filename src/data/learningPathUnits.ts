@@ -16,12 +16,23 @@ export type LessonConjugationRow = {
   meaning: string;
 };
 
+export type QuizQuestionType = 'multiple_choice' | 'fill_blank' | 'true_false';
+
+export type QuizQuestion = {
+  type: QuizQuestionType;
+  question: string;
+  options?: string[];
+  correctAnswer: string;
+  explanation: string;
+};
+
 export type LessonItem = {
   lessonTitle: string;
   grammarBlock: string;
   content: string;
   examples?: LessonExample[];
   conjugation?: LessonConjugationRow[];
+  quiz?: QuizQuestion[];
 };
 
 export type UnitContent = {
@@ -49,6 +60,11 @@ export const UNIT_CONTENT: Record<string, UnitContent> = {
           { original: 'Vous', phonetic: '(Vu)', turkish: 'Siz / Siz (nazik "sen")' },
           { original: 'Ils / Elles', phonetic: '(İl / El)', turkish: 'Onlar (eril / dişil)' },
         ],
+        quiz: [
+          { type: 'multiple_choice', question: '"Je" Türkçede ne anlama gelir?', options: ['Ben', 'Sen', 'O', 'Biz'], correctAnswer: 'Ben', explanation: 'Je = Ben, Fransızcanın tekil 1. şahsı.' },
+          { type: 'multiple_choice', question: '"Nous" hangi öznedir?', options: ['Ben', 'Sen', 'Biz', 'Onlar'], correctAnswer: 'Biz', explanation: 'Nous = Biz, çoğul 1. şahıs.' },
+          { type: 'true_false', question: '"Tu" samimi hitapta "sen" anlamındadır.', options: ['Doğru', 'Yanlış'], correctAnswer: 'Doğru', explanation: 'Tu, arkadaşa ve samimi ortamda "sen" için kullanılır.' },
+        ],
       },
       {
         lessonTitle: 'Ders 2: Être (Olmak) — İlk Formülümüz',
@@ -69,6 +85,11 @@ export const UNIT_CONTENT: Record<string, UnitContent> = {
           { original: 'Nous sommes en vacances.', phonetic: '(Nu som an vakans)', turkish: 'Biz tatildeyiz.' },
           { original: 'Vous êtes d\'où ?', phonetic: '(Vu et du)', turkish: 'Siz nerelisiniz? (Seyahatte çok kullanılır.)' },
         ],
+        quiz: [
+          { type: 'multiple_choice', question: 'Être fiilinde "Je" hangi çekimi alır?', options: ['suis', 'es', 'est', 'sommes'], correctAnswer: 'suis', explanation: 'Je suis = Ben …-yim. Être fiilinin 1. tekil çekimi.' },
+          { type: 'multiple_choice', question: '"Il est français." cümlesinde "est" ne anlama gelir?', options: ['olmak (o)', 'olmak (biz)', 'olmak (siz)', 'olmak (onlar)'], correctAnswer: 'olmak (o)', explanation: 'Il/Elle/On için être çekimi "est" dir.' },
+          { type: 'true_false', question: '"Nous sommes" = Biz …-ız / -iz.', options: ['Doğru', 'Yanlış'], correctAnswer: 'Doğru', explanation: 'Nous + sommes, biz öznesi için être çekimi.' },
+        ],
       },
       {
         lessonTitle: 'Ders 3: Kendini Tanıt — Seyahatte Kullanacağın Cümleler',
@@ -80,6 +101,10 @@ export const UNIT_CONTENT: Record<string, UnitContent> = {
           { original: 'Tu es d\'Istanbul ?', phonetic: '(Tü e distanbul)', turkish: 'Sen İstanbul\'dan mısın?' },
           { original: 'Il est sympa.', phonetic: '(İl e sêmba)', turkish: 'O iyi biri. (sympa = sympathique, kısaca)' },
           { original: 'Nous sommes contents.', phonetic: '(Nu som kontan)', turkish: 'Biz mutluyuz.' },
+        ],
+        quiz: [
+          { type: 'multiple_choice', question: '"Je suis touriste." ne demektir?', options: ['Ben turistim.', 'Sen turistsin.', 'O turist.', 'Biz turistiz.'], correctAnswer: 'Ben turistim.', explanation: 'Je suis + isim/sıfat = Ben …-yim.' },
+          { type: 'true_false', question: '"Vous êtes d\'où?" = Nerelisiniz? anlamına gelir.', options: ['Doğru', 'Yanlış'], correctAnswer: 'Doğru', explanation: 'Seyahatte sık duyacağınız bir soru kalıbı.' },
         ],
       },
     ],
