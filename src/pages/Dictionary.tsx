@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -178,13 +178,13 @@ export default function Dictionary() {
 
   const autocompleteFullList = useMemo(() => {
     const mock = getAutocompleteWords(direction);
-    const lang: 'fr' | 'es' =
+    const lang: 'fr' | 'es' | null =
       direction === 'tr-fr' || direction === 'fr-tr' ? 'fr'
       : direction === 'tr-es' || direction === 'es-tr' ? 'es'
       : null;
     if (lang) {
       const verbs = getVerbListForLang(lang);
-      const seen = new Set(mock.map((x) => x.word.toLowerCase()));
+      const seen = new Set(mock.map((x: { word: string; meaning: string }) => x.word.toLowerCase()));
       verbs.forEach((v) => {
         if (!seen.has(v.toLowerCase())) {
           mock.push({ word: v, meaning: getTranslationOrPlaceholder(v, lang) });
@@ -204,7 +204,7 @@ export default function Dictionary() {
     const q = debouncedQuery.toLowerCase();
     if (!q) return [];
     return autocompleteFullList
-      .filter((x) => x.word.toLowerCase().startsWith(q) || x.word.toLowerCase().includes(q))
+      .filter((x: { word: string; meaning: string }) => x.word.toLowerCase().startsWith(q) || x.word.toLowerCase().includes(q))
       .slice(0, 8);
   }, [autocompleteFullList, debouncedQuery]);
 
@@ -593,7 +593,7 @@ export default function Dictionary() {
                 role="listbox"
                 className="absolute left-0 right-0 top-full mt-1 z-50 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 shadow-xl overflow-hidden max-h-72 overflow-y-auto"
               >
-                {autocompleteSuggestions.map((item, i) => (
+                {autocompleteSuggestions.map((item: { word: string; meaning: string }, i: number) => (
                   <li
                     key={`${item.word}-${i}`}
                     role="option"

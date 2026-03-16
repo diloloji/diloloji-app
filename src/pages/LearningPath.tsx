@@ -2,13 +2,17 @@
  * Öğrenme Yolu (Learning Plan) — A1–C1 müfredat yol haritası.
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { BookOpen, PenLine, MessageCircle, X } from 'lucide-react';
+import { BookOpen, PenLine, MessageCircle, X, Lock, Check, ChevronRight } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import LessonView from '../components/LessonView';
 import { getUnitContent } from '../data/learningPathUnits';
+import { getCompletedCountForUnit } from '../utils/learningProgress';
 import type { UnitContent, LessonItem } from '../data/learningPathUnits';
+
+export type LessonStatus = 'locked' | 'available' | 'in_progress' | 'completed';
 
 type Lang = 'fr' | 'es' | 'en' | 'de';
 type Level = 'A1' | 'A2' | 'B1' | 'B2' | 'C1';
@@ -26,6 +30,29 @@ const ICONS = {
   pen: PenLine,
   message: MessageCircle,
 };
+
+function getLessonStatus(
+  mod: ModuleItem,
+  index: number,
+  modules: ModuleItem[]
+): LessonStatus {
+  if (!mod.unitId) return 'locked';
+  const unit = getUnitContent(mod.unitId);
+  const total = unit?.lessons.length ?? 0;
+  const completedCount = getCompletedCountForUnit(mod.unitId);
+  const prevUnitIndex = modules.slice(0, index).findIndex((m) => m.unitId);
+  if (prevUnitIndex >= 0) {
+    const prev = modules[prevUnitIndex];
+    if (prev?.unitId) {
+      const prevTotal = getUnitContent(prev.unitId)?.lessons.length ?? 0;
+      const prevCompleted = getCompletedCountForUnit(prev.unitId);
+      if (prevCompleted < prevTotal) return 'locked';
+    }
+  }
+  if (total > 0 && completedCount >= total) return 'completed';
+  if (completedCount > 0) return 'in_progress';
+  return 'available';
+}
 
 const CURRICULUM: Record<Lang, Record<Level, ModuleItem[]>> = {
   fr: {
@@ -175,7 +202,7 @@ function UnitDetailPanel({
           <X className="w-5 h-5" strokeWidth={2} />
         </button>
       </div>
-      <div className="flex-1 overflow-y-auto px-4 py-6 pb-24 max-w-3xl mx-auto w-full">
+      <div className="flex-1 overflow-y-auto px-4 py-6 pb-8 max-w-3xl mx-auto w-full">
         {unit.lessons.map((lesson, idx) => (
           <LessonBlock
             key={idx}
@@ -183,6 +210,15 @@ function UnitDetailPanel({
             onStartLesson={() => onOpenLesson(idx)}
           />
         ))}
+        <div className="mt-8 pt-6 border-t border-slate-700/60">
+          <button
+            type="button"
+            onClick={() => unit.lessons.length > 0 && onOpenLesson(0)}
+            className="w-full py-4 px-6 rounded-2xl font-bold text-white bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-600 hover:from-indigo-400 hover:via-purple-400 hover:to-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 focus:ring-offset-slate-900 transition-all shadow-lg shadow-indigo-500/20"
+          >
+            Üniteyi Başlat →
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -191,18 +227,18 @@ function UnitDetailPanel({
 function LessonBlock({ lesson, onStartLesson }: { lesson: LessonItem; onStartLesson: () => void }) {
   return (
     <section className="mb-10">
-      <div className="flex items-start justify-between gap-3 mb-2">
+      <button
+        type="button"
+        onClick={onStartLesson}
+        className="w-full flex items-start justify-between gap-3 mb-2 text-left cursor-pointer rounded-xl p-3 -m-3 hover:bg-slate-700/40 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 focus:ring-offset-slate-900 transition-colors"
+      >
         <h3 className="text-base font-semibold text-indigo-400 dark:text-indigo-300">
           {lesson.lessonTitle}
         </h3>
-        <button
-          type="button"
-          onClick={onStartLesson}
-          className="shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium bg-indigo-600 text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 focus:ring-offset-slate-900 transition-colors"
-        >
+        <span className="shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium bg-indigo-600 text-white">
           Dersi aç
-        </button>
-      </div>
+        </span>
+      </button>
       <div className="rounded-xl bg-slate-800/80 dark:bg-slate-800/80 border border-slate-600/50 p-4 mb-3">
         <p className="text-sm text-slate-300 dark:text-slate-300 whitespace-pre-wrap font-mono leading-relaxed">
           {lesson.grammarBlock}
@@ -263,12 +299,68 @@ function LessonBlock({ lesson, onStartLesson }: { lesson: LessonItem; onStartLes
   );
 }
 
+const LANGS: Lang[] = ['fr', 'es', 'en', 'de'];
+const LEVELS: Level[] = ['A1', 'A2', 'B1', 'B2', 'C1'];
+
+function parseOgrenmePath(pathname: string): { lang: Lang; level: Level; unitId: string | null; lessonIndex: number | null } {
+  const segments = pathname.replace(/^\/ogrenme\/?/, '').split('/').filter(Boolean);
+  const lang = LANGS.includes(segments[0] as Lang) ? (segments[0] as Lang) : 'fr';
+  const level = LEVELS.includes(segments[1] as Level) ? (segments[1] as Level) : 'A1';
+  let unitId: string | null = null;
+  let lessonIndex: number | null = null;
+  const uniteIdx = segments.indexOf('unite');
+  if (uniteIdx >= 0 && segments[uniteIdx + 1]) unitId = segments[uniteIdx + 1];
+  const dersIdx = segments.indexOf('ders');
+  if (dersIdx >= 0 && segments[dersIdx + 1] != null) {
+    const n = parseInt(segments[dersIdx + 1], 10);
+    if (!Number.isNaN(n)) lessonIndex = n;
+  }
+  return { lang, level, unitId, lessonIndex };
+}
+
 export default function LearningPath() {
-  const [lang, setLang] = useState<Lang>('fr');
-  const [level, setLevel] = useState<Level>('A1');
+  const location = useLocation();
+  const navigate = useNavigate();
+  const pathname = location.pathname;
+
+  const [lang, setLangState] = useState<Lang>('fr');
+  const [level, setLevelState] = useState<Level>('A1');
   const [selectedUnitId, setSelectedUnitId] = useState<string | null>(null);
-  /** İnteraktif ders ekranı: ünite + ders indeksi. Açıkken unit panel kapanır. */
   const [selectedLesson, setSelectedLesson] = useState<{ unitId: string; lessonIndex: number } | null>(null);
+
+  useEffect(() => {
+    if (pathname === '/ogrenme' || pathname === '/ogrenme/') {
+      navigate('/ogrenme/fr/A1', { replace: true });
+      return;
+    }
+    const { lang: l, level: lv, unitId: uid, lessonIndex: lix } = parseOgrenmePath(pathname);
+    setLangState(l);
+    setLevelState(lv);
+    setSelectedUnitId(uid || null);
+    setSelectedLesson(uid && lix !== null ? { unitId: uid, lessonIndex: lix } : null);
+  }, [pathname, navigate]);
+
+  const setLang = (l: Lang) => {
+    setLangState(l);
+    navigate(`/ogrenme/${l}/${level}`);
+  };
+  const setLevel = (l: Level) => {
+    setLevelState(l);
+    navigate(`/ogrenme/${lang}/${l}`);
+  };
+
+  const openUnit = (unitId: string) => {
+    navigate(`/ogrenme/${lang}/${level}/unite/${unitId}`);
+  };
+  const closeUnit = () => {
+    navigate(`/ogrenme/${lang}/${level}`);
+  };
+  const openLesson = (unitId: string, lessonIndex: number) => {
+    navigate(`/ogrenme/${lang}/${level}/unite/${unitId}/ders/${lessonIndex}`);
+  };
+  const closeLesson = () => {
+    if (selectedUnitId) navigate(`/ogrenme/${lang}/${level}/unite/${selectedUnitId}`);
+  };
 
   const modules = CURRICULUM[lang][level];
   const selectedUnit = selectedUnitId ? getUnitContent(selectedUnitId) : null;
@@ -339,13 +431,14 @@ export default function LearningPath() {
             >
               <span aria-hidden>🇩🇪</span>
               Almanca
+              <span className="ml-0.5 rounded bg-amber-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-amber-400">Yakında</span>
             </button>
           </div>
         </div>
 
-        {/* Seviye seçici — Segmented Control */}
-        <div className="flex justify-center mb-8">
-          <div className="flex items-center gap-1 p-1 bg-slate-800/60 dark:bg-slate-800/60 backdrop-blur-sm border border-slate-700 rounded-full shadow-inner" role="tablist" aria-label="Seviye">
+        {/* Seviye seçici — Segmented Control (mobilde yatay scroll) */}
+        <div className="flex justify-center mb-8 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-1 -mx-2">
+          <div className="flex items-center gap-1 p-1 bg-slate-800/60 dark:bg-slate-800/60 backdrop-blur-sm border border-slate-700 rounded-full shadow-inner snap-center min-w-0" role="tablist" aria-label="Seviye">
             {(['A1', 'A2', 'B1', 'B2', 'C1'] as const).map((lvl) => (
               <button
                 key={lvl}
@@ -363,23 +456,64 @@ export default function LearningPath() {
           </div>
         </div>
 
-        {/* Modül kartları — Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* Modül kartları — Grid (kartlar aynı yükseklikte) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-stretch">
           {modules.map((mod, i) => {
             const Icon = ICONS[mod.icon];
+            const status = getLessonStatus(mod, i, modules);
+            const unit = mod.unitId ? getUnitContent(mod.unitId) : null;
+            const totalLessons = unit?.lessons.length ?? 0;
+            const completedCount = mod.unitId ? getCompletedCountForUnit(mod.unitId) : 0;
+            const progressPercent = totalLessons > 0 ? (completedCount / totalLessons) * 100 : 0;
+            const isLocked = status === 'locked';
             return (
               <button
                 key={`${mod.title}-${i}`}
                 type="button"
-                onClick={() => mod.unitId && setSelectedUnitId(mod.unitId)}
-                className="bg-slate-800/40 dark:bg-slate-800/40 backdrop-blur-sm border border-slate-700 rounded-2xl p-5 hover:border-indigo-500/50 transition-all cursor-pointer group text-left focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 focus:ring-offset-slate-900"
+                onClick={() => mod.unitId && !isLocked && openUnit(mod.unitId)}
+                disabled={isLocked}
+                className={`relative flex flex-col bg-slate-800/40 dark:bg-slate-800/40 backdrop-blur-sm border rounded-2xl p-5 transition-all text-left focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 focus:ring-offset-slate-900 h-full ${
+                  isLocked
+                    ? 'border-slate-700/80 cursor-not-allowed opacity-80'
+                    : 'border-slate-700 hover:border-indigo-500/50 cursor-pointer group'
+                }`}
               >
+                {/* Sol üst durum rozeti */}
+                <div className="absolute top-3 left-3 flex items-center gap-1.5">
+                  {status === 'completed' && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-900/80 px-2 py-0.5 text-xs font-medium text-emerald-300 border border-emerald-500/40">
+                      <Check className="w-3.5 h-3.5" strokeWidth={2.5} /> Tamamlandı
+                    </span>
+                  )}
+                  {status === 'in_progress' && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-indigo-900/80 px-2 py-0.5 text-xs font-medium text-indigo-300 border border-indigo-500/40 animate-pulse">
+                      <ChevronRight className="w-3.5 h-3.5" strokeWidth={2.5} /> Devam Et
+                    </span>
+                  )}
+                  {status === 'locked' && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-slate-700/80 px-2 py-0.5 text-xs font-medium text-slate-400 border border-slate-600/50">
+                      <Lock className="w-3.5 h-3.5" strokeWidth={2} /> Kilitli
+                    </span>
+                  )}
+                </div>
                 <div className="flex flex-col gap-3">
                   <span className="inline-flex w-10 h-10 items-center justify-center rounded-xl bg-indigo-500/20 dark:bg-indigo-500/20 text-indigo-500 dark:text-indigo-400 group-hover:scale-110 group-hover:animate-bounce transition-transform duration-200">
                     <Icon className="w-5 h-5" strokeWidth={2} aria-hidden />
                   </span>
-                  <h3 className="font-semibold text-slate-800 dark:text-slate-100 text-base">{mod.title}</h3>
+                  <h3 className="font-semibold text-slate-800 dark:text-slate-100 text-base pr-20">{mod.title}</h3>
                   <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">{mod.description}</p>
+                  {mod.unitId && totalLessons > 0 && (
+                    <div className="mt-1 h-1.5 rounded-full bg-slate-700 overflow-hidden">
+                      <div
+                        className="h-full rounded-full bg-indigo-500 transition-all duration-500"
+                        style={{ width: `${progressPercent}%` }}
+                        role="progressbar"
+                        aria-valuenow={completedCount}
+                        aria-valuemin={0}
+                        aria-valuemax={totalLessons}
+                      />
+                    </div>
+                  )}
                 </div>
               </button>
             );
@@ -391,11 +525,8 @@ export default function LearningPath() {
       {selectedUnit && !selectedLesson && (
         <UnitDetailPanel
           unit={selectedUnit}
-          onClose={() => setSelectedUnitId(null)}
-          onOpenLesson={(lessonIndex) => {
-            setSelectedUnitId(null);
-            setSelectedLesson({ unitId: selectedUnit.id, lessonIndex });
-          }}
+          onClose={closeUnit}
+          onOpenLesson={(lessonIndex) => openLesson(selectedUnit.id, lessonIndex)}
         />
       )}
 
@@ -405,8 +536,18 @@ export default function LearningPath() {
           unit={lessonViewUnit}
           lessonIndex={selectedLesson.lessonIndex}
           lang={lang}
-          onClose={() => setSelectedLesson(null)}
-          onComplete={() => setSelectedLesson(null)}
+          onClose={closeLesson}
+          onComplete={closeLesson}
+          onPrevLesson={
+            selectedLesson.lessonIndex > 0
+              ? () => navigate(`/ogrenme/${lang}/${level}/unite/${selectedLesson.unitId}/ders/${selectedLesson.lessonIndex - 1}`)
+              : undefined
+          }
+          onNextLesson={
+            selectedLesson.lessonIndex < lessonViewUnit.lessons.length - 1
+              ? () => navigate(`/ogrenme/${lang}/${level}/unite/${selectedLesson.unitId}/ders/${selectedLesson.lessonIndex + 1}`)
+              : undefined
+          }
         />
       )}
     </div>

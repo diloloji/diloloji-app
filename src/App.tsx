@@ -50,6 +50,7 @@ function getPageElement(pathname: string) {
     case '/paketler':
       return <Pricing />;
     default:
+      if (pathname.startsWith('/ogrenme/')) return <LearningPath />;
       return <Navigate to="/" replace />;
   }
 }
