@@ -20,7 +20,8 @@ import { getTranslationOrPlaceholder } from '../data/dictionary';
 import { getVerbExample } from '../data/verbExamples';
 import { getTenseExplanation } from '../data/tenseExplanations';
 import { getVerbMetadata } from '../data/verbMetadata';
-import { fetchVerbTranslationFromGroq } from '../services/dictionaryApi';
+import { VERB_LEVELS, CEFR_LEVELS, CEFR_COLORS, type CEFRLevel } from '../data/verbLevels';
+import { fetchVerbTranslationFromGroq, fetchAIVerbExamples, type AIVerbExample } from '../services/dictionaryApi';
 import { getMistakes, getDueMistakes, addMistake, updateMistakeReview, type MistakeEntry } from '../utils/mistakeBank';
 import { getStarredVerbs, toggleStarredVerb, isStarredVerb } from '../utils/starredVerbs';
 import { getActivityHistory, getLastNDays, addActivityToday } from '../utils/activityHistory';
@@ -28,7 +29,7 @@ import { getFlashcardDecks, addCardToDeck, type FlashcardDeck } from '../utils/f
 import { useXp } from '../contexts/XpContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTranslation } from 'react-i18next';
-import { Info } from 'lucide-react';
+import { Info, List as ListIcon, Target as TargetIcon } from 'lucide-react';
 import EzberMakinesi from '../components/EzberMakinesi';
 import AuthModal from '../components/AuthModal';
 import Navbar from '../components/Navbar';
@@ -39,6 +40,59 @@ import { sanitizeForDisplay } from '../utils/sanitize';
 type Mode = 'learning' | 'quiz' | 'review' | 'starred' | 'time-attack' | 'compare';
 type AppMode = 'conjugation' | 'ezber';
 
+/** Zamana Karşı zorluk seviyesi */
+type TimeAttackDifficulty = 'easy' | 'medium' | 'hard';
+
+interface DifficultyConfig {
+  label: string;
+  description: string;
+  levels: CEFRLevel[];
+  tenses: { es: string[]; fr: string[] };
+  secondsPerQuestion: number;
+  multiplier: number;
+  colorToken: 'emerald' | 'amber' | 'rose';
+  emoji: string;
+}
+
+const DIFFICULTY_CONFIG: Record<TimeAttackDifficulty, DifficultyConfig> = {
+  easy: {
+    label: 'Kolay',
+    description: 'A1–A2 düzenli fiiller · sadece Presente',
+    levels: ['A1', 'A2'],
+    tenses: { es: ['presente'], fr: ['present'] },
+    secondsPerQuestion: 15,
+    multiplier: 1,
+    colorToken: 'emerald',
+    emoji: '🌱',
+  },
+  medium: {
+    label: 'Orta',
+    description: 'A1–B1 · Presente, Indefinido, Futuro',
+    levels: ['A1', 'A2', 'B1'],
+    tenses: {
+      es: ['presente', 'preterito', 'futuro'],
+      fr: ['present', 'passe-compose', 'futur-simple'],
+    },
+    secondsPerQuestion: 10,
+    multiplier: 2,
+    colorToken: 'amber',
+    emoji: '⚡',
+  },
+  hard: {
+    label: 'Zor',
+    description: 'Tüm seviyeler · Subjuntivo & Condicional dahil',
+    levels: ['A1', 'A2', 'B1', 'B2', 'C1'],
+    tenses: {
+      es: ['presente', 'imperfecto', 'preterito', 'futuro', 'condicional', 'subjuntivo-presente'],
+      fr: ['present', 'imparfait', 'passe-compose', 'futur-simple', 'subjonctif-present'],
+    },
+    secondsPerQuestion: 7,
+    multiplier: 3,
+    colorToken: 'rose',
+    emoji: '🔥',
+  },
+};
+
 /** Zamana Karşı skor kaydı (localStorage). */
 interface TimeAttackScoreEntry {
   score: number;
@@ -47,14 +101,19 @@ interface TimeAttackScoreEntry {
   verb: string;
   tense: string;
   lang: 'fr' | 'es';
+  difficulty?: TimeAttackDifficulty;
 }
 
-const TIME_ATTACK_STORAGE_KEY = 'diloloji-time-attack-scores';
+const TIME_ATTACK_STORAGE_KEY_PREFIX = 'diloloji-time-attack-scores';
 const TIME_ATTACK_MAX_ENTRIES = 50;
 
-function getTimeAttackScores(): TimeAttackScoreEntry[] {
+function storageKeyFor(difficulty: TimeAttackDifficulty): string {
+  return `${TIME_ATTACK_STORAGE_KEY_PREFIX}-${difficulty}`;
+}
+
+function getTimeAttackScores(difficulty: TimeAttackDifficulty): TimeAttackScoreEntry[] {
   try {
-    const raw = localStorage.getItem(TIME_ATTACK_STORAGE_KEY);
+    const raw = localStorage.getItem(storageKeyFor(difficulty));
     if (!raw) return [];
     const parsed = JSON.parse(raw) as TimeAttackScoreEntry[];
     return Array.isArray(parsed) ? parsed : [];
@@ -63,12 +122,15 @@ function getTimeAttackScores(): TimeAttackScoreEntry[] {
   }
 }
 
-function saveTimeAttackScore(entry: TimeAttackScoreEntry): { highScore: number; lastFive: TimeAttackScoreEntry[] } {
-  const list = getTimeAttackScores();
-  list.push(entry);
+function saveTimeAttackScore(
+  entry: TimeAttackScoreEntry,
+  difficulty: TimeAttackDifficulty
+): { highScore: number; lastFive: TimeAttackScoreEntry[] } {
+  const list = getTimeAttackScores(difficulty);
+  list.push({ ...entry, difficulty });
   const trimmed = list.slice(-TIME_ATTACK_MAX_ENTRIES);
   try {
-    localStorage.setItem(TIME_ATTACK_STORAGE_KEY, JSON.stringify(trimmed));
+    localStorage.setItem(storageKeyFor(difficulty), JSON.stringify(trimmed));
   } catch {
     /* ignore */
   }
@@ -123,13 +185,41 @@ function formatConjugationForDisplay(
   return out;
 }
 
-/** Zamana Karşı: rastgele fiil + zamir + zaman (dil bazlı). */
-function getRandomTimeAttackQuestion(lang: AppLanguage): { verbKey: string; pronoun: string; tense: string } | null {
-  const tenses = getTenses(lang);
+/** Zamana Karşı: rastgele fiil + zamir + zaman (dil + zorluk bazlı). */
+function getRandomTimeAttackQuestion(
+  lang: AppLanguage,
+  difficulty: TimeAttackDifficulty = 'medium'
+): { verbKey: string; pronoun: string; tense: string } | null {
+  const cfg = DIFFICULTY_CONFIG[difficulty];
+  const verbLang = lang === 'es' ? 'es' : 'fr';
   const pronouns = getPronouns(lang);
   const pronounIds = pronouns.map((p) => p.id);
-  for (let i = 0; i < 15; i++) {
+
+  // Zorluk seviyelerine göre fiil havuzu
+  const pool: string[] = [];
+  for (const lvl of cfg.levels) {
+    const verbsAtLevel = VERB_LEVELS[verbLang]?.[lvl] ?? [];
+    pool.push(...verbsAtLevel);
+  }
+  const verbPool = pool.length > 0 ? pool : null;
+
+  // Zorluğa göre zaman havuzu
+  const tensePool = cfg.tenses[verbLang];
+
+  for (let i = 0; i < 25; i++) {
+    const verb = verbPool
+      ? verbPool[Math.floor(Math.random() * verbPool.length)]
+      : getRandomVerbForLang(lang);
+    const tense = tensePool[Math.floor(Math.random() * tensePool.length)];
+    const result = getConjugationsForLang(verb, tense, lang);
+    if (!result.ok) continue;
+    const pronoun = pronounIds[Math.floor(Math.random() * pronounIds.length)];
+    return { verbKey: result.infinitive, pronoun, tense };
+  }
+  // Fallback: herhangi bir zaman/fiil
+  for (let i = 0; i < 10; i++) {
     const verb = getRandomVerbForLang(lang);
+    const tenses = getTenses(lang);
     const tense = tenses[Math.floor(Math.random() * tenses.length)].id;
     const result = getConjugationsForLang(verb, tense, lang);
     if (!result.ok) continue;
@@ -465,6 +555,11 @@ export function Page() {
 
   const [verbInput, setVerbInput] = useState('');
   const [verbKey, setVerbKey] = useState<string | null>(null);
+  const [selectedCEFRLevel, setSelectedCEFRLevel] = useState<CEFRLevel | null>(null);
+  const [showFavorites, setShowFavorites] = useState(false);
+  /** AI ile üretilen örnek cümleler (fiil + zaman değişiminde yeniden istek) */
+  const [aiExamples, setAIExamples] = useState<AIVerbExample[]>([]);
+  const [aiExamplesLoading, setAIExamplesLoading] = useState(false);
   const [conjugations, setConjugations] = useState<Record<string, string> | null>(null);
   /** Tersine arama: kullanıcı çekim yazdığında gösterilecek bilgi kartı (örn. "suis → être, Présent - 1. Tekil") */
   const [reverseLookupInfo, setReverseLookupInfo] = useState<{
@@ -535,8 +630,9 @@ export function Page() {
   /** Üyelik sistemi: şimdilik mock — true yaparak giriş yapmış kullanıcıyı simüle edebilirsin */
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  /** Zamana Karşı (Arcade): süre, soru, skor, combo, can, oyun bitti */
-  const [timeAttackTimeLeft, setTimeAttackTimeLeft] = useState(60);
+  /** Zamana Karşı (Arcade): zorluk, süre (soru başına), soru, skor, combo, can, oyun bitti */
+  const [timeAttackDifficulty, setTimeAttackDifficulty] = useState<TimeAttackDifficulty | null>(null);
+  const [timeAttackTimeLeft, setTimeAttackTimeLeft] = useState(10);
   const [timeAttackQuestion, setTimeAttackQuestion] = useState<{ verbKey: string; pronoun: string; tense: string } | null>(null);
   const [timeAttackInput, setTimeAttackInput] = useState('');
   const [timeAttackScore, setTimeAttackScore] = useState(0);
@@ -549,9 +645,11 @@ export function Page() {
   const [timeAttackHighScore, setTimeAttackHighScore] = useState(0);
   const [timeAttackLastScores, setTimeAttackLastScores] = useState<TimeAttackScoreEntry[]>([]);
   const [timeAttackIsNewRecord, setTimeAttackIsNewRecord] = useState(false);
-  const [timeAttackComboToast, setTimeAttackComboToast] = useState<number | null>(null);
-  const timeAttackComboToastRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [timeAttackFeedback, setTimeAttackFeedback] = useState<'correct' | 'wrong' | null>(null);
+  /** Yanlışta gösterilen doğru cevap ve dondurma (locked) durumu */
+  const [timeAttackRevealedAnswer, setTimeAttackRevealedAnswer] = useState<string | null>(null);
+  const [timeAttackLocked, setTimeAttackLocked] = useState(false);
+  const timeAttackAdvanceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [timeAttackPointsFlash, setTimeAttackPointsFlash] = useState<number | null>(null);
   const [timeAttackShake, setTimeAttackShake] = useState(false);
   const timeAttackTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -571,11 +669,12 @@ export function Page() {
     }
   }, [timeAttackGameOver, timeAttackScore, addXP]);
 
-  /** Zamana Karşı bittiğinde bir kez skoru localStorage'a yaz; kişisel rekor ve son 5'i state'e al */
+  /** Zamana Karşı bittiğinde bir kez skoru localStorage'a yaz; kişisel rekor ve son 5'i state'e al (zorluk bazlı) */
   useEffect(() => {
     if (!timeAttackGameOver || timeAttackSaveDoneRef.current) return;
+    if (!timeAttackDifficulty) return;
     timeAttackSaveDoneRef.current = true;
-    const list = getTimeAttackScores();
+    const list = getTimeAttackScores(timeAttackDifficulty);
     const prevBest = list.length > 0 ? Math.max(...list.map((e) => e.score)) : 0;
     const entry: TimeAttackScoreEntry = {
       score: timeAttackScore,
@@ -584,12 +683,13 @@ export function Page() {
       verb: timeAttackQuestion?.verbKey ?? '',
       tense: timeAttackQuestion?.tense ?? '',
       lang: selectedLanguage,
+      difficulty: timeAttackDifficulty,
     };
-    const { highScore, lastFive } = saveTimeAttackScore(entry);
+    const { highScore, lastFive } = saveTimeAttackScore(entry, timeAttackDifficulty);
     setTimeAttackHighScore(highScore);
     setTimeAttackLastScores(lastFive);
     setTimeAttackIsNewRecord(timeAttackScore >= prevBest && timeAttackScore > 0);
-  }, [timeAttackGameOver, timeAttackScore, timeAttackMaxCombo, timeAttackQuestion, selectedLanguage]);
+  }, [timeAttackGameOver, timeAttackScore, timeAttackMaxCombo, timeAttackQuestion, selectedLanguage, timeAttackDifficulty]);
 
   useEffect(() => {
     if (!timeAttackGameOver) timeAttackSaveDoneRef.current = false;
@@ -622,6 +722,27 @@ export function Page() {
     return () => document.removeEventListener('mousedown', handle);
   }, [addToSetOpen]);
 
+  /** Alıştırma başlığındaki zaman dropdown'u (hızlı zaman değiştirme) */
+  const [quizTenseMenuOpen, setQuizTenseMenuOpen] = useState(false);
+  const quizTenseMenuRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!quizTenseMenuOpen) return;
+    const handle = (e: MouseEvent) => {
+      if (quizTenseMenuRef.current && !quizTenseMenuRef.current.contains(e.target as Node)) {
+        setQuizTenseMenuOpen(false);
+      }
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setQuizTenseMenuOpen(false);
+    };
+    document.addEventListener('mousedown', handle);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', handle);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [quizTenseMenuOpen]);
+
   const handleAddVerbToSet = useCallback(
     (deckId: string, _deckTitle: string, verbKey: string, lang: AppLanguage) => {
       const back = getTranslationOrPlaceholder(verbKey, lang);
@@ -631,6 +752,23 @@ export function Page() {
     },
     []
   );
+
+  /** Alıştırma başlığından zaman değişimi: inputları temizle, feedback'i sıfırla */
+  const changeQuizTense = useCallback((tenseId: string) => {
+    if (tenseId === selectedTense) {
+      setQuizTenseMenuOpen(false);
+      return;
+    }
+    setSelectedTense(tenseId);
+    setUserAnswers(getInitialUserAnswers(selectedLanguage));
+    setQuizFeedback(Object.fromEntries(pronounsForLang.map((p) => [p.id, null as 'correct' | 'wrong' | 'typo' | null])));
+    setQuizPasséHint(Object.fromEntries(pronounsForLang.map((p) => [p.id, null])) as Record<string, string | null>);
+    setShowHints(false);
+    setShowCongrats(false);
+    setCurrentFocusIndex(0);
+    setQuizTenseMenuOpen(false);
+    requestAnimationFrame(() => quizInputRefs.current[0]?.focus());
+  }, [selectedTense, selectedLanguage, pronounsForLang]);
 
   /** Kıyaslama sekmesi: iki zaman seçici */
   const [compareTense1, setCompareTense1] = useState<string>(() => getTenses('fr')[0].id);
@@ -903,45 +1041,67 @@ export function Page() {
     }
   }, [verbKey, selectedTense, selectedLanguage]);
 
-  /** Güncel fiil ref'i (çeviri fallback'te stale response'ı önlemek için) */
+  /**
+   * Fiil/zaman/dil değiştiğinde önceki AI sonuçlarını (örnek cümleler + çeviri)
+   * temizle. OTOMATİK API çağrısı YOK — kullanıcı "AI Analizi Başlat" butonuna
+   * basmalı.
+   */
+  useEffect(() => {
+    setAIExamples([]);
+    setAIExamplesLoading(false);
+    setDynamicMeaning(null);
+    setTranslation(null);
+    setIsMeaningLoading(false);
+  }, [verbKey, selectedTense, selectedLanguage]);
+
+  /** Güncel fiil ref'i (stale response'ı önlemek için) */
   useEffect(() => {
     verbKeyRef.current = verbKey;
   }, [verbKey]);
 
-  /** Fiil veya dil değişince Groq ile Türkçe anlamı çek (mastar: -mak/-mek) */
-  useEffect(() => {
-    if (!verbKey) {
-      setTranslation(null);
-      setDynamicMeaning(null);
-      setIsMeaningLoading(false);
-      return;
-    }
+  /**
+   * Butona basıldığında AI analizi başlatılır — manuel tetikleme.
+   * Hem Türkçe anlam (mastar) hem örnek cümleler eş zamanlı getirilir.
+   */
+  const generateAISentences = useCallback(async () => {
+    if (!verbKey || aiExamplesLoading) return;
     const langLabel = selectedLanguage === 'fr' ? 'Fransızca' : 'İspanyolca';
+    const tenseLbl = tensesForLang.find((t) => t.id === selectedTense)?.label ?? selectedTense;
+    setAIExamplesLoading(true);
     setIsMeaningLoading(true);
+    setAIExamples([]);
     setDynamicMeaning(null);
     setTranslation(null);
-    let cancelled = false;
-    fetchVerbTranslationFromGroq(verbKey, langLabel)
-      .then((res) => {
-        if (cancelled || verbKeyRef.current !== verbKey) return;
-        const raw = res?.translation?.trim();
+    const currentVerb = verbKey;
+    try {
+      const [examplesRes, translationRes] = await Promise.allSettled([
+        fetchAIVerbExamples(verbKey, tenseLbl, langLabel),
+        fetchVerbTranslationFromGroq(verbKey, langLabel),
+      ]);
+      // Sonuçlar dönerken kullanıcı başka fiile geçmişse eski veriyi UI'a yazma.
+      if (verbKeyRef.current !== currentVerb) return;
+      if (examplesRes.status === 'fulfilled') {
+        setAIExamples(examplesRes.value.examples ?? []);
+      } else {
+        setAIExamples([]);
+      }
+      if (translationRes.status === 'fulfilled') {
+        const raw = translationRes.value?.translation?.trim();
         if (raw) {
           const text = raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase();
           setDynamicMeaning(text);
           setTranslation(text);
         }
-      })
-      .catch(() => {
-        if (!cancelled && verbKeyRef.current === verbKey) {
-          setDynamicMeaning(null);
-          setTranslation(null);
-        }
-      })
-      .finally(() => {
-        if (!cancelled && verbKeyRef.current === verbKey) setIsMeaningLoading(false);
-      });
-    return () => { cancelled = true; };
-  }, [verbKey, selectedLanguage]);
+      }
+    } catch {
+      setAIExamples([]);
+    } finally {
+      if (verbKeyRef.current === currentVerb) {
+        setAIExamplesLoading(false);
+        setIsMeaningLoading(false);
+      }
+    }
+  }, [verbKey, selectedTense, selectedLanguage, tensesForLang, aiExamplesLoading]);
 
   // Yeni fiil yüklendiğinde quiz cevaplarını ve ipucunu sıfırla (doğru cevaplar kütüphaneden gelen conjugations ile güncellenir)
   useEffect(() => {
@@ -1047,55 +1207,36 @@ export function Page() {
     lastAccentInsertRef.current = null;
   }, [userAnswers]);
 
-  // Zamana Karşı: moda girince süre ve soru başlat; saniye sayacı
+  // Zamana Karşı moddan çıkınca timer'ı ve zorluk seçimini sıfırla
   useEffect(() => {
     if (mode !== 'time-attack') {
       if (timeAttackTimerRef.current) {
         clearInterval(timeAttackTimerRef.current);
         timeAttackTimerRef.current = null;
       }
-      return;
-    }
-    setTimeAttackGameOver(false);
-    setTimeAttackTimeLeft(60);
-    setTimeAttackScore(0);
-    setTimeAttackCombo(1);
-    setTimeAttackLives(3);
-    setTimeAttackCorrectCount(0);
-    setTimeAttackMaxCombo(1);
-    setTimeAttackInput('');
-    setTimeAttackFeedback(null);
-    setTimeAttackPointsFlash(null);
-    setTimeAttackShake(false);
-    setTimeAttackQuestion(getRandomTimeAttackQuestion(selectedLanguage));
-    timeAttackTimerRef.current = setInterval(() => {
-      setTimeAttackTimeLeft((t) => {
-        if (t <= 1) {
-          if (timeAttackTimerRef.current) {
-            clearInterval(timeAttackTimerRef.current);
-            timeAttackTimerRef.current = null;
-          }
-          setTimeAttackGameOver(true);
-          return 0;
-        }
-        return t - 1;
-      });
-    }, 1000);
-    return () => {
-      if (timeAttackTimerRef.current) {
-        clearInterval(timeAttackTimerRef.current);
-        timeAttackTimerRef.current = null;
+      if (timeAttackAdvanceTimeoutRef.current) {
+        clearTimeout(timeAttackAdvanceTimeoutRef.current);
+        timeAttackAdvanceTimeoutRef.current = null;
       }
-    };
+      setTimeAttackDifficulty(null);
+      setTimeAttackGameOver(false);
+      setTimeAttackLocked(false);
+    }
   }, [mode]);
 
-  const restartTimeAttack = useCallback(() => {
+  const startTimeAttack = useCallback((difficulty: TimeAttackDifficulty) => {
+    const cfg = DIFFICULTY_CONFIG[difficulty];
     if (timeAttackTimerRef.current) {
       clearInterval(timeAttackTimerRef.current);
       timeAttackTimerRef.current = null;
     }
+    if (timeAttackAdvanceTimeoutRef.current) {
+      clearTimeout(timeAttackAdvanceTimeoutRef.current);
+      timeAttackAdvanceTimeoutRef.current = null;
+    }
+    setTimeAttackDifficulty(difficulty);
     setTimeAttackGameOver(false);
-    setTimeAttackTimeLeft(60);
+    setTimeAttackTimeLeft(cfg.secondsPerQuestion);
     setTimeAttackScore(0);
     setTimeAttackCombo(1);
     setTimeAttackLives(3);
@@ -1103,68 +1244,123 @@ export function Page() {
     setTimeAttackMaxCombo(1);
     setTimeAttackPointsFlash(null);
     setTimeAttackShake(false);
-    setTimeAttackQuestion(getRandomTimeAttackQuestion(selectedLanguage));
+    setTimeAttackQuestion(getRandomTimeAttackQuestion(selectedLanguage, difficulty));
     setTimeAttackInput('');
     setTimeAttackFeedback(null);
+    setTimeAttackRevealedAnswer(null);
+    setTimeAttackLocked(false);
+    // Per-question timer: süre bitince otomatik yanlış say
     timeAttackTimerRef.current = setInterval(() => {
-      setTimeAttackTimeLeft((t) => {
-        if (t <= 1) {
-          if (timeAttackTimerRef.current) {
-            clearInterval(timeAttackTimerRef.current);
-            timeAttackTimerRef.current = null;
-          }
-          setTimeAttackGameOver(true);
-          return 0;
-        }
-        return t - 1;
-      });
+      setTimeAttackTimeLeft((t) => (t <= 0 ? 0 : t - 1));
     }, 1000);
+  }, [selectedLanguage]);
+
+  /** Oyunu başa al → zorluk seçim ekranına dön */
+  const resetToDifficultyMenu = useCallback(() => {
+    if (timeAttackTimerRef.current) {
+      clearInterval(timeAttackTimerRef.current);
+      timeAttackTimerRef.current = null;
+    }
+    if (timeAttackAdvanceTimeoutRef.current) {
+      clearTimeout(timeAttackAdvanceTimeoutRef.current);
+      timeAttackAdvanceTimeoutRef.current = null;
+    }
+    setTimeAttackDifficulty(null);
+    setTimeAttackGameOver(false);
+    setTimeAttackLocked(false);
+    setTimeAttackQuestion(null);
+    setTimeAttackInput('');
+    setTimeAttackFeedback(null);
+    setTimeAttackRevealedAnswer(null);
   }, []);
+
+  /** Sıradaki soruya geç — doğru cevabı temizle, kilidi aç, input'u sıfırla, süreyi yenile */
+  const advanceToNextTimeAttackQuestion = useCallback(() => {
+    if (timeAttackAdvanceTimeoutRef.current) {
+      clearTimeout(timeAttackAdvanceTimeoutRef.current);
+      timeAttackAdvanceTimeoutRef.current = null;
+    }
+    setTimeAttackRevealedAnswer(null);
+    setTimeAttackLocked(false);
+    setTimeAttackFeedback(null);
+    setTimeAttackInput('');
+    const diff = timeAttackDifficulty ?? 'medium';
+    setTimeAttackQuestion(getRandomTimeAttackQuestion(selectedLanguage, diff));
+    setTimeAttackTimeLeft(DIFFICULTY_CONFIG[diff].secondsPerQuestion);
+    requestAnimationFrame(() => timeAttackInputRef.current?.focus());
+  }, [selectedLanguage, timeAttackDifficulty]);
+
+  /** Yanlış cevap akışı — can düş, doğruyu göster, 1.8s bekle, sıradakine geç */
+  const handleTimeAttackWrong = useCallback((correctAnswer: string, opts?: { fromTimeout?: boolean }) => {
+    setTimeAttackFeedback('wrong');
+    setTimeAttackRevealedAnswer(correctAnswer || '—');
+    setTimeAttackLocked(true);
+    setTimeAttackCombo(1);
+    setTimeAttackShake(true);
+    setTimeout(() => setTimeAttackShake(false), 400);
+    let gameEnded = false;
+    setTimeAttackLives((l) => {
+      const next = l - 1;
+      if (next <= 0 && timeAttackTimerRef.current) {
+        clearInterval(timeAttackTimerRef.current);
+        timeAttackTimerRef.current = null;
+        gameEnded = true;
+      }
+      return Math.max(0, next);
+    });
+    if (timeAttackAdvanceTimeoutRef.current) clearTimeout(timeAttackAdvanceTimeoutRef.current);
+    timeAttackAdvanceTimeoutRef.current = setTimeout(() => {
+      timeAttackAdvanceTimeoutRef.current = null;
+      if (gameEnded) {
+        setTimeAttackGameOver(true);
+        setTimeAttackLocked(false);
+        setTimeAttackRevealedAnswer(null);
+        setTimeAttackFeedback(null);
+      } else {
+        advanceToNextTimeAttackQuestion();
+      }
+    }, opts?.fromTimeout ? 2000 : 1800);
+  }, [advanceToNextTimeAttackQuestion]);
 
   const submitTimeAttackAnswer = useCallback(() => {
     const q = timeAttackQuestion;
-    if (!q || timeAttackGameOver || !timeAttackInput.trim()) return;
+    if (!q || timeAttackGameOver || timeAttackLocked || !timeAttackInput.trim()) return;
+    const diff = timeAttackDifficulty ?? 'medium';
+    const cfg = DIFFICULTY_CONFIG[diff];
     const conjugations = getConjugationForTenseForLang(q.verbKey, q.tense, selectedLanguage);
     const correct = conjugations[q.pronoun] ?? '';
     const isCorrect = checkOne(timeAttackInput.trim(), correct);
-    setTimeAttackFeedback(isCorrect ? 'correct' : 'wrong');
     if (isCorrect) {
+      setTimeAttackFeedback('correct');
       const nextCombo = timeAttackCombo + 1;
-      const points = 10 * timeAttackCombo;
+      const points = 10 * timeAttackCombo * cfg.multiplier;
       setTimeAttackScore((s) => s + points);
       setTimeAttackCombo((c) => c + 1);
       setTimeAttackCorrectCount((n) => n + 1);
       setTimeAttackMaxCombo((m) => Math.max(m, nextCombo));
       setTimeAttackPointsFlash(points);
-      setTimeout(() => setTimeAttackPointsFlash(null), 600);
-      setTimeAttackTimeLeft((t) => t + 2);
+      setTimeout(() => setTimeAttackPointsFlash(null), 700);
       addActivityToday(1);
-      if (nextCombo >= 5) {
-        if (timeAttackComboToastRef.current) clearTimeout(timeAttackComboToastRef.current);
-        setTimeAttackComboToast(nextCombo);
-        timeAttackComboToastRef.current = setTimeout(() => {
-          setTimeAttackComboToast(null);
-          timeAttackComboToastRef.current = null;
-        }, 2000);
-      }
+      // Doğru → bekletmeden sıradaki soruya geç + süreyi yenile
+      setTimeAttackInput('');
+      setTimeAttackQuestion(getRandomTimeAttackQuestion(selectedLanguage, diff));
+      setTimeAttackTimeLeft(cfg.secondsPerQuestion);
+      setTimeout(() => setTimeAttackFeedback(null), 600);
     } else {
-      setTimeAttackLives((l) => {
-        const next = l - 1;
-        if (next <= 0 && timeAttackTimerRef.current) {
-          clearInterval(timeAttackTimerRef.current);
-          timeAttackTimerRef.current = null;
-          setTimeAttackGameOver(true);
-        }
-        return Math.max(0, next);
-      });
-      setTimeAttackCombo(1);
-      setTimeAttackShake(true);
-      setTimeout(() => setTimeAttackShake(false), 400);
+      handleTimeAttackWrong(correct);
     }
-    setTimeAttackInput('');
-    setTimeAttackQuestion(getRandomTimeAttackQuestion(selectedLanguage));
-    setTimeout(() => setTimeAttackFeedback(null), 800);
-  }, [timeAttackQuestion, timeAttackGameOver, timeAttackInput, timeAttackCombo]);
+  }, [timeAttackQuestion, timeAttackGameOver, timeAttackLocked, timeAttackInput, timeAttackCombo, selectedLanguage, timeAttackDifficulty, handleTimeAttackWrong]);
+
+  /** Per-question timer sıfıra düştüğünde: doğru cevabı göster, can düşür, sıradaki soruya geç */
+  useEffect(() => {
+    if (timeAttackTimeLeft !== 0) return;
+    if (!timeAttackDifficulty || timeAttackGameOver || timeAttackLocked) return;
+    const q = timeAttackQuestion;
+    if (!q) return;
+    const conjugations = getConjugationForTenseForLang(q.verbKey, q.tense, selectedLanguage);
+    const correct = conjugations[q.pronoun] ?? '';
+    handleTimeAttackWrong(correct, { fromTimeout: true });
+  }, [timeAttackTimeLeft, timeAttackDifficulty, timeAttackGameOver, timeAttackLocked, timeAttackQuestion, selectedLanguage, handleTimeAttackWrong]);
 
   const setAnswer = useCallback((pronoun: string, value: string) => {
     setUserAnswers((prev) => ({ ...prev, [pronoun]: value }));
@@ -1829,6 +2025,129 @@ export function Page() {
                 document.body
               )}
             </div>
+
+            {/* ── Favorilerim ── */}
+            <div className="flex flex-col gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowFavorites((v) => !v);
+                  setSelectedCEFRLevel(null);
+                }}
+                className={`w-full flex items-center justify-between gap-2 rounded-lg border py-2 px-3 text-xs font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${
+                  showFavorites
+                    ? 'border-transparent bg-gradient-to-r from-amber-500 to-yellow-500 text-white shadow-md shadow-amber-500/25'
+                    : 'border-slate-200/50 dark:border-slate-700/40 bg-white/5 dark:bg-slate-800/30 text-slate-600 dark:text-slate-300 hover:text-amber-600 dark:hover:text-amber-400 hover:border-amber-400/40 dark:hover:border-amber-500/40 hover:bg-amber-50/50 dark:hover:bg-amber-500/5'
+                }`}
+                aria-expanded={showFavorites}
+              >
+                <span className="flex items-center gap-1.5">
+                  <span aria-hidden>⭐</span>
+                  Favorilerim
+                </span>
+                <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold tabular-nums ${
+                  showFavorites ? 'bg-white/25 text-white' : 'bg-amber-500/15 text-amber-600 dark:text-amber-400'
+                }`}>
+                  {starredVerbs.length}
+                </span>
+              </button>
+
+              {/* Favori fiil havuzu */}
+              <AnimatePresence initial={false}>
+                {showFavorites && (
+                  <motion.div
+                    key="favorites-list"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.2, ease: 'easeOut' }}
+                    className="overflow-hidden"
+                  >
+                    {starredVerbs.length === 0 ? (
+                      <p className="rounded-lg border border-dashed border-slate-200/60 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/40 px-3 py-3 text-xs text-slate-500 dark:text-slate-500 italic text-center">
+                        Henüz favori fiilin yok. Fiil kartındaki ⭐ ikonuna tıkla.
+                      </p>
+                    ) : (
+                      <div className="flex flex-wrap gap-1.5">
+                        {starredVerbs.map((verb) => (
+                          <button
+                            key={verb}
+                            type="button"
+                            onClick={() => {
+                              setVerbInput(verb);
+                              setError('');
+                              setAutocompleteClosed(true);
+                              loadVerb(verb);
+                            }}
+                            className="group flex items-center gap-1 rounded-lg border border-amber-500/25 bg-amber-500/10 px-2.5 py-1 text-xs font-medium text-amber-700 dark:text-amber-300 hover:bg-amber-500/20 hover:border-amber-500/50 transition-all duration-150 focus:outline-none focus:ring-1 focus:ring-amber-500/50 active:scale-95"
+                            title={`${verb} çekimini göster`}
+                          >
+                            <span className="text-[10px] opacity-70 group-hover:opacity-100 transition-opacity" aria-hidden>⭐</span>
+                            {verb}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* ── Seviyelere Göre Keşfet ── */}
+            <div className="flex flex-col gap-2">
+              <p className="text-xs font-medium text-slate-500 dark:text-slate-500 select-none">
+                Seviyelere Göre Keşfet
+              </p>
+              {/* Seviye butonları */}
+              <div className="flex gap-1.5">
+                {CEFR_LEVELS.map((lvl) => {
+                  const isActive = selectedCEFRLevel === lvl;
+                  return (
+                    <button
+                      key={lvl}
+                      type="button"
+                      onClick={() => setSelectedCEFRLevel(isActive ? null : lvl)}
+                      className={`flex-1 rounded-lg border py-1.5 text-xs font-bold tracking-wide transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${
+                        isActive
+                          ? `${CEFR_COLORS[lvl].btn} shadow-md border-transparent`
+                          : 'border-slate-200/50 dark:border-slate-700/40 bg-white/5 dark:bg-slate-800/30 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100/60 dark:hover:bg-slate-700/40'
+                      }`}
+                    >
+                      {lvl}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Fiil havuzu — seçili seviyede chip'ler */}
+              {selectedCEFRLevel && (
+                <motion.div
+                  key={`${selectedLanguage}-${selectedCEFRLevel}`}
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.18, ease: 'easeOut' }}
+                  className="flex flex-wrap gap-1.5 overflow-hidden"
+                >
+                  {(VERB_LEVELS[selectedLanguage as 'es' | 'fr']?.[selectedCEFRLevel] ?? []).map((verb) => (
+                    <button
+                      key={verb}
+                      type="button"
+                      onClick={() => {
+                        setVerbInput(verb);
+                        setError('');
+                        setAutocompleteClosed(true);
+                        loadVerb(verb);
+                      }}
+                      className={`rounded-lg border px-2.5 py-1 text-xs font-medium transition-all duration-150 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 active:scale-95 ${CEFR_COLORS[selectedCEFRLevel].chip}`}
+                    >
+                      {verb}
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </div>
+
             {/* Zaman seçimi — custom dropdown (glassmorphism, kategoriler, check ikonu, animasyon) */}
             <div className="w-full flex-shrink-0 flex flex-col relative overflow-visible" ref={tenseDropdownRef}>
               <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">{t('zaman_secin')}</label>
@@ -2257,11 +2576,103 @@ export function Page() {
               </div>
             </div>
 
-            {/* Zamana Karşı (Arcade) — sadece Detaylı modda */}
-            {viewMode === 'detailed' && mode === 'time-attack' && (
+            {/* Zamana Karşı (Arcade) — tüm görünümlerde çalışır (viewMode'dan bağımsız) */}
+            {mode === 'time-attack' && (
               <div className={`p-6 sm:p-8 relative ${timeAttackShake ? 'animate-time-attack-shake' : ''}`}>
-                {timeAttackGameOver ? (
+                {timeAttackDifficulty === null ? (
+                  /* ───────────── ZORLUK SEÇİM EKRANI ───────────── */
+                  <div className="max-w-2xl mx-auto text-center">
+                    <div className="mb-8">
+                      <h2 className="text-3xl sm:text-4xl font-black bg-gradient-to-r from-violet-600 via-indigo-500 to-cyan-500 dark:from-violet-400 dark:via-indigo-300 dark:to-cyan-300 bg-clip-text text-transparent">
+                        ⏱ Zamana Karşı
+                      </h2>
+                      <p className="mt-3 text-slate-600 dark:text-slate-300">
+                        Zorluğunu seç ve fiil çekimlerinde kendini test et.
+                      </p>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      {(['easy', 'medium', 'hard'] as TimeAttackDifficulty[]).map((diff) => {
+                        const cfg = DIFFICULTY_CONFIG[diff];
+                        const colorMap = {
+                          emerald: {
+                            border: 'border-emerald-400/40 hover:border-emerald-400',
+                            bg: 'bg-emerald-50/70 dark:bg-emerald-500/10 hover:bg-emerald-100/80 dark:hover:bg-emerald-500/15',
+                            text: 'text-emerald-700 dark:text-emerald-300',
+                            badge: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/30',
+                            glow: 'shadow-emerald-500/20',
+                          },
+                          amber: {
+                            border: 'border-amber-400/40 hover:border-amber-400',
+                            bg: 'bg-amber-50/70 dark:bg-amber-500/10 hover:bg-amber-100/80 dark:hover:bg-amber-500/15',
+                            text: 'text-amber-700 dark:text-amber-300',
+                            badge: 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/30',
+                            glow: 'shadow-amber-500/20',
+                          },
+                          rose: {
+                            border: 'border-rose-400/40 hover:border-rose-400',
+                            bg: 'bg-rose-50/70 dark:bg-rose-500/10 hover:bg-rose-100/80 dark:hover:bg-rose-500/15',
+                            text: 'text-rose-700 dark:text-rose-300',
+                            badge: 'bg-rose-500/10 text-rose-700 dark:text-rose-300 border-rose-500/30',
+                            glow: 'shadow-rose-500/20',
+                          },
+                        }[cfg.colorToken];
+                        const best = (() => {
+                          const list = getTimeAttackScores(diff);
+                          return list.length > 0 ? Math.max(...list.map((e) => e.score)) : 0;
+                        })();
+                        return (
+                          <button
+                            key={diff}
+                            type="button"
+                            onClick={() => startTimeAttack(diff)}
+                            className={`group text-left rounded-2xl border-2 p-5 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 ${colorMap.border} ${colorMap.bg} ${colorMap.glow}`}
+                          >
+                            <div className="flex items-center justify-between mb-3">
+                              <span className="text-3xl" aria-hidden>{cfg.emoji}</span>
+                              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${colorMap.badge}`}>
+                                x{cfg.multiplier} PUAN
+                              </span>
+                            </div>
+                            <p className={`text-xl font-black ${colorMap.text}`}>{cfg.label}</p>
+                            <p className="mt-1 text-xs text-slate-600 dark:text-slate-400 leading-snug">
+                              {cfg.description}
+                            </p>
+                            <div className="mt-4 pt-3 border-t border-slate-200/60 dark:border-slate-600/40 space-y-1 text-xs">
+                              <div className="flex justify-between text-slate-500 dark:text-slate-400">
+                                <span>Süre/soru</span>
+                                <span className="font-semibold tabular-nums text-slate-700 dark:text-slate-200">{cfg.secondsPerQuestion}s</span>
+                              </div>
+                              <div className="flex justify-between text-slate-500 dark:text-slate-400">
+                                <span>Rekor</span>
+                                <span className={`font-bold tabular-nums ${colorMap.text}`}>
+                                  {best > 0 ? best : '—'}
+                                </span>
+                              </div>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <p className="mt-6 text-xs text-slate-500 dark:text-slate-400">
+                      3 can · Süre dolunca doğru cevap gösterilir · Combo ile puanın katlanır 🔥
+                    </p>
+                  </div>
+                ) : timeAttackGameOver ? (
                   <div className="rounded-2xl border border-slate-200/80 dark:border-slate-600/80 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm shadow-xl p-8 max-w-md mx-auto text-center">
+                    {(() => {
+                      const cfg = DIFFICULTY_CONFIG[timeAttackDifficulty];
+                      const badgeMap = {
+                        emerald: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/40',
+                        amber: 'bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/40',
+                        rose: 'bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-500/40',
+                      }[cfg.colorToken];
+                      return (
+                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 mb-3 rounded-full text-xs font-bold border ${badgeMap}`}>
+                          <span aria-hidden>{cfg.emoji}</span>
+                          {cfg.label} · x{cfg.multiplier}
+                        </span>
+                      );
+                    })()}
                     <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-2">Oyun Bitti!</h2>
                     {timeAttackIsNewRecord && (
                       <p className="text-amber-600 dark:text-amber-400 font-bold text-lg animate-pulse mb-4">🏆 Yeni Rekor!</p>
@@ -2272,7 +2683,7 @@ export function Page() {
                         <dd className="font-bold text-slate-800 dark:text-slate-100 tabular-nums">{timeAttackScore}</dd>
                       </div>
                       <div className="flex justify-between">
-                        <dt className="text-slate-500 dark:text-slate-400">Kişisel rekor</dt>
+                        <dt className="text-slate-500 dark:text-slate-400">Kişisel rekor ({DIFFICULTY_CONFIG[timeAttackDifficulty].label})</dt>
                         <dd className="font-bold text-indigo-600 dark:text-indigo-400 tabular-nums">{timeAttackHighScore}</dd>
                       </div>
                       <div className="flex justify-between">
@@ -2286,7 +2697,7 @@ export function Page() {
                     </dl>
                     {timeAttackLastScores.length > 0 && (
                       <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-600 text-left">
-                        <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">Son 5 skor</p>
+                        <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">Son 5 skor ({DIFFICULTY_CONFIG[timeAttackDifficulty].label})</p>
                         <ul className="space-y-1 text-sm text-slate-700 dark:text-slate-300">
                           {timeAttackLastScores.map((e, i) => (
                             <li key={i} className="flex justify-between gap-2">
@@ -2299,38 +2710,98 @@ export function Page() {
                         </ul>
                       </div>
                     )}
-                    <button
-                      type="button"
-                      onClick={restartTimeAttack}
-                      className="mt-8 w-full py-4 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 dark:from-violet-500 dark:to-indigo-500 dark:hover:from-violet-400 dark:hover:to-indigo-400 text-white font-bold text-lg shadow-lg shadow-indigo-500/25 transition-all duration-300"
-                    >
-                      Tekrar Oyna
-                    </button>
+                    <div className="mt-8 grid grid-cols-2 gap-3">
+                      <button
+                        type="button"
+                        onClick={resetToDifficultyMenu}
+                        className="py-3 rounded-2xl border border-slate-300 dark:border-slate-600 bg-white/70 dark:bg-slate-700/70 text-slate-700 dark:text-slate-200 font-semibold hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors"
+                      >
+                        Zorluk Değiştir
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => startTimeAttack(timeAttackDifficulty)}
+                        className="py-3 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 dark:from-violet-500 dark:to-indigo-500 dark:hover:from-violet-400 dark:hover:to-indigo-400 text-white font-bold shadow-lg shadow-indigo-500/25 transition-all duration-300"
+                      >
+                        Tekrar Oyna
+                      </button>
+                    </div>
                   </div>
                 ) : (
                   <>
+                    {/* Zorluk rozeti */}
+                    {(() => {
+                      const cfg = DIFFICULTY_CONFIG[timeAttackDifficulty];
+                      const badgeMap = {
+                        emerald: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/40',
+                        amber: 'bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/40',
+                        rose: 'bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-500/40',
+                      }[cfg.colorToken];
+                      return (
+                        <div className="flex items-center justify-center gap-2 mb-4">
+                          <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${badgeMap}`}>
+                            <span aria-hidden>{cfg.emoji}</span>
+                            {cfg.label} · x{cfg.multiplier} PUAN
+                          </span>
+                          <button
+                            type="button"
+                            onClick={resetToDifficultyMenu}
+                            className="text-xs text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 underline underline-offset-2"
+                          >
+                            Zorluk değiştir
+                          </button>
+                        </div>
+                      );
+                    })()}
                     {/* HUD: Süre | Skor & Kombo | Canlar */}
                     <div className="flex items-center justify-between gap-4 mb-6 flex-wrap">
-                      <div className={`flex items-center gap-2 font-mono text-2xl font-bold tabular-nums text-slate-800 dark:text-slate-100 ${timeAttackTimeLeft <= 15 ? 'animate-pulse text-red-600 dark:text-red-400' : ''}`}>
+                      <div className={`flex items-center gap-2 font-mono text-2xl font-bold tabular-nums text-slate-800 dark:text-slate-100 ${timeAttackTimeLeft <= 3 ? 'animate-pulse text-red-600 dark:text-red-400' : ''}`}>
                         <span aria-hidden>⏱</span>
-                        {Math.floor(timeAttackTimeLeft / 60)}:{(timeAttackTimeLeft % 60).toString().padStart(2, '0')}
+                        {timeAttackTimeLeft}s
                       </div>
                       <div className="flex items-center gap-3">
                         <span className="text-sm font-semibold text-slate-600 dark:text-slate-300">
                           SKOR: <span className="text-indigo-600 dark:text-indigo-400 tabular-nums">{timeAttackScore}</span>
                         </span>
                         <span className="text-slate-400 dark:text-slate-500">|</span>
-                        <span
-                          className={`text-sm font-bold ${
-                            timeAttackCombo >= 5
-                              ? 'text-red-400 dark:text-red-400 animate-pulse'
-                              : timeAttackCombo >= 3
-                                ? 'text-orange-400 dark:text-orange-400 animate-combo-wiggle'
-                                : 'text-slate-600 dark:text-slate-300'
+                        {/*
+                          Inline combo sayacı — her artışta framer-motion ile
+                          scale [1, 1.2, 1] animate olur, 🔥 ikonunun arkasına
+                          combo büyüdükçe yoğunlaşan altın/kırmızı glow (drop-shadow).
+                        */}
+                        <motion.span
+                          key={`ta-combo-${timeAttackCombo}`}
+                          initial={{ scale: 1 }}
+                          animate={timeAttackCombo >= 2 ? { scale: [1, 1.2, 1] } : { scale: 1 }}
+                          transition={{ duration: 0.32, ease: 'easeOut' }}
+                          className={`inline-flex items-center gap-1 text-sm font-bold ${
+                            timeAttackCombo >= 10
+                              ? 'text-red-500 dark:text-red-400'
+                              : timeAttackCombo >= 5
+                                ? 'text-orange-500 dark:text-orange-400'
+                                : timeAttackCombo >= 3
+                                  ? 'text-amber-500 dark:text-amber-400'
+                                  : 'text-slate-600 dark:text-slate-300'
                           }`}
                         >
-                          x{timeAttackCombo} COMBO 🔥
-                        </span>
+                          x{timeAttackCombo} COMBO
+                          <span
+                            aria-hidden
+                            className="inline-block transition-all duration-300"
+                            style={{
+                              filter:
+                                timeAttackCombo >= 20
+                                  ? 'drop-shadow(0 0 8px rgba(239,68,68,0.9)) drop-shadow(0 0 16px rgba(251,146,60,0.7))'
+                                  : timeAttackCombo >= 10
+                                    ? 'drop-shadow(0 0 6px rgba(251,146,60,0.85)) drop-shadow(0 0 12px rgba(250,204,21,0.55))'
+                                    : timeAttackCombo >= 5
+                                      ? 'drop-shadow(0 0 5px rgba(250,204,21,0.75))'
+                                      : 'none',
+                            }}
+                          >
+                            🔥
+                          </span>
+                        </motion.span>
                       </div>
                       <div className="flex items-center gap-0.5" aria-label={`${timeAttackLives} can`}>
                         {[1, 2, 3].map((i) => (
@@ -2340,21 +2811,6 @@ export function Page() {
                         ))}
                       </div>
                     </div>
-                    {timeAttackComboToast !== null && (
-                      <div
-                        className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
-                        aria-live="polite"
-                      >
-                        <div className="bg-red-500/90 dark:bg-red-600/90 text-white text-4xl sm:text-5xl font-black px-8 py-6 rounded-2xl shadow-2xl animate-pulse border-4 border-red-400 dark:border-red-300">
-                          x{timeAttackComboToast} COMBO! 🔥
-                        </div>
-                      </div>
-                    )}
-                    {timeAttackPointsFlash !== null && (
-                      <p className="text-center text-2xl font-bold text-green-500 dark:text-green-400 animate-pulse mb-2">
-                        +{timeAttackPointsFlash}
-                      </p>
-                    )}
                     {timeAttackQuestion && (
                       <>
                         <p className="text-slate-600 dark:text-slate-300 text-center mb-1">
@@ -2364,7 +2820,48 @@ export function Page() {
                           {' — '}
                           <span>{tensesForLang.find((t) => t.id === timeAttackQuestion.tense)?.label}</span>
                         </p>
-                        <div className="flex flex-col gap-2 mt-4 max-w-md mx-auto">
+                        <div className="relative flex flex-col gap-2 mt-4 max-w-md mx-auto">
+                          {/*
+                            Yüzen puan/combo rozeti — doğru cevapta inputun
+                            sağ üst köşesinden yukarı süzülüp kaybolur.
+                          */}
+                          <AnimatePresence>
+                            {timeAttackPointsFlash !== null && (
+                              <motion.div
+                                key={`ta-float-${timeAttackPointsFlash}-${timeAttackCombo}`}
+                                initial={{ opacity: 0, y: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, y: -22, scale: 1 }}
+                                exit={{ opacity: 0, y: -44, scale: 0.95 }}
+                                transition={{ duration: 0.5, ease: 'easeOut' }}
+                                className="pointer-events-none absolute -top-2 right-1 z-10 flex flex-col items-end gap-0.5 text-right"
+                                aria-hidden
+                              >
+                                <span
+                                  className={`text-sm font-bold tabular-nums ${
+                                    timeAttackCombo >= 5
+                                      ? 'text-amber-400 dark:text-amber-300'
+                                      : 'text-emerald-500 dark:text-emerald-400'
+                                  }`}
+                                  style={{
+                                    textShadow:
+                                      timeAttackCombo >= 5
+                                        ? '0 0 8px rgba(251,191,36,0.75)'
+                                        : '0 0 6px rgba(52,211,153,0.55)',
+                                  }}
+                                >
+                                  +{timeAttackPointsFlash}
+                                </span>
+                                {timeAttackCombo >= 5 && (
+                                  <span
+                                    className="text-xs font-semibold text-amber-400 dark:text-amber-300"
+                                    style={{ textShadow: '0 0 6px rgba(251,191,36,0.6)' }}
+                                  >
+                                    x{timeAttackCombo} Combo!
+                                  </span>
+                                )}
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
                           <div className="flex flex-col sm:flex-row gap-2">
                             <input
                               ref={timeAttackInputRef}
@@ -2378,14 +2875,22 @@ export function Page() {
                                 }
                               }}
                               placeholder="Cevabınız..."
-                              className="flex-1 h-12 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 px-4 py-3 text-base placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400"
+                              disabled={timeAttackLocked}
+                              className={`flex-1 h-12 rounded-xl border bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 px-4 py-3 text-base placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 transition-colors duration-200 disabled:opacity-80 ${
+                                timeAttackFeedback === 'wrong'
+                                  ? 'border-red-500 dark:border-red-500 ring-2 ring-red-500/40 focus:ring-red-500'
+                                  : timeAttackFeedback === 'correct'
+                                  ? 'border-green-500 dark:border-green-500 focus:ring-green-500'
+                                  : 'border-slate-200 dark:border-slate-600 focus:ring-indigo-500 dark:focus:ring-indigo-400'
+                              }`}
                               autoComplete="off"
                               autoFocus
                             />
                             <button
-                            type="button"
+                              type="button"
                               onClick={submitTimeAttackAnswer}
-                              className="rounded-xl bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white font-medium px-5 py-3 transition-colors duration-300"
+                              disabled={timeAttackLocked}
+                              className="rounded-xl bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium px-5 py-3 transition-colors duration-300"
                             >
                               Kontrol
                             </button>
@@ -2393,17 +2898,39 @@ export function Page() {
                           <AccentKeyboard
                             lang={selectedLanguage}
                             onInsert={(char) => {
+                              if (timeAttackLocked) return;
                               setTimeAttackInput((prev) => prev + char);
                               requestAnimationFrame(() => timeAttackInputRef.current?.focus());
                             }}
                           />
                         </div>
                         {timeAttackFeedback === 'correct' && (
-                          <p className="text-center mt-3 text-green-600 dark:text-green-400 font-medium">+2 saniye</p>
+                          <p className="text-center mt-3 text-green-600 dark:text-green-400 font-medium">
+                            <span aria-hidden>✓</span> Doğru!
+                          </p>
                         )}
-                        {timeAttackFeedback === 'wrong' && (
-                          <p className="text-center mt-3 text-red-600 dark:text-red-400 font-medium">Can -1 · Kombo sıfırlandı</p>
-                        )}
+                        <AnimatePresence>
+                          {timeAttackFeedback === 'wrong' && timeAttackRevealedAnswer && (
+                            <motion.div
+                              key="ta-reveal"
+                              initial={{ opacity: 0, y: -6, scale: 0.98 }}
+                              animate={{ opacity: 1, y: 0, scale: 1 }}
+                              exit={{ opacity: 0, y: -6, scale: 0.98 }}
+                              transition={{ duration: 0.18, ease: 'easeOut' }}
+                              className="mt-3 max-w-md mx-auto rounded-xl border border-red-400/40 dark:border-red-500/40 bg-red-50 dark:bg-red-500/10 px-4 py-3 text-center shadow-sm"
+                            >
+                              <p className="text-xs font-semibold uppercase tracking-wide text-red-600/80 dark:text-red-400/80">
+                                Can -1 · Kombo sıfırlandı
+                              </p>
+                              <p className="mt-1 text-sm text-red-700 dark:text-red-300">
+                                Doğrusu:{' '}
+                                <span className="font-bold text-red-800 dark:text-red-200">
+                                  {timeAttackRevealedAnswer}
+                                </span>
+                              </p>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
                       </>
                     )}
                   </>
@@ -2411,11 +2938,11 @@ export function Page() {
               </div>
             )}
 
-            {/* Kıyaslama — sadece Detaylı modda */}
-            {viewMode === 'detailed' && mode === 'compare' && (
+            {/* Kıyaslama — tüm görünümlerde çalışır (viewMode'dan bağımsız) */}
+            {mode === 'compare' && (
               <div className="p-6 sm:p-8">
                 <div className="flex flex-wrap items-end justify-center gap-3 sm:gap-4 mb-8">
-                  <div className="w-full sm:w-48 flex-shrink-0 flex flex-col relative" ref={compareDropdown1Ref}>
+                  <div className="w-full sm:w-48 flex-shrink-0 flex flex-col relative self-end" ref={compareDropdown1Ref}>
                     <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">1. Zamanı Seçin</label>
                     <button
                       type="button"
@@ -2468,10 +2995,10 @@ export function Page() {
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center justify-center shrink-0 w-12 h-12 rounded-full bg-white/10 dark:bg-slate-700/50 border border-slate-200/50 dark:border-slate-600/50 text-slate-500 dark:text-slate-400 font-bold text-sm" aria-hidden>
+                  <div className="flex items-center justify-center shrink-0 w-12 h-12 rounded-full bg-white/10 dark:bg-slate-700/50 border border-slate-200/50 dark:border-slate-600/50 text-slate-500 dark:text-slate-400 font-bold text-sm self-end shadow-inner" aria-hidden>
                     VS
                   </div>
-                  <div className="w-full sm:w-48 flex-shrink-0 flex flex-col relative" ref={compareDropdown2Ref}>
+                  <div className="w-full sm:w-48 flex-shrink-0 flex flex-col relative self-end" ref={compareDropdown2Ref}>
                     <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">2. Zamanı Seçin</label>
                     <button
                       type="button"
@@ -2541,20 +3068,27 @@ export function Page() {
                     <p className="text-slate-500 dark:text-slate-400 text-sm mt-1.5">İki dropdown'dan farklı zamanlar seçerek karşılaştırma yapabilirsiniz.</p>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="rounded-2xl bg-white/5 dark:bg-slate-800/30 border border-slate-200/30 dark:border-slate-600/30 p-6">
-                      <h3 className="text-lg font-bold text-indigo-600 dark:text-indigo-400 mb-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+                    <div className="h-full rounded-2xl bg-white/5 dark:bg-slate-800/30 border border-slate-200/30 dark:border-slate-600/30 p-6 flex flex-col">
+                      <h3 className="min-h-[3.5rem] flex items-center text-lg font-bold text-indigo-600 dark:text-indigo-400 mb-4 pb-3 border-b border-indigo-500/15 dark:border-indigo-400/15 leading-snug">
                         {tensesForLang.find((t) => t.id === compareTense1)?.label ?? '—'}
                       </h3>
-                      <ul className="space-y-3">
-                        {pronounsForLang.map(({ id, label }) => {
+                      <ul className="flex-1">
+                        {pronounsForLang.map(({ id, label }, idx) => {
                           const text1 = getSafeConjugationMap(verbKey, compareTense1, selectedLanguage)[id] ?? '—';
                           const text2 = getSafeConjugationMap(verbKey, compareTense2, selectedLanguage)[id] ?? '—';
                           const { a: segA, b: _segB } = getDiffSegments(text1, text2);
                           return (
-                            <li key={id} className="flex items-center justify-between gap-4">
-                              <span className="text-slate-600 dark:text-slate-300 font-semibold min-w-[5.5rem]">{label}</span>
-                              <span className="text-slate-900 dark:text-slate-100 text-right">
+                            <li
+                              key={id}
+                              className={`flex justify-between items-center gap-4 py-2 border-b border-slate-200/40 dark:border-white/5 ${
+                                idx === pronounsForLang.length - 1 ? 'border-b-0' : ''
+                              }`}
+                            >
+                              <span className="w-1/3 text-left text-slate-600 dark:text-slate-300 font-semibold truncate">
+                                {label}
+                              </span>
+                              <span className="w-2/3 text-right text-slate-900 dark:text-slate-100 break-words">
                                 {segA.map((s, i) =>
                                   s.highlight ? (
                                     <mark key={i} className="bg-amber-300/70 dark:bg-amber-500/40 rounded px-0.5">
@@ -2570,19 +3104,26 @@ export function Page() {
                         })}
                       </ul>
                     </div>
-                    <div className="rounded-2xl bg-white/5 dark:bg-slate-800/30 border border-slate-200/30 dark:border-slate-600/30 md:border-l md:border-l-slate-300/70 dark:md:border-l-slate-600/70 p-6">
-                      <h3 className="text-lg font-bold text-fuchsia-600 dark:text-fuchsia-400 mb-4">
+                    <div className="h-full rounded-2xl bg-white/5 dark:bg-slate-800/30 border border-slate-200/30 dark:border-slate-600/30 p-6 flex flex-col">
+                      <h3 className="min-h-[3.5rem] flex items-center text-lg font-bold text-fuchsia-600 dark:text-fuchsia-400 mb-4 pb-3 border-b border-fuchsia-500/15 dark:border-fuchsia-400/15 leading-snug">
                         {tensesForLang.find((t) => t.id === compareTense2)?.label ?? '—'}
                       </h3>
-                      <ul className="space-y-3">
-                        {pronounsForLang.map(({ id, label }) => {
+                      <ul className="flex-1">
+                        {pronounsForLang.map(({ id, label }, idx) => {
                           const text1 = getSafeConjugationMap(verbKey, compareTense1, selectedLanguage)[id] ?? '—';
                           const text2 = getSafeConjugationMap(verbKey, compareTense2, selectedLanguage)[id] ?? '—';
                           const { b: segB } = getDiffSegments(text1, text2);
                           return (
-                            <li key={id} className="flex items-center justify-between gap-4">
-                              <span className="text-slate-600 dark:text-slate-300 font-semibold min-w-[5.5rem]">{label}</span>
-                              <span className="text-slate-900 dark:text-slate-100 text-right">
+                            <li
+                              key={id}
+                              className={`flex justify-between items-center gap-4 py-2 border-b border-slate-200/40 dark:border-white/5 ${
+                                idx === pronounsForLang.length - 1 ? 'border-b-0' : ''
+                              }`}
+                            >
+                              <span className="w-1/3 text-left text-slate-600 dark:text-slate-300 font-semibold truncate">
+                                {label}
+                              </span>
+                              <span className="w-2/3 text-right text-slate-900 dark:text-slate-100 break-words">
                                 {segB.map((s, i) =>
                                   s.highlight ? (
                                     <mark key={i} className="bg-amber-300/70 dark:bg-amber-500/40 rounded px-0.5">
@@ -2639,7 +3180,7 @@ export function Page() {
               </div>
             )}
 
-        {(verbKey && conjugationsForDisplay && (mode === 'learning' || viewMode === 'simple')) && (
+        {(verbKey && conjugationsForDisplay && mode === 'learning') && (
           <div className="print-area">
             {/* Yazdırma çalışma yaprağı — sadece @media print ile görünür */}
             <div className="hidden print:block print:bg-white print:text-black pb-8">
@@ -2736,7 +3277,14 @@ export function Page() {
                 </p>
               </div>
             )}
-            <div className={`border-b border-slate-200 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/50 px-5 sm:px-6 transition-all duration-300 ${viewMode === 'simple' ? 'py-2 pt-2' : 'py-2 sm:py-3'}`}>
+            {/*
+              Kapsayıcı başlık alanı — Basit/Detaylı geçişlerinde UI kaymasını
+              engellemek için sabit padding (py-3 sm:py-3.5) ve tutarlı iç
+              yapı kullanılır. Mod butonları daima sağ uçta çakılı kalır;
+              yalnızca 'Detaylı' modundaki araç grubu (tense rozeti, Ezber
+              Modu, Sete Ekle, Yazdır) ortadan fade ile girip/çıkar.
+            */}
+            <div className="border-b border-slate-200 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/50 px-5 sm:px-6 py-3 sm:py-3.5 transition-colors duration-300">
               <div className="flex flex-col md:flex-row flex-wrap items-start md:items-center justify-between gap-1.5 md:gap-x-3 md:gap-y-2 text-center sm:text-left">
                 <div className="flex items-center gap-2 min-w-0 order-1">
                   <h2 className="font-bold text-slate-800 dark:text-slate-100 capitalize text-xl tracking-tight">{verbKey}</h2>
@@ -2773,8 +3321,106 @@ export function Page() {
                     getTranslationOrPlaceholder(verbKey, selectedLanguage)
                   )}
                 </span>
-                <div className="order-3 flex items-center gap-2 shrink-0 print:hidden">
-                  {/* Görünüm modu: Basit | Detaylı */}
+                {/*
+                  Sağ cluster — Detaylı-moda-özel ikon grubu (Ezber Modu, Sete
+                  Ekle, Yazdır) SOLDA fade ile girer/çıkar, Basit/Detaylı
+                  toggle daima EN SAĞDA çakılı kalır. Flex düzeni sayesinde
+                  ikonlar gizlendiğinde toggle'ın sağ piksel koordinatı
+                  değişmez.
+                */}
+                <div className="order-3 flex items-center gap-2 shrink-0 print:hidden ml-auto">
+                  <AnimatePresence mode="wait" initial={false}>
+                    {viewMode === 'detailed' && (
+                      <motion.div
+                        key="verb-header-toolbar"
+                        initial={{ opacity: 0, x: 8 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 8 }}
+                        transition={{ duration: 0.2, ease: 'easeOut' }}
+                        className="flex items-center gap-2"
+                      >
+                        <span className="inline-flex items-center text-xs font-semibold text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-700/80 border border-slate-200 dark:border-slate-600 px-2.5 py-1 rounded-lg shadow-sm">
+                          {tenseLabel}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setActiveRecallMode((on) => !on)}
+                          className={`cursor-pointer inline-flex items-center gap-2 rounded-xl border px-3 py-1.5 text-xs font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 active:scale-95 ${
+                            activeRecallMode
+                              ? 'border-indigo-400 dark:border-indigo-500 bg-indigo-500/15 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300'
+                              : 'border-slate-200 dark:border-slate-600 bg-slate-100/80 dark:bg-slate-700/60 text-slate-600 dark:text-slate-400 hover:bg-indigo-500/20 hover:border-indigo-400 dark:hover:border-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-200'
+                          }`}
+                          title={activeRecallMode ? 'Ezber modunu kapat' : 'Ezber modu: çekimleri gizle, üzerine gelince aç'}
+                          aria-pressed={activeRecallMode}
+                          aria-label={activeRecallMode ? 'Ezber modu açık' : 'Ezber modu kapalı'}
+                        >
+                          <EyeIcon open={!activeRecallMode} className="w-4 h-4" />
+                          <span>Ezber Modu</span>
+                        </button>
+                        <div className="relative shrink-0" ref={addToSetRef}>
+                          <button
+                            type="button"
+                            onClick={() => setAddToSetOpen((o) => !o)}
+                            className="p-2 w-9 h-9 flex items-center justify-center rounded-lg bg-indigo-600/20 border border-indigo-500/30 text-indigo-400 hover:bg-indigo-600 hover:text-white transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                            title="Sete Ekle"
+                            aria-label="Sete Ekle"
+                            aria-expanded={addToSetOpen}
+                          >
+                            <span aria-hidden>➕</span>
+                          </button>
+                          {addToSetOpen && (
+                            <div className="absolute right-0 top-full mt-1.5 min-w-[12rem] rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 shadow-xl py-2 z-50 max-h-64 overflow-y-auto">
+                              {(() => {
+                                const decks: FlashcardDeck[] = typeof window !== 'undefined' ? getFlashcardDecks() : [];
+                                const mockDecks = decks.length === 0
+                                  ? [
+                                      { id: 'mock-1', title: 'Seyahat Kelimeleri', cards: [] },
+                                      { id: 'mock-2', title: 'Zor Fiiller', cards: [] },
+                                    ] as { id: string; title: string; cards: unknown[] }[]
+                                  : decks;
+                                if (mockDecks.length === 0) {
+                                  return <p className="px-4 py-3 text-sm text-slate-500 dark:text-slate-400">Henüz set yok.</p>;
+                                }
+                                return (
+                                  <>
+                                    {mockDecks.map((deck) => (
+                                      <button
+                                        key={deck.id}
+                                        type="button"
+                                        onClick={() => handleAddVerbToSet(deck.id, deck.title, verbKey, selectedLanguage)}
+                                        className="w-full text-left px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-indigo-500/15 dark:hover:bg-indigo-500/20 transition-colors"
+                                      >
+                                        {deck.title}
+                                      </button>
+                                    ))}
+                                    {decks.length === 0 && (
+                                      <Link
+                                        to="/ezber-makinesi"
+                                        className="block px-4 py-2.5 text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:bg-indigo-500/10"
+                                        onClick={() => setAddToSetOpen(false)}
+                                      >
+                                        Ezber Makinesi&apos;nde set oluştur →
+                                      </Link>
+                                    )}
+                                  </>
+                                );
+                              })()}
+                            </div>
+                          )}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => window.print()}
+                          className="p-2 w-9 h-9 flex items-center justify-center rounded-lg bg-slate-800/50 border border-slate-700 hover:bg-slate-700 text-slate-300 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                          title="Yazdır"
+                          aria-label="Yazdır"
+                        >
+                          <span aria-hidden>🖨️</span>
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                  {/* Görünüm modu: Basit | Detaylı — daima en sağda, konumu sabit */}
                   <div className="flex items-center rounded-lg border border-slate-200 dark:border-slate-600 bg-slate-100/80 dark:bg-slate-800/60 p-0.5" role="tablist" aria-label="Görünüm modu">
                     <button
                       type="button"
@@ -2803,154 +3449,114 @@ export function Page() {
                       Detaylı
                     </button>
                   </div>
-                  <AnimatePresence mode="wait">
-                  {viewMode === 'detailed' && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="inline-flex items-center gap-2"
-                  >
-                  <span className="inline-flex items-center text-xs font-semibold text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-700/80 border border-slate-200 dark:border-slate-600 px-2.5 py-1 rounded-lg shadow-sm">
-                    {tenseLabel}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setActiveRecallMode((on) => !on)}
-                    className={`cursor-pointer inline-flex items-center gap-2 rounded-xl border px-3 py-1.5 text-xs font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 active:scale-95 ${
-                      activeRecallMode
-                        ? 'border-indigo-400 dark:border-indigo-500 bg-indigo-500/15 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300'
-                        : 'border-slate-200 dark:border-slate-600 bg-slate-100/80 dark:bg-slate-700/60 text-slate-600 dark:text-slate-400 hover:bg-indigo-500/20 hover:border-indigo-400 dark:hover:border-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-200'
-                    }`}
-                    title={activeRecallMode ? 'Ezber modunu kapat' : 'Ezber modu: çekimleri gizle, üzerine gelince aç'}
-                    aria-pressed={activeRecallMode}
-                    aria-label={activeRecallMode ? 'Ezber modu açık' : 'Ezber modu kapalı'}
-                  >
-                    <EyeIcon open={!activeRecallMode} className="w-4 h-4" />
-                    <span>Ezber Modu</span>
-                  </button>
-                  <div className="relative shrink-0" ref={addToSetRef}>
-                    <button
-                      type="button"
-                      onClick={() => setAddToSetOpen((o) => !o)}
-                      className="p-2 w-9 h-9 flex items-center justify-center rounded-lg bg-indigo-600/20 border border-indigo-500/30 text-indigo-400 hover:bg-indigo-600 hover:text-white transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
-                      title="Sete Ekle"
-                      aria-label="Sete Ekle"
-                      aria-expanded={addToSetOpen}
-                    >
-                      <span aria-hidden>➕</span>
-                    </button>
-                    {addToSetOpen && (
-                      <div className="absolute right-0 top-full mt-1.5 min-w-[12rem] rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 shadow-xl py-2 z-50 max-h-64 overflow-y-auto">
-                        {(() => {
-                          const decks: FlashcardDeck[] = typeof window !== 'undefined' ? getFlashcardDecks() : [];
-                          const mockDecks = decks.length === 0
-                            ? [
-                                { id: 'mock-1', title: 'Seyahat Kelimeleri', cards: [] },
-                                { id: 'mock-2', title: 'Zor Fiiller', cards: [] },
-                              ] as { id: string; title: string; cards: unknown[] }[]
-                            : decks;
-                          if (mockDecks.length === 0) {
-                            return <p className="px-4 py-3 text-sm text-slate-500 dark:text-slate-400">Henüz set yok.</p>;
-                          }
-                          return (
-                            <>
-                              {mockDecks.map((deck) => (
-                                <button
-                                  key={deck.id}
-                                  type="button"
-                                  onClick={() => handleAddVerbToSet(deck.id, deck.title, verbKey, selectedLanguage)}
-                                  className="w-full text-left px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-indigo-500/15 dark:hover:bg-indigo-500/20 transition-colors"
-                                >
-                                  {deck.title}
-                                </button>
-                              ))}
-                              {decks.length === 0 && (
-                                <Link
-                                  to="/ezber-makinesi"
-                                  className="block px-4 py-2.5 text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:bg-indigo-500/10"
-                                  onClick={() => setAddToSetOpen(false)}
-                                >
-                                  Ezber Makinesi&apos;nde set oluştur →
-                                </Link>
-                              )}
-                            </>
-                          );
-                        })()}
-                      </div>
-                    )}
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => window.print()}
-                    className="p-2 w-9 h-9 flex items-center justify-center rounded-lg bg-slate-800/50 border border-slate-700 hover:bg-slate-700 text-slate-300 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
-                    title="Yazdır"
-                    aria-label="Yazdır"
-                  >
-                    <span aria-hidden>🖨️</span>
-                  </button>
-                  </motion.div>
-                  )}
-                  </AnimatePresence>
                 </div>
               </div>
-              {/* Rozetler: Basit modda sadece Geçmiş Ortaç + Kurallı/Düzensiz; Detaylı modda tümü */}
+              {/*
+                Rozetler — her iki modda da tutarlı dikey ritim (pt-2 mt-2).
+                Detaylı-moda-özel rozetler (Mastar, Ulaç, Auxiliaire) yumuşak
+                fade ile girer/çıkar; Geçmiş Ortaç ve Kurallı/Düzensiz rozeti
+                daima görünür.
+              */}
               {(() => {
                 const meta = getVerbMetadata(verbKey, selectedLanguage, !isIrregularVerb(verbKey, selectedLanguage));
-                const isSimple = viewMode === 'simple';
                 return (
-                  <div className={`flex flex-wrap items-center gap-x-2 gap-y-1.5 border-t border-slate-200/80 dark:border-slate-600/80 ${isSimple ? 'pt-1.5 mt-1.5' : 'pt-2 mt-2'}`}>
-                    {!isSimple && (
-                      <>
-                        <span className="inline-flex items-center rounded-lg bg-slate-100/90 dark:bg-slate-800/30 border border-slate-300 dark:border-slate-700 px-2 py-0.5 text-xs font-medium text-slate-600 dark:text-slate-400 cursor-default select-none">
-                          Mastar: <span className="ml-0.5 font-semibold text-slate-800 dark:text-slate-100">{meta.infinitive}</span>
-                        </span>
-                        <span className="inline-flex items-center rounded-lg bg-slate-100/90 dark:bg-slate-800/30 border border-slate-300 dark:border-slate-700 px-2 py-0.5 text-xs font-medium text-slate-600 dark:text-slate-400 cursor-default select-none">
-                          Ulaç: <span className="ml-0.5 font-semibold text-slate-800 dark:text-slate-100">{meta.gerund}</span>
-                        </span>
-                      </>
-                    )}
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 border-t border-slate-200/80 dark:border-slate-600/80 pt-2 mt-2">
+                    <AnimatePresence initial={false}>
+                      {viewMode === 'detailed' && (
+                        <motion.span
+                          key="verb-meta-infinitive"
+                          initial={{ opacity: 0, width: 0 }}
+                          animate={{ opacity: 1, width: 'auto' }}
+                          exit={{ opacity: 0, width: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="inline-flex items-center overflow-hidden"
+                        >
+                          <span className="inline-flex items-center rounded-lg bg-slate-100/90 dark:bg-slate-800/30 border border-slate-300 dark:border-slate-700 px-2 py-0.5 text-xs font-medium text-slate-600 dark:text-slate-400 cursor-default select-none whitespace-nowrap">
+                            Mastar: <span className="ml-0.5 font-semibold text-slate-800 dark:text-slate-100">{meta.infinitive}</span>
+                          </span>
+                        </motion.span>
+                      )}
+                      {viewMode === 'detailed' && (
+                        <motion.span
+                          key="verb-meta-gerund"
+                          initial={{ opacity: 0, width: 0 }}
+                          animate={{ opacity: 1, width: 'auto' }}
+                          exit={{ opacity: 0, width: 0 }}
+                          transition={{ duration: 0.2, delay: 0.03 }}
+                          className="inline-flex items-center overflow-hidden"
+                        >
+                          <span className="inline-flex items-center rounded-lg bg-slate-100/90 dark:bg-slate-800/30 border border-slate-300 dark:border-slate-700 px-2 py-0.5 text-xs font-medium text-slate-600 dark:text-slate-400 cursor-default select-none whitespace-nowrap">
+                            Ulaç: <span className="ml-0.5 font-semibold text-slate-800 dark:text-slate-100">{meta.gerund}</span>
+                          </span>
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
                     <span className="inline-flex items-center rounded-lg bg-slate-100/90 dark:bg-slate-800/30 border border-slate-300 dark:border-slate-700 px-2 py-0.5 text-xs font-medium text-slate-600 dark:text-slate-400 cursor-default select-none">
                       Geçmiş Ortaç: <span className="ml-0.5 font-semibold text-slate-800 dark:text-slate-100">{meta.pastParticiple}</span>
                     </span>
                     <span className={`inline-flex items-center rounded-lg border border-slate-300 dark:border-slate-700 px-2 py-0.5 text-xs font-semibold cursor-default select-none ${meta.isRegular ? 'bg-emerald-500/10 dark:bg-slate-800/30 text-emerald-700 dark:text-emerald-400' : 'bg-amber-500/10 dark:bg-slate-800/30 text-amber-800 dark:text-amber-400'}`}>
                       {meta.isRegular ? 'Kurallı' : 'Düzensiz'}
                     </span>
-                    {!isSimple && (
-                      <span className="inline-flex items-center rounded-lg bg-slate-100/90 dark:bg-slate-800/30 border border-slate-300 dark:border-slate-700 px-2 py-0.5 text-xs font-semibold text-slate-700 dark:text-slate-300 cursor-default select-none">
-                        Auxiliaire: {meta.auxiliary}
-                      </span>
-                    )}
+                    <AnimatePresence initial={false}>
+                      {viewMode === 'detailed' && (
+                        <motion.span
+                          key="verb-meta-auxiliary"
+                          initial={{ opacity: 0, width: 0 }}
+                          animate={{ opacity: 1, width: 'auto' }}
+                          exit={{ opacity: 0, width: 0 }}
+                          transition={{ duration: 0.2, delay: 0.06 }}
+                          className="inline-flex items-center overflow-hidden"
+                        >
+                          <span className="inline-flex items-center rounded-lg bg-slate-100/90 dark:bg-slate-800/30 border border-slate-300 dark:border-slate-700 px-2 py-0.5 text-xs font-semibold text-slate-700 dark:text-slate-300 cursor-default select-none whitespace-nowrap">
+                            Auxiliaire: {meta.auxiliary}
+                          </span>
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
                   </div>
                 );
               })()}
-              {/* Alternatif formlar: Dönüşlü / Olumsuz — sadece Detaylı modda */}
-              {viewMode === 'detailed' && (
-              <div className="flex flex-wrap items-center gap-2 mt-1.5 pt-1.5 border-t border-slate-200/80 dark:border-slate-600/80 print:hidden">
-                <span className="text-xs font-medium text-slate-500 dark:text-slate-400 cursor-default">Alternatif formlar:</span>
-                <button
-                  type="button"
-                  onClick={() => setIsReflexive((v) => !v)}
-                  className={`cursor-pointer inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-medium transition-all duration-200 active:scale-95 ${isReflexive ? 'bg-indigo-600 border-indigo-500 text-white dark:bg-indigo-500 dark:border-indigo-400' : 'bg-slate-100 dark:bg-slate-700/80 border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-indigo-500/20 hover:border-indigo-400 dark:hover:border-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-200'}`}
-                  aria-pressed={isReflexive}
-                  aria-label={isReflexive ? 'Dönüşlü açık' : 'Dönüşlü kapalı'}
-                  title={selectedLanguage === 'fr' ? 'Örn: se laver' : 'Örn: lavarse'}
-                >
-                  Dönüşlü (Reflexive)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsNegative((v) => !v)}
-                  className={`cursor-pointer inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-medium transition-all duration-200 active:scale-95 ${isNegative ? 'bg-indigo-600 border-indigo-500 text-white dark:bg-indigo-500 dark:border-indigo-400' : 'bg-slate-100 dark:bg-slate-700/80 border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-indigo-500/20 hover:border-indigo-400 dark:hover:border-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-200'}`}
-                  aria-pressed={isNegative}
-                  aria-label={isNegative ? 'Olumsuz açık' : 'Olumsuz kapalı'}
-                  title={selectedLanguage === 'fr' ? 'ne … pas' : 'no …'}
-                >
-                  Olumsuz (Negative)
-                </button>
-              </div>
-              )}
+              {/*
+                Alternatif formlar: Dönüşlü / Olumsuz — sadece Detaylı modda.
+                Çekim tablosunun yapısını bozmamak için yükseklik (height)
+                Framer Motion ile animate edilir.
+              */}
+              <AnimatePresence initial={false}>
+                {viewMode === 'detailed' && (
+                  <motion.div
+                    key="alt-forms-row"
+                    initial={{ height: 0, opacity: 0, marginTop: 0, paddingTop: 0 }}
+                    animate={{ height: 'auto', opacity: 1, marginTop: 6, paddingTop: 6 }}
+                    exit={{ height: 0, opacity: 0, marginTop: 0, paddingTop: 0 }}
+                    transition={{ duration: 0.2, ease: 'easeOut' }}
+                    className="overflow-hidden border-t border-slate-200/80 dark:border-slate-600/80 print:hidden"
+                  >
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-xs font-medium text-slate-500 dark:text-slate-400 cursor-default">Alternatif formlar:</span>
+                      <button
+                        type="button"
+                        onClick={() => setIsReflexive((v) => !v)}
+                        className={`cursor-pointer inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-medium transition-all duration-200 active:scale-95 ${isReflexive ? 'bg-indigo-600 border-indigo-500 text-white dark:bg-indigo-500 dark:border-indigo-400' : 'bg-slate-100 dark:bg-slate-700/80 border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-indigo-500/20 hover:border-indigo-400 dark:hover:border-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-200'}`}
+                        aria-pressed={isReflexive}
+                        aria-label={isReflexive ? 'Dönüşlü açık' : 'Dönüşlü kapalı'}
+                        title={selectedLanguage === 'fr' ? 'Örn: se laver' : 'Örn: lavarse'}
+                      >
+                        Dönüşlü (Reflexive)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setIsNegative((v) => !v)}
+                        className={`cursor-pointer inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-medium transition-all duration-200 active:scale-95 ${isNegative ? 'bg-indigo-600 border-indigo-500 text-white dark:bg-indigo-500 dark:border-indigo-400' : 'bg-slate-100 dark:bg-slate-700/80 border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-indigo-500/20 hover:border-indigo-400 dark:hover:border-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-200'}`}
+                        aria-pressed={isNegative}
+                        aria-label={isNegative ? 'Olumsuz açık' : 'Olumsuz kapalı'}
+                        title={selectedLanguage === 'fr' ? 'ne … pas' : 'no …'}
+                      >
+                        Olumsuz (Negative)
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
             {(viewMode === 'detailed' || viewMode === 'simple') && showAllTenses ? (
               /* Tüm zamanlar — kip (mood) gruplarına göre başlık + kartlar; smooth açılış */
@@ -3063,21 +3669,20 @@ export function Page() {
                     return (
                       <li
                         key={id}
-                        className={`group flex items-center justify-between gap-3 sm:gap-4 px-4 sm:px-6 py-2.5 sm:py-3 ${activeRecallMode ? 'cursor-default' : ''} ${homophoneInfo ? 'border-l-2 border-l-amber-400/50 dark:border-l-amber-500/40 pl-4 sm:pl-5' : ''}`}
+                        className={`group grid grid-cols-[5.5rem_1fr_auto] items-center gap-3 sm:gap-4 px-4 sm:px-6 py-2.5 sm:py-3 transition-all duration-300 ease-in-out ${activeRecallMode ? 'cursor-default' : ''} ${homophoneInfo ? 'border-l-2 border-l-amber-400/50 dark:border-l-amber-500/40 pl-4 sm:pl-5' : ''}`}
                         title={homophoneInfo ? `Bu ${homophoneInfo.count} çekimin yazılışı farklı olsa da okunuşu aynıdır: [${homophoneInfo.key}]` : undefined}
                       >
-                        <span className="text-slate-600 dark:text-slate-300 font-semibold min-w-[5.5rem] shrink-0">{label}</span>
-                        <div className="flex items-center gap-3 sm:gap-4 text-right min-w-0">
-                          <span
-                            className={`inline-block min-w-0 truncate transition-all duration-300 ${activeRecallMode ? 'blur-md group-hover:blur-none' : ''}`}
-                          >
-                            <ConjugationWithStemSuffix
-                              text={displayText}
-                              tenseId={selectedTense}
-                              lang={selectedLanguage}
-                            />
-                          </span>
-                          <span className="inline-flex items-center gap-1 shrink-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200 print:opacity-0 print:!hidden">
+                        <span className="text-slate-600 dark:text-slate-300 font-semibold">{label}</span>
+                        <span
+                          className={`min-w-0 truncate text-right transition-all duration-300 ease-in-out ${activeRecallMode ? 'blur-md group-hover:blur-none' : ''}`}
+                        >
+                          <ConjugationWithStemSuffix
+                            text={displayText}
+                            tenseId={selectedTense}
+                            lang={selectedLanguage}
+                          />
+                        </span>
+                        <span className="inline-flex items-center justify-end gap-1 w-[68px] shrink-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 ease-in-out print:opacity-0 print:!hidden">
                             <button
                               type="button"
                               onClick={async () => {
@@ -3101,7 +3706,6 @@ export function Page() {
                               size="sm"
                             />
                           </span>
-                        </div>
                       </li>
                     );
                   })}
@@ -3109,89 +3713,216 @@ export function Page() {
               ))}
             </div>
 
-            {/* Tüm Zamanları Göster — tek buton; çekim tablosunun altında (mobil + masaüstü) */}
-            {verbKey && conjugations && (
-              <div className="mt-4 mx-4 sm:mx-0">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowAllTenses((v) => !v);
-                  }}
-                  className={`w-full rounded-xl border px-3 py-2.5 text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${
-                    showAllTenses
-                      ? 'border-indigo-400 dark:border-indigo-500 bg-indigo-500/15 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300'
-                      : 'border-slate-200 dark:border-slate-600 bg-slate-50/80 dark:bg-slate-800/60 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700'
-                  }`}
-                  aria-pressed={showAllTenses}
-                  aria-label={showAllTenses ? t('tekli_gorunume_don') : t('tum_zamanlari_goster')}
-                >
-                  {t('tum_zamanlari_goster')}
-                </button>
-              </div>
+
+            {/* AI Örnek Cümleler — manuel buton ile Groq'tan 2 cümle */}
+            {verbKey && conjugations && !showAllTenses && (
+              <motion.div
+                key={`ai-examples-${verbKey}-${selectedTense}-${selectedLanguage}`}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, ease: 'easeOut' }}
+                className="mx-4 sm:mx-0 mt-4 rounded-xl border border-indigo-500/20 dark:border-indigo-400/20 bg-white/5 dark:bg-white/[0.04] backdrop-blur-sm p-4 transition-all duration-300 ease-in-out"
+              >
+                <div className="flex items-center gap-2 mb-3 pb-2 border-b border-indigo-500/10 dark:border-indigo-400/10">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-indigo-500/20 text-sm" aria-hidden>💡</span>
+                  <h4 className="text-xs font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400">
+                    AI Örnek Cümleler
+                  </h4>
+                  <span className="text-[10px] font-medium text-slate-500 dark:text-slate-500 ml-auto">
+                    {tensesForLang.find((x) => x.id === selectedTense)?.label ?? selectedTense}
+                  </span>
+                  {aiExamples.length > 0 && !aiExamplesLoading && (
+                    <button
+                      type="button"
+                      onClick={generateAISentences}
+                      className="ml-1 flex h-6 w-6 items-center justify-center rounded-md text-indigo-500 dark:text-indigo-400 hover:bg-indigo-500/10 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
+                      title="Yeni cümleler üret"
+                      aria-label="Yenile"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
+                        <path d="M21 12a9 9 0 1 1-3-6.7" />
+                        <path d="M21 4v5h-5" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+                {aiExamples.length === 0 && !aiExamplesLoading && (
+                  <button
+                    type="button"
+                    onClick={generateAISentences}
+                    className="group w-full flex items-center justify-center gap-2 rounded-lg border border-indigo-500/30 dark:border-indigo-400/30 bg-indigo-500/[0.03] dark:bg-indigo-500/[0.06] px-4 py-3 text-sm font-medium text-indigo-600 dark:text-indigo-300 hover:bg-indigo-500/10 dark:hover:bg-indigo-500/15 hover:border-indigo-500/50 dark:hover:border-indigo-400/50 hover:shadow-[0_0_20px_-5px_rgba(99,102,241,0.4)] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
+                  >
+                    <span className="text-base transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12" aria-hidden>✨</span>
+                    <span>AI Analizi Başlat</span>
+                  </button>
+                )}
+                {aiExamplesLoading && (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-center gap-2 py-2 text-sm font-medium text-indigo-600 dark:text-indigo-300">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 animate-spin">
+                        <path d="M21 12a9 9 0 1 1-6.2-8.6" />
+                      </svg>
+                      <span>Cümleler yazılıyor…</span>
+                    </div>
+                    {[1, 2].map((i) => (
+                      <div key={i} className="flex flex-col gap-2 animate-pulse">
+                        <div className="h-4 bg-slate-200/30 dark:bg-slate-700/40 rounded w-3/4" />
+                        <div className="h-3 bg-slate-200/20 dark:bg-slate-700/25 rounded w-2/3" />
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {aiExamples.length > 0 && !aiExamplesLoading && (
+                  <ul className="space-y-3">
+                    {aiExamples.map((ex, i) => (
+                      <motion.li
+                        key={`${ex.sentence}-${i}`}
+                        initial={{ opacity: 0, x: -8 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.25, delay: i * 0.1 }}
+                        className="group flex items-start gap-3"
+                      >
+                        <span className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-indigo-500/15 text-[10px] font-bold text-indigo-600 dark:text-indigo-400">
+                          {i + 1}
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm sm:text-base italic text-slate-800 dark:text-indigo-100 flex items-center gap-2 flex-wrap">
+                            {ex.sentence}
+                            <PronunciationButton
+                              word={ex.sentence}
+                              lang={selectedLanguage === 'fr' ? 'fr-FR' : 'es-ES'}
+                              size="sm"
+                            />
+                          </p>
+                          <p className="mt-0.5 text-xs sm:text-sm text-slate-500 dark:text-indigo-300/80">
+                            {ex.translation}
+                          </p>
+                        </div>
+                      </motion.li>
+                    ))}
+                  </ul>
+                )}
+              </motion.div>
             )}
 
-            {/* Örnek cümle kartı — sadece Detaylı modda */}
-            {viewMode === 'detailed' && (() => {
-              const example = getVerbExample(selectedLanguage, verbKey);
-              if (!example) return null;
-              return (
-                <div className="mx-4 sm:mx-0 mt-4 rounded-xl bg-indigo-900/20 dark:bg-indigo-900/30 border border-indigo-500/30 dark:border-indigo-400/40 p-4 flex items-start gap-3 backdrop-blur-sm transition-all duration-200">
-                  <span className="text-xl shrink-0" aria-hidden>💡</span>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-lg italic text-slate-800 dark:text-indigo-100 flex items-center gap-2 flex-wrap">
-                      {example.sentence}
-                      <PronunciationButton
-                        word={example.sentence}
-                        lang={selectedLanguage === 'fr' ? 'fr-FR' : 'es-ES'}
-                        size="sm"
-                      />
-                    </p>
-                    <p className="mt-1 text-sm text-slate-500 dark:text-indigo-300/90">
-                      {example.translation}
-                    </p>
-                  </div>
-                </div>
-              );
-            })()}
-
-            {/* Fiil Aileleri — sadece Detaylı modda */}
-            {viewMode === 'detailed' && verbFamily.length > 0 && (
-              <section className="mx-4 sm:mx-0 mt-6 rounded-xl border border-dashed border-slate-300 dark:border-slate-600 bg-slate-50/60 dark:bg-slate-800/40 backdrop-blur-sm px-4 py-4">
-                <div className="flex items-start gap-3">
-                  <span className="text-xl shrink-0 mt-0.5" aria-hidden>💡</span>
-                  <div className="min-w-0 flex-1">
-                    <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">
-                      Bu fiili biliyorsan, bunları da çözdün!
-                    </h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
-                      Aynı çekim kuralına sahip fiiller — tıklayarak hızlıca geçiş yap.
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {verbFamily.slice(0, 12).map((v) => (
-                        <button
-                          key={v}
-                          type="button"
-                          onClick={() => loadVerb(v)}
-                          className="inline-flex items-center rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700/80 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-indigo-50 dark:hover:bg-indigo-500/20 hover:border-indigo-300 dark:hover:border-indigo-500/50 hover:text-indigo-700 dark:hover:text-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-colors duration-200 capitalize"
-                        >
-                          {v}
-                        </button>
-                      ))}
+            {/*
+              Detaylı-moda-özel alt bölümler (Örnek cümle, Fiil Aileleri).
+              AnimatePresence + height animasyonu ile mod geçişinde ani
+              boşalma/doluşma olmadan yumuşakça fade in/out yapar.
+            */}
+            <AnimatePresence initial={false}>
+              {viewMode === 'detailed' && (() => {
+                const example = getVerbExample(selectedLanguage, verbKey);
+                if (!example) return null;
+                return (
+                  <motion.div
+                    key="verb-example-card"
+                    initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                    animate={{ opacity: 1, height: 'auto', marginTop: 16 }}
+                    exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                    transition={{ duration: 0.25, ease: 'easeOut' }}
+                    className="overflow-hidden"
+                  >
+                    <div className="mx-4 sm:mx-0 rounded-xl bg-indigo-900/20 dark:bg-indigo-900/30 border border-indigo-500/30 dark:border-indigo-400/40 p-4 flex items-start gap-3 backdrop-blur-sm">
+                      <span className="text-xl shrink-0" aria-hidden>💡</span>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-lg italic text-slate-800 dark:text-indigo-100 flex items-center gap-2 flex-wrap">
+                          {example.sentence}
+                          <PronunciationButton
+                            word={example.sentence}
+                            lang={selectedLanguage === 'fr' ? 'fr-FR' : 'es-ES'}
+                            size="sm"
+                          />
+                        </p>
+                        <p className="mt-1 text-sm text-slate-500 dark:text-indigo-300/90">
+                          {example.translation}
+                        </p>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })()}
+              {viewMode === 'detailed' && verbFamily.length > 0 && (
+                <motion.section
+                  key="verb-family-card"
+                  initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                  animate={{ opacity: 1, height: 'auto', marginTop: 24 }}
+                  exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                  transition={{ duration: 0.25, ease: 'easeOut' }}
+                  className="overflow-hidden"
+                >
+                  <div className="mx-4 sm:mx-0 rounded-xl border border-dashed border-slate-300 dark:border-slate-600 bg-slate-50/60 dark:bg-slate-800/40 backdrop-blur-sm px-4 py-4">
+                    <div className="flex items-start gap-3">
+                      <span className="text-xl shrink-0 mt-0.5" aria-hidden>💡</span>
+                      <div className="min-w-0 flex-1">
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">
+                          Bu fiili biliyorsan, bunları da çözdün!
+                        </h3>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
+                          Aynı çekim kuralına sahip fiiller — tıklayarak hızlıca geçiş yap.
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {verbFamily.slice(0, 12).map((v) => (
+                            <button
+                              key={v}
+                              type="button"
+                              onClick={() => loadVerb(v)}
+                              className="inline-flex items-center rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700/80 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-indigo-50 dark:hover:bg-indigo-500/20 hover:border-indigo-300 dark:hover:border-indigo-500/50 hover:text-indigo-700 dark:hover:text-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-colors duration-200 capitalize"
+                            >
+                              {v}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </section>
-            )}
+                </motion.section>
+              )}
+            </AnimatePresence>
             </>
+            )}
+
+            {/* Tüm Zamanları Göster / Daralt — her iki durumda da görünür; açıkken sticky float */}
+            {verbKey && conjugations && (
+              <div
+                className={`mt-4 mx-4 sm:mx-0 pb-2 ${
+                  showAllTenses
+                    ? 'sticky bottom-4 z-20'
+                    : ''
+                }`}
+              >
+                <button
+                  type="button"
+                  onClick={() => setShowAllTenses((v) => !v)}
+                  className={`group w-full sm:w-auto sm:min-w-[280px] sm:mx-auto sm:block rounded-xl border px-4 py-2.5 text-sm font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 active:scale-[0.98] ${
+                    showAllTenses
+                      ? 'border-indigo-400/60 dark:border-indigo-400/50 bg-white/85 dark:bg-slate-900/80 backdrop-blur-md text-indigo-700 dark:text-indigo-300 shadow-lg shadow-indigo-500/10 dark:shadow-black/40 hover:bg-white/95 dark:hover:bg-slate-900/90 hover:border-indigo-500 dark:hover:border-indigo-400'
+                      : 'border-slate-200 dark:border-slate-600 bg-slate-50/80 dark:bg-slate-800/60 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:border-indigo-400/60 dark:hover:border-indigo-400/50 hover:text-indigo-600 dark:hover:text-indigo-300'
+                  }`}
+                  aria-pressed={showAllTenses}
+                  aria-label={showAllTenses ? 'Daralt, sadece seçili zamanı göster' : t('tum_zamanlari_goster')}
+                >
+                  <span className="inline-flex items-center justify-center gap-2">
+                    <span
+                      className="inline-block transition-transform duration-300"
+                      style={{ transform: showAllTenses ? 'rotate(0deg)' : 'rotate(180deg)' }}
+                      aria-hidden
+                    >
+                      ▲
+                    </span>
+                    {showAllTenses ? 'Daralt (Sadece Seçili Zamanı Göster)' : t('tum_zamanlari_goster')}
+                  </span>
+                </button>
+              </div>
             )}
             </div>
           </div>
         )}
 
-            {/* Quiz modu (Alıştırma) — sadece Detaylı modda */}
-            {viewMode === 'detailed' && verbKey && mode === 'quiz' && conjugationsForDisplay && (
+            {/* Quiz modu (Alıştırma) — viewMode'dan bağımsız, mod seçimine göre render */}
+            {verbKey && mode === 'quiz' && conjugationsForDisplay && (
             <>
-            <div className="border-b border-slate-100 dark:border-slate-700/50 px-5 sm:px-6 py-4">
+            <div className="border-b border-slate-100/80 dark:border-white/5 px-5 sm:px-6 py-4">
               <div className="flex flex-row flex-wrap items-center justify-between gap-x-4 gap-y-2 text-center sm:text-left">
                 <div className="flex items-center gap-2 min-w-0 order-1">
                   <h2 className="font-bold text-slate-800 dark:text-slate-100 capitalize text-xl tracking-tight">{verbKey}</h2>
@@ -3228,38 +3959,135 @@ export function Page() {
                     getTranslationOrPlaceholder(verbKey, selectedLanguage)
                   )}
                 </span>
-                <span className="inline-flex items-center text-xs font-semibold text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-700/80 border border-slate-200 dark:border-slate-600 px-2.5 py-1 rounded-lg shadow-sm order-3 shrink-0">
-                  {tenseLabel}
-                </span>
+                <div className="flex items-center gap-1 order-3 shrink-0">
+                  {/*
+                    Görünüm modu ikonları — büyük pill butonların yerine
+                    minimalist 'ghost' ikon butonlar. Aktif seçim ince
+                    indigo arka plan ile belli olur; pasif durumda sadece
+                    hover'da hafif arka plan belirir.
+                  */}
+                  <button
+                    type="button"
+                    onClick={() => setQuizLayout('list')}
+                    aria-pressed={quizLayout === 'list'}
+                    title="Liste görünümü"
+                    aria-label="Liste görünümü"
+                    className={`flex items-center justify-center w-8 h-8 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 ${
+                      quizLayout === 'list'
+                        ? 'bg-indigo-500/15 text-indigo-600 dark:text-indigo-300'
+                        : 'text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-white/10 hover:text-slate-600 dark:hover:text-slate-300'
+                    }`}
+                  >
+                    <ListIcon className="w-4 h-4" strokeWidth={2} aria-hidden />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setQuizLayout('focus'); setCurrentFocusIndex(0); }}
+                    aria-pressed={quizLayout === 'focus'}
+                    title="Odak görünümü"
+                    aria-label="Odak görünümü"
+                    className={`flex items-center justify-center w-8 h-8 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 ${
+                      quizLayout === 'focus'
+                        ? 'bg-indigo-500/15 text-indigo-600 dark:text-indigo-300'
+                        : 'text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-white/10 hover:text-slate-600 dark:hover:text-slate-300'
+                    }`}
+                  >
+                    <TargetIcon className="w-4 h-4" strokeWidth={2} aria-hidden />
+                  </button>
+                  <div ref={quizTenseMenuRef} className="relative shrink-0 ml-1">
+                  <button
+                    type="button"
+                    onClick={() => setQuizTenseMenuOpen((v) => !v)}
+                    aria-haspopup="listbox"
+                    aria-expanded={quizTenseMenuOpen}
+                    title="Başka bir zamana geç"
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-700/80 border border-slate-200 dark:border-slate-600 px-2.5 py-1 rounded-lg shadow-sm hover:border-indigo-400 dark:hover:border-indigo-400/60 hover:text-indigo-600 dark:hover:text-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 transition-colors"
+                  >
+                    <span className="truncate max-w-[11rem]">{tenseLabel}</span>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      className={`w-3.5 h-3.5 transition-transform duration-200 ${quizTenseMenuOpen ? 'rotate-180' : ''}`}
+                      aria-hidden
+                    >
+                      <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.06l3.71-3.83a.75.75 0 011.08 1.04l-4.24 4.38a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                  <AnimatePresence>
+                    {quizTenseMenuOpen && (
+                      <motion.div
+                        key="quiz-tense-menu"
+                        initial={{ opacity: 0, y: -4, scale: 0.97 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -4, scale: 0.97 }}
+                        transition={{ duration: 0.16, ease: 'easeOut' }}
+                        role="listbox"
+                        aria-label="Zaman seç"
+                        className="absolute right-0 mt-2 z-30 w-72 max-h-80 overflow-y-auto rounded-xl shadow-2xl backdrop-blur-md bg-white/90 dark:bg-slate-900/85 border border-slate-200/70 dark:border-white/20 p-1"
+                      >
+                        {tenseGroupsForLang.map((group) => (
+                          <div key={group.mood} className="px-1 py-1">
+                            <p className="px-2 pt-1 pb-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                              {group.label}
+                            </p>
+                            {group.tenseIds.map((tid) => {
+                              const tItem = tensesForLang.find((t) => t.id === tid);
+                              if (!tItem) return null;
+                              const isActive = tItem.id === selectedTense;
+                              return (
+                                <button
+                                  key={tItem.id}
+                                  type="button"
+                                  role="option"
+                                  aria-selected={isActive}
+                                  onClick={() => changeQuizTense(tItem.id)}
+                                  className={`w-full flex items-center justify-between gap-2 px-2.5 py-2 text-left rounded-lg text-sm transition-colors ${
+                                    isActive
+                                      ? 'bg-indigo-50 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-200 font-semibold'
+                                      : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/10'
+                                  }`}
+                                >
+                                  <span className="truncate">{tItem.label}</span>
+                                  {isActive && (
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-indigo-600 dark:text-indigo-300 shrink-0" aria-hidden>
+                                      <path fillRule="evenodd" d="M16.704 5.29a1 1 0 010 1.42l-7.5 7.5a1 1 0 01-1.42 0l-3.5-3.5a1 1 0 011.42-1.42L8.5 12.08l6.79-6.79a1 1 0 011.414 0z" clipRule="evenodd" />
+                                    </svg>
+                                  )}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                  </div>
+                </div>
               </div>
-              {/* İlerleme: X / 6 çekim + progress bar */}
+              {/*
+                İlerleme: X / 6 çekim + ince progress bar (h-1).
+                Görünüm modu butonları (Liste/Odak) yukarıya, tense
+                dropdown'un yanına ikon olarak taşındı — burada artık
+                tekrar eden büyük pill yok.
+              */}
               {(() => {
                 const answeredCount = pronounIds.filter((p) => quizFeedback[p] !== null).length;
                 const total = pronounIds.length;
                 const progressPct = total ? (answeredCount / total) * 100 : 0;
                 return (
-                  <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-700/50">
+                  <div className="mt-4 pt-3 border-t border-slate-100/80 dark:border-white/5">
                     <div className="flex items-center justify-between gap-2 mb-1.5">
-                      <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
+                      <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
                         {answeredCount} / {total} çekim
                       </span>
                     </div>
-                    <div className="h-1.5 w-full rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden" role="progressbar" aria-valuenow={answeredCount} aria-valuemin={0} aria-valuemax={total}>
+                    <div className="h-1 w-full rounded-full bg-slate-200/70 dark:bg-white/5 overflow-hidden" role="progressbar" aria-valuenow={answeredCount} aria-valuemin={0} aria-valuemax={total}>
                       <div className="h-full bg-indigo-500 dark:bg-indigo-400 rounded-full transition-all duration-300" style={{ width: `${progressPct}%` }} />
                     </div>
                   </div>
                 );
               })()}
-              <div className="flex justify-end mt-3 pt-3 border-t border-slate-100 dark:border-slate-700/50">
-                <div className="flex bg-slate-200/80 dark:bg-slate-800/80 backdrop-blur-sm border border-slate-300 dark:border-slate-700 rounded-full p-1" role="group" aria-label="Alıştırma görünümü">
-                  <button type="button" onClick={() => setQuizLayout('list')} className={`flex items-center justify-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium transition-all duration-300 ${quizLayout === 'list' ? 'bg-indigo-600 text-white shadow-md' : 'bg-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white'}`} aria-pressed={quizLayout === 'list'}>
-                    <span aria-hidden>📄</span><span>Liste</span>
-                  </button>
-                  <button type="button" onClick={() => { setQuizLayout('focus'); setCurrentFocusIndex(0); }} className={`flex items-center justify-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium transition-all duration-300 ${quizLayout === 'focus' ? 'bg-indigo-600 text-white shadow-md' : 'bg-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white'}`} aria-pressed={quizLayout === 'focus'}>
-                    <span aria-hidden>🎯</span><span>Odak</span>
-                  </button>
-                </div>
-              </div>
             </div>
 
             {/* Liste modu: tüm çekimler kontrol edildi ama hepsi doğru değil — özet + Tekrar Çalış */}
@@ -3410,132 +4238,146 @@ export function Page() {
               );
             })()}
 
-            {/* Liste görünümü: 6 şahıs */}
+            {/*
+              Liste görünümü: 6 şahıs — 2 kolonlu grid. Her satırda:
+                • Sabit w-20 zamir etiketi → tüm inputlar dikey hizada başlar.
+                • Inputlara pr-10 sağ iç boşluk + absolute right-3 ikon slot.
+                • Yazılan metin, checkmark / speaker / çarpı ikonlarıyla çakışmaz.
+            */}
             {quizLayout === 'list' && (
-            <ul className="divide-y divide-slate-100 dark:divide-slate-700/50 px-5 sm:px-6 py-4 mb-6">
-              {pronounsForLang.map(({ id, label }, index) => {
-                const feedback = quizFeedback[id];
-                const correctValue = conjugationsForDisplay[id];
-                return (
-                  <li key={id} className="py-3 first:pt-0 last:pb-0">
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-4">
-                      <span className="min-w-[120px] shrink-0 font-semibold text-slate-700 dark:text-slate-300">{label}</span>
-                      <div className={`flex-1 min-w-0 relative flex items-center rounded-xl shadow-inner ${feedback === 'wrong' ? 'animate-shake' : ''} ${quizEmptyShake === id ? 'animate-shake ring-2 ring-red-500 dark:ring-red-400 ring-inset' : ''}`}>
-                        <input
-                          ref={(el) => {
-                            quizInputRefs.current[index] = el;
-                          }}
-                          type="text"
-                          value={userAnswers[id]}
-                          onChange={(e) => setAnswer(id, e.target.value)}
-                          onFocus={() => { activeQuizInputIndexRef.current = index; }}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') handleQuizInputKeyDown(e, index);
-                          }}
-                          placeholder="Cevabınız..."
-                          className={`w-full h-12 rounded-xl border px-4 py-3 pr-20 text-base placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all shadow-inner ${
-                            feedback === 'correct'
-                              ? 'border-emerald-400 dark:border-emerald-500/60 bg-emerald-50/80 dark:bg-emerald-500/20 text-slate-800 dark:text-slate-100 focus:ring-emerald-500/30 dark:focus:ring-emerald-400/30'
-                              : feedback === 'wrong'
-                                ? 'border-red-500 dark:border-red-400/60 bg-red-50/80 dark:bg-red-500/15 text-slate-800 dark:text-slate-100 focus:ring-red-500/20 dark:focus:ring-red-400/30'
-                                : feedback === 'typo'
-                                  ? 'border-amber-400 dark:border-amber-500/60 bg-amber-50/80 dark:bg-amber-500/15 text-slate-800 dark:text-slate-100 focus:ring-amber-500/30 dark:focus:ring-amber-400/30'
-                                  : 'bg-slate-100/90 dark:bg-slate-900/50 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:border-indigo-500'
-                          }`}
-                          aria-label={`${label} çekimi`}
-                        />
-                        {feedback === 'correct' && (
-                          <span className="absolute right-3 flex items-center gap-1">
-                            <button
-                              type="button"
-                              onClick={() => speakConjugation(correctValue, selectedLanguage)}
-                              className="p-1 rounded text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-colors duration-300"
-                              title={selectedLanguage === 'es' ? 'Dinle (İspanyolca)' : 'Dinle (Fransızca)'}
-                              aria-label={`${correctValue} dinle`}
-                            >
-                              <SpeakerIcon className="w-5 h-5" />
-                            </button>
-                            <span className="text-emerald-600 dark:text-emerald-400 pointer-events-none" aria-hidden>
-                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            <div className="px-5 sm:px-6 py-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 md:grid-rows-3 md:grid-flow-col gap-x-6 gap-y-3">
+                {pronounsForLang.map(({ id, label }, index) => {
+                  const feedback = quizFeedback[id];
+                  const correctValue = conjugationsForDisplay[id];
+                  return (
+                    <div key={id} className="flex flex-col gap-1">
+                      <div className="flex items-center gap-4">
+                        <span className="w-20 shrink-0 text-sm font-semibold text-slate-700 dark:text-slate-300 tracking-tight">
+                          {label}
+                        </span>
+                        <div className={`flex-1 min-w-0 relative ${feedback === 'wrong' ? 'animate-shake' : ''} ${quizEmptyShake === id ? 'animate-shake ring-2 ring-red-500 dark:ring-red-400 ring-inset rounded-lg' : ''}`}>
+                          <input
+                            ref={(el) => {
+                              quizInputRefs.current[index] = el;
+                            }}
+                            type="text"
+                            value={userAnswers[id]}
+                            onChange={(e) => setAnswer(id, e.target.value)}
+                            onFocus={() => { activeQuizInputIndexRef.current = index; }}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') handleQuizInputKeyDown(e, index);
+                            }}
+                            placeholder="…"
+                            tabIndex={index + 1}
+                            className={`peer w-full h-10 rounded-lg border pl-3 pr-10 text-sm placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 transition-all duration-200 ${
+                              feedback === 'correct'
+                                ? 'border-emerald-400 dark:border-emerald-500/60 bg-emerald-50/70 dark:bg-emerald-500/15 text-slate-800 dark:text-slate-100 focus:border-emerald-500'
+                                : feedback === 'wrong'
+                                  ? 'border-red-500 dark:border-red-400/60 bg-red-50/70 dark:bg-red-500/10 text-slate-800 dark:text-slate-100 focus:border-red-500'
+                                  : feedback === 'typo'
+                                    ? 'border-amber-400 dark:border-amber-500/60 bg-amber-50/70 dark:bg-amber-500/10 text-slate-800 dark:text-slate-100 focus:border-amber-500'
+                                    : 'bg-white/60 dark:bg-slate-900/40 border-slate-200/70 dark:border-white/10 text-slate-800 dark:text-white focus:border-indigo-500 dark:focus:border-indigo-400 hover:border-slate-300 dark:hover:border-white/20'
+                            }`}
+                            aria-label={`${label} çekimi`}
+                          />
+                          {feedback === 'correct' && (
+                            <span className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                              <button
+                                type="button"
+                                onClick={() => speakConjugation(correctValue, selectedLanguage)}
+                                tabIndex={-1}
+                                className="p-0.5 rounded text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-colors"
+                                title={selectedLanguage === 'es' ? 'Dinle (İspanyolca)' : 'Dinle (Fransızca)'}
+                                aria-label={`${correctValue} dinle`}
+                              >
+                                <SpeakerIcon className="w-3.5 h-3.5" />
+                              </button>
+                              <span className="text-emerald-600 dark:text-emerald-400 pointer-events-none" aria-hidden>
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                                </svg>
+                              </span>
+                            </span>
+                          )}
+                          {feedback === 'wrong' && (
+                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-red-500 dark:text-red-400 pointer-events-none" aria-hidden>
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                               </svg>
                             </span>
-                          </span>
-                        )}
-                        {feedback === 'wrong' && (
-                          <span className="absolute right-3 text-red-500 dark:text-red-400 pointer-events-none" aria-hidden>
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                          </span>
-                        )}
+                          )}
+                        </div>
                       </div>
+                      {!showHints && feedback === 'typo' && (
+                        <p className="text-xs text-amber-700 dark:text-amber-300 font-medium pl-[5.5rem]">
+                          Neredeyse! Doğrusu: <strong>{correctValue}</strong>
+                        </p>
+                      )}
+                      {showHints && (
+                        <p className="text-xs text-slate-500 dark:text-slate-400 pl-[5.5rem]">
+                          Doğru: <span className="font-medium text-slate-700 dark:text-slate-200">{correctValue}</span>
+                        </p>
+                      )}
+                      {!showHints && feedback === 'wrong' && (
+                        <p className="text-xs pl-[5.5rem]">
+                          {quizPasséHint[id] ? (
+                            <span className="text-amber-700 dark:text-amber-300 font-medium">{quizPasséHint[id]}</span>
+                          ) : (
+                            <span className="text-red-600 dark:text-red-300">Doğru: <strong>{correctValue}</strong></span>
+                          )}
+                        </p>
+                      )}
                     </div>
-                    {!showHints && feedback === 'typo' && (
-                      <p className="mt-1.5 text-sm text-amber-700 dark:text-amber-300 font-medium pl-0 sm:pl-[7.5rem]">
-                        Neredeyse! Doğrusu: <strong>{correctValue}</strong>
-                      </p>
-                    )}
-                    {showHints && (
-                      <p className="mt-1.5 text-sm text-slate-500 dark:text-slate-400 pl-0 sm:pl-[7.5rem]">
-                        Doğru: <span className="font-medium text-slate-700 dark:text-slate-200">{correctValue}</span>
-                      </p>
-                    )}
-                    {!showHints && feedback === 'wrong' && (
-                      <p className="mt-1.5 text-sm pl-0 sm:pl-[7.5rem]">
-                        {quizPasséHint[id] ? (
-                          <span className="text-amber-700 dark:text-amber-300 font-medium">
-                            {quizPasséHint[id]}
-                          </span>
-                        ) : (
-                          <span className="text-red-600 dark:text-red-300">
-                            Doğru cevap: <strong>{correctValue}</strong>
-                          </span>
-                        )}
-                      </p>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
+                  );
+                })}
+              </div>
+            </div>
             )}
 
-            {/* Sanal aksan klavyesi — input hemen altında, tıklayınca odak korunur (useEffect) */}
-            <div className="flex flex-wrap justify-center w-full px-5 sm:px-6 pt-2 pb-4 border-t border-slate-100 dark:border-slate-700/50">
-              <AccentKeyboard
-                lang={selectedLanguage}
-                onInsert={(char) => {
-                  insertAccentChar(char);
-                  requestAnimationFrame(() => {
-                    const idx = activeQuizInputIndexRef.current;
-                    quizInputRefs.current[idx]?.focus();
-                  });
-                }}
-              />
-            </div>
-            {/* Aksiyon butonları — en altta, sağa hizalı */}
-            <div className="px-5 sm:px-6 pb-6 pt-4 flex flex-wrap justify-end gap-2 border-t border-slate-100 dark:border-slate-700/50">
-              <button
-                type="button"
-                onClick={quizLayout === 'focus' ? handleFocusModeSubmit : checkQuiz}
-                className="rounded-xl bg-gradient-to-r from-indigo-600 to-blue-500 dark:from-indigo-500 dark:to-blue-500 text-white text-sm font-semibold px-4 py-2.5 shadow-sm hover:shadow-md dark:shadow-indigo-500/20 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-all duration-300"
-              >
-                Kontrol Et
-              </button>
-              <button
-                type="button"
-                onClick={toggleShowHints}
-                className="rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 text-sm font-medium px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 transition-colors duration-300"
-              >
-                {showHints ? 'İpucu Gizle' : 'İpucu Göster'}
-              </button>
-              <button
-                type="button"
-                onClick={resetQuiz}
-                className="rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 text-sm font-medium px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 transition-colors duration-300"
-              >
-                Sıfırla
-              </button>
+            {/*
+              Alıştırma alt çubuğu — aksan klavyesi + aksiyon butonları
+              aynı blok içinde gruplandı. Aksan tuşları (gap-1.5) aksiyon
+              butonlarının hemen üstünde tek satır halinde oturuyor;
+              space-y-4 ile aralarında dengeli, nefes alan boşluk bırakılır.
+            */}
+            <div className="px-5 sm:px-6 py-5 border-t border-slate-100/80 dark:border-white/5 space-y-4">
+              <div className="flex justify-center w-full">
+                <AccentKeyboard
+                  compact
+                  lang={selectedLanguage}
+                  onInsert={(char) => {
+                    insertAccentChar(char);
+                    requestAnimationFrame(() => {
+                      const idx = activeQuizInputIndexRef.current;
+                      quizInputRefs.current[idx]?.focus();
+                    });
+                  }}
+                />
+              </div>
+              <div className="flex flex-wrap justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={quizLayout === 'focus' ? handleFocusModeSubmit : checkQuiz}
+                  className="rounded-xl bg-gradient-to-r from-indigo-600 to-blue-500 dark:from-indigo-500 dark:to-blue-500 text-white text-sm font-semibold px-4 py-2.5 shadow-sm hover:shadow-md dark:shadow-indigo-500/20 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-all duration-300"
+                >
+                  Kontrol Et
+                </button>
+                <button
+                  type="button"
+                  onClick={toggleShowHints}
+                  className="rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 text-sm font-medium px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 transition-colors duration-300"
+                >
+                  {showHints ? 'İpucu Gizle' : 'İpucu Göster'}
+                </button>
+                <button
+                  type="button"
+                  onClick={resetQuiz}
+                  className="rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 text-sm font-medium px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 transition-colors duration-300"
+                >
+                  Sıfırla
+                </button>
+              </div>
             </div>
           </>
             )}

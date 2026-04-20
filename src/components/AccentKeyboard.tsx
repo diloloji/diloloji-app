@@ -12,10 +12,35 @@ interface AccentKeyboardProps {
   lang: AppLanguage;
   onInsert: (char: string) => void;
   className?: string;
+  /** Kompakt tek satırlık inline mod — alıştırma grid'i için */
+  compact?: boolean;
 }
 
-export default function AccentKeyboard({ lang, onInsert, className = '' }: AccentKeyboardProps) {
+export default function AccentKeyboard({ lang, onInsert, className = '', compact = false }: AccentKeyboardProps) {
   const chars = lang === 'fr' ? CHARS_FR : CHARS_ES;
+  if (compact) {
+    return (
+      <div
+        className={`flex flex-wrap justify-center items-center gap-1.5 ${className}`}
+        role="group"
+        aria-label={lang === 'es' ? 'İspanyolca özel karakterler' : 'Fransızca aksanlı harfler'}
+      >
+        {chars.map((char) => (
+          <button
+            key={char}
+            type="button"
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={() => onInsert(char)}
+            tabIndex={-1}
+            className="text-sm font-medium w-8 h-8 flex items-center justify-center rounded-md bg-slate-100/80 dark:bg-slate-800/60 border border-slate-200/70 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-indigo-500/15 hover:border-indigo-400/40 hover:text-indigo-600 dark:hover:text-indigo-300 active:scale-90 transition-all duration-150 focus:outline-none focus:ring-1 focus:ring-indigo-500/40 touch-manipulation"
+            aria-label={`${char} ekle`}
+          >
+            {char}
+          </button>
+        ))}
+      </div>
+    );
+  }
   return (
     <div
       className={`flex flex-wrap gap-2 mt-2 ${className}`}

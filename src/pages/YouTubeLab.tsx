@@ -145,7 +145,17 @@ export default function YouTubeLab() {
           <input
             type="text"
             value={urlInput}
-            onChange={(e) => { setError(null); setUrlInput(e.target.value); }}
+            onChange={(e) => {
+              setError(null);
+              setUrlInput(e.target.value);
+              // URL değiştiğinde eski analiz sonuçlarını temizle —
+              // kullanıcı 'Videoyu Analiz Et' butonuna tekrar basmalı.
+              if (analysis || videoId) {
+                setAnalysis(null);
+                setVideoId(null);
+                setEmbedStart(null);
+              }
+            }}
             placeholder="YouTube URL veya video ID yapıştırın..."
             className="flex-1 min-w-0 rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent"
             aria-label="YouTube URL"
@@ -153,18 +163,18 @@ export default function YouTubeLab() {
           <button
             type="button"
             onClick={handleAnalyze}
-            disabled={loading}
+            disabled={loading || !urlInput.trim()}
             className="flex items-center justify-center gap-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-5 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 focus:ring-offset-[#0a0e17] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {loading ? (
               <>
                 <span className="inline-block w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" aria-hidden />
-                <span className="text-sm">Analiz ediliyor...</span>
+                <span className="text-sm">Yükleniyor...</span>
               </>
             ) : (
               <>
                 <Send className="w-4 h-4" strokeWidth={2} />
-                Analiz Et
+                Videoyu Analiz Et
               </>
             )}
           </button>

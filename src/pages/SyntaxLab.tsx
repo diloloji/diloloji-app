@@ -283,7 +283,10 @@ export default function SyntaxLab() {
     return () => clearTimeout(t);
   }, [toastMessage]);
 
-  /** YouTube Lab vb. sayfalardan gönderilen cümle: textarea doldurulur ve analiz tetiklenir */
+  /**
+   * YouTube Lab vb. sayfalardan gönderilen cümle: textarea'yı önceden doldur.
+   * OTOMATİK API çağrısı YAPMA — kullanıcı "Analiz Et" butonuna basmalı.
+   */
   useEffect(() => {
     const state = location.state as { prefillSentence?: string; prefillLanguage?: LangId } | null;
     const prefill = state?.prefillSentence;
@@ -293,17 +296,9 @@ export default function SyntaxLab() {
       setLanguage(state.prefillLanguage);
     }
     setError(null);
-    setLoading(true);
+    setItems([]);
     setAddedKeys(new Set());
     setShadowingResult(null);
-    analyzeSentence(prefill.trim(), state?.prefillLanguage ?? language).then((result) => {
-      setItems(result);
-      setLoading(false);
-      if (result.length === 0) setError('Analiz sonucu alınamadı.');
-    }).catch(() => {
-      setLoading(false);
-      setError('Bir hata oluştu.');
-    });
   }, [location.state]);
 
   const handleAddToDeck = useCallback((key: string) => {

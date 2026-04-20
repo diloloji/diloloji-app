@@ -11,6 +11,7 @@ import Profile from './pages/Profile';
 import Leaderboard from './pages/Leaderboard';
 import Pricing from './pages/Pricing';
 import YouTubeLab from './pages/YouTubeLab';
+import ReadingPractice from './pages/ReadingPractice';
 import { XpProvider } from './contexts/XpContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { OnboardingProvider, useOnboarding } from './contexts/OnboardingContext';
@@ -41,6 +42,8 @@ function getPageElement(pathname: string) {
       return <SyntaxLab />;
     case '/youtube-lab':
       return <YouTubeLab />;
+    case '/okuma':
+      return <ReadingPractice />;
     case '/profil':
       return <Profile />;
     case '/leaderboard':

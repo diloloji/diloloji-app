@@ -27,6 +27,7 @@ type HamburgerLinkItem = {
 };
 
 const HAMBURGER_LINKS: HamburgerLinkItem[] = [
+  { to: '/okuma', labelKey: 'okuma', labelFallback: 'Okuma Pratiği' },
   { to: '/syntax-lab', labelKey: 'syntax_lab', labelFallback: 'Cümle Laboratuvarı' },
   { to: '/youtube-lab', labelKey: 'youtube_lab', labelFallback: 'YouTube Lab' },
   { to: '/simulator', labelKey: 'simulator', labelFallback: 'Simülatör' },
