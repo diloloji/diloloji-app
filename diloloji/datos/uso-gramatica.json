@@ -1,0 +1,4903 @@
+{
+  "kelimeler": [
+    {
+      "kelime": "gato",
+      "anlam": "kedi",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "El gato es blanco.",
+      "ornek_tr": "Kedi beyazdır."
+    },
+    {
+      "kelime": "gata",
+      "anlam": "dişi kedi",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "La gata es blanca.",
+      "ornek_tr": "Dişi kedi beyazdır."
+    },
+    {
+      "kelime": "blanco",
+      "anlam": "beyaz",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "El gato es blanco.",
+      "ornek_tr": "Kedi beyazdır."
+    },
+    {
+      "kelime": "blanca",
+      "anlam": "beyaz (dişi)",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "La gata es blanca.",
+      "ornek_tr": "Dişi kedi beyazdır."
+    },
+    {
+      "kelime": "español",
+      "anlam": "İspanyolca",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Hablo español.",
+      "ornek_tr": "İspanyolca konuşurum."
+    },
+    {
+      "kelime": "española",
+      "anlam": "İspanyolca (dişil)",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "La película es española.",
+      "ornek_tr": "Film İspanyol filmidir."
+    },
+    {
+      "kelime": "campeón",
+      "anlam": "şampiyon",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Es un campeón.",
+      "ornek_tr": "O bir şampiyon."
+    },
+    {
+      "kelime": "campeona",
+      "anlam": "şampiyon (dişil)",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Ella es una campeona.",
+      "ornek_tr": "O bir şampiyon."
+    },
+    {
+      "kelime": "hablador",
+      "anlam": "konuşkan",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "Es un hombre hablador.",
+      "ornek_tr": "O konuşkan bir adam."
+    },
+    {
+      "kelime": "habladora",
+      "anlam": "konuşkan (dişil)",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "Es una mujer habladora.",
+      "ornek_tr": "O konuşkan bir kadın."
+    },
+    {
+      "kelime": "amigo",
+      "anlam": "arkadaş",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Es mi amigo.",
+      "ornek_tr": "O benim arkadaşım."
+    },
+    {
+      "kelime": "amiga",
+      "anlam": "arkadaş (dişil)",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Es mi amiga.",
+      "ornek_tr": "O benim arkadaşım."
+    },
+    {
+      "kelime": "amable",
+      "anlam": "sevimli",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "Es un hombre amable.",
+      "ornek_tr": "O sevimli bir adam."
+    },
+    {
+      "kelime": "capaz",
+      "anlam": "becerikli",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "Es un hombre capaz.",
+      "ornek_tr": "O becerikli bir adam."
+    },
+    {
+      "kelime": "chocolate",
+      "anlam": "çikolata",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Me gusta el chocolate.",
+      "ornek_tr": "Çikolatayı seviyorum."
+    },
+    {
+      "kelime": "belga",
+      "anlam": "Belçikalı",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "Es un chocolate belga.",
+      "ornek_tr": "Bu Belçikalı çikolata."
+    },
+    {
+      "kelime": "sillón",
+      "anlam": "koltuk",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "El sillón es cómodo.",
+      "ornek_tr": "Koltuk rahat."
+    },
+    {
+      "kelime": "marroquí",
+      "anlam": "Faslı",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "La casa es marroquí.",
+      "ornek_tr": "Ev Faslı."
+    },
+    {
+      "kelime": "cerveza",
+      "anlam": "bira",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Quiero una cerveza.",
+      "ornek_tr": "Bir bira istiyorum."
+    },
+    {
+      "kelime": "frío",
+      "anlam": "soğuk",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "La cerveza está fría.",
+      "ornek_tr": "Bira soğuk."
+    },
+    {
+      "kelime": "natural",
+      "anlam": "doğal",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "El agua es natural.",
+      "ornek_tr": "Su doğaldır."
+    },
+    {
+      "kelime": "grande",
+      "anlam": "büyük",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "La casa es grande.",
+      "ornek_tr": "Ev büyük."
+    },
+    {
+      "kelime": "negro",
+      "anlam": "siyah",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "El gato es negro.",
+      "ornek_tr": "Kedi siyahtır."
+    },
+    {
+      "kelime": "viejo",
+      "anlam": "eski",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "El coche es viejo.",
+      "ornek_tr": "Araba eski."
+    },
+    {
+      "kelime": "duro",
+      "anlam": "sert",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "La piedra es dura.",
+      "ornek_tr": "Taş sert."
+    },
+    {
+      "kelime": "ligero",
+      "anlam": "hafif",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "El bolso es ligero.",
+      "ornek_tr": "Çanta hafiftir."
+    },
+    {
+      "kelime": "caliente",
+      "anlam": "sıcak",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "El café está caliente.",
+      "ornek_tr": "Kahve sıcaktır."
+    },
+    {
+      "kelime": "estricto",
+      "anlam": "katı",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "El profesor es estricto.",
+      "ornek_tr": "Öğretmen katıdır."
+    },
+    {
+      "kelime": "ser",
+      "anlam": "olmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Yo soy estudiante.",
+      "ornek_tr": "Ben öğrenciim."
+    },
+    {
+      "kelime": "observar",
+      "anlam": "gözlemlemek",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Observa el ejemplo.",
+      "ornek_tr": "Örneği gözlemle."
+    },
+    {
+      "kelime": "forma",
+      "anlam": "şekil",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "La forma del verbo ser.",
+      "ornek_tr": "Ser fiilinin şekli."
+    },
+    {
+      "kelime": "uso",
+      "anlam": "kullanım",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "El uso del verbo ser.",
+      "ornek_tr": "Ser fiilinin kullanımı."
+    },
+    {
+      "kelime": "ejercicios",
+      "anlam": "alıştırmalar",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Ejercicios de español.",
+      "ornek_tr": "İspanyolca alıştırmalar."
+    },
+    {
+      "kelime": "correciones",
+      "anlam": "düzeltmeler",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Correcciones de ejercicios.",
+      "ornek_tr": "Alıştırmaların düzeltmeleri."
+    },
+    {
+      "kelime": "estudiante",
+      "anlam": "öğrenci",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Soy estudiante.",
+      "ornek_tr": "Öğrenciyim."
+    },
+    {
+      "kelime": "periodista",
+      "anlam": "gazeteci",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Ella es periodista.",
+      "ornek_tr": "O gazeteci."
+    },
+    {
+      "kelime": "diseñador",
+      "anlam": "tasarımcı",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Él es diseñador.",
+      "ornek_tr": "O tasarımcı."
+    },
+    {
+      "kelime": "profesor",
+      "anlam": "öğretmen",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Ella es profesora.",
+      "ornek_tr": "O öğretmen."
+    },
+    {
+      "kelime": "cocinero",
+      "anlam": "aşçı",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Él es cocinero.",
+      "ornek_tr": "O aşçı."
+    },
+    {
+      "kelime": "médico",
+      "anlam": "doktor",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Ella es médica.",
+      "ornek_tr": "O doktordur."
+    },
+    {
+      "kelime": "cantante",
+      "anlam": "şarkıcı",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Él es cantante.",
+      "ornek_tr": "O şarkıcı."
+    },
+    {
+      "kelime": "diplomático",
+      "anlam": "diplomat",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Él es diplomático.",
+      "ornek_tr": "O diplomat."
+    },
+    {
+      "kelime": "asistente",
+      "anlam": "yardımcı",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Ella es asistente.",
+      "ornek_tr": "O yardımcı."
+    },
+    {
+      "kelime": "abogado",
+      "anlam": "avukat",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Él es abogado.",
+      "ornek_tr": "O avukat."
+    },
+    {
+      "kelime": "taxista",
+      "anlam": "taksi şoförü",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Él es taxista.",
+      "ornek_tr": "O taksi şoförü."
+    },
+    {
+      "kelime": "azafata",
+      "anlam": "hostes",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Ella es azafata.",
+      "ornek_tr": "O hostes."
+    },
+    {
+      "kelime": "ser",
+      "anlam": "olmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Yo soy estudiante.",
+      "ornek_tr": "Ben öğrenciim."
+    },
+    {
+      "kelime": "estudiar",
+      "anlam": "çalışmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Estudio español.",
+      "ornek_tr": "İspanyolca çalışıyorum."
+    },
+    {
+      "kelime": "amigo",
+      "anlam": "arkadaş",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Mi amigo se llama Juan.",
+      "ornek_tr": "Arkadaşımın adı Juan."
+    },
+    {
+      "kelime": "universidad",
+      "anlam": "üniversite",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Estudio en la universidad.",
+      "ornek_tr": "Üniversitede okuyorum."
+    },
+    {
+      "kelime": "autónoma",
+      "anlam": "özerk",
+      "tur": "sıfat",
+      "seviye": "A2",
+      "ornek": "La universidad es autónoma.",
+      "ornek_tr": "Üniversite özerktir."
+    },
+    {
+      "kelime": "diamante",
+      "anlam": "elmas",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Los diamantes son caros.",
+      "ornek_tr": "Elmaslar pahalıdır."
+    },
+    {
+      "kelime": "país",
+      "anlam": "ülke",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Canadá es un país.",
+      "ornek_tr": "Kanada bir ülkedir."
+    },
+    {
+      "kelime": "gato",
+      "anlam": "kedi",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Mi gato se llama Luna.",
+      "ornek_tr": "Kedimin adı Luna."
+    },
+    {
+      "kelime": "hermana",
+      "anlam": "kız kardeş",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Mi hermana es joven.",
+      "ornek_tr": "Kız kardeşim genç."
+    },
+    {
+      "kelime": "bolso",
+      "anlam": "çantа",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Mi bolso es rojo.",
+      "ornek_tr": "Çantam kırmızı."
+    },
+    {
+      "kelime": "madre",
+      "anlam": "anne",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Mi madre es amable.",
+      "ornek_tr": "Annem nazik."
+    },
+    {
+      "kelime": "boxeo",
+      "anlam": "boks",
+      "tur": "isim",
+      "seviye": "A2",
+      "ornek": "El boxeo es un deporte violento.",
+      "ornek_tr": "Boks şiddetli bir spordur."
+    },
+    {
+      "kelime": "casa",
+      "anlam": "ev",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Mi casa es azul.",
+      "ornek_tr": "Evim mavi."
+    },
+    {
+      "kelime": "calle",
+      "anlam": "cadde",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "La calle es muy larga.",
+      "ornek_tr": "Cadde çok uzun."
+    },
+    {
+      "kelime": "dominio",
+      "anlam": "dominyum",
+      "tur": "isim",
+      "seviye": "A2",
+      "ornek": "Hoy es domingo.",
+      "ornek_tr": "Bugün pazar."
+    },
+    {
+      "kelime": "rico",
+      "anlam": "zengin",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "Él es muy rico.",
+      "ornek_tr": "O çok zengin."
+    },
+    {
+      "kelime": "español",
+      "anlam": "İspanyolca",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Hablo español.",
+      "ornek_tr": "İspanyolca konuşurum."
+    },
+    {
+      "kelime": "estudiante",
+      "anlam": "öğrenci",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Soy estudiante.",
+      "ornek_tr": "Öğrenciyim."
+    },
+    {
+      "kelime": "piso",
+      "anlam": "kat",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Mi piso es pequeño.",
+      "ornek_tr": "Katım küçük."
+    },
+    {
+      "kelime": "española",
+      "anlam": "İspanyol",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "La bandera española es roja.",
+      "ornek_tr": "İspanyol bayrağı kırmızı."
+    },
+    {
+      "kelime": "extranjero",
+      "anlam": "yabancı",
+      "tur": "isim",
+      "seviye": "A2",
+      "ornek": "Ellos son extranjeros.",
+      "ornek_tr": "Onlar yabancılar."
+    },
+    {
+      "kelime": "eléctrico",
+      "anlam": "elektrikli",
+      "tur": "sıfat",
+      "seviye": "A2",
+      "ornek": "Los coches eléctricos son buenos.",
+      "ornek_tr": "Elektrikli arabalar iyidir."
+    },
+    {
+      "kelime": "profesor",
+      "anlam": "öğretmen",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Mi profesor es muy bueno.",
+      "ornek_tr": "Öğretmenim çok iyi."
+    },
+    {
+      "kelime": "optimista",
+      "anlam": "iyimser",
+      "tur": "sıfat",
+      "seviye": "A2",
+      "ornek": "Ella es muy optimista.",
+      "ornek_tr": "O çok iyimser."
+    },
+    {
+      "kelime": "azul",
+      "anlam": "mavi",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "El cielo es azul.",
+      "ornek_tr": "Gök mavi."
+    },
+    {
+      "kelime": "amarillo",
+      "anlam": "sarı",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "La banana es amarilla.",
+      "ornek_tr": "Muz sarı."
+    },
+    {
+      "kelime": "blanco",
+      "anlam": "beyaz",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "La nieve es blanca.",
+      "ornek_tr": "Kar beyaz."
+    },
+    {
+      "kelime": "marron",
+      "anlam": "kahverengi",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "Mi pelo es marrón.",
+      "ornek_tr": "Saçlarım kahverengi."
+    },
+    {
+      "kelime": "verde",
+      "anlam": "yeşil",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "La hierba es verde.",
+      "ornek_tr": "Ot yeşil."
+    },
+    {
+      "kelime": "negro",
+      "anlam": "siyah",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "La noche es negra.",
+      "ornek_tr": "Gece siyahtır."
+    },
+    {
+      "kelime": "rojo",
+      "anlam": "kırmızı",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "La manzana es roja.",
+      "ornek_tr": "Elma kırmızı."
+    },
+    {
+      "kelime": "rosa",
+      "anlam": "pembe",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "La rosa es rosa.",
+      "ornek_tr": "Gül pembedir."
+    },
+    {
+      "kelime": "estar",
+      "anlam": "olmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Yo estoy cansado.",
+      "ornek_tr": "Ben yorgunum."
+    },
+    {
+      "kelime": "hablar",
+      "anlam": "konuşmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Yo hablo español.",
+      "ornek_tr": "Ben İspanyolca konuşurum."
+    },
+    {
+      "kelime": "ser",
+      "anlam": "olmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Yo soy estudiante.",
+      "ornek_tr": "Ben öğrenciymim."
+    },
+    {
+      "kelime": "tener",
+      "anlam": "sahip olmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Tengo un libro.",
+      "ornek_tr": "Ben bir kitabım."
+    },
+    {
+      "kelime": "hacer",
+      "anlam": "yapmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Hago mi tarea.",
+      "ornek_tr": "Ödevimi yapıyorum."
+    },
+    {
+      "kelime": "turistas",
+      "anlam": "turistler",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Los turistas vienen de muchos países.",
+      "ornek_tr": "Turistler birçok ülkeden geliyor."
+    },
+    {
+      "kelime": "cines",
+      "anlam": "sinemalar",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Me gusta ir al cine.",
+      "ornek_tr": "Sinema gitmeyi seviyorum."
+    },
+    {
+      "kelime": "alumnos",
+      "anlam": "öğrenciler",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Los alumnos estudian mucho.",
+      "ornek_tr": "Öğrenciler çok çalışıyor."
+    },
+    {
+      "kelime": "museos",
+      "anlam": "müzeler",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Me encantan los museos.",
+      "ornek_tr": "Müzeleri seviyorum."
+    },
+    {
+      "kelime": "cervezas",
+      "anlam": "bierler",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Quiero una cerveza.",
+      "ornek_tr": "Bir bira istiyorum."
+    },
+    {
+      "kelime": "gente",
+      "anlam": "insanlar",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Hay mucha gente aquí.",
+      "ornek_tr": "Burada çok insan var."
+    },
+    {
+      "kelime": "personas",
+      "anlam": "kişiler",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Conozco a muchas personas.",
+      "ornek_tr": "Birçok kişi tanıyorum."
+    },
+    {
+      "kelime": "madre",
+      "anlam": "anne",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Mi madre es muy amable.",
+      "ornek_tr": "Annem çok sevgi dolu."
+    },
+    {
+      "kelime": "loli",
+      "anlam": "",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "",
+      "ornek_tr": ""
+    },
+    {
+      "kelime": "abrigo",
+      "anlam": "mont",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Tengo un abrigo nuevo.",
+      "ornek_tr": "Yeni bir montum var."
+    },
+    {
+      "kelime": "llaves",
+      "anlam": "anahtarlar",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Necesito mis llaves.",
+      "ornek_tr": "Anahtarlarımı ihtiyacım var."
+    },
+    {
+      "kelime": "habitación",
+      "anlam": "oda",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Mi habitación es grande.",
+      "ornek_tr": "Odam büyük."
+    },
+    {
+      "kelime": "gato",
+      "anlam": "kedi",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Tengo un gato.",
+      "ornek_tr": "Bir kedim var."
+    },
+    {
+      "kelime": "pantalones",
+      "anlam": "pantolonlar",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Me gustan los pantalones negros.",
+      "ornek_tr": "Siyah pantolonları seviyorum."
+    },
+    {
+      "kelime": "armario",
+      "anlam": "dolap",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Mi ropa está en el armario.",
+      "ornek_tr": "Giysilerim dolapta."
+    },
+    {
+      "kelime": "casa",
+      "anlam": "ev",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Vivo en una casa grande.",
+      "ornek_tr": "Büyük bir evde yaşıyorum."
+    },
+    {
+      "kelime": "hotel",
+      "anlam": "otel",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Me hospedo en un hotel.",
+      "ornek_tr": "Bir otelde kalıyorum."
+    },
+    {
+      "kelime": "ciudad",
+      "anlam": "şehir",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Vivo en una ciudad grande.",
+      "ornek_tr": "Büyük bir şehirde yaşıyorum."
+    },
+    {
+      "kelime": "clase",
+      "anlam": "sınıf",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Estoy en la clase de español.",
+      "ornek_tr": "İspanyolca dersindeyim."
+    },
+    {
+      "kelime": "nevera",
+      "anlam": "buzdolabı",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "La nevera está vacía.",
+      "ornek_tr": "Buzdolabı boş."
+    },
+    {
+      "kelime": "parque",
+      "anlam": "park",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Me gusta caminar en el parque.",
+      "ornek_tr": "Parkta yürümeyi seviyorum."
+    },
+    {
+      "kelime": "padre",
+      "anlam": "baba",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Mi padre es abogado.",
+      "ornek_tr": "Babam avukat."
+    },
+    {
+      "kelime": "madre",
+      "anlam": "anne",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Mi madre es periodista.",
+      "ornek_tr": "Annmem gazeteci."
+    },
+    {
+      "kelime": "abogado",
+      "anlam": "avukat",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Mi padre es abogado.",
+      "ornek_tr": "Babam avukat."
+    },
+    {
+      "kelime": "periodista",
+      "anlam": "gazeteci",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Mi madre es periodista.",
+      "ornek_tr": "Annmem gazeteci."
+    },
+    {
+      "kelime": "escritor",
+      "anlam": "yazar",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Nuestra madre es escritora.",
+      "ornek_tr": "Annmemiz yazar."
+    },
+    {
+      "kelime": "libro",
+      "anlam": "kitap",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Este libro es mío.",
+      "ornek_tr": "Bu kitap benim."
+    },
+    {
+      "kelime": "marido",
+      "anlam": "koca",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "¿Tu marido es profesor?",
+      "ornek_tr": "Kocan öğretmen mi?"
+    },
+    {
+      "kelime": "broma",
+      "anlam": "şaka",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "No me gustan tus bromas.",
+      "ornek_tr": "Şakalarını sevmedim."
+    },
+    {
+      "kelime": "vaso",
+      "anlam": "bardak",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "mi vaso",
+      "ornek_tr": "benim bardagım"
+    },
+    {
+      "kelime": "copa",
+      "anlam": "kadeh",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "mi copa",
+      "ornek_tr": "benim kadehim"
+    },
+    {
+      "kelime": "hola",
+      "anlam": "merhaba",
+      "tur": "ünlem",
+      "seviye": "A1",
+      "ornek": "¡Hola, Ana!",
+      "ornek_tr": "Merhaba, Ana!"
+    },
+    {
+      "kelime": "adjetivo",
+      "anlam": "sıfat",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "adjetivos posesivos",
+      "ornek_tr": "sahip sıfatları"
+    },
+    {
+      "kelime": "posesivo",
+      "anlam": "sahip",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "adjetivos posesivos",
+      "ornek_tr": "sahip sıfatları"
+    },
+    {
+      "kelime": "pronombre",
+      "anlam": "zamir",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "pronombres posesivos",
+      "ornek_tr": "sahip zamirleri"
+    },
+    {
+      "kelime": "libro",
+      "anlam": "kitap",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Es mi libro.",
+      "ornek_tr": "Bu benim kitabım."
+    },
+    {
+      "kelime": "gafas",
+      "anlam": "gözlük",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Tienes gafas.",
+      "ornek_tr": "Gözlüğün var."
+    },
+    {
+      "kelime": "falda",
+      "anlam": "etek",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Ella tiene una falda.",
+      "ornek_tr": "O bir etek giyiyor."
+    },
+    {
+      "kelime": "cartera",
+      "anlam": "canta",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Necesito una cartera.",
+      "ornek_tr": "Bir canta ihtiyacım var."
+    },
+    {
+      "kelime": "pasaporte",
+      "anlam": "pasaport",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Mi pasaporte está aquí.",
+      "ornek_tr": "Pasaportum burada."
+    },
+    {
+      "kelime": "radio",
+      "anlam": "radyo",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "La radio es mía.",
+      "ornek_tr": "Radyo benim."
+    },
+    {
+      "kelime": "mesa",
+      "anlam": "masa",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "La mesa es grande.",
+      "ornek_tr": "Masa büyük."
+    },
+    {
+      "kelime": "hija",
+      "anlam": "kız",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Ella es mi hija.",
+      "ornek_tr": "O benim kızım."
+    },
+    {
+      "kelime": "reloj",
+      "anlam": "saat",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Mi reloj es nuevo.",
+      "ornek_tr": "Saatim yeni."
+    },
+    {
+      "kelime": "amigos",
+      "anlam": "arkadaşlar",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Tengo muchos amigos.",
+      "ornek_tr": "Birçok arkadaşım var."
+    },
+    {
+      "kelime": "padres",
+      "anlam": "ebeveynler",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Mis padres son mayores.",
+      "ornek_tr": "Ebeveynlerim yaşlı."
+    },
+    {
+      "kelime": "vacaciones",
+      "anlam": "tatil",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Tengo vacaciones en julio.",
+      "ornek_tr": "Temmuz ayında tatile gidiyorum."
+    },
+    {
+      "kelime": "discos",
+      "anlam": "diskler",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Tengo muchos discos.",
+      "ornek_tr": "Birçok diskim var."
+    },
+    {
+      "kelime": "coche",
+      "anlam": "araba",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Tengo un coche rojo.",
+      "ornek_tr": "Kırmızı bir arabam var."
+    },
+    {
+      "kelime": "moto",
+      "anlam": "motosiklet",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Ella tiene una moto.",
+      "ornek_tr": "O bir motosiklet sürüyor."
+    },
+    {
+      "kelime": "amigos",
+      "anlam": "arkadaşlar",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Tengo amigos en la escuela.",
+      "ornek_tr": "Okulda arkadaşlarım var."
+    },
+    {
+      "kelime": "pueblo",
+      "anlam": "köy",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Vivo en un pueblo.",
+      "ornek_tr": "Bir köyde yaşıyorum."
+    },
+    {
+      "kelime": "hijos",
+      "anlam": "çocuklar",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Tengo dos hijos.",
+      "ornek_tr": "İki çocuğum var."
+    },
+    {
+      "kelime": "país",
+      "anlam": "ülke",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Vivo en España.",
+      "ornek_tr": "İspanya'da yaşıyorum."
+    },
+    {
+      "kelime": "casa",
+      "anlam": "ev",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Mi casa es azul.",
+      "ornek_tr": "Evim mavi."
+    },
+    {
+      "kelime": "ordenadores",
+      "anlam": "bilgisayarlar",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Tengo un ordenador.",
+      "ornek_tr": "Bir bilgisayarım var."
+    },
+    {
+      "kelime": "trabajo",
+      "anlam": "iş",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Tengo un trabajo nuevo.",
+      "ornek_tr": "Yeni bir işim var."
+    },
+    {
+      "kelime": "mío",
+      "anlam": "benim",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "Es mi libro.",
+      "ornek_tr": "Bu benim kitabım."
+    },
+    {
+      "kelime": "mía",
+      "anlam": "benim (dişil)",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "La casa es mía.",
+      "ornek_tr": "Ev benim."
+    },
+    {
+      "kelime": "míos",
+      "anlam": "benim (çoğul)",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "Los libros son míos.",
+      "ornek_tr": "Kitaplar benim."
+    },
+    {
+      "kelime": "mías",
+      "anlam": "benim (dişil çoğul)",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "Las casas son mías.",
+      "ornek_tr": "Evler benim."
+    },
+    {
+      "kelime": "tu",
+      "anlam": "senin",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "Es tu libro.",
+      "ornek_tr": "Bu senin kitabın."
+    },
+    {
+      "kelime": "tus",
+      "anlam": "senin (çoğul)",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "Los libros son tus.",
+      "ornek_tr": "Kitaplar senin."
+    },
+    {
+      "kelime": "su",
+      "anlam": "onun",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "Es su casa.",
+      "ornek_tr": "Bu onun evi."
+    },
+    {
+      "kelime": "sus",
+      "anlam": "onun (çoğul)",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "Los libros son sus.",
+      "ornek_tr": "Kitaplar onun."
+    },
+    {
+      "kelime": "nuestro",
+      "anlam": "bizim",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "Es nuestra casa.",
+      "ornek_tr": "Bu bizim evimiz."
+    },
+    {
+      "kelime": "nuestra",
+      "anlam": "bizim (dişil)",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "La casa es nuestra.",
+      "ornek_tr": "Ev bizim."
+    },
+    {
+      "kelime": "nuestros",
+      "anlam": "bizim (çoğul)",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "Los libros son nuestros.",
+      "ornek_tr": "Kitaplar bizim."
+    },
+    {
+      "kelime": "nuestras",
+      "anlam": "bizim (dişil çoğul)",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "Las casas son nuestras.",
+      "ornek_tr": "Evler bizim."
+    },
+    {
+      "kelime": "vuestro",
+      "anlam": "sizin",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "Es vuestra casa.",
+      "ornek_tr": "Bu sizin eviniz."
+    },
+    {
+      "kelime": "vuestros",
+      "anlam": "sizin (çoğul)",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "Los libros son vuestros.",
+      "ornek_tr": "Kitaplar sizin."
+    },
+    {
+      "kelime": "observar",
+      "anlam": "gözlemlemek",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Observa la imagen.",
+      "ornek_tr": "Resme bak."
+    },
+    {
+      "kelime": "pregunta",
+      "anlam": "soru",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "¿Tienes alguna pregunta?",
+      "ornek_tr": "Seni bir sorum var mı?"
+    },
+    {
+      "kelime": "fumar",
+      "anlam": "sigara içmek",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "No fumo.",
+      "ornek_tr": "Sigara içmem."
+    },
+    {
+      "kelime": "trabajar",
+      "anlam": "çalışmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Trabajo en una oficina.",
+      "ornek_tr": "Bir ofiste çalışıyorum."
+    },
+    {
+      "kelime": "hablar",
+      "anlam": "konuşmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Hablo español.",
+      "ornek_tr": "İspanyolca konuşurum."
+    },
+    {
+      "kelime": "vivir",
+      "anlam": "yaşamak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Vivo en Madrid.",
+      "ornek_tr": "Madrid'de yaşıyorum."
+    },
+    {
+      "kelime": "bailar",
+      "anlam": "dans etmek",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Me gusta bailar.",
+      "ornek_tr": "Dans etmeyi severim."
+    },
+    {
+      "kelime": "estudiar",
+      "anlam": "çalışmak (öğrenmek)",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Estudio español.",
+      "ornek_tr": "İspanyolca çalışıyorum."
+    },
+    {
+      "kelime": "escuchar",
+      "anlam": "dinlemek",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Escucho música.",
+      "ornek_tr": "Müzik dinlerim."
+    },
+    {
+      "kelime": "comer",
+      "anlam": "yemek yemek",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Como en un restaurante.",
+      "ornek_tr": "Bir restoranda yemek yerim."
+    },
+    {
+      "kelime": "ver",
+      "anlam": "görmek",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Veo la televisión.",
+      "ornek_tr": "Televizyon izlerim."
+    },
+    {
+      "kelime": "decir",
+      "anlam": "söylemek",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Digo la verdad.",
+      "ornek_tr": "Gerçeği söylerim."
+    },
+    {
+      "kelime": "escribir",
+      "anlam": "yazmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Escribo cartas.",
+      "ornek_tr": "Mektup yazarım."
+    },
+    {
+      "kelime": "beber",
+      "anlam": "içmek",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Bebo agua.",
+      "ornek_tr": "Su içerim."
+    },
+    {
+      "kelime": "deber",
+      "anlam": "borç olmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Debo dinero.",
+      "ornek_tr": "Borç param var."
+    },
+    {
+      "kelime": "vender",
+      "anlam": "satmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Vendo mi coche.",
+      "ornek_tr": "Arabamı satıyorum."
+    },
+    {
+      "kelime": "estudiar",
+      "anlam": "çalışmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Estudio español.",
+      "ornek_tr": "İspanyolca çalışıyorum."
+    },
+    {
+      "kelime": "bailar",
+      "anlam": "dans etmek",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Bailo flamenco.",
+      "ornek_tr": "Flamenko dansı yapıyorum."
+    },
+    {
+      "kelime": "comer",
+      "anlam": "yemek yemek",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Como poco.",
+      "ornek_tr": "Az yemek yiyorum."
+    },
+    {
+      "kelime": "mirar",
+      "anlam": "bakmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Miro la televisión.",
+      "ornek_tr": "Televizyon izliyorum."
+    },
+    {
+      "kelime": "leer",
+      "anlam": "okumak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Leo un libro.",
+      "ornek_tr": "Bir kitap okuyorum."
+    },
+    {
+      "kelime": "entrar",
+      "anlam": "girmek",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Entro en clase.",
+      "ornek_tr": "Sınıfa giriyorum."
+    },
+    {
+      "kelime": "practicar",
+      "anlam": "pratik yapmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Practico deporte.",
+      "ornek_tr": "Spor yapıyorum."
+    },
+    {
+      "kelime": "cambiar",
+      "anlam": "değiştirmek",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Cambio de ropa.",
+      "ornek_tr": "Giysi değiştiriyorum."
+    },
+    {
+      "kelime": "vivir",
+      "anlam": "yaşamak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Vivo en Madrid.",
+      "ornek_tr": "Madrid'de yaşıyorum."
+    },
+    {
+      "kelime": "flamenco",
+      "anlam": "flamenko",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Me gusta el flamenco.",
+      "ornek_tr": "Flamenko hoşuma gider."
+    },
+    {
+      "kelime": "barato",
+      "anlam": "ucuz",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "Este coche es barato.",
+      "ornek_tr": "Bu araba ucuz."
+    },
+    {
+      "kelime": "solo",
+      "anlam": "yalnız",
+      "tur": "zarf",
+      "seviye": "A1",
+      "ornek": "Voy solo.",
+      "ornek_tr": "Yalnız gidiyorum."
+    },
+    {
+      "kelime": "mucho",
+      "anlam": "çok",
+      "tur": "zarf",
+      "seviye": "A1",
+      "ornek": "Hablo mucho.",
+      "ornek_tr": "Çok konuşurum."
+    },
+    {
+      "kelime": "siempre",
+      "anlam": "her zaman",
+      "tur": "zarf",
+      "seviye": "A1",
+      "ornek": "Siempre estudio.",
+      "ornek_tr": "Her zaman çalışırım."
+    },
+    {
+      "kelime": "dominngo",
+      "anlam": "pazar",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "El domingo descanso.",
+      "ornek_tr": "Pazar günleri dinleniyorum."
+    },
+    {
+      "kelime": "restaurante",
+      "anlam": "restoran",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Voy al restaurante.",
+      "ornek_tr": "Restorana gidiyorum."
+    },
+    {
+      "kelime": "cine",
+      "anlam": "sinema",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Voy al cine.",
+      "ornek_tr": "Sinema gidiyorum."
+    },
+    {
+      "kelime": "periódico",
+      "anlam": "gazete",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Leo el periódico.",
+      "ornek_tr": "Gazete okuyorum."
+    },
+    {
+      "kelime": "Palacio",
+      "anlam": "saray",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Visito el Palacio.",
+      "ornek_tr": "Saray'ı ziyaret ediyorum."
+    },
+    {
+      "kelime": "Música",
+      "anlam": "müzik",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Me gusta la música.",
+      "ornek_tr": "Müzik hoşuma gider."
+    },
+    {
+      "kelime": "trabajar",
+      "anlam": "çalışmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Trabajo en una empresa.",
+      "ornek_tr": "Bir şirkette çalışıyorum."
+    },
+    {
+      "kelime": "casado",
+      "anlam": "evli",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "Estoy casado.",
+      "ornek_tr": "Evliyim."
+    },
+    {
+      "kelime": "profesor",
+      "anlam": "öğretmen",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Soy profesor.",
+      "ornek_tr": "Öğretmenim."
+    },
+    {
+      "kelime": "dibujo",
+      "anlam": "çizim",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Me gusta el dibujo.",
+      "ornek_tr": "Çizim hoşuma gider."
+    },
+    {
+      "kelime": "cena",
+      "anlam": "akşam yemeği",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Ceno con amigos.",
+      "ornek_tr": "Arkadaşlarla akşam yemeği yiyorum."
+    },
+    {
+      "kelime": "amigos",
+      "anlam": "arkadaşlar",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Tengo amigos.",
+      "ornek_tr": "Arkadaşlarım var."
+    },
+    {
+      "kelime": "hospital",
+      "anlam": "hastane",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Mi madre trabaja en un hospital.",
+      "ornek_tr": "Annem hastanede çalışıyor."
+    },
+    {
+      "kelime": "llamarse",
+      "anlam": "çağrılmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Me llamo Juan.",
+      "ornek_tr": "Benim adım Juan."
+    },
+    {
+      "kelime": "observar",
+      "anlam": "gözlemlemek",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Observo la imagen.",
+      "ornek_tr": "Resmi gözlemliyorum."
+    },
+    {
+      "kelime": "querer",
+      "anlam": "istemek",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Quiero un café.",
+      "ornek_tr": "Bir kahve istiyorum."
+    },
+    {
+      "kelime": "poder",
+      "anlam": "güçlü olmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Puedo hacerlo.",
+      "ornek_tr": "Onu yapabilirim."
+    },
+    {
+      "kelime": "pedir",
+      "anlam": "sipariş etmek",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Pido un libro.",
+      "ornek_tr": "Bir kitap sipariş ediyorum."
+    },
+    {
+      "kelime": "jugar",
+      "anlam": "oynamak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Juego al fútbol.",
+      "ornek_tr": "Futbol oynuyorum."
+    },
+    {
+      "kelime": "traer",
+      "anlam": "getirmek",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Traigo un regalo.",
+      "ornek_tr": "Bir hediye getiriyorum."
+    },
+    {
+      "kelime": "saber",
+      "anlam": "bilmek",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Sé tu nombre.",
+      "ornek_tr": "Senin adını biliyorum."
+    },
+    {
+      "kelime": "salir",
+      "anlam": "çıkmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Salgo a la calle.",
+      "ornek_tr": "Sokağa çıkıyorum."
+    },
+    {
+      "kelime": "decir",
+      "anlam": "söylemek",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Digo la verdad.",
+      "ornek_tr": "Gerçeği söylüyorum."
+    },
+    {
+      "kelime": "oír",
+      "anlam": "duymak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Oigo música.",
+      "ornek_tr": "Müzik duyuyorum."
+    },
+    {
+      "kelime": "tener",
+      "anlam": "sahip olmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Tengo un coche.",
+      "ornek_tr": "Bir araba sahibiyim."
+    },
+    {
+      "kelime": "venir",
+      "anlam": "gelmek",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Vengo de Madrid.",
+      "ornek_tr": "Madrid'den geliyorum."
+    },
+    {
+      "kelime": "coger",
+      "anlam": "yakalamak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Cogo el autobús.",
+      "ornek_tr": "Otobüsü yakalıyorum."
+    },
+    {
+      "kelime": "conocer",
+      "anlam": "tanımak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Conozco a tu hermano.",
+      "ornek_tr": "Senin kardeşini tanıyorum."
+    },
+    {
+      "kelime": "dar",
+      "anlam": "vermek",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Doy un regalo.",
+      "ornek_tr": "Bir hediye veriyorum."
+    },
+    {
+      "kelime": "hacer",
+      "anlam": "yapmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Hago un ejercicio.",
+      "ornek_tr": "Bir alıştırma yapıyorum."
+    },
+    {
+      "kelime": "poner",
+      "anlam": "koymak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Pongo un libro aquí.",
+      "ornek_tr": "Buraya bir kitap koyuyorum."
+    },
+    {
+      "kelime": "hablar",
+      "anlam": "konuşmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Hablo español.",
+      "ornek_tr": "İspanyolca konuşurum."
+    },
+    {
+      "kelime": "ir",
+      "anlam": "gitmek",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Voy al cine.",
+      "ornek_tr": "Sinema'ya gidiyorum."
+    },
+    {
+      "kelime": "volver",
+      "anlam": "dönmek",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Vuelvo a casa.",
+      "ornek_tr": "Eve dönüyorum."
+    },
+    {
+      "kelime": "venir",
+      "anlam": "gelmek",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Yo vengo de España.",
+      "ornek_tr": "Ben İspanya'dan geliyorum."
+    },
+    {
+      "kelime": "empezar",
+      "anlam": "başlamak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "La película empieza a las 8.",
+      "ornek_tr": "Film saat 8'de başlıyor."
+    },
+    {
+      "kelime": "cerrar",
+      "anlam": "kapatmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Cierro la puerta.",
+      "ornek_tr": "Kapıyı kapatıyorum."
+    },
+    {
+      "kelime": "poder",
+      "anlam": "olabilmek",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Puedo ir al cine.",
+      "ornek_tr": "Sinema'ya gidebilirim."
+    },
+    {
+      "kelime": "entender",
+      "anlam": "anlamak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Entiendo lo que dices.",
+      "ornek_tr": "Dediğini anlıyorum."
+    },
+    {
+      "kelime": "poner",
+      "anlam": "koymak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Pongo la mesa.",
+      "ornek_tr": "Masayı koyuyorum."
+    },
+    {
+      "kelime": "coger",
+      "anlam": "almak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Cogo el autobús.",
+      "ornek_tr": "Otobüse biniyim."
+    },
+    {
+      "kelime": "encontrar",
+      "anlam": "bulmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Encuentro mis llaves.",
+      "ornek_tr": "Anahtarlarımı buluyorum."
+    },
+    {
+      "kelime": "saber",
+      "anlam": "bilmek",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Sé tu nombre.",
+      "ornek_tr": "İsmini biliyorum."
+    },
+    {
+      "kelime": "hacer",
+      "anlam": "yapmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Hago mi tarea.",
+      "ornek_tr": "Ödevimi yapıyorum."
+    },
+    {
+      "kelime": "abrir",
+      "anlam": "açmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Abro la ventana.",
+      "ornek_tr": "Pencereyi açıyorum."
+    },
+    {
+      "kelime": "ir",
+      "anlam": "gitmek",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Voy al parque.",
+      "ornek_tr": "Park'a gidiyorum."
+    },
+    {
+      "kelime": "salir",
+      "anlam": "çıkmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Salgo de casa.",
+      "ornek_tr": "Evimden çıkıyorum."
+    },
+    {
+      "kelime": "volver",
+      "anlam": "dönmek",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Vuelvo a casa.",
+      "ornek_tr": "Eve dönüyorum."
+    },
+    {
+      "kelime": "llegar",
+      "anlam": "varmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Llego a la estación.",
+      "ornek_tr": "İstasyona varıyorum."
+    },
+    {
+      "kelime": "costa",
+      "anlam": "maliyet",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "¿Cuánto cuesta?",
+      "ornek_tr": "Ne kadar?"
+    },
+    {
+      "kelime": "dormir",
+      "anlam": "uyumak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Duermo ocho horas.",
+      "ornek_tr": "Sekiz saat uyuyorum."
+    },
+    {
+      "kelime": "conocer",
+      "anlam": "tanımak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Conozco a tu hermano.",
+      "ornek_tr": "Kardeşini tanıyorum."
+    },
+    {
+      "kelime": "oír",
+      "anlam": "duymak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Yo oigo a los niños.",
+      "ornek_tr": "Ben çocukları duyuyorum."
+    },
+    {
+      "kelime": "salir",
+      "anlam": "çıkmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Salgo por la noche.",
+      "ornek_tr": "Geceleri dışarı çıkıyorum."
+    },
+    {
+      "kelime": "dormir",
+      "anlam": "uyumak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Duermo bien.",
+      "ornek_tr": "İyi uyuyorum."
+    },
+    {
+      "kelime": "hacer",
+      "anlam": "yapmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Hago algún deporte.",
+      "ornek_tr": "Bir spor yapıyorum."
+    },
+    {
+      "kelime": "tener",
+      "anlam": "sahip olmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Tengo un diccionario.",
+      "ornek_tr": "Bir sözlüğüm var."
+    },
+    {
+      "kelime": "poder",
+      "anlam": "güçlü olmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Puedo abrir la puerta.",
+      "ornek_tr": "Kapıyı açabilirim."
+    },
+    {
+      "kelime": "saber",
+      "anlam": "bilmek",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Sé tocar la guitarra.",
+      "ornek_tr": "Gitar çalmayı biliyorum."
+    },
+    {
+      "kelime": "entender",
+      "anlam": "anlamak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Entiendo alemán.",
+      "ornek_tr": "Almanca anlıyorum."
+    },
+    {
+      "kelime": "pensar",
+      "anlam": "düşünmek",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Pienso en mis vacaciones.",
+      "ornek_tr": "Tatilimi düşünüyorum."
+    },
+    {
+      "kelime": "calentar",
+      "anlam": "ısıtmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Caliento el agua.",
+      "ornek_tr": "Suyumu ısıtıyorum."
+    },
+    {
+      "kelime": "contar",
+      "anlam": "saymak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Cuento hasta diez.",
+      "ornek_tr": "On'a kadar sayıyorum."
+    },
+    {
+      "kelime": "regar",
+      "anlam": "sulamak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Riego las plantas.",
+      "ornek_tr": "Bitkileri suluyorum."
+    },
+    {
+      "kelime": "merendar",
+      "anlam": "öğleden sonra atıştırmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Merendamos a las cinco.",
+      "ornek_tr": "Beşte öğleden sonra atıştırmalık yiyoruz."
+    },
+    {
+      "kelime": "cerrar",
+      "anlam": "kapatmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Cierro la puerta.",
+      "ornek_tr": "Kapıyı kapatıyorum."
+    },
+    {
+      "kelime": "colgar",
+      "anlam": "asmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Cuelgo la ropa.",
+      "ornek_tr": "Giysileri asıyorum."
+    },
+    {
+      "kelime": "pedir",
+      "anlam": "istemek",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Pido ayuda.",
+      "ornek_tr": "Yardım istiyorum."
+    },
+    {
+      "kelime": "salir",
+      "anlam": "çıkmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Salgo de casa.",
+      "ornek_tr": "Evdən çıkıyorum."
+    },
+    {
+      "kelime": "decir",
+      "anlam": "söylemek",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Digo la verdad.",
+      "ornek_tr": "Gerçeği söylüyorum."
+    },
+    {
+      "kelime": "conducir",
+      "anlam": "sürmek",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Conduzco un coche.",
+      "ornek_tr": "Bir araba sürüyorum."
+    },
+    {
+      "kelime": "sonar",
+      "anlam": "çınlamak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Suena el teléfono.",
+      "ornek_tr": "Telefon çalıyor."
+    },
+    {
+      "kelime": "volar",
+      "anlam": "uçmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Vuelo en avión.",
+      "ornek_tr": "Uçakla uçuyorum."
+    },
+    {
+      "kelime": "calentar",
+      "anlam": "ısıtmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Caliento el agua.",
+      "ornek_tr": "Suyumu ısıtıyorum."
+    },
+    {
+      "kelime": "conocer",
+      "anlam": "tanımak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Conozco a Juan.",
+      "ornek_tr": "Juan'ı tanıyorum."
+    },
+    {
+      "kelime": "costar",
+      "anlam": "maliyetine gelmek",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Cuesta mucho.",
+      "ornek_tr": "Pahalıya mal oluyor."
+    },
+    {
+      "kelime": "comenzar",
+      "anlam": "başlamak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Comienzo a leer.",
+      "ornek_tr": "Okumaya başlıyorum."
+    },
+    {
+      "kelime": "ser",
+      "anlam": "olmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Yo soy estudiante.",
+      "ornek_tr": "Ben öğrenciim."
+    },
+    {
+      "kelime": "estar",
+      "anlam": "bulunmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Estoy en casa.",
+      "ornek_tr": "Evdeyim."
+    },
+    {
+      "kelime": "tener",
+      "anlam": "sahne olmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Tengo un libro.",
+      "ornek_tr": "Bir kitabım var."
+    },
+    {
+      "kelime": "hambre",
+      "anlam": "açlık",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Tengo hambre.",
+      "ornek_tr": "Açım."
+    },
+    {
+      "kelime": "alto",
+      "anlam": "yüksek",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "Mi hermano es alto.",
+      "ornek_tr": "Kardeşim uzun boylu."
+    },
+    {
+      "kelime": "rico",
+      "anlam": "zengin",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "Mi novio es rico.",
+      "ornek_tr": "Geleceğim zengin."
+    },
+    {
+      "kelime": "inteligente",
+      "anlam": "akıllı",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "El presidente es inteligente.",
+      "ornek_tr": "Başkan akıllı."
+    },
+    {
+      "kelime": "bueno",
+      "anlam": "iyi",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "Andrés es un hombre bueno.",
+      "ornek_tr": "Andrés iyi bir adam."
+    },
+    {
+      "kelime": "enferma",
+      "anlam": "hasta",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "Mi madre no está enferma.",
+      "ornek_tr": "Annem hasta değil."
+    },
+    {
+      "kelime": "cansado",
+      "anlam": "yorgun",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "Estoy cansado.",
+      "ornek_tr": "Yorgunum."
+    },
+    {
+      "kelime": "nervioso",
+      "anlam": "sinirli",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "Estoy nervioso.",
+      "ornek_tr": "Sinirliyim."
+    },
+    {
+      "kelime": "viejo",
+      "anlam": "eski",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "Mi coche es viejo.",
+      "ornek_tr": "Arabam eski."
+    },
+    {
+      "kelime": "nuevo",
+      "anlam": "yeni",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "Mi coche es nuevo.",
+      "ornek_tr": "Arabam yeni."
+    },
+    {
+      "kelime": "grande",
+      "anlam": "büyük",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "Mi casa es grande.",
+      "ornek_tr": "Evim büyük."
+    },
+    {
+      "kelime": "pequeño",
+      "anlam": "küçük",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "Mi hermano es pequeño.",
+      "ornek_tr": "Kardeşim küçük."
+    },
+    {
+      "kelime": "abierto",
+      "anlam": "açık",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "La puerta está abierta.",
+      "ornek_tr": "Kapı açık."
+    },
+    {
+      "kelime": "cerrado",
+      "anlam": "kapalı",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "La tienda está cerrada.",
+      "ornek_tr": "Dükkan kapalı."
+    },
+    {
+      "kelime": "caliente",
+      "anlam": "sıcak",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "El café está caliente.",
+      "ornek_tr": "Kahve sıcak."
+    },
+    {
+      "kelime": "frío",
+      "anlam": "soğuk",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "El agua está fría.",
+      "ornek_tr": "Su soğuk."
+    },
+    {
+      "kelime": "lejos",
+      "anlam": "uzak",
+      "tur": "zarf",
+      "seviye": "A1",
+      "ornek": "La casa está lejos.",
+      "ornek_tr": "Evim uzak."
+    },
+    {
+      "kelime": "cerca",
+      "anlam": "yakın",
+      "tur": "zarf",
+      "seviye": "A1",
+      "ornek": "La casa está cerca.",
+      "ornek_tr": "Evim yakın."
+    },
+    {
+      "kelime": "observar",
+      "anlam": "gözlemlemek",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Observa la imagen.",
+      "ornek_tr": "Resme bak."
+    },
+    {
+      "kelime": "levantarse",
+      "anlam": "kalkmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Me levanto a las 7.",
+      "ornek_tr": "7'de kalkarım."
+    },
+    {
+      "kelime": "acostarse",
+      "anlam": "yatmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Me acuesto a las 10.",
+      "ornek_tr": "10'da yatarım."
+    },
+    {
+      "kelime": "bañarse",
+      "anlam": "yıkanmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Me baño todos los días.",
+      "ornek_tr": "Her gün yıkanırım."
+    },
+    {
+      "kelime": "ducharse",
+      "anlam": "duş almak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Me ducho por la mañana.",
+      "ornek_tr": "Sabah duş alırım."
+    },
+    {
+      "kelime": "vestirse",
+      "anlam": "giyinmek",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Me visto rápidamente.",
+      "ornek_tr": "Hızlı giyinirim."
+    },
+    {
+      "kelime": "afeitarse",
+      "anlam": "tıraş olmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Me afeito cada mañana.",
+      "ornek_tr": "Her sabah tıraş olurum."
+    },
+    {
+      "kelime": "llamarse",
+      "anlam": "çağrılmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Me llamo Juan.",
+      "ornek_tr": "Benim adım Juan."
+    },
+    {
+      "kelime": "quedarse",
+      "anlam": "kalmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Me quedo en casa.",
+      "ornek_tr": "Evde kalıyorum."
+    },
+    {
+      "kelime": "casarse",
+      "anlam": "evlenmek",
+      "tur": "fiil",
+      "seviye": "A2",
+      "ornek": "Se casan el próximo año.",
+      "ornek_tr": "Gelecek yıl evlenecekler."
+    },
+    {
+      "kelime": "prohibido",
+      "anlam": "yasak",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "Está prohibido bañarse.",
+      "ornek_tr": "Yıkanmak yasaktır."
+    },
+    {
+      "kelime": "venga",
+      "anlam": "hadi",
+      "tur": "ünlem",
+      "seviye": "A1",
+      "ornek": "Venga, vamos!",
+      "ornek_tr": "Hadi, gidelim!"
+    },
+    {
+      "kelime": "¿quién",
+      "anlam": "kim",
+      "tur": "soruluk zamir",
+      "seviye": "A1",
+      "ornek": "¿Quién es?",
+      "ornek_tr": "Kim o?"
+    },
+    {
+      "kelime": "¿cómo",
+      "anlam": "nasıl",
+      "tur": "soruluk zarf",
+      "seviye": "A1",
+      "ornek": "¿Cómo estás?",
+      "ornek_tr": "Nasılsın?"
+    },
+    {
+      "kelime": "ya",
+      "anlam": "zaten",
+      "tur": "zarf",
+      "seviye": "A1",
+      "ornek": "Ya lo he hecho.",
+      "ornek_tr": "Zaten yaptım."
+    },
+    {
+      "kelime": "tú",
+      "anlam": "sen",
+      "tur": "kişisel zamir",
+      "seviye": "A1",
+      "ornek": "Tú eres mi amigo.",
+      "ornek_tr": "Sen benim arkadaşım."
+    },
+    {
+      "kelime": "te",
+      "anlam": "seni",
+      "tur": "kişisel zamir",
+      "seviye": "A1",
+      "ornek": "Te voy a dar un regalo.",
+      "ornek_tr": "Sana bir hediye vereceğim."
+    },
+    {
+      "kelime": "se",
+      "anlam": "onu",
+      "tur": "kişisel zamir",
+      "seviye": "A1",
+      "ornek": "Se lo doy.",
+      "ornek_tr": "Ona veriyorum."
+    },
+    {
+      "kelime": "nos",
+      "anlam": "bizi",
+      "tur": "kişisel zamir",
+      "seviye": "A1",
+      "ornek": "Nos vamos juntos.",
+      "ornek_tr": "Beraber gidiyoruz."
+    },
+    {
+      "kelime": "os",
+      "anlam": "sizi",
+      "tur": "kişisel zamir",
+      "seviye": "A1",
+      "ornek": "Os doy un consejo.",
+      "ornek_tr": "Sizlere bir tavsiye veriyorum."
+    },
+    {
+      "kelime": "me",
+      "anlam": "beni",
+      "tur": "kişisel zamir",
+      "seviye": "A1",
+      "ornek": "Me duele la cabeza.",
+      "ornek_tr": "Başım ağrıyor."
+    },
+    {
+      "kelime": "a",
+      "anlam": "için",
+      "tur": "edat",
+      "seviye": "A1",
+      "ornek": "Voy a la tienda.",
+      "ornek_tr": "Dükkana gidiyorum."
+    },
+    {
+      "kelime": "de",
+      "anlam": "dan",
+      "tur": "edat",
+      "seviye": "A1",
+      "ornek": "Soy de España.",
+      "ornek_tr": "İspanya'danım."
+    },
+    {
+      "kelime": "en",
+      "anlam": "içinde",
+      "tur": "edat",
+      "seviye": "A1",
+      "ornek": "Estoy en casa.",
+      "ornek_tr": "Evdeyim."
+    },
+    {
+      "kelime": "con",
+      "anlam": "ile",
+      "tur": "edat",
+      "seviye": "A1",
+      "ornek": "Voy con mis amigos.",
+      "ornek_tr": "Arkadaşlarımla gidiyorum."
+    },
+    {
+      "kelime": "por",
+      "anlam": "tarafından",
+      "tur": "edat",
+      "seviye": "A1",
+      "ornek": "Es un regalo por ti.",
+      "ornek_tr": "Bu senin için bir hediye."
+    },
+    {
+      "kelime": "para",
+      "anlam": "için",
+      "tur": "edat",
+      "seviye": "A1",
+      "ornek": "Esto es para ti.",
+      "ornek_tr": "Bu senin için."
+    },
+    {
+      "kelime": "levantarse",
+      "anlam": "uğraşmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Me levanto a las 7.",
+      "ornek_tr": "Ben 7'de kalkarım."
+    },
+    {
+      "kelime": "ducharse",
+      "anlam": "duş almak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Me ducho todas las mañanas.",
+      "ornek_tr": "Her sabah duş alırım."
+    },
+    {
+      "kelime": "afeitarse",
+      "anlam": "tıraş olmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Él se afeita con maquinilla.",
+      "ornek_tr": "O, jiletle tıraş olur."
+    },
+    {
+      "kelime": "lavarse",
+      "anlam": "yıkanmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Me lavo los dientes.",
+      "ornek_tr": "Dişlerimi fırçalarım."
+    },
+    {
+      "kelime": "acostarse",
+      "anlam": "yatmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Me acuesto a las 11.",
+      "ornek_tr": "Ben 11'de yatıyorum."
+    },
+    {
+      "kelime": "bañarse",
+      "anlam": "banyoda yıkanmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Nos bañamos en la piscina.",
+      "ornek_tr": "Havuzda yıkanıyoruz."
+    },
+    {
+      "kelime": "pintarse",
+      "anlam": "boyanmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Ella se pinta las uñas.",
+      "ornek_tr": "O, tırnaklarını boyar."
+    },
+    {
+      "kelime": "encontrarse",
+      "anlam": "buluşmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Nos encontramos en el parque.",
+      "ornek_tr": "Parkta buluşuyoruz."
+    },
+    {
+      "kelime": "despertar",
+      "anlam": "uyandırmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Me despierto a las 7.",
+      "ornek_tr": "Ben 7'de uyanıyorum."
+    },
+    {
+      "kelime": "sentarse",
+      "anlam": "oturmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Se sienta en la silla.",
+      "ornek_tr": "O, sandalyeye oturur."
+    },
+    {
+      "kelime": "separarse",
+      "anlam": "ayrılmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Se separan los niños.",
+      "ornek_tr": "Çocuklar ayrılıyor."
+    },
+    {
+      "kelime": "acordarse",
+      "anlam": "hatırlamak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Me acuerdo de ti.",
+      "ornek_tr": "Seni hatırlıyorum."
+    },
+    {
+      "kelime": "uso",
+      "anlam": "kullanım",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "El uso del diccionario es importante.",
+      "ornek_tr": "Sözlüğün kullanımı önemlidir."
+    },
+    {
+      "kelime": "números",
+      "anlam": "sayılar",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Los números son importantes en matemáticas.",
+      "ornek_tr": "Matematikte sayılar önemlidir."
+    },
+    {
+      "kelime": "cardinales",
+      "anlam": "asıl sayılar",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "Los números cardinales son usados para contar.",
+      "ornek_tr": "Asıl sayılar saymak için kullanılır."
+    },
+    {
+      "kelime": "ordinales",
+      "anlam": "sıra sayıları",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "Los números ordinales indican orden.",
+      "ornek_tr": "Sıra sayıları sırayı gösterir."
+    },
+    {
+      "kelime": "delante",
+      "anlam": "önünde",
+      "tur": "edat",
+      "seviye": "A1",
+      "ornek": "El parque está delante de la casa.",
+      "ornek_tr": "Park evin önünde."
+    },
+    {
+      "kelime": "detrás",
+      "anlam": "arkasında",
+      "tur": "edat",
+      "seviye": "A1",
+      "ornek": "La casa está detrás del parque.",
+      "ornek_tr": "Ev parkın arkasında."
+    },
+    {
+      "kelime": "ejercicios",
+      "anlam": "alıştırmalar",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Los ejercicios son importantes para aprender.",
+      "ornek_tr": "Alıştırmalar öğrenmek için önemlidir."
+    },
+    {
+      "kelime": "correctores",
+      "anlam": "doğruluk",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "La correctores son útiles para mejorar.",
+      "ornek_tr": "Doğruluk geliştirmek için kullanışlıdır."
+    },
+    {
+      "kelime": "escibir",
+      "anlam": "yazmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Yo escribo una carta.",
+      "ornek_tr": "Ben bir mektup yazıyorum."
+    },
+    {
+      "kelime": "leer",
+      "anlam": "okumak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Yo leo un libro.",
+      "ornek_tr": "Ben bir kitap okuyorum."
+    },
+    {
+      "kelime": "reloj",
+      "anlam": "saat",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "El reloj es azul.",
+      "ornek_tr": "Saat mavidir."
+    },
+    {
+      "kelime": "ejercicios",
+      "anlam": "alıştırmalar",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Los ejercicios son fáciles.",
+      "ornek_tr": "Alıştırmalar kolaydır."
+    },
+    {
+      "kelime": "correcciones",
+      "anlam": "düzeltmeler",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Necesito las correcciones.",
+      "ornek_tr": "Düzeltmelere ihtiyacım var."
+    },
+    {
+      "kelime": "esciba",
+      "anlam": "yaz",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Esciba su nombre.",
+      "ornek_tr": "İsmini yaz."
+    },
+    {
+      "kelime": "diligencias",
+      "anlam": "işlemler",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "Las diligencias son importantes.",
+      "ornek_tr": "İşlemler önemlidir."
+    },
+    {
+      "kelime": "viva",
+      "anlam": "yaşasın",
+      "tur": "ünlem",
+      "seviye": "A1",
+      "ornek": "¡Viva España!",
+      "ornek_tr": "İspanya yaşasın!"
+    },
+    {
+      "kelime": "primero",
+      "anlam": "ilk",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "Este es mi primer libro.",
+      "ornek_tr": "Bu benim ilk kitabım."
+    },
+    {
+      "kelime": "segundo",
+      "anlam": "ikinci",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "Es la segunda planta.",
+      "ornek_tr": "İkinci kattadır."
+    },
+    {
+      "kelime": "tercero",
+      "anlam": "üçüncü",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "Es el tercer piso.",
+      "ornek_tr": "Üçüncü kattır."
+    },
+    {
+      "kelime": "escritura",
+      "anlam": "yazı",
+      "tur": "isim",
+      "seviye": "A1",
+      "ornek": "La escritura es importante.",
+      "ornek_tr": "Yazı önemlidir."
+    },
+    {
+      "kelime": "correcto",
+      "anlam": "doğru",
+      "tur": "sıfat",
+      "seviye": "A1",
+      "ornek": "La respuesta es correcta.",
+      "ornek_tr": "Cevap doğrudur."
+    },
+    {
+      "kelime": "a",
+      "anlam": "a",
+      "tur": "edat",
+      "seviye": "A1",
+      "ornek": "Voy a la tienda.",
+      "ornek_tr": "Dükkana gidiyorum."
+    },
+    {
+      "kelime": "de",
+      "anlam": "dan, -den",
+      "tur": "edat",
+      "seviye": "A1",
+      "ornek": "Soy de Turquía.",
+      "ornek_tr": "Türkiye'denim."
+    },
+    {
+      "kelime": "en",
+      "anlam": "de, -da",
+      "tur": "edat",
+      "seviye": "A1",
+      "ornek": "Estoy en la biblioteca.",
+      "ornek_tr": "Kütüphanedeyim."
+    },
+    {
+      "kelime": "con",
+      "anlam": "ile",
+      "tur": "edat",
+      "seviye": "A1",
+      "ornek": "Hablo con mi amigo.",
+      "ornek_tr": "Arkadaşım ile konuşurum."
+    },
+    {
+      "kelime": "sin",
+      "anlam": "olmadan",
+      "tur": "edat",
+      "seviye": "A1",
+      "ornek": "No puedo vivir sin ti.",
+      "ornek_tr": "Sen olmadan yaşayamam."
+    },
+    {
+      "kelime": "para",
+      "anlam": "için",
+      "tur": "edat",
+      "seviye": "A1",
+      "ornek": "Este regalo es para ti.",
+      "ornek_tr": "Bu hediye senin için."
+    },
+    {
+      "kelime": "por",
+      "anlam": "tarafından",
+      "tur": "edat",
+      "seviye": "A1",
+      "ornek": "Es un regalo por tu cumpleaños.",
+      "ornek_tr": "Doğum günün için bir hediye."
+    },
+    {
+      "kelime": "observar",
+      "anlam": "gözlemlemek",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Observo el coche.",
+      "ornek_tr": "Arabayı gözlemliyorum."
+    },
+    {
+      "kelime": "limpiar",
+      "anlam": "temizlemek",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Limpio el coche.",
+      "ornek_tr": "Arabayı temizliyorum."
+    },
+    {
+      "kelime": "cantar",
+      "anlam": "şarkı söylemek",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Canto una canción.",
+      "ornek_tr": "Bir şarkı söylüyorum."
+    },
+    {
+      "kelime": "beber",
+      "anlam": "içmek",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Bebo agua.",
+      "ornek_tr": "Su içiyorum."
+    },
+    {
+      "kelime": "vivir",
+      "anlam": "yaşamak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Vivo en Madrid.",
+      "ornek_tr": "Madrid'de yaşıyorum."
+    },
+    {
+      "kelime": "leer",
+      "anlam": "okumak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Leo un libro.",
+      "ornek_tr": "Bir kitap okuyorum."
+    },
+    {
+      "kelime": "dormir",
+      "anlam": "uyumak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Duermo mucho.",
+      "ornek_tr": "Çok uyuyorum."
+    },
+    {
+      "kelime": "hablar",
+      "anlam": "konuşmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Hablo español.",
+      "ornek_tr": "İspanyolca konuşurum."
+    },
+    {
+      "kelime": "poner",
+      "anlam": "koymak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Pongo el libro aquí.",
+      "ornek_tr": "Kitabı buraya koyuyorum."
+    },
+    {
+      "kelime": "tomar",
+      "anlam": "almak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Tomo un vaso de agua.",
+      "ornek_tr": "Bir bardak su alıyorum."
+    },
+    {
+      "kelime": "bailar",
+      "anlam": "dans etmek",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Bailo salsa.",
+      "ornek_tr": "Salsa dansı ediyorum."
+    },
+    {
+      "kelime": "hacer",
+      "anlam": "yapmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Hago mi tarea.",
+      "ornek_tr": "Ödevimi yapıyorum."
+    },
+    {
+      "kelime": "estudiar",
+      "anlam": "çalışmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Estudio para el examen.",
+      "ornek_tr": "Sınav için çalışıyorum."
+    },
+    {
+      "kelime": "salir",
+      "anlam": "çıkmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Salgo con mis amigos.",
+      "ornek_tr": "Arkadaşlarım ile dışarı çıkıyorum."
+    },
+    {
+      "kelime": "ver",
+      "anlam": "görmek",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Veo una película.",
+      "ornek_tr": "Bir film izliyorum."
+    },
+    {
+      "kelime": "escribir",
+      "anlam": "yazmak",
+      "tur": "fiil",
+      "seviye": "A1",
+      "ornek": "Escribo una carta.",
+      "ornek_tr": "Bir mektup yazıyorum."
+    }
+  ],
+  "fiil_cekimleri": [
+    {
+      "fiil": "ser",
+      "zaman": "presente",
+      "yo": "soy",
+      "tu": "eres",
+      "el": "es",
+      "nosotros": "somos",
+      "vosotros": "sois",
+      "ellos": "son"
+    },
+    {
+      "fiil": "ser",
+      "zaman": "presente",
+      "yo": "soy",
+      "tú": "eres",
+      "él/ella/usted": "es",
+      "nosotros/as": "somos",
+      "vosotros/as": "sois",
+      "ellos/as": "son"
+    },
+    {
+      "fiil": "estar",
+      "zaman": "presente",
+      "yo": "estoy",
+      "tu": "estás",
+      "el": "está",
+      "nosotros": "estamos",
+      "vosotros": "estáis",
+      "ellos": "están"
+    },
+    {
+      "fiil": "trabajar",
+      "zaman": "presente",
+      "yo": "trabajo",
+      "tú": "trabajas",
+      "él/ella/usted": "trabaja",
+      "nosotros/as": "trabajamos",
+      "vosotros/as": "trabajáis",
+      "ellos/as": "trabajan"
+    },
+    {
+      "fiil": "hablar",
+      "zaman": "presente",
+      "yo": "hablo",
+      "tú": "hablas",
+      "él/ella/usted": "habla",
+      "nosotros/as": "hablamos",
+      "vosotros/as": "habláis",
+      "ellos/as": "hablan"
+    },
+    {
+      "fiil": "vivir",
+      "zaman": "presente",
+      "yo": "vivo",
+      "tú": "vives",
+      "él/ella/usted": "vive",
+      "nosotros/as": "vivimos",
+      "vosotros/as": "vivís",
+      "ellos/as": "viven"
+    },
+    {
+      "fiil": "bailar",
+      "zaman": "presente",
+      "yo": "bailo",
+      "tú": "bailas",
+      "él/ella/usted": "baila",
+      "nosotros/as": "bailamos",
+      "vosotros/as": "bailáis",
+      "ellos/as": "bailan"
+    },
+    {
+      "fiil": "estudiar",
+      "zaman": "presente",
+      "yo": "estudio",
+      "tú": "estudias",
+      "él/ella/usted": "estudia",
+      "nosotros/as": "estudiamos",
+      "vosotros/as": "estudiáis",
+      "ellos/as": "estudian"
+    },
+    {
+      "fiil": "escuchar",
+      "zaman": "presente",
+      "yo": "escucho",
+      "tú": "escuchas",
+      "él/ella/usted": "escucha",
+      "nosotros/as": "escuchamos",
+      "vosotros/as": "escucháis",
+      "ellos/as": "escuchan"
+    },
+    {
+      "fiil": "comer",
+      "zaman": "presente",
+      "yo": "como",
+      "tú": "comes",
+      "él/ella/usted": "come",
+      "nosotros/as": "comemos",
+      "vosotros/as": "coméis",
+      "ellos/as": "comen"
+    },
+    {
+      "fiil": "ver",
+      "zaman": "presente",
+      "yo": "veo",
+      "tú": "ves",
+      "él/ella/usted": "ve",
+      "nosotros/as": "vemos",
+      "vosotros/as": "veis",
+      "ellos/as": "ven"
+    },
+    {
+      "fiil": "beber",
+      "zaman": "presente",
+      "yo": "bebo",
+      "tú": "bebes",
+      "él/ella/usted": "bebe",
+      "nosotros/as": "bebemos",
+      "vosotros/as": "bebéis",
+      "ellos/as": "beben"
+    },
+    {
+      "fiil": "escribir",
+      "zaman": "presente",
+      "yo": "escribo",
+      "tú": "escribes",
+      "él/ella/usted": "escribe",
+      "nosotros/as": "escribimos",
+      "vosotros/as": "escribís",
+      "ellos/as": "escriben"
+    },
+    {
+      "fiil": "deber",
+      "zaman": "presente",
+      "yo": "debo",
+      "tú": "debes",
+      "él/ella/usted": "debe",
+      "nosotros/as": "debemos",
+      "vosotros/as": "debéis",
+      "ellos/as": "deben"
+    },
+    {
+      "fiil": "vender",
+      "zaman": "presente",
+      "yo": "vendo",
+      "tú": "vendes",
+      "él": "vende",
+      "nosotros": "vendemos",
+      "vosotros": "vendéis",
+      "ellos": "venden"
+    },
+    {
+      "fiil": "estudiar",
+      "zaman": "presente",
+      "yo": "estudio",
+      "tú": "estudias",
+      "él": "estudia",
+      "nosotros": "estudiamos",
+      "vosotros": "estudiáis",
+      "ellos": "estudian"
+    },
+    {
+      "fiil": "bailar",
+      "zaman": "presente",
+      "yo": "bailo",
+      "tú": "bailas",
+      "él": "baila",
+      "nosotros": "bailamos",
+      "vosotros": "bailáis",
+      "ellos": "bailan"
+    },
+    {
+      "fiil": "comer",
+      "zaman": "presente",
+      "yo": "como",
+      "tú": "comes",
+      "él": "come",
+      "nosotros": "comemos",
+      "vosotros": "coméis",
+      "ellos": "comen"
+    },
+    {
+      "fiil": "mirar",
+      "zaman": "presente",
+      "yo": "moro",
+      "tú": "miras",
+      "él": "mira",
+      "nosotros": "miramos",
+      "vosotros": "miráis",
+      "ellos": "miran"
+    },
+    {
+      "fiil": "leer",
+      "zaman": "presente",
+      "yo": "leo",
+      "tú": "Lees",
+      "él": "lee",
+      "nosotros": "leemos",
+      "vosotros": "leéis",
+      "ellos": "leen"
+    },
+    {
+      "fiil": "entrar",
+      "zaman": "presente",
+      "yo": "entro",
+      "tú": "entras",
+      "él": "entra",
+      "nosotros": "entramos",
+      "vosotros": "entráis",
+      "ellos": "entran"
+    },
+    {
+      "fiil": "practicar",
+      "zaman": "presente",
+      "yo": "practico",
+      "tú": "practicas",
+      "él": "practica",
+      "nosotros": "practicamos",
+      "vosotros": "practicáis",
+      "ellos": "practican"
+    },
+    {
+      "fiil": "cambiar",
+      "zaman": "presente",
+      "yo": "cambio",
+      "tú": "cambias",
+      "él": "cambia",
+      "nosotros": "cambiamos",
+      "vosotros": "cambiais",
+      "ellos": "cambian"
+    },
+    {
+      "fiil": "vivir",
+      "zaman": "presente",
+      "yo": "vivo",
+      "tú": "vives",
+      "él": "vive",
+      "nosotros": "vivimos",
+      "vosotros": "vivís",
+      "ellos": "viven"
+    },
+    {
+      "fiil": "querer",
+      "zaman": "presente",
+      "yo": "quiero",
+      "tu": "quieres",
+      "el": "quiere",
+      "nosotros": "queremos",
+      "vosotros": "queréis",
+      "ellos": "quieren"
+    },
+    {
+      "fiil": "poder",
+      "zaman": "presente",
+      "yo": "puedo",
+      "tu": "puedes",
+      "el": "puede",
+      "nosotros": "podemos",
+      "vosotros": "podéis",
+      "ellos": "pueden"
+    },
+    {
+      "fiil": "pedir",
+      "zaman": "presente",
+      "yo": "pido",
+      "tu": "pides",
+      "el": "pide",
+      "nosotros": "pedimos",
+      "vosotros": "pedís",
+      "ellos": "piden"
+    },
+    {
+      "fiil": "jugar",
+      "zaman": "presente",
+      "yo": "juego",
+      "tu": "juegas",
+      "el": "juega",
+      "nosotros": "jugamos",
+      "vosotros": "jugáis",
+      "ellos": "juegan"
+    },
+    {
+      "fiil": "traer",
+      "zaman": "presente",
+      "yo": "traigo",
+      "tu": "traes",
+      "el": "trae",
+      "nosotros": "traemos",
+      "vosotros": "traéis",
+      "ellos": "traen"
+    },
+    {
+      "fiil": "saber",
+      "zaman": "presente",
+      "yo": "sé",
+      "tu": "sabes",
+      "el": "sabe",
+      "nosotros": "sabemos",
+      "vosotros": "sabéis",
+      "ellos": "saben"
+    },
+    {
+      "fiil": "salir",
+      "zaman": "presente",
+      "yo": "salgo",
+      "tu": "sales",
+      "el": "sale",
+      "nosotros": "salimos",
+      "vosotros": "salís",
+      "ellos": "salen"
+    },
+    {
+      "fiil": "decir",
+      "zaman": "presente",
+      "yo": "digo",
+      "tu": "dices",
+      "el": "dice",
+      "nosotros": "decimos",
+      "vosotros": "decís",
+      "ellos": "dicen"
+    },
+    {
+      "fiil": "oír",
+      "zaman": "presente",
+      "yo": "oigo",
+      "tu": "oyes",
+      "el": "oye",
+      "nosotros": "oímos",
+      "vosotros": "oís",
+      "ellos": "oyen"
+    },
+    {
+      "fiil": "tener",
+      "zaman": "presente",
+      "yo": "tengo",
+      "tu": "tienes",
+      "el": "tiene",
+      "nosotros": "tenemos",
+      "vosotros": "tenéis",
+      "ellos": "tienen"
+    },
+    {
+      "fiil": "venir",
+      "zaman": "presente",
+      "yo": "vengo",
+      "tu": "vienes",
+      "el": "viene",
+      "nosotros": "venimos",
+      "vosotros": "venís",
+      "ellos": "vienen"
+    },
+    {
+      "fiil": "coger",
+      "zaman": "presente",
+      "yo": "cojo",
+      "tu": "coges",
+      "el": "coge",
+      "nosotros": "cogemos",
+      "vosotros": "cogéis",
+      "ellos": "cogen"
+    },
+    {
+      "fiil": "conocer",
+      "zaman": "presente",
+      "yo": "conozco",
+      "tu": "conoces",
+      "el": "conoce",
+      "nosotros": "conocemos",
+      "vosotros": "conocéis",
+      "ellos": "conocen"
+    },
+    {
+      "fiil": "dar",
+      "zaman": "presente",
+      "yo": "doy",
+      "tu": "das",
+      "el": "da",
+      "nosotros": "damos",
+      "vosotros": "dais",
+      "ellos": "dan"
+    },
+    {
+      "fiil": "hacer",
+      "zaman": "presente",
+      "yo": "hago",
+      "tu": "haces",
+      "el": "hace",
+      "nosotros": "hacemos",
+      "vosotros": "hacéis",
+      "ellos": "hacen"
+    },
+    {
+      "fiil": "poner",
+      "zaman": "presente",
+      "yo": "pongo",
+      "tu": "pones",
+      "el": "pone",
+      "nosotros": "ponemos",
+      "vosotros": "ponéis",
+      "ellos": "ponen"
+    },
+    {
+      "fiil": "ir",
+      "zaman": "presente",
+      "yo": "voy",
+      "tu": "vas",
+      "el": "va",
+      "nosotros": "vamos",
+      "vosotros": "vais",
+      "ellos": "van"
+    },
+    {
+      "fiil": "volver",
+      "zaman": "presente",
+      "yo": "vuelvo",
+      "tu": "vuelves",
+      "el": "vuelve",
+      "nosotros": "volvemos",
+      "vosotros": "volvéis",
+      "ellos": "vuelven"
+    },
+    {
+      "fiil": "venir",
+      "zaman": "presente",
+      "yo": "vengo",
+      "tu": "vienes",
+      "el": "viene",
+      "nosotros": "venimos",
+      "vosotros": "venís",
+      "ellos": "vienen"
+    },
+    {
+      "fiil": "empezar",
+      "zaman": "presente",
+      "yo": "empiezo",
+      "tu": "empiezas",
+      "el": "empieza",
+      "nosotros": "empezamos",
+      "vosotros": "empezáis",
+      "ellos": "empiezan"
+    },
+    {
+      "fiil": "cerrar",
+      "zaman": "presente",
+      "yo": "cierro",
+      "tu": "cierras",
+      "el": "cierra",
+      "nosotros": "cerramos",
+      "vosotros": "cerráis",
+      "ellos": "cierran"
+    },
+    {
+      "fiil": "poder",
+      "zaman": "presente",
+      "yo": "puedo",
+      "tu": "puedes",
+      "el": "puede",
+      "nosotros": "podemos",
+      "vosotros": "podéis",
+      "ellos": "pueden"
+    },
+    {
+      "fiil": "entender",
+      "zaman": "presente",
+      "yo": "entiendo",
+      "tu": "entiendes",
+      "el": "entiende",
+      "nosotros": "entendemos",
+      "vosotros": "entendéis",
+      "ellos": "entienden"
+    },
+    {
+      "fiil": "poner",
+      "zaman": "presente",
+      "yo": "pongo",
+      "tu": "pones",
+      "el": "pone",
+      "nosotros": "ponemos",
+      "vosotros": "ponéis",
+      "ellos": "ponen"
+    },
+    {
+      "fiil": "coger",
+      "zaman": "presente",
+      "yo": "cojo",
+      "tu": "coges",
+      "el": "coge",
+      "nosotros": "cogemos",
+      "vosotros": "cogéis",
+      "ellos": "cogen"
+    },
+    {
+      "fiil": "encontrar",
+      "zaman": "presente",
+      "yo": "encuentro",
+      "tu": "encuentras",
+      "el": "encuentra",
+      "nosotros": "encontramos",
+      "vosotros": "encontráis",
+      "ellos": "encuentran"
+    },
+    {
+      "fiil": "saber",
+      "zaman": "presente",
+      "yo": "sé",
+      "tu": "sabes",
+      "el": "sabe",
+      "nosotros": "sabemos",
+      "vosotros": "sabéis",
+      "ellos": "saben"
+    },
+    {
+      "fiil": "hacer",
+      "zaman": "presente",
+      "yo": "hago",
+      "tu": "haces",
+      "el": "hace",
+      "nosotros": "hacemos",
+      "vosotros": "hacéis",
+      "ellos": "hacen"
+    },
+    {
+      "fiil": "abrir",
+      "zaman": "presente",
+      "yo": "abro",
+      "tu": "abres",
+      "el": "abre",
+      "nosotros": "abrimos",
+      "vosotros": "abrís",
+      "ellos": "abren"
+    },
+    {
+      "fiil": "ir",
+      "zaman": "presente",
+      "yo": "voy",
+      "tu": "vas",
+      "el": "va",
+      "nosotros": "vamos",
+      "vosotros": "vais",
+      "ellos": "van"
+    },
+    {
+      "fiil": "salir",
+      "zaman": "presente",
+      "yo": "salgo",
+      "tu": "sales",
+      "el": "sale",
+      "nosotros": "salimos",
+      "vosotros": "salís",
+      "ellos": "salen"
+    },
+    {
+      "fiil": "volver",
+      "zaman": "presente",
+      "yo": "vuelvo",
+      "tu": "vuelves",
+      "el": "vuelve",
+      "nosotros": "volvemos",
+      "vosotros": "volvéis",
+      "ellos": "vuelven"
+    },
+    {
+      "fiil": "llegar",
+      "zaman": "presente",
+      "yo": "llegro",
+      "tu": "llegas",
+      "el": "llega",
+      "nosotros": "llegamos",
+      "vosotros": "llegáis",
+      "ellos": "llegan"
+    },
+    {
+      "fiil": "costar",
+      "zaman": "presente",
+      "yo": "cuesto",
+      "tu": "cuestas",
+      "el": "cuesta",
+      "nosotros": "costamos",
+      "vosotros": "costáis",
+      "ellos": "cuestan"
+    },
+    {
+      "fiil": "dormir",
+      "zaman": "presente",
+      "yo": "duermo",
+      "tu": "duermes",
+      "el": "duerme",
+      "nosotros": "dormimos",
+      "vosotros": "dormís",
+      "ellos": "duermen"
+    },
+    {
+      "fiil": "conocer",
+      "zaman": "presente",
+      "yo": "conozco",
+      "tu": "conoces",
+      "el": "conoce",
+      "nosotros": "conocemos",
+      "vosotros": "conocéis",
+      "ellos": "conocen"
+    },
+    {
+      "fiil": "pensar",
+      "zaman": "presente",
+      "yo": "pienso",
+      "tú": "piensas",
+      "él/ella/ud.": "piensa",
+      "nosotros": "pensamos",
+      "vosotros": "pensáis",
+      "ellos": "piensan"
+    },
+    {
+      "fiil": "calentar",
+      "zaman": "presente",
+      "yo": "caliento",
+      "tú": "calientas",
+      "él/ella/ud.": "calienta",
+      "nosotros": " calentamos",
+      "vosotros": "calentáis",
+      "ellos": "calientan"
+    },
+    {
+      "fiil": "contar",
+      "zaman": "presente",
+      "yo": "cuento",
+      "tú": "cuentas",
+      "él/ella/ud.": "cuenta",
+      "nosotros": "contamos",
+      "vosotros": "contáis",
+      "ellos": "cuentan"
+    },
+    {
+      "fiil": "regar",
+      "zaman": "presente",
+      "yo": "riego",
+      "tú": "riguas",
+      "él/ella/ud.": "riega",
+      "nosotros": "regamos",
+      "vosotros": "regáis",
+      "ellos": "riegan"
+    },
+    {
+      "fiil": "merendar",
+      "zaman": "presente",
+      "yo": "meriendo",
+      "tú": "meriendas",
+      "él/ella/ud.": "merienda",
+      "nosotros": "merendamos",
+      "vosotros": "merendáis",
+      "ellos": "meriendan"
+    },
+    {
+      "fiil": "cerrar",
+      "zaman": "presente",
+      "yo": "cierro",
+      "tú": "cierras",
+      "él/ella/ud.": "cierra",
+      "nosotros": "cerramos",
+      "vosotros": "cerráis",
+      "ellos": "cierran"
+    },
+    {
+      "fiil": "colgar",
+      "zaman": "presente",
+      "yo": "cuelgo",
+      "tú": "cuelgas",
+      "él/ella/ud.": "cuelga",
+      "nosotros": "colgamos",
+      "vosotros": "colgáis",
+      "ellos": "cuelgan"
+    },
+    {
+      "fiil": "pedir",
+      "zaman": "presente",
+      "yo": "pido",
+      "tú": "pides",
+      "él/ella/ud.": "pide",
+      "nosotros": "pedimos",
+      "vosotros": "pedís",
+      "ellos": "piden"
+    },
+    {
+      "fiil": "salir",
+      "zaman": "presente",
+      "yo": "salgo",
+      "tú": "sales",
+      "él/ella/ud.": "sale",
+      "nosotros": "salimos",
+      "vosotros": "salís",
+      "ellos": "salen"
+    },
+    {
+      "fiil": "decir",
+      "zaman": "presente",
+      "yo": "digo",
+      "tú": "dices",
+      "él/ella/ud.": "dice",
+      "nosotros": "decimos",
+      "vosotros": "decís",
+      "ellos": "dicen"
+    },
+    {
+      "fiil": "conducir",
+      "zaman": "presente",
+      "yo": "conduzco",
+      "tú": "conduces",
+      "él/ella/ud.": "conduce",
+      "nosotros": "conducimos",
+      "vosotros": "conducís",
+      "ellos": "conducen"
+    },
+    {
+      "fiil": "tener",
+      "zaman": "presente",
+      "yo": "tengo",
+      "tú": "tienes",
+      "él/ella/ud.": "tiene",
+      "nosotros": "tenemos",
+      "vosotros": "tenéis",
+      "ellos": "tienen"
+    },
+    {
+      "fiil": "ser",
+      "zaman": "presente",
+      "yo": "soy",
+      "tú": "eres",
+      "él/ella/usted": "es",
+      "nosotros/as": "somos",
+      "vosotros/as": "sois",
+      "ellos/as": "son"
+    },
+    {
+      "fiil": "estar",
+      "zaman": "presente",
+      "yo": "estoy",
+      "tú": "estás",
+      "él/ella/usted": "está",
+      "nosotros/as": "estamos",
+      "vosotros/as": "estáis",
+      "ellos/as": "están"
+    },
+    {
+      "fiil": "tener",
+      "zaman": "presente",
+      "yo": "tengo",
+      "tú": "tienes",
+      "él/ella/usted": "tiene",
+      "nosotros/as": "tenemos",
+      "vosotros/as": "tenéis",
+      "ellos/as": "tienen"
+    },
+    {
+      "fiil": "levantarse",
+      "zaman": "presente",
+      "yo": "me levanto",
+      "tú": "te levantas",
+      "él/ella/usted": "se levanta",
+      "nosotros/as": "nos levantamos",
+      "vosotros/as": "os levantáis",
+      "ellos/as": "se levantan"
+    },
+    {
+      "fiil": "acostarse",
+      "zaman": "presente",
+      "yo": "me acuesto",
+      "tú": "te acuestas",
+      "él/ella/usted": "se acuesta",
+      "nosotros/as": "nos acostamos",
+      "vosotros/as": "os acostáis",
+      "ellos/as": "se acuestan"
+    },
+    {
+      "fiil": "bañarse",
+      "zaman": "presente",
+      "yo": "me baño",
+      "tú": "te bañas",
+      "él/ella/usted": "se baña",
+      "nosotros/as": "nos bañamos",
+      "vosotros/as": "os bañáis",
+      "ellos/as": "se bañan"
+    },
+    {
+      "fiil": "ducharse",
+      "zaman": "presente",
+      "yo": "me ducho",
+      "tú": "te duchas",
+      "él/ella/usted": "se ducha",
+      "nosotros/as": "nos duchamos",
+      "vosotros/as": "os ducháis",
+      "ellos/as": "se duchan"
+    },
+    {
+      "fiil": "vestirse",
+      "zaman": "presente",
+      "yo": "me visto",
+      "tú": "te vistes",
+      "él/ella/usted": "se viste",
+      "nosotros/as": "nos vestimos",
+      "vosotros/as": "os vestís",
+      "ellos/as": "se visten"
+    },
+    {
+      "fiil": "afeitarse",
+      "zaman": "presente",
+      "yo": "me afeito",
+      "tú": "te afeitas",
+      "él/ella/usted": "se afeita",
+      "nosotros/as": "nos afeitamos",
+      "vosotros/as": "os afeitáis",
+      "ellos/as": "se afeitan"
+    },
+    {
+      "fiil": "levantarse",
+      "zaman": "presente",
+      "yo": "me levanto",
+      "tu": "te levantas",
+      "el": "se levanta",
+      "nosotros": "nos levantamos",
+      "vosotros": "os levantáis",
+      "ellos": "se levantan"
+    },
+    {
+      "fiil": "ducharse",
+      "zaman": "presente",
+      "yo": "me ducho",
+      "tu": "te duchas",
+      "el": "se ducha",
+      "nosotros": "nos duchamos",
+      "vosotros": "os ducháis",
+      "ellos": "se duchan"
+    },
+    {
+      "fiil": "afeitarse",
+      "zaman": "presente",
+      "yo": "me afeito",
+      "tu": "te afeitas",
+      "el": "se afeita",
+      "nosotros": "nos afeitamos",
+      "vosotros": "os afeitáis",
+      "ellos": "se afeitan"
+    },
+    {
+      "fiil": "lavarse",
+      "zaman": "presente",
+      "yo": "me lavo",
+      "tu": "te lavas",
+      "el": "se lava",
+      "nosotros": "nos lavamos",
+      "vosotros": "os laváis",
+      "ellos": "se lavan"
+    },
+    {
+      "fiil": "acostarse",
+      "zaman": "presente",
+      "yo": "me acuesto",
+      "tu": "te acuestas",
+      "el": "se acuesta",
+      "nosotros": "nos acostamos",
+      "vosotros": "os acostáis",
+      "ellos": "se acuestan"
+    },
+    {
+      "fiil": "bañarse",
+      "zaman": "presente",
+      "yo": "me baño",
+      "tu": "te bañas",
+      "el": "se baña",
+      "nosotros": "nos bañamos",
+      "vosotros": "os bañáis",
+      "ellos": "se bañan"
+    },
+    {
+      "fiil": "pintarse",
+      "zaman": "presente",
+      "yo": "me pinto",
+      "tu": "te pintas",
+      "el": "se pinta",
+      "nosotros": "nos pintamos",
+      "vosotros": "os pintáis",
+      "ellos": "se pintan"
+    },
+    {
+      "fiil": "encontrarse",
+      "zaman": "presente",
+      "yo": "me encuentro",
+      "tu": "te encuentras",
+      "el": "se encuentra",
+      "nosotros": "nos encontramos",
+      "vosotros": "os encontráis",
+      "ellos": "se encuentran"
+    },
+    {
+      "fiil": "despertar",
+      "zaman": "presente",
+      "yo": "despierto",
+      "tu": "despieras",
+      "el": "despierta",
+      "nosotros": "despertamos",
+      "vosotros": "despertáis",
+      "ellos": "despiertan"
+    },
+    {
+      "fiil": "sentarse",
+      "zaman": "presente",
+      "yo": "me siento",
+      "tu": "te sientas",
+      "el": "se sienta",
+      "nosotros": "nos sentamos",
+      "vosotros": "os sentáis",
+      "ellos": "se sientan"
+    },
+    {
+      "fiil": "separarse",
+      "zaman": "presente",
+      "yo": "me separo",
+      "tu": "te separas",
+      "el": "se separa",
+      "nosotros": "nos separamos",
+      "vosotros": "os separáis",
+      "ellos": "se separan"
+    },
+    {
+      "fiil": "acordarse",
+      "zaman": "presente",
+      "yo": "me acuerdo",
+      "tu": "te acuerdas",
+      "el": "se acuerda",
+      "nosotros": "nos acordamos",
+      "vosotros": "os acordáis",
+      "ellos": "se acuerdan"
+    },
+    {
+      "fiil": "hablar",
+      "zaman": "presente",
+      "yo": "hablo",
+      "tu": "hablas",
+      "el": "habla",
+      "nosotros": "hablamos",
+      "vosotros": "habláis",
+      "ellos": "hablan"
+    },
+    {
+      "fiil": "cantar",
+      "zaman": "presente",
+      "yo": "canto",
+      "tu": "cantas",
+      "el": "canta",
+      "nosotros": "cantamos",
+      "vosotros": "cantáis",
+      "ellos": "cantan"
+    },
+    {
+      "fiil": "beber",
+      "zaman": "presente",
+      "yo": "bebo",
+      "tu": "bebes",
+      "el": "bebe",
+      "nosotros": "bebemos",
+      "vosotros": "bebéis",
+      "ellos": "beben"
+    },
+    {
+      "fiil": "vivir",
+      "zaman": "presente",
+      "yo": "vivo",
+      "tu": "vives",
+      "el": "vive",
+      "nosotros": "vivimos",
+      "vosotros": "vivís",
+      "ellos": "viven"
+    },
+    {
+      "fiil": "leer",
+      "zaman": "presente",
+      "yo": "leo",
+      "tu": "Lees",
+      "el": "lee",
+      "nosotros": "leemos",
+      "vosotros": "leéis",
+      "ellos": "leen"
+    },
+    {
+      "fiil": "dormir",
+      "zaman": "presente",
+      "yo": "duermo",
+      "tu": "duermes",
+      "el": "duerme",
+      "nosotros": "dormimos",
+      "vosotros": "dormís",
+      "ellos": "duermen"
+    },
+    {
+      "fiil": "ir",
+      "zaman": "presente",
+      "yo": "voy",
+      "tu": "vas",
+      "el": "va",
+      "nosotros": "vamos",
+      "vosotros": "vais",
+      "ellos": "van"
+    }
+  ],
+  "gramer_kurallari": [
+    {
+      "konu": "Feminine Formation",
+      "aciklama": "Adjectives and nouns change to feminine form",
+      "kural": "Add -a to nationality adjectives and those ending in -an, -on, -or",
+      "ornekler": [
+        "español - española",
+        "campeón - campeona",
+        "hablador - habladora"
+      ]
+    },
+    {
+      "konu": "Adjective Agreement",
+      "aciklama": "Adjectives agree in gender and number with the noun",
+      "kural": "Masculine adjectives end in -o, feminine in -a",
+      "ornekler": [
+        "blanco - blanca",
+        "negro - negra"
+      ]
+    },
+    {
+      "konu": "Verbo Ser",
+      "aciklama": "Olmak fiili, kişi ve şeylerin özelliklerini belirtmek için kullanılır.",
+      "kural": "Yo soy, tú eres, él/ella/usted es, nosotros/as somos, vosotros/as sois, ellos/as son",
+      "ornekler": [
+        "Yo soy estudiante.",
+        "Ella es médica.",
+        "¿Dónde eres?"
+      ]
+    },
+    {
+      "konu": "Ser Fiili",
+      "aciklama": "İspanyolca'da kalıcı özellikler için kullanılan bir fiil.",
+      "kural": "Yo soy, tú eres, él/ella/usted es, nosotros/as somos, vosotros/as sois, ellos/as son",
+      "ornekler": [
+        "Yo soy estudiante.",
+        "Ella es alta.",
+        "¿Dónde eres?"
+      ]
+    },
+    {
+      "konu": "Presente de Indicativo",
+      "aciklama": "Geniş zaman - şimdiki ve alışkanlık ifade eder",
+      "kural": "-ar fiiller: -o, -as, -a, -amos, -áis, -an",
+      "ornekler": [
+        "Yo hablo español.",
+        "Ella come mucho.",
+        "¿Dónde vives?"
+      ]
+    },
+    {
+      "konu": "Ser ve Estar Fiilleri",
+      "aciklama": "Ser: kalıcı özellikler, Estar: geçici durumlar",
+      "kural": "Ser: soy, eres, es, somos, sois, son; Estar: estoy, estás, está, estamos, estáis, están",
+      "ornekler": [
+        "Soy estudiante.",
+        "Estoy cansado."
+      ]
+    },
+    {
+      "konu": "Possesif Sıfatlar (Adjetivos Posesivos)",
+      "aciklama": "Sahip olduğumuz şeyleri belirtmek için kullanılır.",
+      "kural": "Sıfatlar, sahip olunan şeyin önüne gelir ve cinsiyet ve sayı bakımından uyum sağlar.",
+      "ornekler": [
+        "Mi padre es abogado.",
+        "Mi madre es periodista."
+      ]
+    },
+    {
+      "konu": "Possesif Zamirler (Pronombres Posesivos)",
+      "aciklama": "Sahip olduğumuz şeyleri belirtmek için kullanılır, isim tekrarını önler.",
+      "kural": "Zamirler, cümlede tek başına kullanılır ve cinsiyet ve sayı bakımından uyum sağlar.",
+      "ornekler": [
+        "Este libro es mío.",
+        "La casa es nuestra."
+      ]
+    },
+    {
+      "konu": "Possessives",
+      "aciklama": "Possessive adjectives (sıfatlar) and pronouns (zamirler)",
+      "kural": "Possessive adjectives agree with the noun they modify in gender and number.",
+      "ornekler": [
+        "Es mi libro. (The book is mine.)",
+        "La casa es mía. (The house is mine.)",
+        "Los libros son míos. (The books are mine.)",
+        "Las casas son mías. (The houses are mine.)"
+      ]
+    },
+    {
+      "konu": "Possessive Pronouns",
+      "aciklama": "Possessive pronouns replace a noun and show possession.",
+      "kural": "Possessive pronouns agree with the noun they replace in gender and number.",
+      "ornekler": [
+        "El libro es mío. (The book is mine.)",
+        "La casa es mía. (The house is mine.)",
+        "Los libros son míos. (The books are mine.)",
+        "Las casas son mías. (The houses are mine.)"
+      ]
+    },
+    {
+      "konu": "Presente de Indicativo",
+      "aciklama": "Geniş zaman - şimdiki ve alışkanlık ifade eder",
+      "kural": "-ar fiiller: -o, -as, -a, -amos, -áis, -an; -er fiiller: -o, -es, -e, -emos, -éis, -en; -ir fiiller: -o, -es, -e, -imos, -ís, -en",
+      "ornekler": [
+        "Yo hablo español.",
+        "Ella come mucho.",
+        "¿Dónde vives?"
+      ]
+    },
+    {
+      "konu": "Presente de Indicativo",
+      "aciklama": "Şimdiki zaman - günlük rutin ve alışkanlıklar",
+      "kural": "Fiil kökü + -o (yo), -as (tú), -a (él/ella/usted), -amos (nosotros/as), -áis (vosotros/as), -an (ellos/as)",
+      "ornekler": [
+        "Yo estudio español. (A1)",
+        "Ella come mucho. (A1)",
+        "¿Dónde vives? (A1)"
+      ]
+    },
+    {
+      "konu": "Habitual Actions",
+      "aciklama": "Alışkanlıklar",
+      "kural": "Presente de indicativo kullanılır",
+      "ornekler": [
+        "Pepe viene a verme todas las tardes. (A1)"
+      ]
+    },
+    {
+      "konu": "Verbos irregulares en presente",
+      "aciklama": "Bazı fiiller şimdiki zamanda düzensiz çekimlenir.",
+      "kural": "Fiil kökünde değişiklikler olur.",
+      "ornekler": [
+        "Querer: quiero, quieres, quiere...",
+        "Poder: puedo, puedes, puede..."
+      ]
+    },
+    {
+      "konu": "Uso del presente",
+      "aciklama": "Şimdiki zaman, alışkanlıklar ve genel bilgiler için kullanılır.",
+      "kural": "Yo como frutas. (Şimdiki zamanda yemek yemek)",
+      "ornekler": [
+        "Hablo español. (Alışkanlık)",
+        "Los bancos cierran a las dos. (Genel bilgi)"
+      ]
+    },
+    {
+      "konu": "Presente de Indicativo",
+      "aciklama": "Geniş zaman - şimdiki ve alışkanlık ifade eder",
+      "kural": "-ar fiiller: -o, -as, -a, -amos, -áis, -an; -er fiiller: -o, -es, -e, -emos, -éis, -en; -ir fiiller: -o, -es, -e, -imos, -ís, -en",
+      "ornekler": [
+        "Yo hablo español.",
+        "Ella come mucho.",
+        "¿Dónde vives?"
+      ]
+    },
+    {
+      "konu": "Presente de Indicativo",
+      "aciklama": "Geniş zaman - şimdiki ve alışkanlık ifade eder",
+      "kural": "-ar fiiller: -o, -as, -a, -amos, -áis, -an",
+      "ornekler": [
+        "Yo hablo español.",
+        "Ella come mucho.",
+        "¿Dónde vives?"
+      ]
+    },
+    {
+      "konu": "Presente de Indicativo (irregularidades)",
+      "aciklama": "Presente zamanda düzensiz fiiller",
+      "kural": "Örneğin: tener, venir, salir",
+      "ornekler": [
+        "Tengo un libro.",
+        "Vengo de España.",
+        "Salgo por la noche."
+      ]
+    },
+    {
+      "konu": "SER kullanımı",
+      "aciklama": "Kalıcı özellikler, meslek, yer, zaman, ilişki",
+      "kural": "Yo soy estudiante. Ella es médica.",
+      "ornekler": [
+        "Yo soy de España.",
+        "Ella es alta."
+      ]
+    },
+    {
+      "konu": "ESTAR kullanımı",
+      "aciklama": "Geçici durumlar, yer",
+      "kural": "Estoy cansado. Ella está en casa.",
+      "ornekler": [
+        "Estoy en el colegio.",
+        "Ella está triste."
+      ]
+    },
+    {
+      "konu": "TENER kullanımı",
+      "aciklama": "Sahip olma, fiziksel/ruhsal durum",
+      "kural": "Tengo un libro. Estoy enfermo.",
+      "ornekler": [
+        "Tengo hambre.",
+        "Ella tiene frío."
+      ]
+    },
+    {
+      "konu": "Reflexive Verbs",
+      "aciklama": "Kişi kendisiyle ilgili eylemleri ifade eder. (kalkmak, yatmak, yıkanmak gibi)",
+      "kural": "Verbo + pronombre reflexivo (me, te, se, nos, os, se)",
+      "ornekler": [
+        "Me levanto a las 7.",
+        "Ella se viste rápidamente.",
+        "Nos duchamos por la mañana."
+      ]
+    },
+    {
+      "konu": "Uso de pronombres reflexivos",
+      "aciklama": "Pronombres reflexivos (me, te, se, nos, os, se) kullanılır.",
+      "kural": "Verbo + pronombre reflexivo",
+      "ornekler": [
+        "Me acuesto a las 10.",
+        "Te bañas todos los días?",
+        "Se afeita cada mañana."
+      ]
+    },
+    {
+      "konu": "Presente de Indicativo",
+      "aciklama": "Geniş zaman - şimdiki ve alışkanlık ifade eder",
+      "kural": "-ar fiiller: -o, -as, -a, -amos, -áis, -an; -er fiiller: -o, -es, -e, -emos, -éis, -en; -ir fiiller: -o, -es, -e, -imos, -ís, -en",
+      "ornekler": [
+        "Yo hablo español.",
+        "Ella come mucho.",
+        "¿Dónde vives?"
+      ]
+    },
+    {
+      "konu": "Reflexive Verbs",
+      "aciklama": "Kişi kendine yönelik eylemler için kullanılır",
+      "kural": "Verbe 'se' eklenir: levantarse, ducharse, afeitarse",
+      "ornekler": [
+        "Me levanto a las 7.",
+        "Ella se ducha todas las mañanas."
+      ]
+    },
+    {
+      "konu": "Ornek Cümleler",
+      "aciklama": "Verilerin cümle içinde kullanımı",
+      "kural": "Yo me lavo los dientes. / Ella se acuesta tarde.",
+      "ornekler": [
+        "Yo me ducho por la mañana.",
+        "Ella se afeita con maquinilla."
+      ]
+    },
+    {
+      "konu": "Números cardinales y ordinales",
+      "aciklama": "Los números cardinales se usan para expresar precio, peso, distancia, medida, hora y días del mes. Los números ordinales se usan para nombrar los pisos de una casa y el número de orden en un grupo.",
+      "kural": "Los cardinales: 1. Los cardinales -que son la serie de los números- se usan, por ejemplo, para expresar el precio, el peso, la distancia, la medida, la hora y los días del mes. Los ordinales: 1. Los ordinales se usan, por ejemplo, para nombrar los pisos de una casa y el número de orden en un grupo.",
+      "ornekler": [
+        "Vale 500 pesetas.",
+        "Pesa 52 kilos.",
+        "Mi pueblo y el tuyo están a 60 kilómetros.",
+        "Mide 6 metros y 15 centímetros.",
+        "Son las 10 de la noche.",
+        "Hoy es 19 de septiembre.",
+        "El ascensor se ha parado en el segundo piso.",
+        "Sílvia era la primera de la clase."
+      ]
+    },
+    {
+      "konu": "Uso de 'uno' y 'un'",
+      "aciklama": "Uno pierde la -o delante de un nombre masculino singular y cambia la -o en -a delante de un nombre femenino.",
+      "kural": "Uno: un libro, una casa, veintiún años, ochenta y una pesetas",
+      "ornekler": [
+        "un libro",
+        "una casa",
+        "veintiún años",
+        "ochenta y una pesetas"
+      ]
+    },
+    {
+      "konu": "Centenas",
+      "aciklama": "Las centenas -doscientas- van en masculino y femenino, según el nombre al que acompañan.",
+      "kural": "240 Km. - doscientos cuarenta kilómetros, 240 ptas. - doscientos cuarenta pesetas",
+      "ornekler": [
+        "240 Km.",
+        "240 ptas."
+      ]
+    },
+    {
+      "konu": "Ordinales",
+      "aciklama": "Los ordinales se usan muy poco después del 10º (décimo). Se suelen sustituir por los cardinales.",
+      "kural": "Vivo en el piso 15 (quince) - cardinal, Vivo en el 15º (décimoquinto) piso - ordinal",
+      "ornekler": [
+        "Vivo en el piso 15.",
+        "Vivo en el 15º piso."
+      ]
+    },
+    {
+      "konu": "Gerundio",
+      "aciklama": "Fiillerin -ando / -iendo ile biten formları",
+      "kural": "Regular: -ar fiiller -ando, -er / -ir fiiller -iendo",
+      "ornekler": [
+        "Estoy cantando.",
+        "Estoy bebiendo.",
+        "Estoy viviendo."
+      ]
+    },
+    {
+      "konu": "IR + infinitivo",
+      "aciklama": "İleride yapılacak eylemler için kullanılır",
+      "kural": "Voy a + infinitivo",
+      "ornekler": [
+        "Voy a hablar.",
+        "Voy a comer."
+      ]
+    },
+    {
+      "konu": "ESTAR + gerundio",
+      "aciklama": "Şu anda devam eden eylemler",
+      "kural": "Estar (presente) + gerundio",
+      "ornekler": [
+        "Estoy hablando.",
+        "Están estudiando."
+      ]
+    }
+  ],
+  "alistirmalar": [
+    {
+      "soru": "La cerveza,",
+      "cevap": "fría",
+      "aciklama": "Cerveza (feminine), frío (masculine) -> fría"
+    },
+    {
+      "soru": "El café,",
+      "cevap": "caliente",
+      "aciklama": "Café (masculine), caliente (masculine)"
+    },
+    {
+      "soru": "Los zapatos,",
+      "cevap": "viejos",
+      "aciklama": "Zapatos (plural masculine), viejo -> viejos"
+    },
+    {
+      "soru": "La carne,",
+      "cevap": "negra",
+      "aciklama": "Carne (feminine), negro -> negra"
+    },
+    {
+      "soru": "El coche,",
+      "cevap": "grande",
+      "aciklama": "Coche (masculine), grande (masculine)"
+    },
+    {
+      "soru": "Yo ___ (ser) estudiante.",
+      "cevap": "soy",
+      "aciklama": "Presente de indicativo, yo şahsı için ser fiili soy alır."
+    },
+    {
+      "soru": "Ella ___ (ser) periodista.",
+      "cevap": "es",
+      "aciklama": "Presente de indicativo, él/ella/usted şahsı için ser fiili es alır."
+    },
+    {
+      "soru": "Nosotros ___ (ser) médicos.",
+      "cevap": "somos",
+      "aciklama": "Presente de indicativo, nosotros/as şahsı için ser fiili somos alır."
+    },
+    {
+      "soru": "2. Canadá .......... un país.",
+      "cevap": "es",
+      "aciklama": "Kanada bir ülkedir, 'ser' fiili kullanılır."
+    },
+    {
+      "soru": "3. Todos los gatos no .......... negros.",
+      "cevap": "son",
+      "aciklama": "Tüm kediler siyah değildir, 'ser' fiili kullanılır."
+    },
+    {
+      "soru": "4. Mi hermana .......... joven.",
+      "cevap": "es",
+      "aciklama": "Kız kardeşim genç, 'ser' fiili kullanılır."
+    },
+    {
+      "soru": "5. Mi bolso .......... rojo.",
+      "cevap": "es",
+      "aciklama": "Çantam kırmızı, 'ser' fiili kullanılır."
+    },
+    {
+      "soru": "6. Esa .......... mi madre.",
+      "cevap": "es",
+      "aciklama": "O annem, 'ser' fiili kullanılır."
+    },
+    {
+      "soru": "7. El boxeo .......... un deporte violento.",
+      "cevap": "es",
+      "aciklama": "Boks şiddetli bir spordur, 'ser' fiili kullanılır."
+    },
+    {
+      "soru": "8. ¿Tú .......... de aquí?",
+      "cevap": "eres",
+      "aciklama": "Sen buradan mısın, 'ser' fiili kullanılır."
+    },
+    {
+      "soru": "9. ¿Juan y Ana .......... solteros?",
+      "cevap": "son",
+      "aciklama": "Juan ve Ana bekar mı, 'ser' fiili kullanılır."
+    },
+    {
+      "soru": "10. Esta calle .......... muy larga.",
+      "cevap": "es",
+      "aciklama": "Bu cadde çok uzun, 'ser' fiili kullanılır."
+    },
+    {
+      "soru": "11. Hoy .......... domingo.",
+      "cevap": "es",
+      "aciklama": "Bugün pazar, 'ser' fiili kullanılır."
+    },
+    {
+      "soru": "12. Yo no .......... rico.",
+      "cevap": "soy",
+      "aciklama": "Ben zengin değilim, 'ser' fiili kullanılır."
+    },
+    {
+      "soru": "13. ¿Vosotros .......... españoles?",
+      "cevap": "sois",
+      "aciklama": "Siz İspanyolsunuz, 'ser' fiili kullanılır."
+    },
+    {
+      "soru": "14. Nosotros no .......... estudiantes.",
+      "cevap": "somos",
+      "aciklama": "Biz öğrenci değiliz, 'ser' fiili kullanılır."
+    },
+    {
+      "soru": "15. Mi piso .......... pequeño.",
+      "cevap": "es",
+      "aciklama": "Katım küçük, 'ser' fiili kullanılır."
+    },
+    {
+      "soru": "16. ¿Vd. .......... española?",
+      "cevap": "es",
+      "aciklama": "Siz İspanyol musunuz, 'ser' fiili kullanılır."
+    },
+    {
+      "soru": "17. ¿Vds. .......... extranjeros?",
+      "cevap": "son",
+      "aciklama": "Siz yabancısınız, 'ser' fiili kullanılır."
+    },
+    {
+      "soru": "18. ¿Vosotros .......... catalanes?",
+      "cevap": "sois",
+      "aciklama": "Siz Katalan mısınız, 'ser' fiili kullanılır."
+    },
+    {
+      "soru": "19. Ellos .......... electricistas.",
+      "cevap": "son",
+      "aciklama": "Onlar elektrikçidir, 'ser' fiili kullanılır."
+    },
+    {
+      "soru": "20. Ana Mª no .......... profesora.",
+      "cevap": "es",
+      "aciklama": "Ana Mª öğretmen değil, 'ser' fiili kullanılır."
+    },
+    {
+      "soru": "21. Yo .......... optimista.",
+      "cevap": "soy",
+      "aciklama": "Ben iyimserim, 'ser' fiili kullanılır."
+    },
+    {
+      "soru": "Yo ___ (estar) contento con mi trabajo.",
+      "cevap": "estoy",
+      "aciklama": "Presente de indicativo, yo şahsı için estar fiil eki -oy alır."
+    },
+    {
+      "soru": "¿Dónde ___ (estar) mis llaves?",
+      "cevap": "están",
+      "aciklama": "Presente de indicativo, plural şahsı için estar fiil eki -án alır."
+    },
+    {
+      "soru": "Los turistas americanos ___ (estar) en este hotel.",
+      "cevap": "están",
+      "aciklama": "Presente de indicativo, plural şahsı için estar fiil eki -án alır."
+    },
+    {
+      "soru": "Yo ___ (tener) un libro.",
+      "cevap": "tengo",
+      "aciklama": "Present tense of 'tener' (to have)."
+    },
+    {
+      "soru": "La casa ___ (ser) mía.",
+      "cevap": "es",
+      "aciklama": "Verb 'ser' (to be) in present tense."
+    },
+    {
+      "soru": "Los libros ___ (ser) míos.",
+      "cevap": "son",
+      "aciklama": "Verb 'ser' (to be) in present tense, plural form."
+    },
+    {
+      "soru": "¿Dónde _______ (vivir, tú)?",
+      "cevap": "vives",
+      "aciklama": "Presente de indicativo, tú şahsı için -ar fiil eki -as alır."
+    },
+    {
+      "soru": "Yo no _______ (fumar) nunca.",
+      "cevap": "fumo",
+      "aciklama": "Presente de indicativo, yo şahsı için -ar fiil eki -o alır."
+    },
+    {
+      "soru": "¿Y tú, _______ (fumar)?",
+      "cevap": "fumas",
+      "aciklama": "Presente de indicativo, tú şahsı için -ar fiil eki -as alır."
+    },
+    {
+      "soru": "No, él tampoco _______ (fumar).",
+      "cevap": "fuma",
+      "aciklama": "Presente de indicativo, él şahsı için -ar fiil eki -a alır."
+    },
+    {
+      "soru": "Yo _______ (hablar) muy bien español.",
+      "cevap": "hablo",
+      "aciklama": "Presente de indicativo, yo şahsı için -ar fiil eki -o alır."
+    },
+    {
+      "soru": "¿Dónde _______ (trabajar) tú?",
+      "cevap": "trabajas",
+      "aciklama": "Presente de indicativo, tú şahsı için -ar fiil eki -as alır."
+    },
+    {
+      "soru": "Nosotros no _______ (bailar) vosotros.",
+      "cevap": "bailamos",
+      "aciklama": "Presente de indicativo, nosotros şahsı için -ar fiil eki -amos alır."
+    },
+    {
+      "soru": "Yo _______ (estudiar) inglés.",
+      "cevap": "estudio",
+      "aciklama": "Presente de indicativo, yo şahsı için -ar fiil eki -o alır."
+    },
+    {
+      "soru": "La niña _______ (cantar) muy bien.",
+      "cevap": "canta",
+      "aciklama": "Presente de indicativo, la niña şahsı için -ar fiil eki -a alır."
+    },
+    {
+      "soru": "Mis padres _______ (escuchar) normalmente música 'disco'.",
+      "cevap": "escuchan",
+      "aciklama": "Presente de indicativo, mis padres şahsı için -ar fiil eki -an alır."
+    },
+    {
+      "soru": "¿Vives en Ohio? ¿Dónde _______ (vivir) él?",
+      "cevap": "vive",
+      "aciklama": "Presente de indicativo, él şahsı için -ir fiil eki -e alır."
+    },
+    {
+      "soru": "¿Vds. ya _______ (hablar) bien español?",
+      "cevap": "hablan",
+      "aciklama": "Presente de indicativo, Vds. şahsı için -ar fiil eki -an alır."
+    },
+    {
+      "soru": "Mi hija _______ (trabajar) en verano de 8 a 15.",
+      "cevap": "trabaja",
+      "aciklama": "Presente de indicativo, mi hija şahsı için -ar fiil eki -a alır."
+    },
+    {
+      "soru": "Las tiendas no _______ (abrir) hasta las 9.",
+      "cevap": "abren",
+      "aciklama": "Presente de indicativo, las tiendas şahsı için -ir fiil eki -en alır."
+    },
+    {
+      "soru": "María _______ (escribir) muchas cartas a su familia.",
+      "cevap": "escribe",
+      "aciklama": "Presente de indicativo, María şahsı için -ir fiil eki -e alır."
+    },
+    {
+      "soru": "¿_______ (escribir) poesía desde niño?",
+      "cevap": "escribes",
+      "aciklama": "Presente de indicativo, tú şahsı için -ir fiil eki -es alır."
+    },
+    {
+      "soru": "Los niños nunca _______ (beber) alcohol.",
+      "cevap": "beben",
+      "aciklama": "Presente de indicativo, los niños şahsı için -er fiil eki -en alır."
+    },
+    {
+      "soru": "¿_______ (trabajar) mucho?",
+      "cevap": "trabajas",
+      "aciklama": "Presente de indicativo, tú şahsı için -ar fiil eki -as alır."
+    },
+    {
+      "soru": "Todos los días después de la clase, Tomás _______ (estudiar) la lección y _______ (repasar) los ejercicios.",
+      "cevap": "estudia, repasa",
+      "aciklama": "Presente de indicativo, Tomás şahsı için -ar fiil eki -a alır."
+    },
+    {
+      "soru": "¿(Ellos) estudian en la Universidad?",
+      "cevap": "estudian",
+      "aciklama": "Presente de indicativo, ellos şahsı için -an eki alır."
+    },
+    {
+      "soru": "¿(Vd.) ___ flamenco?",
+      "cevap": "baila",
+      "aciklama": "Presente de indicativo, Vd. şahsı için -a eki alır."
+    },
+    {
+      "soru": "Mi jefe ___ poco de coche.",
+      "cevap": "come",
+      "aciklama": "Presente de indicativo, él şahsı için -e eki alır."
+    },
+    {
+      "soru": "Ellos siempre ___ barato.",
+      "cevap": "comen",
+      "aciklama": "Presente de indicativo, ellos şahsı için -an eki alır."
+    },
+    {
+      "soru": "¿A qué hora ___ en clase (tú)?",
+      "cevap": "entras",
+      "aciklama": "Presente de indicativo, tú şahsı için -as eki alır."
+    },
+    {
+      "soru": "¿Qué ___ (vosotros)?",
+      "cevap": "coméis",
+      "aciklama": "Presente de indicativo, vosotros şahsı için -éis eki alır."
+    },
+    {
+      "soru": "¿Vd. ___ algún deporte?",
+      "cevap": "practica",
+      "aciklama": "Presente de indicativo, Vd. şahsı için -a eki alır."
+    },
+    {
+      "soru": "Yo ___ solo.",
+      "cevap": "vivo",
+      "aciklama": "Presente de indicativo, yo şahsı için -o eki alır."
+    },
+    {
+      "soru": "Mis hijos ___ mucho.",
+      "cevap": "leen",
+      "aciklama": "Presente de indicativo, ellos şahsı için -en eki alır."
+    },
+    {
+      "soru": "Los domingos nosotros siempre ___ el periódico.",
+      "cevap": "leemos",
+      "aciklama": "Presente de indicativo, nosotros şahsı için -emos eki alır."
+    },
+    {
+      "soru": "Yo ___ (salir) a las 5.",
+      "cevap": "salgo",
+      "aciklama": "Salir fiilinin şimdiki zamanda yo çekimi."
+    },
+    {
+      "soru": "Ellos ___ (venir) mañana.",
+      "cevap": "vienen",
+      "aciklama": "venir fiilinin şimdiki zamanda ellos çekimi."
+    },
+    {
+      "soru": "Tú ___ (poder) hacerlo.",
+      "cevap": "puedes",
+      "aciklama": "poder fiilinin şimdiki zamanda tú çekimi."
+    },
+    {
+      "soru": "Yo ___ (venir) de España.",
+      "cevap": "vengo",
+      "aciklama": "Presente de indicativo, yo şahsı için -ar fiil eki -o alır."
+    },
+    {
+      "soru": "¿Cuándo ___ (empezar) la película?",
+      "cevap": "empieza",
+      "aciklama": "Presente de indicativo, üçüncü şahıs için -ar fiil eki -a alır."
+    },
+    {
+      "soru": "Yo ___ (cerrar) la puerta.",
+      "cevap": "cierro",
+      "aciklama": "Presente de indicativo, yo şahsı için -ar fiil eki -o alır."
+    },
+    {
+      "soru": "¿Puedes ___ (venir) a mi casa?",
+      "cevap": "venir",
+      "aciklama": "Fiil mastar formda kullanılır."
+    },
+    {
+      "soru": "Yo ___ (poder) ir al cine.",
+      "cevap": "puedo",
+      "aciklama": "Presente de indicativo, yo şahsı için -er fiil eki -o alır."
+    },
+    {
+      "soru": "¿Hace algún deporte?",
+      "cevap": "",
+      "aciklama": "Hacer fiilinin kullanımı"
+    },
+    {
+      "soru": "¿Tienes un diccionario?",
+      "cevap": "",
+      "aciklama": "Tener fiilinin kullanımı"
+    },
+    {
+      "soru": "¿Puedes abrir la puerta?",
+      "cevap": "",
+      "aciklama": "Poder fiilinin kullanımı"
+    },
+    {
+      "soru": "¿Sabes tocar la guitarra?",
+      "cevap": "",
+      "aciklama": "Saber fiilinin kullanımı"
+    },
+    {
+      "soru": "¿Entiendes alemán?",
+      "cevap": "",
+      "aciklama": "Entender fiilinin kullanımı"
+    },
+    {
+      "soru": "1. Mi hermana ___ alta y morena y yo ___ bajita y rubia.",
+      "cevap": "es, soy",
+      "aciklama": "Ser fiili kalıcı özellikler için kullanılır."
+    },
+    {
+      "soru": "2. Mi marido ___ camarero, trabaja mucho.",
+      "cevap": "es",
+      "aciklama": "Ser fiili meslek için kullanılır."
+    },
+    {
+      "soru": "3. Ana, ¿dónde ___ la casete?",
+      "cevap": "está",
+      "aciklama": "Estar fiili yer için kullanılır."
+    },
+    {
+      "soru": "4. Los niños ___ en el colegio.",
+      "cevap": "están",
+      "aciklama": "Estar fiili yer için kullanılır."
+    },
+    {
+      "soru": "5. ¿___ (tú) nerviosa por tu boda?",
+      "cevap": "Estás",
+      "aciklama": "Estar fiili geçici durum için kullanılır."
+    },
+    {
+      "soru": "6. (Nosotros) ___ cansados de trabajar.",
+      "cevap": "estamos",
+      "aciklama": "Estar fiili geçici durum için kullanılır."
+    },
+    {
+      "soru": "7. (Yo) ___ española.",
+      "cevap": "soy",
+      "aciklama": "Ser fiili kalıcı özellikler için kullanılır."
+    },
+    {
+      "soru": "8. Fernando y Reyes ___ profesores.",
+      "cevap": "son",
+      "aciklama": "Ser fiili meslek için kullanılır."
+    },
+    {
+      "soru": "9. Mañana ___ el día de mi cumpleaños.",
+      "cevap": "es",
+      "aciklama": "Ser fiili zaman için kullanılır."
+    },
+    {
+      "soru": "10. Madrid ___ en el centro de España.",
+      "cevap": "está",
+      "aciklama": "Estar fiili yer için kullanılır."
+    },
+    {
+      "soru": "11. El coche ___ aparcado en la calle Mayor.",
+      "cevap": "está",
+      "aciklama": "Estar fiili yer için kullanılır."
+    },
+    {
+      "soru": "12. Mi coche ___ viejo, pero ___ nuevo.",
+      "cevap": "es, es",
+      "aciklama": "Ser fiili kalıcı özellikler için kullanılır."
+    },
+    {
+      "soru": "13. Mi novio ___ bastante rico.",
+      "cevap": "es",
+      "aciklama": "Ser fiili kalıcı özellikler için kullanılır."
+    },
+    {
+      "soru": "14. Las ballenas ___ mamíferos.",
+      "cevap": "son",
+      "aciklama": "Ser fiili kalıcı özellikler için kullanılır."
+    },
+    {
+      "soru": "15. El presidente ___ inteligente.",
+      "cevap": "es",
+      "aciklama": "Ser fiili kalıcı özellikler için kullanılır."
+    },
+    {
+      "soru": "16. Estos macarrones ___ riquísimos.",
+      "cevap": "son",
+      "aciklama": "Ser fiili kalıcı özellikler için kullanılır."
+    },
+    {
+      "soru": "17. Las verduras ___ buenas para la salud.",
+      "cevap": "son",
+      "aciklama": "Ser fiili kalıcı özellikler için kullanılır."
+    },
+    {
+      "soru": "18. Andrés ___ un hombre bueno.",
+      "cevap": "es",
+      "aciklama": "Ser fiili kalıcı özellikler için kullanılır."
+    },
+    {
+      "soru": "19. Mi madre no ___ enferma.",
+      "cevap": "está",
+      "aciklama": "Estar fiili geçici durum için kullanılır."
+    },
+    {
+      "soru": "20. ¿Cómo ___ los padres de tu marido?",
+      "cevap": "son",
+      "aciklama": "Ser fiili kalıcı özellikler için kullanılır."
+    },
+    {
+      "soru": "Carmen se ___________ (bañarse).",
+      "cevap": "baña",
+      "aciklama": "Reflexive verb kullanımı."
+    },
+    {
+      "soru": "¿A qué hora te ___________ (levantar)?",
+      "cevap": "levantas",
+      "aciklama": "Reflexive verb kullanımı."
+    },
+    {
+      "soru": "Ella ___________ (acostarse) a las 10.",
+      "cevap": "se acuesta",
+      "aciklama": "Reflexive verb kullanımı."
+    },
+    {
+      "soru": "Yo ___ (levantarse) a las 7.",
+      "cevap": "me levanto",
+      "aciklama": "Presente de indicativo, yo şahsı için -ar fiil eki -o alır."
+    },
+    {
+      "soru": "¿Tú ___ (ducharse) por la mañana?",
+      "cevap": "te duchas",
+      "aciklama": "Presente de indicativo, tú şahsı için -ar fiil eki -as alır."
+    },
+    {
+      "soru": "Ella ___ (afeitarse) con maquinilla.",
+      "cevap": "se afeita",
+      "aciklama": "Presente de indicativo, ella şahsı için -ar fiil eki -a alır."
+    },
+    {
+      "soru": "Nosotros ___ (lavarnos) los dientes antes de comer.",
+      "cevap": "nos lavamos",
+      "aciklama": "Presente de indicativo, nosotros şahsı için -ar fiil eki -amos alır."
+    },
+    {
+      "soru": "Vosotros ___ (acostaros) tarde.",
+      "cevap": "os acostáis",
+      "aciklama": "Presente de indicativo, vosotros şahsı için -ar fiil eki -áis alır."
+    },
+    {
+      "soru": "Escribe con letras: 15",
+      "cevap": "quince",
+      "aciklama": "Números cardinales"
+    },
+    {
+      "soru": "Escribe con letras: 29",
+      "cevap": "veintinueve",
+      "aciklama": "Números cardinales"
+    },
+    {
+      "soru": "Escribe con letras: 80",
+      "cevap": "ochenta",
+      "aciklama": "Números cardinales"
+    },
+    {
+      "soru": "Escribe con letras: 64",
+      "cevap": "sesenta y cuatro",
+      "aciklama": "Números cardinales"
+    },
+    {
+      "soru": "Escribe con letras: 143",
+      "cevap": "ciento cuarenta y tres",
+      "aciklama": "Números cardinales"
+    },
+    {
+      "soru": "4. Escriba debajo del reloj la hora que marca.",
+      "cevap": "",
+      "aciklama": "Saatlerin yazılması"
+    },
+    {
+      "soru": "5. Escribe con letras.",
+      "cevap": "",
+      "aciklama": "Sayıların kelime ile yazılması"
+    },
+    {
+      "soru": "6. ¿En qué piso viven?",
+      "cevap": "",
+      "aciklama": "Katların adreslerinin yazılması"
+    },
+    {
+      "soru": "7. Complete con PRIMERO, A / TERCERO, -A.",
+      "cevap": "",
+      "aciklama": "Sıfatların kullanımı"
+    },
+    {
+      "soru": "8. Escribe el ordinal en género masculino o femenino, según corresponda.",
+      "cevap": "",
+      "aciklama": "Sıra sayılarının kullanımı"
+    },
+    {
+      "soru": "Poner (gerundio)",
+      "cevap": "poniendo",
+      "aciklama": "Poner fiilinin gerundio hali"
+    },
+    {
+      "soru": "Beber (gerundio)",
+      "cevap": "bebiendo",
+      "aciklama": "Beber fiilinin gerundio hali"
+    },
+    {
+      "soru": "Tomar (gerundio)",
+      "cevap": "tomando",
+      "aciklama": "Tomar fiilinin gerundio hali"
+    },
+    {
+      "soru": "Bailar (gerundio)",
+      "cevap": "bailando",
+      "aciklama": "Bailar fiilinin gerundio hali"
+    },
+    {
+      "soru": "Hacer (gerundio)",
+      "cevap": "haciendo",
+      "aciklama": "Hacer fiilinin gerundio hali"
+    },
+    {
+      "soru": "Hablar (gerundio)",
+      "cevap": "hablando",
+      "aciklama": "Hablar fiilinin gerundio hali"
+    },
+    {
+      "soru": "Dormir (gerundio)",
+      "cevap": "durmiendo",
+      "aciklama": "Dormir fiilinin gerundio hali"
+    },
+    {
+      "soru": "Salir (gerundio)",
+      "cevap": "saliento",
+      "aciklama": "Salir fiilinin gerundio hali"
+    },
+    {
+      "soru": "Ver (gerundio)",
+      "cevap": "viendo",
+      "aciklama": "Ver fiilinin gerundio hali"
+    },
+    {
+      "soru": "Escribir (gerundio)",
+      "cevap": "escribiendo",
+      "aciklama": "Escribir fiilinin gerundio hali"
+    },
+    {
+      "soru": "Leer (gerundio)",
+      "cevap": "leyendo",
+      "aciklama": "Leer fiilinin gerundio hali"
+    },
+    {
+      "soru": "Estudiar (gerundio)",
+      "cevap": "estudiando",
+      "aciklama": "Estudiar fiilinin gerundio hali"
+    }
+  ],
+  "_processed_pages": [
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23
+  ]
+}
