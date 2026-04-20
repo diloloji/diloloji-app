@@ -372,14 +372,18 @@ export default function Dictionary() {
     }
   }, []);
 
+  // Global dil context'i değiştiğinde yönü senkronla; OTOMATİK API çağrısı YAPMA.
+  // Kullanıcı yeni sonuç görmek isterse 'Ara' butonuna basmalı.
   useEffect(() => {
     const newDir: DictDirection = selectedLanguage === 'es' ? 'tr-es' : 'tr-fr';
     setDirection(newDir);
     setResult(undefined);
-    if (query.trim()) {
-      doSearch(query.trim(), newDir);
-    }
-  }, [selectedLanguage, doSearch]);
+    setGroqExamples(null);
+    setGroqCommonPhrases(null);
+    setGroqWordMatrix(null);
+    setGroqEtymology(null);
+    setGroqSemanticShift(null);
+  }, [selectedLanguage]);
 
   const handleSearch = useCallback(
     (e: React.FormEvent) => {
@@ -531,6 +535,16 @@ export default function Dictionary() {
                   onChange={(e) => {
                     setQuery(e.target.value);
                     setAutocompleteOpen(true);
+                    // Input değiştiğinde eski sonuçları temizle ki kullanıcı
+                    // yeni bir arama için 'Ara' butonuna basması gerektiğini anlasın.
+                    if (result !== undefined) {
+                      setResult(undefined);
+                      setGroqExamples(null);
+                      setGroqCommonPhrases(null);
+                      setGroqWordMatrix(null);
+                      setGroqEtymology(null);
+                      setGroqSemanticShift(null);
+                    }
                   }}
                   onFocus={() => debouncedQuery.trim().length >= 1 && setAutocompleteOpen(true)}
                   onKeyDown={(e) => {
@@ -577,13 +591,40 @@ export default function Dictionary() {
                 {query.length > 0 && (
                   <button
                     type="button"
-                    onClick={() => { setQuery(''); setResult(undefined); setAutocompleteOpen(false); }}
+                    onClick={() => {
+                      setQuery('');
+                      setResult(undefined);
+                      setGroqExamples(null);
+                      setGroqCommonPhrases(null);
+                      setGroqWordMatrix(null);
+                      setGroqEtymology(null);
+                      setGroqSemanticShift(null);
+                      setAutocompleteOpen(false);
+                    }}
                     className="p-2 rounded-full text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-white/10 transition-colors shrink-0"
                     aria-label="Temizle"
                   >
                     <X className="w-5 h-5" strokeWidth={2} />
                   </button>
                 )}
+                <button
+                  type="submit"
+                  disabled={isLoading || !query.trim()}
+                  className="shrink-0 inline-flex items-center gap-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-600/40 disabled:cursor-not-allowed text-white font-semibold px-4 sm:px-5 py-2.5 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 focus:ring-offset-slate-50 dark:focus:ring-offset-night-950"
+                  aria-label="Ara"
+                >
+                  {isLoading ? (
+                    <>
+                      <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" aria-hidden />
+                      <span className="hidden sm:inline">Yükleniyor...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Search className="w-4 h-4" strokeWidth={2.5} aria-hidden />
+                      <span>Ara</span>
+                    </>
+                  )}
+                </button>
               </div>
             </motion.div>
             {autocompleteOpen && debouncedQuery.trim().length >= 1 && (

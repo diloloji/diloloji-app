@@ -225,6 +225,134 @@ export async function fetchVerbTranslationFromGroq(
   }
 }
 
+// ─── Fiil Lab: AI Örnek Cümle Üretimi ───────────────────────────────────
+
+/** Fiil + zaman çekimi için üretilmiş örnek cümle */
+export interface AIVerbExample {
+  sentence: string;
+  translation: string;
+}
+
+export interface AIVerbExamplesResponse {
+  examples: AIVerbExample[];
+}
+
+const GROQ_VERB_EXAMPLES_SYSTEM =
+  'Sen deneyimli bir dil öğretmenisin. Kullanıcıya belirli bir fiilin belirli bir zamandaki çekimini öğretmek için B1 seviyesinde, doğal, günlük hayattan 2 adet örnek cümle üretirsin. Her cümle fiili istenen zamanda kullanmalı ve anlamlı, bağlamlı olmalıdır. Cevabı yalnızca şu JSON formatında ver (başka metin ekleme): { "examples": [ { "sentence": "hedef dildeki cümle", "translation": "Türkçe çevirisi" }, { "sentence": "...", "translation": "..." } ] }. Cümleler fiili farklı zamirlerde ve bağlamlarda kullanmalı.';
+
+/**
+ * Fiil + zaman için Groq üzerinden 2 örnek cümle + Türkçe çeviri üretir.
+ * @param verb - Fiil mastarı (örn. hablar, parler)
+ * @param tenseLabel - Zaman etiketi (örn. Presente, Passé Composé)
+ * @param language - "İspanyolca" | "Fransızca" | "İngilizce"
+ */
+export async function fetchAIVerbExamples(
+  verb: string,
+  tenseLabel: string,
+  language: string
+): Promise<AIVerbExamplesResponse> {
+  const apiKey = import.meta.env.VITE_GROQ_API_KEY;
+  if (!apiKey || typeof apiKey !== 'string') {
+    console.warn('[Fiil Lab] VITE_GROQ_API_KEY tanımlı değil.');
+    return { examples: [] };
+  }
+  const userMessage = `Kullanıcı ${language} dilinde "${verb}" fiilinin "${tenseLabel}" çekimini inceliyor. Bu fiili ve zamanı kullanan, B1 seviyesinde, doğal ve günlük hayattan 2 adet örnek cümle üret. Her cümlenin Türkçe çevirisini ekle.`;
+  try {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: [
+          { role: 'system', content: GROQ_VERB_EXAMPLES_SYSTEM },
+          { role: 'user', content: userMessage },
+        ],
+        response_format: { type: 'json_object' },
+        temperature: 0.6,
+        max_tokens: 320,
+      }),
+    });
+    if (!response.ok) return { examples: [] };
+    const data = await response.json();
+    const raw = data?.choices?.[0]?.message?.content;
+    if (typeof raw !== 'string') return { examples: [] };
+    const parsed = JSON.parse(raw) as AIVerbExamplesResponse;
+    if (!Array.isArray(parsed?.examples)) return { examples: [] };
+    const valid = parsed.examples
+      .filter((e) => e && typeof e.sentence === 'string' && typeof e.translation === 'string')
+      .slice(0, 2);
+    return { examples: valid };
+  } catch (e) {
+    console.warn('[Fiil Lab] Örnek cümle üretilemedi:', e);
+    return { examples: [] };
+  }
+}
+
+/** Okuma Pratiği — tek kelime analizi (side drawer için) */
+export interface WordAnalysisResult {
+  word: string;
+  base?: string;
+  type?: string;
+  translation?: string;
+  example?: string;
+  exampleTranslation?: string;
+}
+
+const GROQ_WORD_ANALYSIS_SYSTEM =
+  'Sen profesyonel bir dil öğretmenisin. Sana verilen cümle bağlamında tek bir kelimeyi analiz et. Sonucu yalnızca şu JSON formatında dön (başka metin ekleme): { "word": "orijinal form", "base": "mastar/kök hali", "type": "verb | noun | adjective | pronoun | preposition | article | adverb | conjunction | determiner | other", "translation": "Türkçe anlamı (fiiller için -mak/-mek)", "example": "kısa, doğal örnek cümle (hedef dilde)", "exampleTranslation": "örnek cümlenin Türkçe çevirisi" }. Çevirileri kısa ve bağlama uygun tut.';
+
+/**
+ * Okuma Pratiği — tek kelime analizi (Groq).
+ * @param word - Tıklanan kelime
+ * @param language - "Fransızca" | "İspanyolca" | "İngilizce"
+ * @param context - (opsiyonel) kelimenin geçtiği cümle
+ */
+export async function analyzeWord(
+  word: string,
+  language: string,
+  context?: string
+): Promise<WordAnalysisResult | null> {
+  const apiKey = import.meta.env.VITE_GROQ_API_KEY;
+  if (!apiKey || typeof apiKey !== 'string') return null;
+  const trimmed = (word || '').trim();
+  if (!trimmed) return null;
+  const userMessage = context
+    ? `${language} cümlesi: "${context}". Bu cümledeki "${trimmed}" kelimesini analiz et.`
+    : `${language} dilinde "${trimmed}" kelimesini analiz et.`;
+  try {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: [
+          { role: 'system', content: GROQ_WORD_ANALYSIS_SYSTEM },
+          { role: 'user', content: userMessage },
+        ],
+        response_format: { type: 'json_object' },
+        temperature: 0.2,
+        max_tokens: 320,
+      }),
+    });
+    if (!response.ok) return null;
+    const data = await response.json();
+    const raw = data?.choices?.[0]?.message?.content;
+    if (typeof raw !== 'string') return null;
+    const parsed = JSON.parse(raw) as WordAnalysisResult;
+    if (!parsed?.translation) return null;
+    return parsed;
+  } catch (e) {
+    console.warn('[Okuma] Kelime analizi başarısız:', e);
+    return null;
+  }
+}
+
 /** Cümle Laboratuvarı — kelime/öbek analiz öğesi */
 export interface SentenceAnalysisItem {
   word: string;
