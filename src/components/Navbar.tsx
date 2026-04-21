@@ -7,10 +7,12 @@ import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import type { LucideIcon } from 'lucide-react';
-import { Menu, X, User, LogOut, Sun, Moon, Languages } from 'lucide-react';
+import { Menu, X, User, LogOut, Sun, Moon, Languages, Flame, BookOpen } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useThemeContext } from '../contexts/ThemeContext';
 import LoginModal from './LoginModal';
+import { getDailyGoalSummary, updateDocumentTitle, DAILY_GOAL } from '../utils/dailyGoal';
+import AutoSpeakToggle from './speech/AutoSpeakToggle';
 
 const MAIN_LINKS = [
   { to: '/sozluk', labelKey: 'sozluk' },
@@ -27,7 +29,11 @@ type HamburgerLinkItem = {
 };
 
 const HAMBURGER_LINKS: HamburgerLinkItem[] = [
+  { to: '/serbest', labelKey: 'serbest_mod', labelFallback: 'Serbest Mod' },
+  { to: '/historia', labelKey: 'historia', labelFallback: 'Historia Mode' },
+  { to: '/cloze-sprint', labelKey: 'cloze_sprint', labelFallback: 'Cloze Sprint' },
   { to: '/okuma', labelKey: 'okuma', labelFallback: 'Okuma Pratiği' },
+  { to: '/haberler', labelKey: 'haberler', labelFallback: 'Okuma Modu (Haberler)' },
   { to: '/syntax-lab', labelKey: 'syntax_lab', labelFallback: 'Cümle Laboratuvarı' },
   { to: '/youtube-lab', labelKey: 'youtube_lab', labelFallback: 'YouTube Lab' },
   { to: '/simulator', labelKey: 'simulator', labelFallback: 'Simülatör' },
@@ -53,6 +59,27 @@ export default function Navbar({ onLoginClick, onLogoutClick, isLoggedIn, printH
   const [hamburgerOpen, setHamburgerOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
   const langRef = useRef<HTMLDivElement>(null);
+  const [dailyGoal, setDailyGoal] = useState(() => getDailyGoalSummary());
+
+  // localStorage'tan günlük hedef ve streak verisini canlı tutar:
+  // diğer sekmeden değişiklik (storage event) ve sayfa odağı geri döndüğünde tazelenir.
+  useEffect(() => {
+    const refresh = () => {
+      setDailyGoal(getDailyGoalSummary());
+      updateDocumentTitle();
+    };
+    refresh();
+    window.addEventListener('storage', refresh);
+    window.addEventListener('focus', refresh);
+    document.addEventListener('visibilitychange', refresh);
+    const intervalId = window.setInterval(refresh, 30_000);
+    return () => {
+      window.removeEventListener('storage', refresh);
+      window.removeEventListener('focus', refresh);
+      document.removeEventListener('visibilitychange', refresh);
+      window.clearInterval(intervalId);
+    };
+  }, [location.pathname]);
 
   const openLoginModal = (e?: React.MouseEvent) => {
     e?.preventDefault();
@@ -141,8 +168,26 @@ export default function Navbar({ onLoginClick, onLogoutClick, isLoggedIn, printH
             })}
           </nav>
 
-          {/* Sağ — Giriş Yap, Pro'ya Geç, Hamburger (shrink-0) */}
-          <div className="flex items-center gap-3 shrink-0">
+          {/* Sağ — Streak, Giriş Yap, Pro'ya Geç, Hamburger (shrink-0) */}
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            <Link
+              to="/"
+              className={`hidden sm:inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold border transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400/50 ${
+                dailyGoal.metToday
+                  ? 'border-amber-400/40 bg-amber-500/10 text-amber-700 dark:text-amber-300 hover:bg-amber-500/15'
+                  : dailyGoal.streak > 0
+                    ? 'border-amber-300/30 bg-amber-500/5 text-amber-600 dark:text-amber-300/90 hover:bg-amber-500/10'
+                    : 'border-slate-200 dark:border-white/10 bg-slate-50/80 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10'
+              }`}
+              title={`Günlük seri: ${dailyGoal.streak} gün · Bugün ${dailyGoal.todayCount}/${DAILY_GOAL}`}
+              aria-label={`Günlük seri ${dailyGoal.streak} gün, bugün ${dailyGoal.todayCount} / ${DAILY_GOAL} çekim`}
+            >
+              <Flame className={`w-3.5 h-3.5 ${dailyGoal.metToday ? '' : dailyGoal.streak > 0 ? '' : 'opacity-60'}`} strokeWidth={2.2} />
+              <span className="tabular-nums">{dailyGoal.streak}</span>
+              <span className="text-[10px] opacity-60 hidden md:inline">
+                {dailyGoal.todayCount}/{DAILY_GOAL}
+              </span>
+            </Link>
             {!resolvedLoggedIn && (
               <button
                 type="button"
@@ -256,6 +301,27 @@ export default function Navbar({ onLoginClick, onLogoutClick, isLoggedIn, printH
                 })}
 
                 <div className="my-2 border-t border-slate-200/50 dark:border-white/10" />
+
+                {/* Zaman Kartları — İspanyolca zamanların referansı */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    closeHamburger();
+                    window.dispatchEvent(new CustomEvent('conjume:open-tense-cards'));
+                  }}
+                  className="w-full py-3 px-4 rounded-xl text-left text-sm font-medium flex items-center gap-2 bg-slate-100/80 dark:bg-white/5 text-slate-700 dark:text-slate-200 hover:bg-slate-200/80 dark:hover:bg-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                >
+                  <BookOpen className="w-4 h-4 shrink-0" strokeWidth={2} aria-hidden />
+                  Zaman Kartları
+                </button>
+
+                {/* Ses Ayarı (TTS) */}
+                <div className="flex items-center justify-between gap-2 w-full py-2.5 px-4 rounded-xl bg-slate-100/80 dark:bg-white/5">
+                  <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
+                    Sesli okuma
+                  </span>
+                  <AutoSpeakToggle variant="pill" />
+                </div>
 
                 {/* Dil Ayarları (TR) */}
                 <div className="relative" ref={langRef}>

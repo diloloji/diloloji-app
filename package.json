@@ -27,6 +27,7 @@
     "spanish-verbs": "^3.4.0"
   },
   "devDependencies": {
+    "@anthropic-ai/sdk": "^0.90.0",
     "@eslint/js": "^9.39.4",
     "@types/canvas-confetti": "^1.9.0",
     "@types/dompurify": "^3.0.5",

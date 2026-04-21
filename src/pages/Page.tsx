@@ -23,19 +23,32 @@ import { getVerbMetadata } from '../data/verbMetadata';
 import { VERB_LEVELS, CEFR_LEVELS, CEFR_COLORS, type CEFRLevel } from '../data/verbLevels';
 import { fetchVerbTranslationFromGroq, fetchAIVerbExamples, type AIVerbExample } from '../services/dictionaryApi';
 import { getMistakes, getDueMistakes, addMistake, updateMistakeReview, type MistakeEntry } from '../utils/mistakeBank';
+import { getConjugationRule } from '../utils/conjugationRules';
+import ErrorAnalysisCard from '../components/ErrorAnalysisCard';
 import { getStarredVerbs, toggleStarredVerb, isStarredVerb } from '../utils/starredVerbs';
 import { getActivityHistory, getLastNDays, addActivityToday } from '../utils/activityHistory';
+import { updateDocumentTitle } from '../utils/dailyGoal';
 import { getFlashcardDecks, addCardToDeck, type FlashcardDeck } from '../utils/flashcardDecks';
 import { useXp } from '../contexts/XpContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTranslation } from 'react-i18next';
-import { Info, List as ListIcon, Target as TargetIcon } from 'lucide-react';
+import { Info, List as ListIcon, Target as TargetIcon, BookOpen } from 'lucide-react';
 import EzberMakinesi from '../components/EzberMakinesi';
 import AuthModal from '../components/AuthModal';
 import Navbar from '../components/Navbar';
 import AccentKeyboard from '../components/AccentKeyboard';
 import PronunciationButton from '../components/PronunciationButton';
 import { sanitizeForDisplay } from '../utils/sanitize';
+import { speakAuto } from '../utils/speech';
+import MicButton from '../components/speech/MicButton';
+import {
+  getRuleHint,
+  getLetterMask,
+  markRevealedAfterThreeAttempts,
+  markHintUsed,
+} from '../utils/hintEngine';
+import SmartHintBubble from '../components/SmartHintBubble';
+import TenseCardOverlay from '../components/tenseCard/TenseCardOverlay';
 
 type Mode = 'learning' | 'quiz' | 'review' | 'starred' | 'time-attack' | 'compare';
 type AppMode = 'conjugation' | 'ezber';
@@ -296,35 +309,6 @@ function checkOne(user: string, correct: string): boolean {
   return checkAnswer(user, correct) === 'correct';
 }
 
-/** İki metin arasındaki farkları vurgulamak için segment listesi (kıyaslama modu). */
-function getDiffSegments(a: string, b: string): { a: { text: string; highlight: boolean }[]; b: { text: string; highlight: boolean }[] } {
-  let i = 0;
-  while (i < a.length && i < b.length && a[i] === b[i]) i++;
-  const prefixLen = i;
-  let j = 0;
-  while (
-    j < a.length - j &&
-    j < b.length - j &&
-    a[a.length - 1 - j] === b[b.length - 1 - j]
-  )
-    j++;
-  const suffixLen = j;
-  const aPrefix = a.slice(0, prefixLen);
-  const aMiddle = a.slice(prefixLen, a.length - suffixLen);
-  const aSuffix = suffixLen > 0 ? a.slice(-suffixLen) : '';
-  const bPrefix = b.slice(0, prefixLen);
-  const bMiddle = b.slice(prefixLen, b.length - suffixLen);
-  const bSuffix = suffixLen > 0 ? b.slice(-suffixLen) : '';
-  const seg = (prefix: string, middle: string, suffix: string) => {
-    const out: { text: string; highlight: boolean }[] = [];
-    if (prefix) out.push({ text: prefix, highlight: false });
-    if (middle) out.push({ text: middle, highlight: true });
-    if (suffix) out.push({ text: suffix, highlight: false });
-    return out;
-  };
-  return { a: seg(aPrefix, aMiddle, aSuffix), b: seg(bPrefix, bMiddle, bSuffix) };
-}
-
 /** Düzenli kökten sapan harfler: aksanlı ve özel karakterler (ç, œ, æ). Her karakter için highlight mı döner. */
 function getHighlightRuns(text: string): { char: string; highlight: boolean }[] {
   const result: { char: string; highlight: boolean }[] = [];
@@ -582,6 +566,20 @@ export function Page() {
   const [quizPasséHint, setQuizPasséHint] = useState<Record<string, string | null>>(() =>
     Object.fromEntries(getPronouns('fr').map((p) => [p.id, null as string | null]))
   );
+  /**
+   * Akıllı İpucu Sistemi (alıştırma modu, soru-bazlı):
+   *   quizAttempts: her şahıs için kaç kez yanlış girildi (0..3). 3'te tam cevap gösterilir.
+   *   quizHintMode: 'rule' (1. yanlış), 'letters' (2. yanlış), 'reveal' (3. yanlış / auto-fill).
+   * Her ikisi de soru bazlı; localStorage'a yazılmaz; tense/verb/dil değişiminde sıfırlanır.
+   */
+  const [quizAttempts, setQuizAttempts] = useState<Record<string, number>>(() =>
+    Object.fromEntries(getPronouns('fr').map((p) => [p.id, 0]))
+  );
+  const [quizHintMode, setQuizHintMode] = useState<Record<string, 'rule' | 'letters' | 'reveal' | null>>(() =>
+    Object.fromEntries(getPronouns('fr').map((p) => [p.id, null as 'rule' | 'letters' | 'reveal' | null]))
+  );
+  /** Reveal sonrası 1.5sn bekleme zamanlayıcıları (pronoun bazlı) — temizleme için tutulur. */
+  const revealTimersRef = useRef<Record<string, ReturnType<typeof setTimeout> | null>>({});
   const [showHints, setShowHints] = useState(false);
   const [error, setError] = useState('');
   const [showCongrats, setShowCongrats] = useState(false);
@@ -724,6 +722,27 @@ export function Page() {
 
   /** Alıştırma başlığındaki zaman dropdown'u (hızlı zaman değiştirme) */
   const [quizTenseMenuOpen, setQuizTenseMenuOpen] = useState(false);
+  /**
+   * Zaman Kartları overlay durumu.
+   *   null           → kapalı
+   *   { kind: 'grid', highlightId? }      → 9 kart grid görünümü
+   *   { kind: 'detail', tenseId }         → tek kartın detayı
+   * Overlay absolute konumlanır; Page kök div'i relative olmalıdır.
+   */
+  const [tenseCardOverlay, setTenseCardOverlay] = useState<
+    | null
+    | { kind: 'grid'; highlightId?: string }
+    | { kind: 'detail'; tenseId: string; fromGrid?: boolean }
+  >(null);
+
+  /** Navbar/diğer bileşenlerin tetiklediği global olay ile Zaman Kartları overlay'ini aç. */
+  useEffect(() => {
+    const handler = () => {
+      setTenseCardOverlay({ kind: 'grid', highlightId: selectedLanguage === 'es' ? selectedTense : undefined });
+    };
+    window.addEventListener('conjume:open-tense-cards', handler);
+    return () => window.removeEventListener('conjume:open-tense-cards', handler);
+  }, [selectedLanguage, selectedTense]);
   const quizTenseMenuRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!quizTenseMenuOpen) return;
@@ -753,6 +772,26 @@ export function Page() {
     []
   );
 
+  /** Akıllı ipucu durumunu tek bir şahıs için sıfırlar (doğru / atlama / yeni soru). */
+  const clearSmartHint = useCallback((pronoun: string) => {
+    setQuizAttempts((prev) => ({ ...prev, [pronoun]: 0 }));
+    setQuizHintMode((prev) => ({ ...prev, [pronoun]: null }));
+    const t = revealTimersRef.current[pronoun];
+    if (t) {
+      clearTimeout(t);
+      revealTimersRef.current[pronoun] = null;
+    }
+  }, []);
+
+  /** Tüm şahıslar için akıllı ipucu durumunu sıfırlar (yeni fiil / dil / zaman). */
+  const resetSmartHintsAll = useCallback(() => {
+    const ids = pronounsForLang.map((p) => p.id);
+    setQuizAttempts(Object.fromEntries(ids.map((id) => [id, 0])));
+    setQuizHintMode(Object.fromEntries(ids.map((id) => [id, null as 'rule' | 'letters' | 'reveal' | null])));
+    Object.values(revealTimersRef.current).forEach((t) => { if (t) clearTimeout(t); });
+    revealTimersRef.current = {};
+  }, [pronounsForLang]);
+
   /** Alıştırma başlığından zaman değişimi: inputları temizle, feedback'i sıfırla */
   const changeQuizTense = useCallback((tenseId: string) => {
     if (tenseId === selectedTense) {
@@ -763,20 +802,24 @@ export function Page() {
     setUserAnswers(getInitialUserAnswers(selectedLanguage));
     setQuizFeedback(Object.fromEntries(pronounsForLang.map((p) => [p.id, null as 'correct' | 'wrong' | 'typo' | null])));
     setQuizPasséHint(Object.fromEntries(pronounsForLang.map((p) => [p.id, null])) as Record<string, string | null>);
+    resetSmartHintsAll();
     setShowHints(false);
     setShowCongrats(false);
     setCurrentFocusIndex(0);
     setQuizTenseMenuOpen(false);
     requestAnimationFrame(() => quizInputRefs.current[0]?.focus());
-  }, [selectedTense, selectedLanguage, pronounsForLang]);
+  }, [selectedTense, selectedLanguage, pronounsForLang, resetSmartHintsAll]);
 
-  /** Kıyaslama sekmesi: iki zaman seçici */
+  /** Kıyaslama sekmesi: üç zaman seçici (3'üncüsü opsiyonel) */
   const [compareTense1, setCompareTense1] = useState<string>(() => getTenses('fr')[0].id);
   const [compareTense2, setCompareTense2] = useState<string>(() => getTenses('fr')[1].id);
+  const [compareTense3, setCompareTense3] = useState<string>(() => getTenses('fr')[2]?.id ?? getTenses('fr')[0].id);
   const [compareDropdown1Open, setCompareDropdown1Open] = useState(false);
   const [compareDropdown2Open, setCompareDropdown2Open] = useState(false);
+  const [compareDropdown3Open, setCompareDropdown3Open] = useState(false);
   const compareDropdown1Ref = useRef<HTMLDivElement>(null);
   const compareDropdown2Ref = useRef<HTMLDivElement>(null);
+  const compareDropdown3Ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const h1 = (e: MouseEvent) => {
       if (compareDropdown1Ref.current && !compareDropdown1Ref.current.contains(e.target as Node)) setCompareDropdown1Open(false);
@@ -784,13 +827,18 @@ export function Page() {
     const h2 = (e: MouseEvent) => {
       if (compareDropdown2Ref.current && !compareDropdown2Ref.current.contains(e.target as Node)) setCompareDropdown2Open(false);
     };
+    const h3 = (e: MouseEvent) => {
+      if (compareDropdown3Ref.current && !compareDropdown3Ref.current.contains(e.target as Node)) setCompareDropdown3Open(false);
+    };
     if (compareDropdown1Open) document.addEventListener('mousedown', h1);
     if (compareDropdown2Open) document.addEventListener('mousedown', h2);
+    if (compareDropdown3Open) document.addEventListener('mousedown', h3);
     return () => {
       document.removeEventListener('mousedown', h1);
       document.removeEventListener('mousedown', h2);
+      document.removeEventListener('mousedown', h3);
     };
-  }, [compareDropdown1Open, compareDropdown2Open]);
+  }, [compareDropdown1Open, compareDropdown2Open, compareDropdown3Open]);
 
   /** Dil değişince: tam sıfırlama — fiil, arama metni, anlam, hata temizlenir; "Laboratuvar Hazır!" boş ekranına dönülür */
   useEffect(() => {
@@ -798,6 +846,7 @@ export function Page() {
     setSelectedTense(tenses[0].id);
     setCompareTense1(tenses[0]?.id ?? '');
     setCompareTense2(tenses[1]?.id ?? tenses[0]?.id ?? '');
+    setCompareTense3(tenses[2]?.id ?? tenses[1]?.id ?? tenses[0]?.id ?? '');
     setVerbInput('');
     setVerbKey(null);
     setConjugations(null);
@@ -809,8 +858,9 @@ export function Page() {
     setUserAnswers(getInitialUserAnswers(selectedLanguage));
     setQuizFeedback(Object.fromEntries(pronounsForLang.map((p) => [p.id, null as 'correct' | 'wrong' | 'typo' | null])));
     setQuizPasséHint(Object.fromEntries(pronounsForLang.map((p) => [p.id, null as string | null])));
+    resetSmartHintsAll();
     requestAnimationFrame(() => verbInputRef.current?.focus());
-  }, [selectedLanguage]);
+  }, [selectedLanguage]); // eslint-disable-line react-hooks/exhaustive-deps
 
   /** Review (Tekrar) modu: gösterilen soru ve kullanıcı cevabı */
   const [reviewEntry, setReviewEntry] = useState<MistakeEntry | null>(null);
@@ -1005,6 +1055,7 @@ export function Page() {
         setUserAnswers(getInitialUserAnswers(selectedLanguage));
         setQuizFeedback({ je: null, tu: null, il: null, nous: null, vous: null, ils: null } as Record<string, 'correct' | 'wrong' | 'typo' | null>);
         setQuizPasséHint({ je: null, tu: null, il: null, nous: null, vous: null, ils: null });
+        resetSmartHintsAll();
         setShowHints(false);
         setShowCongrats(false);
         setCurrentFocusIndex(0);
@@ -1013,7 +1064,7 @@ export function Page() {
       }
     }
     setError('Yeni rastgele fiil seçilemedi. Lütfen tekrar deneyin.');
-  }, [selectedTense, selectedLanguage, verbKey]);
+  }, [selectedTense, selectedLanguage, verbKey, resetSmartHintsAll]);
 
   useEffect(() => {
     const mq = window.matchMedia('(min-width: 768px)');
@@ -1108,11 +1159,12 @@ export function Page() {
     setUserAnswers(getInitialUserAnswers(selectedLanguage));
     setQuizFeedback(Object.fromEntries(pronounsForLang.map((p) => [p.id, null as 'correct' | 'wrong' | 'typo' | null])));
     setQuizPasséHint(Object.fromEntries(pronounsForLang.map((p) => [p.id, null as string | null])));
+    resetSmartHintsAll();
     setShowHints(false);
     setShowCongrats(false);
     setCombo(0);
     setCurrentFocusIndex(0);
-  }, [verbKey, selectedLanguage, pronounsForLang]);
+  }, [verbKey, selectedLanguage, pronounsForLang, resetSmartHintsAll]);
 
   // Sayfa ilk açılışta veya yeni fiil seçildiğinde ilgili ilk input'a odaklan
   useEffect(() => {
@@ -1341,6 +1393,8 @@ export function Page() {
       setTimeAttackPointsFlash(points);
       setTimeout(() => setTimeAttackPointsFlash(null), 700);
       addActivityToday(1);
+      updateDocumentTitle();
+      speakAuto(correct, { lang: selectedLanguage === 'es' ? 'es-ES' : 'fr-FR' });
       // Doğru → bekletmeden sıradaki soruya geç + süreyi yenile
       setTimeAttackInput('');
       setTimeAttackQuestion(getRandomTimeAttackQuestion(selectedLanguage, diff));
@@ -1441,6 +1495,7 @@ export function Page() {
       });
       setTotalScore((s) => s + newCorrectCount * 10);
       addActivityToday(newCorrectCount);
+      updateDocumentTitle();
     }
   }, [conjugations, userAnswers, quizFeedback, showHints, selectedTense, verbKey, addToMistakeBank]);
 
@@ -1459,11 +1514,12 @@ export function Page() {
     setUserAnswers(getInitialUserAnswers(selectedLanguage));
     setQuizFeedback({ je: null, tu: null, il: null, nous: null, vous: null, ils: null } as Record<string, 'correct' | 'wrong' | 'typo' | null>);
     setQuizPasséHint({ je: null, tu: null, il: null, nous: null, vous: null, ils: null });
+    resetSmartHintsAll();
     setShowHints(false);
     setShowCongrats(false);
     setCurrentFocusIndex(0);
     requestAnimationFrame(() => quizInputRefs.current[0]?.focus());
-  }, []);
+  }, [selectedLanguage, resetSmartHintsAll]);
 
   /** Zorlandıklarım (Review) modunu aç: tekrar zamanı gelmiş (due) sorulardan rastgele birini seç. */
   const openReviewMode = useCallback(() => {
@@ -1589,6 +1645,65 @@ export function Page() {
   }, [mistakeBank]);
 
   /** Quiz inputları: Enter ile kontrol. Doğruysa sonraki boş inputa focus; yanlışsa aynı inputta kal. */
+  /**
+   * Akıllı İpucu — yanlış cevaptan sonra çağrılır. Üç aşama:
+   *   1. yanlış → 'rule'    (kural ipucu UI'da gösterilir)
+   *   2. yanlış → 'letters' (ilk 2 harf açık, kalanı maskeli)
+   *   3. yanlış → 'reveal'  (input doğru cevapla doldurulur, 1.5sn sonra "doğru" sayılır
+   *      ve odak modunda bir sonraki şahısa geçilir; SRS'e öncelikli işaretlenir).
+   * Liste modunda advance işi normal akışa bırakılır (revealAdvance opsiyonu false).
+   */
+  const applySmartHintAfterWrong = useCallback(
+    (
+      pronoun: string,
+      correct: string,
+      verb: string,
+      tense: string,
+      opts: { onRevealAdvance?: () => void } = {}
+    ) => {
+      const nextAttempts = (quizAttempts[pronoun] ?? 0) + 1;
+      setQuizAttempts((prev) => ({ ...prev, [pronoun]: nextAttempts }));
+      if (nextAttempts >= 3) {
+        setQuizHintMode((prev) => ({ ...prev, [pronoun]: 'reveal' }));
+        setUserAnswers((prev) => ({ ...prev, [pronoun]: correct }));
+        markRevealedAfterThreeAttempts(verb, tense, pronoun);
+        setMistakeBank(getMistakes());
+        const prevTimer = revealTimersRef.current[pronoun];
+        if (prevTimer) clearTimeout(prevTimer);
+        revealTimersRef.current[pronoun] = setTimeout(() => {
+          revealTimersRef.current[pronoun] = null;
+          setQuizFeedback((prev) => ({ ...prev, [pronoun]: 'correct' }));
+          speakAuto(correct, { lang: selectedLanguage === 'es' ? 'es-ES' : 'fr-FR' });
+          opts.onRevealAdvance?.();
+          setQuizAttempts((prev) => ({ ...prev, [pronoun]: 0 }));
+          setQuizHintMode((prev) => ({ ...prev, [pronoun]: null }));
+        }, 1500);
+      } else if (nextAttempts === 2) {
+        setQuizHintMode((prev) => ({ ...prev, [pronoun]: 'letters' }));
+      } else {
+        setQuizHintMode((prev) => ({ ...prev, [pronoun]: 'rule' }));
+      }
+    },
+    [quizAttempts, selectedLanguage]
+  );
+
+  /**
+   * "?" butonu — kullanıcı yanlış yapmadan ipucu ister.
+   * Etkiler: -2 puan, kural ipucu açılır, attempt 1 sayılır (sonraki yanlış 'letters' verir),
+   * SRS'e "ipuçlu çözüldü" olarak eklenir.
+   */
+  const requestHint = useCallback((pronoun: string) => {
+    if (!verbKey) return;
+    if (quizHintMode[pronoun] === 'reveal') return;
+    if ((quizAttempts[pronoun] ?? 0) === 0) {
+      setQuizAttempts((prev) => ({ ...prev, [pronoun]: 1 }));
+    }
+    setQuizHintMode((prev) => ({ ...prev, [pronoun]: prev[pronoun] ?? 'rule' }));
+    setTotalScore((s) => s - 2);
+    markHintUsed(verbKey, selectedTense, pronoun);
+    setMistakeBank(getMistakes());
+  }, [verbKey, selectedTense, quizAttempts, quizHintMode]);
+
   const handleQuizInputKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>, currentIndex: number) => {
       if (e.key !== 'Enter') return;
@@ -1616,9 +1731,22 @@ export function Page() {
         } else {
           setQuizPasséHint((prev) => ({ ...prev, [pronoun]: null }));
         }
+        if (verbKey) {
+          applySmartHintAfterWrong(pronoun, correct, verbKey, selectedTense, {
+            onRevealAdvance: () => {
+              const nextEmpty = pronounIds.findIndex(
+                (_, i) => i > currentIndex && userAnswers[pronounIds[i]].trim() === ''
+              );
+              if (nextEmpty !== -1) {
+                requestAnimationFrame(() => quizInputRefs.current[nextEmpty]?.focus());
+              }
+            },
+          });
+        }
         return;
       }
       setQuizPasséHint((prev) => ({ ...prev, [pronoun]: null }));
+      clearSmartHint(pronoun);
       if (!showHints) {
         setCombo((c) => {
           const nextCombo = c + 1;
@@ -1634,7 +1762,9 @@ export function Page() {
         });
         setTotalScore((s) => s + 10);
         addActivityToday(1);
+        updateDocumentTitle();
       }
+      speakAuto(correct, { lang: selectedLanguage === 'es' ? 'es-ES' : 'fr-FR' });
       const nextEmptyIndex = pronounIds.findIndex(
         (_, i) => i > currentIndex && userAnswers[pronounIds[i]].trim() === ''
       );
@@ -1650,14 +1780,14 @@ export function Page() {
       else if (currentIndex < pronounIds.length - 1)
         requestAnimationFrame(() => quizInputRefs.current[currentIndex + 1]?.focus());
     },
-    [conjugationsForDisplay, userAnswers, showHints, selectedTense, verbKey, addToMistakeBank]
+    [conjugationsForDisplay, userAnswers, showHints, selectedTense, verbKey, addToMistakeBank, selectedLanguage, applySmartHintAfterWrong, clearSmartHint, pronounIds]
   );
 
   /** Odak modu: tek şahıs kontrolü. Doğruysa sonraki şahısa geç, yanlışsa aynı yerde kal. */
-  const handleFocusModeSubmit = useCallback(() => {
+  const handleFocusModeSubmit = useCallback((override?: string) => {
     if (!conjugationsForDisplay || currentFocusIndex >= pronounIds.length) return;
     const pronoun = pronounIds[currentFocusIndex];
-    const userRaw = userAnswers[pronoun];
+    const userRaw = override ?? userAnswers[pronoun];
     const user = userRaw.trim();
     if (!user) {
       setQuizEmptyShake(pronoun);
@@ -1682,9 +1812,18 @@ export function Page() {
       } else {
         setQuizPasséHint((prev) => ({ ...prev, [pronoun]: null }));
       }
+      if (verbKey) {
+        applySmartHintAfterWrong(pronoun, correct, verbKey, selectedTense, {
+          onRevealAdvance: () => {
+            setCurrentFocusIndex((i) => i + 1);
+            requestAnimationFrame(() => quizInputRefs.current[0]?.focus());
+          },
+        });
+      }
       return;
     }
     setQuizPasséHint((prev) => ({ ...prev, [pronoun]: null }));
+    clearSmartHint(pronoun);
     if (!showHints) {
       setCombo((c) => {
         const nextCombo = c + 1;
@@ -1700,10 +1839,12 @@ export function Page() {
       });
       setTotalScore((s) => s + 10);
       addActivityToday(1);
+      updateDocumentTitle();
     }
+    speakAuto(correct, { lang: selectedLanguage === 'es' ? 'es-ES' : 'fr-FR' });
     setCurrentFocusIndex((i) => i + 1);
     requestAnimationFrame(() => quizInputRefs.current[0]?.focus());
-  }, [conjugationsForDisplay, userAnswers, currentFocusIndex, showHints, selectedTense, verbKey, addToMistakeBank]);
+  }, [conjugationsForDisplay, userAnswers, currentFocusIndex, showHints, selectedTense, verbKey, addToMistakeBank, selectedLanguage, applySmartHintAfterWrong, clearSmartHint, pronounIds]);
 
   const SITE_URL = 'https://diloloji.com';
   const isEzber = location.pathname === '/ezber-makinesi';
@@ -1714,7 +1855,8 @@ export function Page() {
   const seoUrl = `${SITE_URL}${location.pathname}`;
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-300 print:bg-white">
+    <div className="relative min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-300 print:bg-white">
+      <TenseCardOverlay open={tenseCardOverlay} onClose={() => setTenseCardOverlay(null)} />
       <Helmet>
         <title>{seoTitle}</title>
         <meta name="description" content={seoDescription} />
@@ -2478,10 +2620,20 @@ export function Page() {
                         </button>
                       )}
                     </div>
-                    {reviewSubmitted && !reviewCorrect && (
-                      <p className="mt-3 text-sm text-red-300">
-                        Doğru cevap: <strong className="text-slate-200">{correctValue}</strong>
-                      </p>
+                    {reviewSubmitted && !reviewCorrect && reviewEntry && (
+                      <div className="mt-3">
+                        <ErrorAnalysisCard
+                          userAnswer={reviewAnswer}
+                          correctAnswer={correctValue}
+                          rule={getConjugationRule(
+                            reviewEntry.verb,
+                            reviewEntry.tense,
+                            reviewEntry.pronoun,
+                            reviewLang,
+                            correctValue
+                          )}
+                        />
+                      </div>
                     )}
                   </div>
                 );
@@ -2939,122 +3091,125 @@ export function Page() {
             )}
 
             {/* Kıyaslama — tüm görünümlerde çalışır (viewMode'dan bağımsız) */}
-            {mode === 'compare' && (
+            {mode === 'compare' && (() => {
+              const compareSlots: {
+                key: 'a' | 'b' | 'c';
+                tense: string;
+                setTense: (id: string) => void;
+                open: boolean;
+                setOpen: (v: boolean) => void;
+                ref: React.RefObject<HTMLDivElement | null>;
+                accent: string;
+                accentText: string;
+                accentBorder: string;
+                hoverBg: string;
+                label: string;
+              }[] = [
+                {
+                  key: 'a',
+                  tense: compareTense1,
+                  setTense: setCompareTense1,
+                  open: compareDropdown1Open,
+                  setOpen: (v) => { setCompareDropdown1Open(v); if (v) { setCompareDropdown2Open(false); setCompareDropdown3Open(false); } },
+                  ref: compareDropdown1Ref,
+                  accent: 'indigo-500',
+                  accentText: 'text-indigo-600 dark:text-indigo-400',
+                  accentBorder: 'border-indigo-500/15 dark:border-indigo-400/15',
+                  hoverBg: 'hover:bg-indigo-500/20',
+                  label: '1. Zaman',
+                },
+                {
+                  key: 'b',
+                  tense: compareTense2,
+                  setTense: setCompareTense2,
+                  open: compareDropdown2Open,
+                  setOpen: (v) => { setCompareDropdown2Open(v); if (v) { setCompareDropdown1Open(false); setCompareDropdown3Open(false); } },
+                  ref: compareDropdown2Ref,
+                  accent: 'fuchsia-500',
+                  accentText: 'text-fuchsia-600 dark:text-fuchsia-400',
+                  accentBorder: 'border-fuchsia-500/15 dark:border-fuchsia-400/15',
+                  hoverBg: 'hover:bg-fuchsia-500/20',
+                  label: '2. Zaman',
+                },
+                {
+                  key: 'c',
+                  tense: compareTense3,
+                  setTense: setCompareTense3,
+                  open: compareDropdown3Open,
+                  setOpen: (v) => { setCompareDropdown3Open(v); if (v) { setCompareDropdown1Open(false); setCompareDropdown2Open(false); } },
+                  ref: compareDropdown3Ref,
+                  accent: 'emerald-500',
+                  accentText: 'text-emerald-600 dark:text-emerald-400',
+                  accentBorder: 'border-emerald-500/15 dark:border-emerald-400/15',
+                  hoverBg: 'hover:bg-emerald-500/20',
+                  label: '3. Zaman',
+                },
+              ];
+              const selectedTenseIds = compareSlots.map((s) => s.tense);
+              const hasDuplicate = new Set(selectedTenseIds).size !== selectedTenseIds.length;
+
+              return (
               <div className="p-6 sm:p-8">
-                <div className="flex flex-wrap items-end justify-center gap-3 sm:gap-4 mb-8">
-                  <div className="w-full sm:w-48 flex-shrink-0 flex flex-col relative self-end" ref={compareDropdown1Ref}>
-                    <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">1. Zamanı Seçin</label>
-                    <button
-                      type="button"
-                      onClick={() => { setCompareDropdown1Open((o) => !o); setCompareDropdown2Open(false); }}
-                      className="w-full h-12 rounded-xl border border-slate-200 dark:border-slate-700/50 bg-slate-50 dark:bg-slate-800/80 px-4 py-3 text-left text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-colors duration-300 flex items-center justify-between gap-2"
-                      aria-expanded={compareDropdown1Open}
-                      aria-haspopup="listbox"
-                    >
-                      <span className="truncate">{tensesForLang.find((t) => t.id === compareTense1)?.label ?? '—'}</span>
-                      <svg className="w-5 h-5 shrink-0 text-slate-400 dark:text-slate-500 transition-transform duration-200" style={{ transform: compareDropdown1Open ? 'rotate(180deg)' : 'none' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </button>
-                    <div
-                      role="listbox"
-                      className={`absolute left-0 right-0 top-full mt-1 z-50 rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl shadow-2xl overflow-hidden transition-all duration-200 ease-out max-h-[min(18rem,60vh)] overflow-y-auto ${
-                        compareDropdown1Open ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-[0.98] pointer-events-none'
-                      }`}
-                    >
-                      <div className="py-2">
-                        {tenseGroupsForLang.map((group) => (
-                          <div key={group.mood} className="px-3 pb-1 pt-2 first:pt-0">
-                            <p className="text-xs font-medium tracking-wide text-slate-500 dark:text-slate-400 px-3 py-1 select-none">{group.label}</p>
-                            <div className="space-y-0.5 mt-0.5">
-                              {group.tenseIds.map((id) => {
-                                const t = tensesForLang.find((x) => x.id === id);
-                                if (!t) return null;
-                                const isSelected = compareTense1 === t.id;
-                                return (
-                                  <button
-                                    key={t.id}
-                                    type="button"
-                                    role="option"
-                                    aria-selected={isSelected}
-                                    onClick={() => { setCompareTense1(t.id); setCompareDropdown1Open(false); }}
-                                    className="w-full flex items-center justify-between gap-2 rounded-lg px-3 py-2.5 text-left text-sm text-slate-800 dark:text-slate-100 hover:bg-indigo-500/20 transition-colors duration-200"
-                                  >
-                                    <span>{t.label}</span>
-                                    {isSelected && (
-                                      <svg className="w-5 h-5 shrink-0 text-indigo-500 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                      </svg>
-                                    )}
-                                  </button>
-                                );
-                              })}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-8">
+                  {compareSlots.map((slot) => (
+                    <div key={slot.key} className="flex flex-col relative" ref={slot.ref}>
+                      <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">{slot.label}</label>
+                      <button
+                        type="button"
+                        onClick={() => slot.setOpen(!slot.open)}
+                        className={`w-full h-12 rounded-xl border border-slate-200 dark:border-slate-700/50 bg-slate-50 dark:bg-slate-800/80 px-4 py-3 text-left text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-${slot.accent}/50 transition-colors duration-300 flex items-center justify-between gap-2`}
+                        aria-expanded={slot.open}
+                        aria-haspopup="listbox"
+                      >
+                        <span className="truncate">{tensesForLang.find((t) => t.id === slot.tense)?.label ?? '—'}</span>
+                        <svg className="w-5 h-5 shrink-0 text-slate-400 dark:text-slate-500 transition-transform duration-200" style={{ transform: slot.open ? 'rotate(180deg)' : 'none' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </button>
+                      <div
+                        role="listbox"
+                        className={`absolute left-0 right-0 top-full mt-1 z-50 rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl shadow-2xl overflow-hidden transition-all duration-200 ease-out max-h-[min(18rem,60vh)] overflow-y-auto ${
+                          slot.open ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-[0.98] pointer-events-none'
+                        }`}
+                      >
+                        <div className="py-2">
+                          {tenseGroupsForLang.map((group) => (
+                            <div key={group.mood} className="px-3 pb-1 pt-2 first:pt-0">
+                              <p className="text-xs font-medium tracking-wide text-slate-500 dark:text-slate-400 px-3 py-1 select-none">{group.label}</p>
+                              <div className="space-y-0.5 mt-0.5">
+                                {group.tenseIds.map((id) => {
+                                  const tx = tensesForLang.find((x) => x.id === id);
+                                  if (!tx) return null;
+                                  const isSelected = slot.tense === tx.id;
+                                  return (
+                                    <button
+                                      key={tx.id}
+                                      type="button"
+                                      role="option"
+                                      aria-selected={isSelected}
+                                      onClick={() => { slot.setTense(tx.id); slot.setOpen(false); }}
+                                      className={`w-full flex items-center justify-between gap-2 rounded-lg px-3 py-2.5 text-left text-sm text-slate-800 dark:text-slate-100 ${slot.hoverBg} transition-colors duration-200`}
+                                    >
+                                      <span>{tx.label}</span>
+                                      {isSelected && (
+                                        <svg className={`w-5 h-5 shrink-0 ${slot.accentText}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                        </svg>
+                                      )}
+                                    </button>
+                                  );
+                                })}
+                              </div>
                             </div>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="flex items-center justify-center shrink-0 w-12 h-12 rounded-full bg-white/10 dark:bg-slate-700/50 border border-slate-200/50 dark:border-slate-600/50 text-slate-500 dark:text-slate-400 font-bold text-sm self-end shadow-inner" aria-hidden>
-                    VS
-                  </div>
-                  <div className="w-full sm:w-48 flex-shrink-0 flex flex-col relative self-end" ref={compareDropdown2Ref}>
-                    <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">2. Zamanı Seçin</label>
-                    <button
-                      type="button"
-                      onClick={() => { setCompareDropdown2Open((o) => !o); setCompareDropdown1Open(false); }}
-                      className="w-full h-12 rounded-xl border border-slate-200 dark:border-slate-700/50 bg-slate-50 dark:bg-slate-800/80 px-4 py-3 text-left text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-colors duration-300 flex items-center justify-between gap-2"
-                      aria-expanded={compareDropdown2Open}
-                      aria-haspopup="listbox"
-                    >
-                      <span className="truncate">{tensesForLang.find((t) => t.id === compareTense2)?.label ?? '—'}</span>
-                      <svg className="w-5 h-5 shrink-0 text-slate-400 dark:text-slate-500 transition-transform duration-200" style={{ transform: compareDropdown2Open ? 'rotate(180deg)' : 'none' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </button>
-                    <div
-                      role="listbox"
-                      className={`absolute left-0 right-0 top-full mt-1 z-50 rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl shadow-2xl overflow-hidden transition-all duration-200 ease-out max-h-[min(18rem,60vh)] overflow-y-auto ${
-                        compareDropdown2Open ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-[0.98] pointer-events-none'
-                      }`}
-                    >
-                      <div className="py-2">
-                        {tenseGroupsForLang.map((group) => (
-                          <div key={group.mood} className="px-3 pb-1 pt-2 first:pt-0">
-                            <p className="text-xs font-medium tracking-wide text-slate-500 dark:text-slate-400 px-3 py-1 select-none">{group.label}</p>
-                            <div className="space-y-0.5 mt-0.5">
-                              {group.tenseIds.map((id) => {
-                                const t = tensesForLang.find((x) => x.id === id);
-                                if (!t) return null;
-                                const isSelected = compareTense2 === t.id;
-                                return (
-                                  <button
-                                    key={t.id}
-                                    type="button"
-                                    role="option"
-                                    aria-selected={isSelected}
-                                    onClick={() => { setCompareTense2(t.id); setCompareDropdown2Open(false); }}
-                                    className="w-full flex items-center justify-between gap-2 rounded-lg px-3 py-2.5 text-left text-sm text-slate-800 dark:text-slate-100 hover:bg-fuchsia-500/20 transition-colors duration-200"
-                                  >
-                                    <span>{t.label}</span>
-                                    {isSelected && (
-                                      <svg className="w-5 h-5 shrink-0 text-fuchsia-500 dark:text-fuchsia-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                      </svg>
-                                    )}
-                                  </button>
-                                );
-                              })}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
+                  ))}
                 </div>
-                {compareTense1 === compareTense2 && (
+                {hasDuplicate && (
                   <div className="rounded-xl border border-amber-300/80 dark:border-amber-500/50 bg-amber-50/80 dark:bg-amber-900/20 px-4 py-3 text-amber-800 dark:text-amber-200 text-sm font-medium mb-4">
-                    Aynı zamanı seçtiniz, farklı bir zaman seçin.
+                    Aynı zamanı birden fazla kez seçtiniz. Daha iyi karşılaştırma için 3 farklı zaman seçin.
                   </div>
                 )}
                 {!verbKey ? (
@@ -3062,87 +3217,56 @@ export function Page() {
                     <p className="text-slate-600 dark:text-slate-300 font-medium">Karşılaştırmak için önce bir fiil girin</p>
                     <p className="text-slate-500 dark:text-slate-400 text-sm mt-1.5">Yukarıdaki arama alanına fiil yazıp &quot;Göster&quot;e tıklayın.</p>
                   </div>
-                ) : compareTense1 === compareTense2 ? (
-                  <div className="text-center py-8 rounded-2xl bg-white/5 dark:bg-slate-800/30 border border-slate-200/30 dark:border-slate-600/30">
-                    <p className="text-slate-600 dark:text-slate-300 font-medium">Farklı bir zaman seçin</p>
-                    <p className="text-slate-500 dark:text-slate-400 text-sm mt-1.5">İki dropdown'dan farklı zamanlar seçerek karşılaştırma yapabilirsiniz.</p>
-                  </div>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
-                    <div className="h-full rounded-2xl bg-white/5 dark:bg-slate-800/30 border border-slate-200/30 dark:border-slate-600/30 p-6 flex flex-col">
-                      <h3 className="min-h-[3.5rem] flex items-center text-lg font-bold text-indigo-600 dark:text-indigo-400 mb-4 pb-3 border-b border-indigo-500/15 dark:border-indigo-400/15 leading-snug">
-                        {tensesForLang.find((t) => t.id === compareTense1)?.label ?? '—'}
-                      </h3>
-                      <ul className="flex-1">
-                        {pronounsForLang.map(({ id, label }, idx) => {
-                          const text1 = getSafeConjugationMap(verbKey, compareTense1, selectedLanguage)[id] ?? '—';
-                          const text2 = getSafeConjugationMap(verbKey, compareTense2, selectedLanguage)[id] ?? '—';
-                          const { a: segA, b: _segB } = getDiffSegments(text1, text2);
-                          return (
-                            <li
-                              key={id}
-                              className={`flex justify-between items-center gap-4 py-2 border-b border-slate-200/40 dark:border-white/5 ${
-                                idx === pronounsForLang.length - 1 ? 'border-b-0' : ''
-                              }`}
-                            >
-                              <span className="w-1/3 text-left text-slate-600 dark:text-slate-300 font-semibold truncate">
-                                {label}
-                              </span>
-                              <span className="w-2/3 text-right text-slate-900 dark:text-slate-100 break-words">
-                                {segA.map((s, i) =>
-                                  s.highlight ? (
-                                    <mark key={i} className="bg-amber-300/70 dark:bg-amber-500/40 rounded px-0.5">
-                                      {s.text}
-                                    </mark>
-                                  ) : (
-                                    <span key={i}>{s.text}</span>
-                                  )
-                                )}
-                              </span>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    </div>
-                    <div className="h-full rounded-2xl bg-white/5 dark:bg-slate-800/30 border border-slate-200/30 dark:border-slate-600/30 p-6 flex flex-col">
-                      <h3 className="min-h-[3.5rem] flex items-center text-lg font-bold text-fuchsia-600 dark:text-fuchsia-400 mb-4 pb-3 border-b border-fuchsia-500/15 dark:border-fuchsia-400/15 leading-snug">
-                        {tensesForLang.find((t) => t.id === compareTense2)?.label ?? '—'}
-                      </h3>
-                      <ul className="flex-1">
-                        {pronounsForLang.map(({ id, label }, idx) => {
-                          const text1 = getSafeConjugationMap(verbKey, compareTense1, selectedLanguage)[id] ?? '—';
-                          const text2 = getSafeConjugationMap(verbKey, compareTense2, selectedLanguage)[id] ?? '—';
-                          const { b: segB } = getDiffSegments(text1, text2);
-                          return (
-                            <li
-                              key={id}
-                              className={`flex justify-between items-center gap-4 py-2 border-b border-slate-200/40 dark:border-white/5 ${
-                                idx === pronounsForLang.length - 1 ? 'border-b-0' : ''
-                              }`}
-                            >
-                              <span className="w-1/3 text-left text-slate-600 dark:text-slate-300 font-semibold truncate">
-                                {label}
-                              </span>
-                              <span className="w-2/3 text-right text-slate-900 dark:text-slate-100 break-words">
-                                {segB.map((s, i) =>
-                                  s.highlight ? (
-                                    <mark key={i} className="bg-amber-300/70 dark:bg-amber-500/40 rounded px-0.5">
-                                      {s.text}
-                                    </mark>
-                                  ) : (
-                                    <span key={i}>{s.text}</span>
-                                  )
-                                )}
-                              </span>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6 items-stretch">
+                    {compareSlots.map((slot) => {
+                      const tenseLabel = tensesForLang.find((t) => t.id === slot.tense)?.label ?? '—';
+                      const explanation = getTenseExplanation(selectedLanguage, slot.tense);
+                      const map = getSafeConjugationMap(verbKey, slot.tense, selectedLanguage);
+                      // Diff vurgusu yalnızca a↔b çiftinde anlamlıdır; 3 zaman gösteriminde sade metin kullanılır.
+                      return (
+                        <div
+                          key={slot.key}
+                          className="h-full rounded-2xl bg-white/5 dark:bg-slate-800/30 border border-slate-200/30 dark:border-slate-600/30 p-5 sm:p-6 flex flex-col"
+                        >
+                          <div className={`mb-3 pb-3 border-b ${slot.accentBorder}`}>
+                            <h3 className={`text-lg font-bold leading-snug ${slot.accentText}`}>
+                              {tenseLabel}
+                            </h3>
+                            {explanation?.shortDesc && (
+                              <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400 leading-snug">
+                                {explanation.shortDesc}
+                              </p>
+                            )}
+                          </div>
+                          <ul className="flex-1">
+                            {pronounsForLang.map(({ id, label }, idx) => {
+                              const text = map[id] ?? '—';
+                              return (
+                                <li
+                                  key={id}
+                                  className={`flex justify-between items-center gap-3 py-2 border-b border-slate-200/40 dark:border-white/5 ${
+                                    idx === pronounsForLang.length - 1 ? 'border-b-0' : ''
+                                  }`}
+                                >
+                                  <span className="w-1/3 text-left text-slate-600 dark:text-slate-300 font-semibold truncate text-sm">
+                                    {label}
+                                  </span>
+                                  <span className="w-2/3 text-right text-slate-900 dark:text-slate-100 break-words text-sm">
+                                    {text}
+                                  </span>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </div>
-            )}
+              );
+            })()}
 
             {!verbKey && mode !== 'time-attack' && mode !== 'compare' && (
               <div className="p-6 sm:p-10 flex items-center justify-center min-h-[280px]">
@@ -3994,6 +4118,17 @@ export function Page() {
                   >
                     <TargetIcon className="w-4 h-4" strokeWidth={2} aria-hidden />
                   </button>
+                  {selectedLanguage === 'es' && (
+                    <button
+                      type="button"
+                      onClick={() => setTenseCardOverlay({ kind: 'grid', highlightId: selectedTense })}
+                      title="Zaman Kartları — tüm zamanların referansı"
+                      aria-label="Zaman Kartları"
+                      className="flex items-center justify-center w-8 h-8 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-white/10 hover:text-indigo-600 dark:hover:text-indigo-300"
+                    >
+                      <BookOpen className="w-4 h-4" strokeWidth={2} aria-hidden />
+                    </button>
+                  )}
                   <div ref={quizTenseMenuRef} className="relative shrink-0 ml-1">
                   <button
                     type="button"
@@ -4177,10 +4312,13 @@ export function Page() {
               const label = pronounsForLang.find((p) => p.id === pronoun)?.label ?? pronoun;
               const feedback = quizFeedback[pronoun];
               const correctValue = conjugationsForDisplay[pronoun];
+              const hintMode = quizHintMode[pronoun];
+              const isRevealing = hintMode === 'reveal';
+              const showAsCorrect = feedback === 'correct' || isRevealing;
               return (
                 <div className="p-5 sm:p-6 mb-6">
                   <p className="text-center text-slate-600 dark:text-slate-300 font-bold text-2xl uppercase tracking-wide mb-4">{label}</p>
-                  <div className={`max-w-md mx-auto relative rounded-2xl ${feedback === 'wrong' ? 'animate-shake' : ''} ${quizEmptyShake === pronoun ? 'animate-shake ring-2 ring-red-500 dark:ring-red-400 ring-inset' : ''}`}>
+                  <div className={`max-w-md mx-auto relative rounded-2xl ${feedback === 'wrong' && !isRevealing ? 'animate-shake' : ''} ${quizEmptyShake === pronoun ? 'animate-shake ring-2 ring-red-500 dark:ring-red-400 ring-inset' : ''}`}>
                     <input
                       ref={(el) => { quizInputRefs.current[0] = el; }}
                       type="text"
@@ -4188,9 +4326,10 @@ export function Page() {
                       onChange={(e) => setAnswer(pronoun, e.target.value)}
                       onFocus={() => { activeQuizInputIndexRef.current = currentFocusIndex; }}
                       onKeyDown={(e) => { if (e.key === 'Enter') handleFocusModeSubmit(); }}
+                      readOnly={isRevealing}
                       placeholder="Cevabınız..."
                       className={`w-full h-12 rounded-2xl border px-5 py-4 text-base sm:text-2xl text-center placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all duration-300 shadow-inner ${
-                        feedback === 'correct'
+                        showAsCorrect
                           ? 'border-emerald-400 dark:border-emerald-500/60 bg-emerald-50/80 dark:bg-emerald-500/20 text-slate-800 dark:text-slate-100 focus:ring-emerald-500/30 dark:focus:ring-emerald-400/30'
                           : feedback === 'wrong'
                             ? 'border-red-500 dark:border-red-400/60 bg-red-50/80 dark:bg-red-500/15 text-slate-800 dark:text-slate-100 focus:ring-red-500/20 dark:focus:ring-red-400/30'
@@ -4200,14 +4339,54 @@ export function Page() {
                       }`}
                       aria-label={`${label} çekimi`}
                     />
-                    {feedback === 'correct' && (
+                    {showAsCorrect && (
                       <span className="absolute right-4 top-1/2 -translate-y-1/2 text-emerald-600 dark:text-emerald-400 pointer-events-none" aria-hidden>
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
                       </span>
                     )}
-                    {feedback === 'wrong' && (
+                    {!showAsCorrect && feedback !== 'wrong' && (
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                        {verbKey && (hintMode === null || hintMode === 'rule') && (
+                          <button
+                            type="button"
+                            onClick={() => requestHint(pronoun)}
+                            tabIndex={-1}
+                            className="w-7 h-7 inline-flex items-center justify-center rounded-full text-slate-500 dark:text-slate-300 hover:text-amber-700 dark:hover:text-amber-300 hover:bg-amber-100/70 dark:hover:bg-amber-500/15 focus:outline-none focus:ring-2 focus:ring-amber-500/40 transition-colors"
+                            title="İpucu al (-2 puan)"
+                            aria-label="İpucu iste"
+                          >
+                            <span className="text-base font-bold leading-none">?</span>
+                          </button>
+                        )}
+                        {selectedLanguage === 'es' && (
+                          <button
+                            type="button"
+                            onClick={() => setTenseCardOverlay({ kind: 'detail', tenseId: selectedTense })}
+                            tabIndex={-1}
+                            className="w-7 h-7 inline-flex items-center justify-center rounded-full text-slate-500 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-300 hover:bg-indigo-100/70 dark:hover:bg-indigo-500/15 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 transition-colors"
+                            title="Zaman kartını aç"
+                            aria-label="Zaman kartını aç"
+                          >
+                            <BookOpen className="w-4 h-4" strokeWidth={2} aria-hidden />
+                          </button>
+                        )}
+                        <MicButton
+                          size={30}
+                          lang={selectedLanguage === 'es' ? 'es-ES' : 'fr-FR'}
+                          onResult={(res) => {
+                            const match = correctValue
+                              ? res.alternatives.find((a) => checkAnswer(a, correctValue) !== 'wrong')
+                              : null;
+                            const picked = match ?? res.transcript;
+                            setAnswer(pronoun, picked);
+                            handleFocusModeSubmit(picked);
+                          }}
+                        />
+                      </div>
+                    )}
+                    {feedback === 'wrong' && !isRevealing && (
                       <span className="absolute right-4 top-1/2 -translate-y-1/2 text-red-500 dark:text-red-400 pointer-events-none" aria-hidden>
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -4225,14 +4404,20 @@ export function Page() {
                       Doğru: <span className="font-medium text-slate-700 dark:text-slate-200">{correctValue}</span>
                     </p>
                   )}
-                  {!showHints && feedback === 'wrong' && (
-                    <p className="mt-3 text-center text-sm">
-                      {quizPasséHint[pronoun] ? (
-                        <span className="text-amber-700 dark:text-amber-300 font-medium">{quizPasséHint[pronoun]}</span>
-                      ) : (
-                        <span className="text-red-600 dark:text-red-300">Doğru cevap: <strong>{correctValue}</strong></span>
-                      )}
-                    </p>
+                  {!showHints && hintMode && verbKey && (
+                    <div className="mt-4 max-w-md mx-auto">
+                      <SmartHintBubble
+                        mode={hintMode}
+                        rule={
+                          hintMode === 'rule'
+                            ? quizPasséHint[pronoun] ??
+                              getRuleHint(verbKey, selectedTense, pronoun, selectedLanguage, correctValue)
+                            : undefined
+                        }
+                        letters={hintMode === 'letters' ? getLetterMask(correctValue, 2) : undefined}
+                        correct={hintMode === 'reveal' ? correctValue : undefined}
+                      />
+                    </div>
                   )}
                 </div>
               );
@@ -4250,13 +4435,16 @@ export function Page() {
                 {pronounsForLang.map(({ id, label }, index) => {
                   const feedback = quizFeedback[id];
                   const correctValue = conjugationsForDisplay[id];
+                  const hintMode = quizHintMode[id];
+                  const isRevealing = hintMode === 'reveal';
+                  const showAsCorrect = feedback === 'correct' || isRevealing;
                   return (
                     <div key={id} className="flex flex-col gap-1">
                       <div className="flex items-center gap-4">
                         <span className="w-20 shrink-0 text-sm font-semibold text-slate-700 dark:text-slate-300 tracking-tight">
                           {label}
                         </span>
-                        <div className={`flex-1 min-w-0 relative ${feedback === 'wrong' ? 'animate-shake' : ''} ${quizEmptyShake === id ? 'animate-shake ring-2 ring-red-500 dark:ring-red-400 ring-inset rounded-lg' : ''}`}>
+                        <div className={`flex-1 min-w-0 relative ${feedback === 'wrong' && !isRevealing ? 'animate-shake' : ''} ${quizEmptyShake === id ? 'animate-shake ring-2 ring-red-500 dark:ring-red-400 ring-inset rounded-lg' : ''}`}>
                           <input
                             ref={(el) => {
                               quizInputRefs.current[index] = el;
@@ -4268,10 +4456,11 @@ export function Page() {
                             onKeyDown={(e) => {
                               if (e.key === 'Enter') handleQuizInputKeyDown(e, index);
                             }}
+                            readOnly={isRevealing}
                             placeholder="…"
                             tabIndex={index + 1}
                             className={`peer w-full h-10 rounded-lg border pl-3 pr-10 text-sm placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 transition-all duration-200 ${
-                              feedback === 'correct'
+                              showAsCorrect
                                 ? 'border-emerald-400 dark:border-emerald-500/60 bg-emerald-50/70 dark:bg-emerald-500/15 text-slate-800 dark:text-slate-100 focus:border-emerald-500'
                                 : feedback === 'wrong'
                                   ? 'border-red-500 dark:border-red-400/60 bg-red-50/70 dark:bg-red-500/10 text-slate-800 dark:text-slate-100 focus:border-red-500'
@@ -4281,7 +4470,7 @@ export function Page() {
                             }`}
                             aria-label={`${label} çekimi`}
                           />
-                          {feedback === 'correct' && (
+                          {showAsCorrect && (
                             <span className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
                               <button
                                 type="button"
@@ -4300,12 +4489,40 @@ export function Page() {
                               </span>
                             </span>
                           )}
-                          {feedback === 'wrong' && (
+                          {!showAsCorrect && feedback === 'wrong' && (
                             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-red-500 dark:text-red-400 pointer-events-none" aria-hidden>
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                               </svg>
                             </span>
+                          )}
+                          {!showAsCorrect && feedback !== 'wrong' && verbKey && (
+                            <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
+                              {hintMode === null && (
+                                <button
+                                  type="button"
+                                  onClick={() => requestHint(id)}
+                                  tabIndex={-1}
+                                  className="w-6 h-6 inline-flex items-center justify-center rounded-full text-slate-400 dark:text-slate-500 hover:text-amber-700 dark:hover:text-amber-300 hover:bg-amber-100/70 dark:hover:bg-amber-500/15 focus:outline-none focus:ring-2 focus:ring-amber-500/40 transition-colors"
+                                  title="İpucu al (-2 puan)"
+                                  aria-label={`${label} için ipucu iste`}
+                                >
+                                  <span className="text-sm font-bold leading-none">?</span>
+                                </button>
+                              )}
+                              {selectedLanguage === 'es' && (
+                                <button
+                                  type="button"
+                                  onClick={() => setTenseCardOverlay({ kind: 'detail', tenseId: selectedTense })}
+                                  tabIndex={-1}
+                                  className="w-6 h-6 inline-flex items-center justify-center rounded-full text-slate-400 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-300 hover:bg-indigo-100/70 dark:hover:bg-indigo-500/15 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 transition-colors"
+                                  title="Zaman kartını aç"
+                                  aria-label={`${label} için zaman kartını aç`}
+                                >
+                                  <BookOpen className="w-3.5 h-3.5" strokeWidth={2} aria-hidden />
+                                </button>
+                              )}
+                            </div>
                           )}
                         </div>
                       </div>
@@ -4319,14 +4536,20 @@ export function Page() {
                           Doğru: <span className="font-medium text-slate-700 dark:text-slate-200">{correctValue}</span>
                         </p>
                       )}
-                      {!showHints && feedback === 'wrong' && (
-                        <p className="text-xs pl-[5.5rem]">
-                          {quizPasséHint[id] ? (
-                            <span className="text-amber-700 dark:text-amber-300 font-medium">{quizPasséHint[id]}</span>
-                          ) : (
-                            <span className="text-red-600 dark:text-red-300">Doğru: <strong>{correctValue}</strong></span>
-                          )}
-                        </p>
+                      {!showHints && hintMode && verbKey && (
+                        <SmartHintBubble
+                          mode={hintMode}
+                          rule={
+                            hintMode === 'rule'
+                              ? quizPasséHint[id] ??
+                                getRuleHint(verbKey, selectedTense, id, selectedLanguage, correctValue)
+                              : undefined
+                          }
+                          letters={hintMode === 'letters' ? getLetterMask(correctValue, 2) : undefined}
+                          correct={hintMode === 'reveal' ? correctValue : undefined}
+                          withLeftPadding
+                          compact
+                        />
                       )}
                     </div>
                   );
@@ -4358,7 +4581,7 @@ export function Page() {
               <div className="flex flex-wrap justify-end gap-2">
                 <button
                   type="button"
-                  onClick={quizLayout === 'focus' ? handleFocusModeSubmit : checkQuiz}
+                  onClick={() => (quizLayout === 'focus' ? handleFocusModeSubmit() : checkQuiz())}
                   className="rounded-xl bg-gradient-to-r from-indigo-600 to-blue-500 dark:from-indigo-500 dark:to-blue-500 text-white text-sm font-semibold px-4 py-2.5 shadow-sm hover:shadow-md dark:shadow-indigo-500/20 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-all duration-300"
                 >
                   Kontrol Et

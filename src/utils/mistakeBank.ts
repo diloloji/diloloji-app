@@ -22,6 +22,10 @@ export type MistakeEntry = {
   easeFactor: number;
   /** Bir sonraki tekrar tarihi (YYYY-MM-DD). Başlangıç: bugün. */
   nextReviewDate: string;
+  /** Aynı çekim için kaç kez yanlış cevap verildi (öncelik sıralaması için). */
+  mistakeCount: number;
+  /** En son yanlış yapılma zamanı (UI sıralama / fresh-first için). */
+  lastMistakeAt: number;
 };
 
 function getToday(): string {
@@ -80,6 +84,8 @@ function normalizeEntry(x: unknown): MistakeEntry | null {
     interval: typeof o.interval === 'number' ? o.interval : 0,
     easeFactor: typeof o.easeFactor === 'number' ? o.easeFactor : DEFAULT_EASE_FACTOR,
     nextReviewDate: typeof o.nextReviewDate === 'string' ? o.nextReviewDate : today,
+    mistakeCount: typeof o.mistakeCount === 'number' && o.mistakeCount > 0 ? o.mistakeCount : 1,
+    lastMistakeAt: typeof o.lastMistakeAt === 'number' ? o.lastMistakeAt : (typeof o.timestamp === 'number' ? o.timestamp : Date.now()),
   };
 }
 
@@ -100,23 +106,58 @@ export function getDueMistakes(): MistakeEntry[] {
   return getMistakes().filter((e) => e.nextReviewDate <= today);
 }
 
-/** Tek bir soruyu ekler; zaten varsa tekrar eklemez (unique). Yeni alanlar: interval 0, easeFactor 2.5, nextReviewDate bugün. */
+/**
+ * Tek bir soruyu ekler veya mevcut kaydın hata sayacını artırır.
+ * - Yeni kayıtta: interval 0, easeFactor 2.5, nextReviewDate bugün, mistakeCount 1.
+ * - Mevcut kayıtta: mistakeCount += 1, lastMistakeAt güncellenir, interval 0'a çekilir, nextReviewDate bugün olur.
+ */
 export function addMistake(verb: string, tense: string, pronoun: string): MistakeEntry[] {
   const items = getMistakes();
   const key = `${verb}|${tense}|${pronoun}`;
-  if (items.some((x) => uniqueKey(x) === key)) return items;
+  const idx = items.findIndex((x) => uniqueKey(x) === key);
+  const now = Date.now();
+  const today = getToday();
+  if (idx !== -1) {
+    const next = [...items];
+    const entry = next[idx];
+    next[idx] = {
+      ...entry,
+      mistakeCount: (entry.mistakeCount ?? 1) + 1,
+      lastMistakeAt: now,
+      interval: 0,
+      nextReviewDate: today,
+    };
+    storageSet(next);
+    return next;
+  }
   const entry: MistakeEntry = {
     verb,
     tense,
     pronoun,
-    timestamp: Date.now(),
+    timestamp: now,
     interval: 0,
     easeFactor: DEFAULT_EASE_FACTOR,
-    nextReviewDate: getToday(),
+    nextReviewDate: today,
+    mistakeCount: 1,
+    lastMistakeAt: now,
   };
   const next = [...items, entry];
   storageSet(next);
   return next;
+}
+
+/** Hata sayısı çoktan aza, eşitse en yeni hata öncedir. */
+export function getMistakesByPriority(): MistakeEntry[] {
+  return [...getMistakes()].sort((a, b) => {
+    if (b.mistakeCount !== a.mistakeCount) return b.mistakeCount - a.mistakeCount;
+    return b.lastMistakeAt - a.lastMistakeAt;
+  });
+}
+
+/** Bugün için tekrar zamanı gelmiş kayıtları öncelik sırasıyla döner. */
+export function getDueMistakesByPriority(): MistakeEntry[] {
+  const today = getToday();
+  return getMistakesByPriority().filter((e) => e.nextReviewDate <= today);
 }
 
 /** Belirtilen soruyu listeden ve localStorage'dan siler. */
