@@ -77,6 +77,11 @@ export default {
           '0%, 100%': { boxShadow: '0 0 20px rgba(236, 72, 153, 0.2), 0 0 40px rgba(236, 72, 153, 0.08)' },
           '50%': { boxShadow: '0 0 32px rgba(236, 72, 153, 0.35), 0 0 60px rgba(236, 72, 153, 0.12)' },
         },
+        'mic-pulse': {
+          '0%': { boxShadow: '0 0 0 0 rgba(239, 68, 68, 0.55)' },
+          '70%': { boxShadow: '0 0 0 10px rgba(239, 68, 68, 0)' },
+          '100%': { boxShadow: '0 0 0 0 rgba(239, 68, 68, 0)' },
+        },
       },
       animation: {
         'combo-in': 'combo-in 0.35s ease-out forwards',
@@ -89,6 +94,7 @@ export default {
         'float-symbol': 'float-symbol 6s ease-in-out infinite',
         'glow-green': 'glow-green 3s ease-in-out infinite',
         'glow-pink': 'glow-pink 3s ease-in-out infinite',
+        'mic-pulse': 'mic-pulse 1.4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       },
       backgroundImage: {
         'gradient-landing': 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%)',

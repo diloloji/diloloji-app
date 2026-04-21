@@ -1,13 +1,15 @@
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion, useInView } from 'framer-motion';
-import { Cpu, Brain, Activity, BookA, FlaskConical, GraduationCap, Search, MessageCircle, Braces } from 'lucide-react';
+import { Cpu, Brain, Activity, BookA, FlaskConical, GraduationCap, Search, MessageCircle, Braces, Flame, Target, RefreshCcw, Sparkles, Zap, Newspaper } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import FloatingBackgroundElements from '../components/FloatingBackgroundElements';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import SyntaxFlowHero from '../components/SyntaxFlowHero';
-import { useRef, useState, useCallback, useEffect } from 'react';
+import { useRef, useState, useCallback, useEffect, useMemo } from 'react';
+import { getDueMistakesByPriority, getMistakesByPriority } from '../utils/mistakeBank';
+import { getDailyGoalSummary, DAILY_GOAL } from '../utils/dailyGoal';
 
 const SITE_URL = 'https://diloloji.com';
 const PARALLAX_INTENSITY = 14;
@@ -211,6 +213,14 @@ export default function HomePage() {
   const countUsers = useCountUp(500, socialProofInView, 1600);
   const countWords = useCountUp(1247, socialProofInView, 1800);
 
+  const dueMistakes = useMemo(() => getDueMistakesByPriority(), []);
+  const allMistakes = useMemo(() => getMistakesByPriority(), []);
+  const goal = useMemo(() => getDailyGoalSummary(), []);
+  const topMistakes = useMemo(
+    () => allMistakes.filter((m) => m.mistakeCount > 1).slice(0, 3),
+    [allMistakes]
+  );
+
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     setMouse({ x: e.clientX, y: e.clientY });
   }, []);
@@ -285,6 +295,109 @@ export default function HomePage() {
           </motion.div>
         </motion.section>
 
+        {/* SRS / Günlük hedef paneli — kullanıcının ilerlemesi varsa gösterilir */}
+        {(dueMistakes.length > 0 || goal.streak > 0 || goal.todayCount > 0) && (
+          <motion.section
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, delay: 0.15 }}
+            className="mb-16 lg:mb-20"
+          >
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {/* Bugün tekrar etmen gereken N çekim */}
+              <Link
+                to={dueMistakes.length > 0 ? '/fiil-laboratuvari?mode=review' : '/fiil-laboratuvari'}
+                className="group relative rounded-2xl border border-rose-300/40 dark:border-rose-400/30 bg-white/60 dark:bg-rose-500/10 backdrop-blur-sm p-5 hover:border-rose-400/60 dark:hover:border-rose-400/50 hover:shadow-lg hover:shadow-rose-500/10 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-rose-400/40"
+              >
+                <div className="flex items-start gap-3">
+                  <span className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-rose-500/15 text-rose-500 dark:text-rose-300 shrink-0">
+                    <RefreshCcw className="w-5 h-5" strokeWidth={2} />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-rose-600/80 dark:text-rose-300/80">
+                      Tekrar Zamanı
+                    </p>
+                    <p className="mt-1 text-slate-800 dark:text-slate-100 font-bold text-lg leading-tight">
+                      {dueMistakes.length > 0
+                        ? `Bugün tekrar etmen gereken ${dueMistakes.length} çekim`
+                        : 'Bugün tekrar bekleyen çekim yok'}
+                    </p>
+                    {topMistakes.length > 0 && (
+                      <p className="mt-2 text-xs text-slate-500 dark:text-slate-400 line-clamp-2">
+                        En zor:{' '}
+                        {topMistakes.map((m) => `${m.verb} (${m.mistakeCount}×)`).join(', ')}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </Link>
+
+              {/* Günlük hedef */}
+              <div className="rounded-2xl border border-indigo-300/40 dark:border-indigo-400/30 bg-white/60 dark:bg-indigo-500/10 backdrop-blur-sm p-5">
+                <div className="flex items-start gap-3">
+                  <span className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-indigo-500/15 text-indigo-600 dark:text-indigo-300 shrink-0">
+                    <Target className="w-5 h-5" strokeWidth={2} />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-indigo-600/80 dark:text-indigo-300/80">
+                      Günlük Hedef
+                    </p>
+                    <p className="mt-1 text-slate-800 dark:text-slate-100 font-bold text-lg tabular-nums">
+                      {goal.todayCount} / {DAILY_GOAL} çekim
+                    </p>
+                    <div className="mt-2 h-2 rounded-full bg-slate-200/80 dark:bg-slate-700/60 overflow-hidden">
+                      <div
+                        className={`h-full rounded-full transition-all duration-500 ${
+                          goal.metToday
+                            ? 'bg-gradient-to-r from-emerald-500 to-teal-400'
+                            : 'bg-gradient-to-r from-indigo-500 to-blue-400'
+                        }`}
+                        style={{ width: `${goal.percent}%` }}
+                        role="progressbar"
+                        aria-valuenow={goal.todayCount}
+                        aria-valuemin={0}
+                        aria-valuemax={DAILY_GOAL}
+                      />
+                    </div>
+                    <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
+                      {goal.metToday
+                        ? 'Hedef tamamlandı! Streak korundu.'
+                        : `Streak için ${goal.remaining} çekim kaldı.`}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Streak */}
+              <div className="rounded-2xl border border-amber-300/40 dark:border-amber-400/30 bg-white/60 dark:bg-amber-500/10 backdrop-blur-sm p-5">
+                <div className="flex items-start gap-3">
+                  <span className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-300 shrink-0">
+                    <Flame className="w-5 h-5" strokeWidth={2} />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-amber-600/80 dark:text-amber-300/80">
+                      Günlük Seri
+                    </p>
+                    <p className="mt-1 text-slate-800 dark:text-slate-100 font-bold text-2xl tabular-nums">
+                      {goal.streak}{' '}
+                      <span className="text-base font-semibold text-slate-500 dark:text-slate-400">
+                        gün
+                      </span>
+                    </p>
+                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                      {goal.streak === 0
+                        ? 'Bugün başla, ilk günü kazan.'
+                        : goal.metToday
+                          ? 'Harika gidiyorsun, devam et!'
+                          : 'Bugün hedefi tamamla, seri kırılmasın.'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.section>
+        )}
+
         {/* Sosyal kanıt — hero altı: canlı sayaçlar + testimoniallar */}
         <motion.section
           initial={{ opacity: 0, y: 24 }}
@@ -356,6 +469,9 @@ export default function HomePage() {
               { to: '/ezber-makinesi', title: 'Ezber Makinesi', desc: 'Quiz, zamana karşı ve kıyaslama ile kalıcı öğrenme.', icon: Brain, iconClass: 'bg-pink-500/15 dark:bg-pink-500/20 text-pink-600 dark:text-pink-400', cardClass: 'hover:border-pink-500/30' },
               { to: '/ogrenme', title: 'Öğrenme Yolu', desc: 'A1’den C1’e adım adım müfredat ve ünite dersleri.', icon: GraduationCap, iconClass: 'bg-amber-500/15 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400', cardClass: 'hover:border-amber-500/30' },
               { to: '/simulator', title: 'Yapay Zeka Simülatörü', desc: 'Gerçek hayat senaryolarında roleplay ile konuşma pratiği. Görev tamamla, XP kazan.', icon: MessageCircle, iconClass: 'bg-violet-500/15 dark:bg-violet-500/20 text-violet-600 dark:text-violet-400', cardClass: 'hover:border-violet-500/40 hover:shadow-[0_0_24px_rgba(139,92,246,0.2)] dark:hover:shadow-[0_0_28px_rgba(139,92,246,0.25)]' },
+              { to: '/historia', title: 'Historia Mode', desc: 'İspanyolca sahneler içinde doğru zamanı seç, çekimi yaz. Puan biriktir, zayıf noktanı keşfet.', icon: Sparkles, iconClass: 'bg-rose-500/15 dark:bg-rose-500/20 text-rose-600 dark:text-rose-400', cardClass: 'hover:border-rose-500/40 hover:shadow-[0_0_24px_rgba(244,63,94,0.18)] dark:hover:shadow-[0_0_28px_rgba(244,63,94,0.22)]' },
+              { to: '/cloze-sprint', title: 'Cloze Sprint', desc: '60 saniyede ne kadar çekim doğru yapabilirsin? Hızlı boşluk doldurma, anlık geri bildirim, günlük rekor.', icon: Zap, iconClass: 'bg-sky-500/15 dark:bg-sky-500/20 text-sky-600 dark:text-sky-400', cardClass: 'hover:border-sky-500/40 hover:shadow-[0_0_24px_rgba(14,165,233,0.18)] dark:hover:shadow-[0_0_28px_rgba(14,165,233,0.22)]' },
+              { to: '/haberler', title: 'Okuma Modu', desc: 'Gerçek İspanyolca haberleri oku; fiiller vurgulanır, kelimelere tıklayıp Türkçe çevirisini gör.', icon: Newspaper, iconClass: 'bg-amber-500/15 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400', cardClass: 'hover:border-amber-500/40 hover:shadow-[0_0_24px_rgba(245,158,11,0.18)] dark:hover:shadow-[0_0_28px_rgba(245,158,11,0.22)]' },
               { to: '/syntax-lab', title: 'Cümle Laboratuvarı', desc: 'Cümleleri matematiksel olarak analiz edin. Kelime türü, kök ve çeviri.', icon: Braces, iconClass: 'bg-amber-500/15 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400', cardClass: 'hover:border-amber-500/40 hover:shadow-[0_0_24px_rgba(245,158,11,0.18)] dark:hover:shadow-[0_0_28px_rgba(245,158,11,0.22)]' },
             ].map((item, i) => (
               <motion.div

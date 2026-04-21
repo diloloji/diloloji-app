@@ -12,19 +12,26 @@ import Leaderboard from './pages/Leaderboard';
 import Pricing from './pages/Pricing';
 import YouTubeLab from './pages/YouTubeLab';
 import ReadingPractice from './pages/ReadingPractice';
+import NewsReader from './pages/NewsReader';
+import HistoriaMode from './pages/HistoriaMode';
+import ClozeSprint from './pages/ClozeSprint';
+import TodaysSession from './pages/TodaysSession';
+import { useEffect } from 'react';
 import { XpProvider } from './contexts/XpContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { OnboardingProvider, useOnboarding } from './contexts/OnboardingContext';
 import ErrorBoundary from './components/ErrorBoundary';
 import OnboardingWizard from './components/OnboardingWizard';
 import BottomNav from './components/BottomNav';
+import { updateDocumentTitle } from './utils/dailyGoal';
 
 function getPageElement(pathname: string) {
   switch (pathname) {
     case '/':
-      return <HomePage />;
+      return <TodaysSession />;
+    case '/serbest':
     case '/anasayfa':
-      return <Navigate to="/" replace />;
+      return <HomePage />;
     case '/login':
       return <Navigate to="/" replace />;
     case '/fiil-laboratuvari':
@@ -44,6 +51,12 @@ function getPageElement(pathname: string) {
       return <YouTubeLab />;
     case '/okuma':
       return <ReadingPractice />;
+    case '/haberler':
+      return <NewsReader />;
+    case '/historia':
+      return <HistoriaMode />;
+    case '/cloze-sprint':
+      return <ClozeSprint />;
     case '/profil':
       return <Profile />;
     case '/leaderboard':
@@ -85,6 +98,10 @@ function AnimatedRoutes() {
 
 function AppContent() {
   const { isCompleted } = useOnboarding();
+  useEffect(() => {
+    const id = window.setTimeout(updateDocumentTitle, 0);
+    return () => window.clearTimeout(id);
+  }, []);
   return (
     <>
       <Routes>
