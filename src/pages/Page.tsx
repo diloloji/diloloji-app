@@ -49,6 +49,10 @@ import {
 } from '../utils/hintEngine';
 import SmartHintBubble from '../components/SmartHintBubble';
 import TenseCardOverlay from '../components/tenseCard/TenseCardOverlay';
+import {
+  fetchSynonyms,
+  type VerbSynonymPayload,
+} from '../services/synonyms';
 
 type Mode = 'learning' | 'quiz' | 'review' | 'starred' | 'time-attack' | 'compare';
 type AppMode = 'conjugation' | 'ezber';
@@ -119,6 +123,11 @@ interface TimeAttackScoreEntry {
 
 const TIME_ATTACK_STORAGE_KEY_PREFIX = 'diloloji-time-attack-scores';
 const TIME_ATTACK_MAX_ENTRIES = 50;
+const SYNONYM_REGISTER_STYLES: Record<'formal' | 'informal' | 'neutral', string> = {
+  formal: 'bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/35',
+  informal: 'bg-orange-500/15 text-orange-700 dark:text-orange-300 border-orange-500/35',
+  neutral: 'bg-slate-500/15 text-slate-700 dark:text-slate-300 border-slate-500/35',
+};
 
 function storageKeyFor(difficulty: TimeAttackDifficulty): string {
   return `${TIME_ATTACK_STORAGE_KEY_PREFIX}-${difficulty}`;
@@ -544,6 +553,9 @@ export function Page() {
   /** AI ile üretilen örnek cümleler (fiil + zaman değişiminde yeniden istek) */
   const [aiExamples, setAIExamples] = useState<AIVerbExample[]>([]);
   const [aiExamplesLoading, setAIExamplesLoading] = useState(false);
+  const [synonymData, setSynonymData] = useState<VerbSynonymPayload | null>(null);
+  const [synonymLoading, setSynonymLoading] = useState(false);
+  const [showSynonymSection, setShowSynonymSection] = useState(false);
   const [conjugations, setConjugations] = useState<Record<string, string> | null>(null);
   /** Tersine arama: kullanıcı çekim yazdığında gösterilecek bilgi kartı (örn. "suis → être, Présent - 1. Tekil") */
   const [reverseLookupInfo, setReverseLookupInfo] = useState<{
@@ -990,6 +1002,45 @@ export function Page() {
   }, [verbInput, selectedTense, selectedLanguage]);
 
   loadVerbRef.current = loadVerb;
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!verbKey || mode !== 'learning' || selectedLanguage !== 'es') {
+      setShowSynonymSection(false);
+      setSynonymLoading(false);
+      setSynonymData(null);
+      return () => {
+        cancelled = true;
+      };
+    }
+    setShowSynonymSection(true);
+    setSynonymLoading(true);
+    setSynonymData(null);
+    void fetchSynonyms(verbKey)
+      .then((payload) => {
+        if (cancelled) return;
+        if (payload.synonyms.length === 0 && payload.antonyms.length === 0 && !payload.note) {
+          setShowSynonymSection(false);
+          setSynonymData(null);
+        } else {
+          setSynonymData(payload);
+          setShowSynonymSection(true);
+        }
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setShowSynonymSection(false);
+        setSynonymData(null);
+      })
+      .finally(() => {
+        if (cancelled) return;
+        setSynonymLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [verbKey, mode, selectedLanguage]);
 
   const switchAppLanguage = useCallback(
     (lang: AppLanguage) => {
@@ -3996,6 +4047,104 @@ export function Page() {
                 </motion.section>
               )}
             </AnimatePresence>
+
+            {selectedLanguage === 'es' && showSynonymSection && (
+              <section className="mx-4 sm:mx-0 mt-5 rounded-2xl border border-slate-200/70 dark:border-slate-700/70 bg-white/70 dark:bg-slate-900/40 backdrop-blur-sm p-4 sm:p-5">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="h-px flex-1 bg-slate-300/80 dark:bg-slate-700/80" />
+                  <h3 className="text-[11px] sm:text-xs font-bold tracking-[0.18em] text-slate-600 dark:text-slate-300 text-center">
+                    EŞ ANLAMLILAR &amp; YAKIN ANLAMLILAR
+                  </h3>
+                  <div className="h-px flex-1 bg-slate-300/80 dark:bg-slate-700/80" />
+                </div>
+
+                {synonymLoading && (
+                  <div className="space-y-2 animate-pulse">
+                    <p className="text-sm text-slate-500 dark:text-slate-400">Eş anlamlılar yükleniyor...</p>
+                    <div className="h-14 rounded-xl bg-slate-200/70 dark:bg-slate-700/40" />
+                    <div className="h-14 rounded-xl bg-slate-200/70 dark:bg-slate-700/40" />
+                  </div>
+                )}
+
+                <AnimatePresence initial={false}>
+                  {!synonymLoading && synonymData && (
+                    <motion.div
+                      key={`synonyms-${verbKey}`}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.22, ease: 'easeOut' }}
+                      className="space-y-4"
+                    >
+                      {synonymData.synonyms.length > 0 && (
+                        <div className="flex flex-col gap-2.5">
+                          {synonymData.synonyms.map((item) => (
+                            <button
+                              key={`syn-${item.verb}`}
+                              type="button"
+                              onClick={() => {
+                                setVerbInput(item.verb);
+                                loadVerb(item.verb);
+                              }}
+                              className="w-full text-left rounded-xl border border-slate-200/80 dark:border-slate-700/70 bg-white/80 dark:bg-slate-800/45 px-3 py-3 hover:border-indigo-400/60 dark:hover:border-indigo-400/50 hover:bg-indigo-50/60 dark:hover:bg-indigo-500/10 transition-colors"
+                            >
+                              <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                                <span className="font-semibold text-slate-900 dark:text-slate-100">
+                                  [{item.verb}]
+                                </span>
+                                <span className="text-slate-700 dark:text-slate-200">{item.turkish}</span>
+                                <span
+                                  className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase ${SYNONYM_REGISTER_STYLES[item.register]}`}
+                                >
+                                  {item.register}
+                                </span>
+                              </div>
+                              <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+                                {item.difference ? `"${item.difference}"` : ''}
+                              </p>
+                              {item.example && (
+                                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 italic">
+                                  {item.example}
+                                </p>
+                              )}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+
+                      {synonymData.antonyms.length > 0 && (
+                        <div className="pt-1">
+                          <h4 className="text-[11px] font-bold tracking-[0.16em] text-slate-500 dark:text-slate-400 mb-2">
+                            ZIT ANLAMLILAR
+                          </h4>
+                          <div className="flex flex-wrap gap-2">
+                            {synonymData.antonyms.map((item) => (
+                              <button
+                                key={`ant-${item.verb}`}
+                                type="button"
+                                onClick={() => {
+                                  setVerbInput(item.verb);
+                                  loadVerb(item.verb);
+                                }}
+                                className="inline-flex items-center gap-1.5 rounded-full border border-slate-300 dark:border-slate-600 bg-slate-100/80 dark:bg-slate-800/60 px-3 py-1.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-200/80 dark:hover:bg-slate-700 transition-colors"
+                              >
+                                <span className="font-semibold">[{item.verb}]</span>
+                                <span>{item.turkish}</span>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {synonymData.note && (
+                        <p className="text-sm text-slate-600 dark:text-slate-300">
+                          Not: {synonymData.note}
+                        </p>
+                      )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </section>
+            )}
             </>
             )}
 
