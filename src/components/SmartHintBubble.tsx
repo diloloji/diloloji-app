@@ -21,10 +21,14 @@ type Props = {
   withLeftPadding?: boolean;
   /** Kompakt görünüm (yan yana hizalama için). */
   compact?: boolean;
+  /** Input altında position:absolute; margin/pl yok (layout kayması önlenir). */
+  absoluteUnderInput?: boolean;
 };
 
-export default function SmartHintBubble({ mode, rule, letters, correct, withLeftPadding, compact }: Props) {
-  const wrap = `${withLeftPadding ? 'pl-[5.5rem]' : ''} ${compact ? 'mt-1' : 'mt-2'}`;
+export default function SmartHintBubble({ mode, rule, letters, correct, withLeftPadding, compact, absoluteUnderInput }: Props) {
+  const wrap = absoluteUnderInput
+    ? ''
+    : `${withLeftPadding ? 'pl-[5.5rem]' : ''} ${compact ? 'mt-1' : 'mt-2'}`;
 
   if (mode === 'rule') {
     return (

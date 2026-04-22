@@ -556,15 +556,15 @@ export function Page() {
   const [translation, setTranslation] = useState<string | null>(null);
   const [dynamicMeaning, setDynamicMeaning] = useState<string | null>(null);
   const [isMeaningLoading, setIsMeaningLoading] = useState(false);
-  const [selectedTense, setSelectedTense] = useState<string>(() => getTenses('fr')[0].id);
+  const [selectedTense, setSelectedTense] = useState<string>(() => getTenses('es')[0].id);
   const [mode, setMode] = useState<Mode>('learning');
-  const [userAnswers, setUserAnswers] = useState<Record<string, string>>(() => getInitialUserAnswers('fr'));
+  const [userAnswers, setUserAnswers] = useState<Record<string, string>>(() => getInitialUserAnswers('es'));
   const [quizFeedback, setQuizFeedback] = useState<Record<string, 'correct' | 'wrong' | 'typo' | null>>(() =>
-    Object.fromEntries(getPronouns('fr').map((p) => [p.id, null as 'correct' | 'wrong' | null]))
+    Object.fromEntries(getPronouns('es').map((p) => [p.id, null as 'correct' | 'wrong' | null]))
   );
   /** Passé Composé için özel ipuçları (Fransızca); İspanyolca için boş kullanılabilir */
   const [quizPasséHint, setQuizPasséHint] = useState<Record<string, string | null>>(() =>
-    Object.fromEntries(getPronouns('fr').map((p) => [p.id, null as string | null]))
+    Object.fromEntries(getPronouns('es').map((p) => [p.id, null as string | null]))
   );
   /**
    * Akıllı İpucu Sistemi (alıştırma modu, soru-bazlı):
@@ -573,10 +573,10 @@ export function Page() {
    * Her ikisi de soru bazlı; localStorage'a yazılmaz; tense/verb/dil değişiminde sıfırlanır.
    */
   const [quizAttempts, setQuizAttempts] = useState<Record<string, number>>(() =>
-    Object.fromEntries(getPronouns('fr').map((p) => [p.id, 0]))
+    Object.fromEntries(getPronouns('es').map((p) => [p.id, 0]))
   );
   const [quizHintMode, setQuizHintMode] = useState<Record<string, 'rule' | 'letters' | 'reveal' | null>>(() =>
-    Object.fromEntries(getPronouns('fr').map((p) => [p.id, null as 'rule' | 'letters' | 'reveal' | null]))
+    Object.fromEntries(getPronouns('es').map((p) => [p.id, null as 'rule' | 'letters' | 'reveal' | null]))
   );
   /** Reveal sonrası 1.5sn bekleme zamanlayıcıları (pronoun bazlı) — temizleme için tutulur. */
   const revealTimersRef = useRef<Record<string, ReturnType<typeof setTimeout> | null>>({});
@@ -990,6 +990,24 @@ export function Page() {
   }, [verbInput, selectedTense, selectedLanguage]);
 
   loadVerbRef.current = loadVerb;
+
+  const switchAppLanguage = useCallback(
+    (lang: AppLanguage) => {
+      const v = verbKey;
+      if (v) {
+        setVerbInput('');
+        setError('');
+        loadVerb(v, lang);
+      } else {
+        setSelectedLanguage(lang);
+        setVerbKey(null);
+        setConjugations(null);
+        setVerbInput('');
+        setError('');
+      }
+    },
+    [verbKey, loadVerb, setSelectedLanguage]
+  );
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -1983,6 +2001,34 @@ export function Page() {
 
       {appMode === 'conjugation' && (
       <main className={`max-w-7xl w-full mx-auto px-4 md:px-8 pb-24 md:pb-20 transition-all duration-300 ${viewMode === 'simple' ? 'pt-2' : 'py-4'}`}>
+        <div className="flex justify-end w-full mb-2 md:mb-1 shrink-0">
+          <div className="lang-switcher" role="tablist" aria-label="Öğrenilen dil">
+            <button
+              type="button"
+              role="tab"
+              data-lang="es"
+              aria-selected={selectedLanguage === 'es'}
+              onClick={() => switchAppLanguage('es')}
+              title="İspanyolca"
+              className={`lang-btn${selectedLanguage === 'es' ? ' active' : ''}`}
+            >
+              <span aria-hidden>🇪🇸</span>
+              <span>ES</span>
+            </button>
+            <button
+              type="button"
+              role="tab"
+              data-lang="fr"
+              aria-selected={selectedLanguage === 'fr'}
+              onClick={() => switchAppLanguage('fr')}
+              title="Fransızca"
+              className={`lang-btn${selectedLanguage === 'fr' ? ' active' : ''}`}
+            >
+              <span aria-hidden>🇫🇷</span>
+              <span>FR</span>
+            </button>
+          </div>
+        </div>
         <div className={`flex flex-col md:grid md:grid-cols-12 md:items-start transition-all duration-300 ${viewMode === 'simple' ? 'gap-4 md:gap-6' : 'gap-6 md:gap-8'}`}>
           {/* Sol sütun: Kontrol paneli — mobilde toggle ile aç/kapa, desktop'ta her zaman görünür */}
           <aside data-print-hide className="flex flex-col gap-4 md:col-span-4 order-1 print:hidden md:sticky md:top-6 md:self-start transition-opacity duration-300">
@@ -1998,59 +2044,6 @@ export function Page() {
             </button>
             {/* Panel içeriği: mobilde sadece leftPanelOpen iken, desktop'ta (md:) her zaman görünür */}
             <div className={leftPanelOpen ? 'flex flex-col gap-4' : 'hidden md:flex md:flex-col md:gap-4'}>
-            {/* Entegre dil seçici — arama alanının hemen üzerinde, segmented control */}
-            <section className="relative z-10 shrink-0 w-full">
-              <div
-                className="grid grid-cols-2 gap-2 w-full p-1 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-600"
-                role="tablist"
-                aria-label="Dil seçin"
-              >
-                <button
-                  type="button"
-                  role="tab"
-                  aria-selected={selectedLanguage === 'fr'}
-                  onClick={() => {
-                    setSelectedLanguage('fr');
-                    setVerbKey(null);
-                    setConjugations(null);
-                    setVerbInput('');
-                    setError('');
-                    if (verbKey) loadVerb(verbKey);
-                  }}
-                  title="Fransızca"
-                  className={`flex items-center justify-center gap-2 w-full rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-1 dark:focus:ring-offset-slate-800 ${
-                    selectedLanguage === 'fr'
-                      ? 'bg-indigo-500 text-white shadow-[0_0_14px_rgba(99,102,241,0.45)] dark:shadow-[0_0_18px_rgba(129,140,248,0.4)] border border-indigo-400/50'
-                      : 'bg-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 hover:bg-slate-200/50 dark:hover:bg-slate-700/50 border border-transparent opacity-70 hover:opacity-90'
-                  }`}
-                >
-                  <span aria-hidden>🇫🇷</span>
-                  Fransızca
-                </button>
-                <button
-                  type="button"
-                  role="tab"
-                  aria-selected={selectedLanguage === 'es'}
-                  onClick={() => {
-                    setSelectedLanguage('es');
-                    setVerbKey(null);
-                    setConjugations(null);
-                    setVerbInput('');
-                    setError('');
-                    if (verbKey) loadVerb(verbKey);
-                  }}
-                  title="İspanyolca"
-                  className={`flex items-center justify-center gap-2 w-full rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-1 dark:focus:ring-offset-slate-800 ${
-                    selectedLanguage === 'es'
-                      ? 'bg-indigo-500 text-white shadow-[0_0_14px_rgba(99,102,241,0.45)] dark:shadow-[0_0_18px_rgba(129,140,248,0.4)] border border-indigo-400/50'
-                      : 'bg-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 hover:bg-slate-200/50 dark:hover:bg-slate-700/50 border border-transparent opacity-70 hover:opacity-90'
-                  }`}
-                >
-                  <span aria-hidden>🇪🇸</span>
-                  İspanyolca
-                </button>
-              </div>
-            </section>
             {/* Fiil arama + Zaman seçici */}
             <section className="relative z-10 p-5 sm:p-6 rounded-2xl bg-white dark:bg-slate-800/80 shadow-md dark:shadow-none border border-slate-200 dark:border-slate-700/50 backdrop-blur-md transition-colors duration-300 shrink-0 overflow-visible" ref={autocompleteWrapRef}>
               <div className="flex flex-col gap-4">
@@ -4424,133 +4417,169 @@ export function Page() {
             })()}
 
             {/*
-              Liste görünümü: 6 şahıs — 2 kolonlu grid. Her satırda:
-                • Sabit w-20 zamir etiketi → tüm inputlar dikey hizada başlar.
-                • Inputlara pr-10 sağ iç boşluk + absolute right-3 ikon slot.
-                • Yazılan metin, checkmark / speaker / çarpı ikonlarıyla çakışmaz.
+              Liste görünümü: tek sütun; grid 120px 1fr 32px 32px (md+), mobilde etiket üstte.
+              İpuçları input sarmalayıcıda absolute (layout kayması yok).
             */}
             {quizLayout === 'list' && (
             <div className="px-5 sm:px-6 py-5">
-              <div className="grid grid-cols-1 md:grid-cols-2 md:grid-rows-3 md:grid-flow-col gap-x-6 gap-y-3">
+              <div className="flex flex-col gap-2">
                 {pronounsForLang.map(({ id, label }, index) => {
                   const feedback = quizFeedback[id];
                   const correctValue = conjugationsForDisplay[id];
                   const hintMode = quizHintMode[id];
                   const isRevealing = hintMode === 'reveal';
                   const showAsCorrect = feedback === 'correct' || isRevealing;
+                  const showHintActions = !showAsCorrect && feedback !== 'wrong' && !!verbKey;
+                  const needHintUnderInput =
+                    (!showHints && feedback === 'typo') ||
+                    showHints ||
+                    (!!hintMode && !!verbKey && !showHints);
                   return (
-                    <div key={id} className="flex flex-col gap-1">
-                      <div className="flex items-center gap-4">
-                        <span className="w-20 shrink-0 text-sm font-semibold text-slate-700 dark:text-slate-300 tracking-tight">
-                          {label}
-                        </span>
-                        <div className={`flex-1 min-w-0 relative ${feedback === 'wrong' && !isRevealing ? 'animate-shake' : ''} ${quizEmptyShake === id ? 'animate-shake ring-2 ring-red-500 dark:ring-red-400 ring-inset rounded-lg' : ''}`}>
-                          <input
-                            ref={(el) => {
-                              quizInputRefs.current[index] = el;
-                            }}
-                            type="text"
-                            value={userAnswers[id]}
-                            onChange={(e) => setAnswer(id, e.target.value)}
-                            onFocus={() => { activeQuizInputIndexRef.current = index; }}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') handleQuizInputKeyDown(e, index);
-                            }}
-                            readOnly={isRevealing}
-                            placeholder="…"
-                            tabIndex={index + 1}
-                            className={`peer w-full h-10 rounded-lg border pl-3 pr-10 text-sm placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 transition-all duration-200 ${
-                              showAsCorrect
-                                ? 'border-emerald-400 dark:border-emerald-500/60 bg-emerald-50/70 dark:bg-emerald-500/15 text-slate-800 dark:text-slate-100 focus:border-emerald-500'
-                                : feedback === 'wrong'
-                                  ? 'border-red-500 dark:border-red-400/60 bg-red-50/70 dark:bg-red-500/10 text-slate-800 dark:text-slate-100 focus:border-red-500'
-                                  : feedback === 'typo'
-                                    ? 'border-amber-400 dark:border-amber-500/60 bg-amber-50/70 dark:bg-amber-500/10 text-slate-800 dark:text-slate-100 focus:border-amber-500'
-                                    : 'bg-white/60 dark:bg-slate-900/40 border-slate-200/70 dark:border-white/10 text-slate-800 dark:text-white focus:border-indigo-500 dark:focus:border-indigo-400 hover:border-slate-300 dark:hover:border-white/20'
-                            }`}
-                            aria-label={`${label} çekimi`}
-                          />
-                          {showAsCorrect && (
-                            <span className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                              <button
-                                type="button"
-                                onClick={() => speakConjugation(correctValue, selectedLanguage)}
-                                tabIndex={-1}
-                                className="p-0.5 rounded text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-colors"
-                                title={selectedLanguage === 'es' ? 'Dinle (İspanyolca)' : 'Dinle (Fransızca)'}
-                                aria-label={`${correctValue} dinle`}
-                              >
-                                <SpeakerIcon className="w-3.5 h-3.5" />
-                              </button>
-                              <span className="text-emerald-600 dark:text-emerald-400 pointer-events-none" aria-hidden>
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                                </svg>
-                              </span>
-                            </span>
-                          )}
-                          {!showAsCorrect && feedback === 'wrong' && (
-                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-red-500 dark:text-red-400 pointer-events-none" aria-hidden>
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                              </svg>
-                            </span>
-                          )}
-                          {!showAsCorrect && feedback !== 'wrong' && verbKey && (
-                            <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
-                              {hintMode === null && (
-                                <button
-                                  type="button"
-                                  onClick={() => requestHint(id)}
-                                  tabIndex={-1}
-                                  className="w-6 h-6 inline-flex items-center justify-center rounded-full text-slate-400 dark:text-slate-500 hover:text-amber-700 dark:hover:text-amber-300 hover:bg-amber-100/70 dark:hover:bg-amber-500/15 focus:outline-none focus:ring-2 focus:ring-amber-500/40 transition-colors"
-                                  title="İpucu al (-2 puan)"
-                                  aria-label={`${label} için ipucu iste`}
-                                >
-                                  <span className="text-sm font-bold leading-none">?</span>
-                                </button>
+                    <div key={id} className="quiz-align-row">
+                      <span className="quiz-p-label">{label}</span>
+                      <div
+                        className={`quiz-p-input-wrap ${needHintUnderInput ? 'pb-6' : ''} ${
+                          feedback === 'wrong' && !isRevealing ? 'animate-shake' : ''
+                        } ${
+                          quizEmptyShake === id
+                            ? 'animate-shake ring-2 ring-red-500 dark:ring-red-400 ring-inset rounded-lg'
+                            : ''
+                        }`}
+                      >
+                        <input
+                          ref={(el) => {
+                            quizInputRefs.current[index] = el;
+                          }}
+                          type="text"
+                          value={userAnswers[id]}
+                          onChange={(e) => setAnswer(id, e.target.value)}
+                          onFocus={() => {
+                            activeQuizInputIndexRef.current = index;
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') handleQuizInputKeyDown(e, index);
+                          }}
+                          readOnly={isRevealing}
+                          placeholder="…"
+                          tabIndex={index + 1}
+                          className={`w-full min-w-0 h-10 rounded-lg border pl-3 text-sm placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 transition-all duration-200 ${
+                            !showAsCorrect && feedback === 'wrong' ? 'pr-8' : 'pr-3'
+                          } ${
+                            showAsCorrect
+                              ? 'border-emerald-400 dark:border-emerald-500/60 bg-emerald-50/70 dark:bg-emerald-500/15 text-slate-800 dark:text-slate-100 focus:border-emerald-500'
+                              : feedback === 'wrong'
+                                ? 'border-red-500 dark:border-red-400/60 bg-red-50/70 dark:bg-red-500/10 text-slate-800 dark:text-slate-100 focus:border-red-500'
+                                : feedback === 'typo'
+                                  ? 'border-amber-400 dark:border-amber-500/60 bg-amber-50/70 dark:bg-amber-500/10 text-slate-800 dark:text-slate-100 focus:border-amber-500'
+                                  : 'bg-white/60 dark:bg-slate-900/40 border-slate-200/70 dark:border-white/10 text-slate-800 dark:text-white focus:border-indigo-500 dark:focus:border-indigo-400 hover:border-slate-300 dark:hover:border-white/20'
+                          }`}
+                          aria-label={`${label} çekimi`}
+                        />
+                        {!showAsCorrect && feedback === 'wrong' && (
+                          <span
+                            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-red-500 dark:text-red-400 pointer-events-none"
+                            aria-hidden
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </span>
+                        )}
+                        {needHintUnderInput && (
+                          <div className="absolute top-full left-0 right-0 z-20 mt-0.5">
+                            <div className="pointer-events-auto space-y-1">
+                              {!showHints && feedback === 'typo' && (
+                                <p className="text-xs text-amber-700 dark:text-amber-300 font-medium">
+                                  Neredeyse! Doğrusu: <strong>{correctValue}</strong>
+                                </p>
                               )}
-                              {selectedLanguage === 'es' && (
-                                <button
-                                  type="button"
-                                  onClick={() => setTenseCardOverlay({ kind: 'detail', tenseId: selectedTense })}
-                                  tabIndex={-1}
-                                  className="w-6 h-6 inline-flex items-center justify-center rounded-full text-slate-400 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-300 hover:bg-indigo-100/70 dark:hover:bg-indigo-500/15 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 transition-colors"
-                                  title="Zaman kartını aç"
-                                  aria-label={`${label} için zaman kartını aç`}
-                                >
-                                  <BookOpen className="w-3.5 h-3.5" strokeWidth={2} aria-hidden />
-                                </button>
+                              {showHints && (
+                                <p className="text-xs text-slate-500 dark:text-slate-400">
+                                  Doğru:{' '}
+                                  <span className="font-medium text-slate-700 dark:text-slate-200">{correctValue}</span>
+                                </p>
+                              )}
+                              {!showHints && hintMode && verbKey && (
+                                <SmartHintBubble
+                                  mode={hintMode}
+                                  rule={
+                                    hintMode === 'rule'
+                                      ? quizPasséHint[id] ??
+                                        getRuleHint(verbKey, selectedTense, id, selectedLanguage, correctValue)
+                                      : undefined
+                                  }
+                                  letters={hintMode === 'letters' ? getLetterMask(correctValue, 2) : undefined}
+                                  correct={hintMode === 'reveal' ? correctValue : undefined}
+                                  absoluteUnderInput
+                                  compact
+                                />
                               )}
                             </div>
-                          )}
-                        </div>
+                          </div>
+                        )}
                       </div>
-                      {!showHints && feedback === 'typo' && (
-                        <p className="text-xs text-amber-700 dark:text-amber-300 font-medium pl-[5.5rem]">
-                          Neredeyse! Doğrusu: <strong>{correctValue}</strong>
-                        </p>
-                      )}
-                      {showHints && (
-                        <p className="text-xs text-slate-500 dark:text-slate-400 pl-[5.5rem]">
-                          Doğru: <span className="font-medium text-slate-700 dark:text-slate-200">{correctValue}</span>
-                        </p>
-                      )}
-                      {!showHints && hintMode && verbKey && (
-                        <SmartHintBubble
-                          mode={hintMode}
-                          rule={
-                            hintMode === 'rule'
-                              ? quizPasséHint[id] ??
-                                getRuleHint(verbKey, selectedTense, id, selectedLanguage, correctValue)
-                              : undefined
-                          }
-                          letters={hintMode === 'letters' ? getLetterMask(correctValue, 2) : undefined}
-                          correct={hintMode === 'reveal' ? correctValue : undefined}
-                          withLeftPadding
-                          compact
-                        />
-                      )}
+                      <div className="quiz-p-hint">
+                        {showHintActions && (
+                          <>
+                            {hintMode === null && (
+                              <button
+                                type="button"
+                                onClick={() => requestHint(id)}
+                                tabIndex={-1}
+                                className="w-6 h-6 shrink-0 inline-flex items-center justify-center rounded-full text-slate-400 dark:text-slate-500 hover:text-amber-700 dark:hover:text-amber-300 hover:bg-amber-100/70 dark:hover:bg-amber-500/15 focus:outline-none focus:ring-2 focus:ring-amber-500/40 transition-colors"
+                                title="İpucu al (-2 puan)"
+                                aria-label={`${label} için ipucu iste`}
+                              >
+                                <span className="text-xs font-bold leading-none">?</span>
+                              </button>
+                            )}
+                            {selectedLanguage === 'es' && (
+                              <button
+                                type="button"
+                                onClick={() => setTenseCardOverlay({ kind: 'detail', tenseId: selectedTense })}
+                                tabIndex={-1}
+                                className="w-6 h-6 shrink-0 inline-flex items-center justify-center rounded-full text-slate-400 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-300 hover:bg-indigo-100/70 dark:hover:bg-indigo-500/15 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 transition-colors"
+                                title="Zaman kartını aç"
+                                aria-label={`${label} için zaman kartını aç`}
+                              >
+                                <BookOpen className="w-3 h-3" strokeWidth={2} aria-hidden />
+                              </button>
+                            )}
+                          </>
+                        )}
+                      </div>
+                      <div className="quiz-p-snd">
+                        {showAsCorrect ? (
+                          <div className="flex flex-col items-center justify-center gap-0.5">
+                            <button
+                              type="button"
+                              onClick={() => speakConjugation(correctValue, selectedLanguage)}
+                              tabIndex={-1}
+                              className="p-0.5 rounded text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-colors"
+                              title={selectedLanguage === 'es' ? 'Dinle (İspanyolca)' : 'Dinle (Fransızca)'}
+                              aria-label={`${correctValue} dinle`}
+                            >
+                              <SpeakerIcon className="w-3.5 h-3.5" />
+                            </button>
+                            <span className="text-emerald-600 dark:text-emerald-400 pointer-events-none" aria-hidden>
+                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                              </svg>
+                            </span>
+                          </div>
+                        ) : showHintActions ? (
+                          <MicButton
+                            size={22}
+                            lang={selectedLanguage === 'es' ? 'es-ES' : 'fr-FR'}
+                            disabled={isRevealing}
+                            onResult={(res) => {
+                              const match = res.alternatives.find((a) => checkAnswer(a, correctValue) !== 'wrong');
+                              setAnswer(id, match ?? res.transcript);
+                            }}
+                            title="Sesle yaz"
+                          />
+                        ) : null}
+                      </div>
                     </div>
                   );
                 })}
