@@ -4,16 +4,14 @@
  * Akış:
  *  1. Liste — son 20 haberin başlıklarını gösterir. API hata verirse
  *     `FALLBACK_ARTICLES` listesi gösterilir.
- *  2. Okuyucu — makale metnini kelime kelime tokenize eder.
- *     - Bilinen fiiller (çekimli halleriyle birlikte): sarı vurgu, tooltip'te
- *       mastar + Türkçe anlam + (varsa) zaman bilgisi.
- *     - Tıklanan herhangi bir kelime: Anthropic/Groq çevirisi, tooltip'te
- *       Türkçe anlam.
+ *  2. Okuyucu — kelimeler tıklanınca Anthropic analizi (bellek önbelleği);
+ *     bilinen fiiller ayrıca sarı vurgulanır. Metin sonunda scroll ile mini quiz
+ *     ve yanlış fiillerin SRS (mistake bank) ile işlenmesi.
  *
  * Tooltip parent'a göre absolute konumludur (position:fixed değil).
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -43,6 +41,14 @@ import {
   type VerbMatch,
 } from '../data/readingVerbList';
 import { translateWordToTr, type WordTip } from '../services/wordTranslate';
+import {
+  analyzeWordForReading,
+  generateReadingQuiz,
+  hasAnthropicKey,
+  type ReadingQuizItem,
+  type ReadingWordAnalysis,
+} from '../services/readingLLM';
+import { addMistake } from '../utils/mistakeBank';
 
 /* ───────────────────── Yardımcılar ───────────────────── */
 
@@ -55,13 +61,16 @@ interface ReaderArticle {
   level: ReadingLevel;
   /** Fallback mi, Wikinews mi (sadece bilgi amaçlı). */
   source: 'wikinews' | 'fallback';
+  theme?: string;
 }
 
 const LEVEL_BADGE: Record<ReadingLevel, string> = {
   A2: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30',
   B1: 'bg-sky-500/15 text-sky-700 dark:text-sky-300 border-sky-500/30',
-  B2: 'bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-500/30',
+  B2: 'bg-violet-500/15 text-violet-800 dark:text-violet-200 border-violet-500/35',
 };
+
+type LevelFilter = 'all' | ReadingLevel;
 
 interface Token {
   key: string;
@@ -89,6 +98,207 @@ function paragraphize(text: string): Token[][] {
     .map((p) => p.replace(/\s+\n/g, '\n').trim())
     .filter(Boolean);
   return paras.map((p) => tokenize(p));
+}
+
+function readingAnswerNorm(s: string): string {
+  return s
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/\p{M}/gu, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function ReadingQuizSection({ title, extract }: { title: string; extract: string }) {
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const [endVisible, setEndVisible] = useState(false);
+  const [started, setStarted] = useState(false);
+  const [qLoading, setQLoading] = useState(false);
+  const [qError, setQError] = useState<string | null>(null);
+  const [questions, setQuestions] = useState<ReadingQuizItem[] | null>(null);
+  const [idx, setIdx] = useState(0);
+  const [input, setInput] = useState('');
+  const [missOnce, setMissOnce] = useState(false);
+  const [justCorrect, setJustCorrect] = useState(false);
+  const [complete, setComplete] = useState(false);
+  const [correctTotal, setCorrectTotal] = useState(0);
+  const [wrongVerbs, setWrongVerbs] = useState<string[]>([]);
+
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) setEndVisible(true);
+        }
+      },
+      { threshold: 0.2, rootMargin: '0px 0px 64px 0px' }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [title, extract]);
+
+  const startQuiz = useCallback(async () => {
+    setQError(null);
+    setQLoading(true);
+    setStarted(true);
+    try {
+      if (!hasAnthropicKey()) {
+        setQError('Quiz için .env üzerinde VITE_ANTHROPIC_API_KEY tanımlanmalı.');
+        setStarted(false);
+        return;
+      }
+      const qs = await generateReadingQuiz(title, extract);
+      const three = qs.slice(0, 3);
+      if (three.length < 1) {
+        setQError('Soru üretilemedi.');
+        setStarted(false);
+        return;
+      }
+      setQuestions(three);
+      setIdx(0);
+      setInput('');
+      setMissOnce(false);
+      setJustCorrect(false);
+      setComplete(false);
+      setCorrectTotal(0);
+      setWrongVerbs([]);
+    } catch (e) {
+      setQError(e instanceof Error ? e.message : 'Quiz yüklenemedi');
+      setStarted(false);
+    } finally {
+      setQLoading(false);
+    }
+  }, [title, extract]);
+
+  const current = questions?.[idx];
+  const totalQ = questions?.length ?? 0;
+
+  const checkAnswer = useCallback(() => {
+    if (!current || !questions) return;
+    const len = questions.length;
+    const ok = readingAnswerNorm(input) === readingAnswerNorm(current.answer);
+    if (ok) {
+      setCorrectTotal((c) => c + 1);
+      setJustCorrect(true);
+      window.setTimeout(() => {
+        setInput('');
+        setMissOnce(false);
+        setJustCorrect(false);
+        setIdx((i) => {
+          if (i >= len - 1) {
+            setComplete(true);
+            return i;
+          }
+          return i + 1;
+        });
+      }, 700);
+    } else {
+      if (!missOnce) {
+        setMissOnce(true);
+      } else {
+        addMistake(current.verb, current.tense, 'okuma-quiz');
+        setWrongVerbs((w) => [...w, current.verb]);
+        window.setTimeout(() => {
+          setInput('');
+          setMissOnce(false);
+          setJustCorrect(false);
+          setIdx((i) => {
+            if (i >= len - 1) {
+              setComplete(true);
+              return i;
+            }
+            return i + 1;
+          });
+        }, 600);
+      }
+    }
+  }, [current, questions, input, missOnce]);
+
+  if (complete && questions) {
+    const u = [...new Set(wrongVerbs)];
+    return (
+      <div
+        ref={sentinelRef}
+        className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-700 space-y-3"
+      >
+        {correctTotal === totalQ && totalQ > 0 ? (
+          <p className="text-lg font-semibold text-emerald-600 dark:text-emerald-400">
+            {totalQ}/{totalQ} doğru — harika!
+          </p>
+        ) : (
+          <p className="text-slate-800 dark:text-slate-200">
+            <span className="font-semibold">
+              {correctTotal}/{totalQ}
+            </span>
+            {u.length > 0
+              ? ` — şu fiiller tekrar: ${u.join(', ')}`
+              : ' — iyi gitti.'}
+          </p>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div
+      ref={sentinelRef}
+      className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-700 space-y-4"
+    >
+      {endVisible && !started && !qLoading && (
+        <button
+          type="button"
+          onClick={startQuiz}
+          className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-medium text-sm shadow"
+        >
+          Quiz Başlat
+        </button>
+      )}
+
+      {qLoading && <p className="text-sm text-slate-500">Quiz hazırlanıyor…</p>}
+      {qError && <p className="text-sm text-rose-600 dark:text-rose-400">{qError}</p>}
+
+      {started && questions && current && !complete && (
+        <div className="space-y-3">
+          <p className="text-sm text-slate-500">
+            Soru {idx + 1} / {totalQ}
+          </p>
+          <p className="text-base text-slate-900 dark:text-slate-100 leading-relaxed">{current.sentence}</p>
+          <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') checkAnswer();
+              }}
+              className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-slate-100"
+              placeholder="Cevabını yaz"
+              disabled={justCorrect}
+            />
+            <button
+              type="button"
+              onClick={checkAnswer}
+              disabled={justCorrect}
+              className="px-4 py-2 rounded-lg bg-slate-800 dark:bg-slate-200 dark:text-slate-900 text-white text-sm font-medium disabled:opacity-50"
+            >
+              Kontrol
+            </button>
+          </div>
+          {justCorrect && <p className="text-sm font-medium text-emerald-600">Doğru!</p>}
+          {missOnce && !justCorrect && (
+            <div className="space-y-1">
+              <p className="text-sm text-rose-600">Yanlış — tekrar dene (son hak).</p>
+              <p className="text-sm text-slate-600 dark:text-slate-300">
+                <span className="font-medium">İpucu:</span> {current.hint}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
 }
 
 /* ───────────────────── Sayfa ───────────────────── */
@@ -150,24 +360,26 @@ export default function NewsReader() {
         title: fb.title,
         extract: fb.extract,
         sourceUrl: fb.sourceUrl,
-        level: estimateLevel(fb.extract),
+        level: fb.level,
         source: 'fallback',
+        theme: fb.theme,
       });
     } finally {
       setReaderLoading(false);
     }
   }, []);
 
-  const openFallback = useCallback((idx: number) => {
-    const fb = FALLBACK_ARTICLES[idx] ?? FALLBACK_ARTICLES[0];
+  const openFallback = useCallback((id: string) => {
+    const fb = FALLBACK_ARTICLES.find((a) => a.id === id) ?? FALLBACK_ARTICLES[0];
     setPhase('reader');
     setReaderLoading(false);
     setReader({
       title: fb.title,
       extract: fb.extract,
       sourceUrl: fb.sourceUrl,
-      level: estimateLevel(fb.extract),
+      level: fb.level,
       source: 'fallback',
+      theme: fb.theme,
     });
   }, []);
 
@@ -199,7 +411,7 @@ export default function NewsReader() {
                 error={listError}
                 onOpen={openArticle}
                 onReload={loadList}
-                onOpenFallback={openFallback}
+                onOpenFallbackById={openFallback}
               />
             </motion.div>
           ) : (
@@ -232,15 +444,56 @@ function ListView({
   error,
   onOpen,
   onReload,
-  onOpenFallback,
+  onOpenFallbackById,
 }: {
   items: NewsListItem[] | null;
   loading: boolean;
   error: string | null;
   onOpen: (item: NewsListItem) => void;
   onReload: () => void;
-  onOpenFallback: (idx: number) => void;
+  onOpenFallbackById: (id: string) => void;
 }) {
+  const [levelFilter, setLevelFilter] = useState<LevelFilter>('all');
+
+  const filteredItems = useMemo(() => {
+    if (!items) return null;
+    if (levelFilter === 'all') return items;
+    return items.filter((it) => it.level === levelFilter);
+  }, [items, levelFilter]);
+
+  const filteredFallbacks = useMemo(() => {
+    if (levelFilter === 'all') return FALLBACK_ARTICLES;
+    return FALLBACK_ARTICLES.filter((fb) => fb.level === levelFilter);
+  }, [levelFilter]);
+
+  const levelFilterBar = (
+    <div className="level-filter flex flex-wrap gap-1.5 p-1 rounded-xl bg-slate-100/80 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80">
+      {(
+        [
+          { k: 'all' as const, l: 'Tümü' },
+          { k: 'A2' as const, l: 'A2' },
+          { k: 'B1' as const, l: 'B1' },
+          { k: 'B2' as const, l: 'B2' },
+        ] as const
+      ).map(({ k, l }) => (
+        <button
+          key={k}
+          type="button"
+          data-level={k}
+          onClick={() => setLevelFilter(k)}
+          className={
+            'lvl-btn px-3 py-1.5 rounded-lg text-sm font-medium transition ' +
+            (levelFilter === k
+              ? 'active bg-amber-500/25 text-amber-900 dark:text-amber-100 border border-amber-500/40'
+              : 'bg-transparent text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-700/50')
+          }
+        >
+          {l}
+        </button>
+      ))}
+    </div>
+  );
+
   return (
     <div className="space-y-5">
       <header className="space-y-2">
@@ -258,10 +511,12 @@ function ListView({
           Okuma Modu
         </h1>
         <p className="text-sm text-slate-600 dark:text-slate-400">
-          Gerçek İspanyolca haber metinleri — Wikinews'ten. Fiiller sarı
-          vurgulanır; diğer kelimelere tıklayarak Türkçe çevirisini alırsın.
+          Gerçek İspanyolca haber metinleri — Wikinews (proxy) üzerinden. Fiiller
+          sarı vurgulanır; kelimeye tıklayınca analiz, metni bitirince mini quiz.
         </p>
       </header>
+
+      {levelFilterBar}
 
       {loading && (
         <div className="space-y-3">
@@ -300,31 +555,40 @@ function ListView({
             <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
               Yedek metinler
             </p>
-            {FALLBACK_ARTICLES.map((fb, idx) => (
+            {filteredFallbacks.length === 0 && (
+              <p className="text-sm text-slate-500">Bu seviyede yedek metin yok.</p>
+            )}
+            {filteredFallbacks.map((fb) => (
               <button
                 key={fb.id}
-                onClick={() => onOpenFallback(idx)}
-                className="w-full text-left rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800 px-4 py-3 transition group"
+                onClick={() => onOpenFallbackById(fb.id)}
+                className="w-full text-left rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800 px-4 py-3 transition group relative"
               >
                 <div className="flex items-start justify-between gap-2">
-                  <span className="text-sm font-medium text-slate-900 dark:text-slate-100 leading-snug">
+                  <span className="text-sm font-medium text-slate-900 dark:text-slate-100 leading-snug pr-14">
                     {fb.title}
                   </span>
-                  <span className="shrink-0 text-[10px] uppercase tracking-wider text-slate-400">
-                    yedek
-                  </span>
+                  <div className="absolute right-3 top-3 flex flex-col items-end gap-1">
+                    <span
+                      className={`shrink-0 text-[10px] font-bold px-1.5 py-0.5 rounded border ${LEVEL_BADGE[fb.level]}`}
+                    >
+                      {fb.level}
+                    </span>
+                    <span className="text-[10px] uppercase tracking-wider text-slate-400">yedek</span>
+                  </div>
                 </div>
+                <p className="text-[11px] text-slate-500 mt-1 capitalize">{fb.theme}</p>
               </button>
             ))}
           </div>
         </div>
       )}
 
-      {!loading && !error && items && (
+      {!loading && !error && items && filteredItems && (
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">
-              Son {items.length} haber
+              {levelFilter === 'all' ? `Son ${filteredItems.length} haber` : `${filteredItems.length} haber (filtre)`}
             </p>
             <button
               onClick={onReload}
@@ -334,18 +598,28 @@ function ListView({
               Yenile
             </button>
           </div>
+          {filteredItems.length === 0 && (
+            <p className="text-sm text-slate-500">Bu seviyede haber yok; filtreyi veya sekmeyi değiştir.</p>
+          )}
           <ul className="space-y-2">
-            {items.map((it) => (
+            {filteredItems.map((it) => (
               <li key={it.title}>
                 <button
                   onClick={() => onOpen(it)}
-                  className="w-full text-left rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800 px-4 py-3 transition group"
+                  className="w-full text-left rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800 px-4 py-3 transition group relative"
                 >
                   <div className="flex items-start justify-between gap-3">
-                    <span className="text-sm font-medium text-slate-900 dark:text-slate-100 leading-snug group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+                    <span className="text-sm font-medium text-slate-900 dark:text-slate-100 leading-snug pr-12 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
                       {it.title}
                     </span>
-                    <BookOpen className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
+                    <div className="absolute right-3 top-3 flex flex-col items-end gap-1">
+                      <span
+                        className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${LEVEL_BADGE[it.level]}`}
+                      >
+                        {it.level}
+                      </span>
+                      <BookOpen className="w-4 h-4 text-slate-400 shrink-0" />
+                    </div>
                   </div>
                   {it.timestamp && (
                     <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-500">
@@ -426,6 +700,11 @@ function ReaderView({
             <h1 className="text-2xl sm:text-3xl font-bold leading-tight tracking-tight">
               {article.title}
             </h1>
+            {article.theme && (
+              <p className="text-xs text-slate-500 dark:text-slate-400 capitalize">
+                Tema: {article.theme}
+              </p>
+            )}
             <a
               href={article.sourceUrl}
               target="_blank"
@@ -473,6 +752,8 @@ function ReaderView({
               })}
             </div>
           </article>
+
+          <ReadingQuizSection title={article.title} extract={article.extract} />
         </>
       )}
     </div>
@@ -480,6 +761,17 @@ function ReaderView({
 }
 
 /* ───────────────────── Kelime span'i + tooltip ───────────────────── */
+
+function mapWordTipToAnalysis(t: WordTip): ReadingWordAnalysis {
+  return {
+    turkish: t.tr,
+    is_verb: Boolean(t.isVerb),
+    infinitive: t.infinitive ?? null,
+    tense: (t.tenseLabel as string) ?? null,
+    person: (t.person as string) ?? null,
+    irregular: t.irregular ?? false,
+  };
+}
 
 interface WordSpanProps {
   value: string;
@@ -509,31 +801,8 @@ function WordSpan({
 
   const isVerb = Boolean(verbMatch);
 
-  const [tip, setTip] = useState<WordTip | null>(() => {
-    if (verbMatch) {
-      return {
-        tr: verbMatch.tr,
-        isVerb: true,
-        infinitive: verbMatch.infinitive,
-        tenseLabel: verbMatch.tenseLabel,
-        person: verbMatch.pronounLabel,
-      };
-    }
-    return null;
-  });
+  const [analysis, setAnalysis] = useState<ReadingWordAnalysis | null>(null);
   const [loadingTip, setLoadingTip] = useState(false);
-
-  useEffect(() => {
-    if (verbMatch) {
-      setTip({
-        tr: verbMatch.tr,
-        isVerb: true,
-        infinitive: verbMatch.infinitive,
-        tenseLabel: verbMatch.tenseLabel,
-        person: verbMatch.pronounLabel,
-      });
-    }
-  }, [verbMatch]);
 
   const handleClick = useCallback(
     (e: React.MouseEvent) => {
@@ -543,27 +812,60 @@ function WordSpan({
         return;
       }
       setActiveTip(tokenKey);
-      if (!verbMatch && !tip) {
-        const clean = normalizeWord(value);
-        if (!clean) return;
+      setAnalysis(null);
+
+      const clean = normalizeWord(value);
+      if (!clean) return;
+
+      void (async () => {
         setLoadingTip(true);
-        translateWordToTr(clean, context)
-          .then((res) => {
-            if (res) {
-              const inf = res.infinitive?.toLowerCase();
-              const trFromDict = inf ? getTurkishForInfinitive(inf) : undefined;
-              // LLM "?" döndürdüyse curated sözlüğe düş.
-              const tr = res.tr === '?' && trFromDict ? trFromDict : res.tr;
-              setTip({ ...res, tr });
+        try {
+          if (hasAnthropicKey()) {
+            const a = await analyzeWordForReading(clean);
+            setAnalysis(a);
+          } else {
+            const t = await translateWordToTr(clean, context);
+            if (t) {
+              const tr =
+                t.tr === '?' && t.isVerb && t.infinitive
+                  ? getTurkishForInfinitive(t.infinitive) ?? t.tr
+                  : t.tr;
+              setAnalysis(mapWordTipToAnalysis({ ...t, tr }));
             } else {
-              setTip({ tr: '(çeviri alınamadı)' });
+              setAnalysis({
+                turkish: '—',
+                is_verb: false,
+                infinitive: null,
+                tense: null,
+                person: null,
+                irregular: false,
+              });
             }
-          })
-          .catch(() => setTip({ tr: '(çeviri alınamadı)' }))
-          .finally(() => setLoadingTip(false));
-      }
+          }
+        } catch {
+          const t = await translateWordToTr(clean, context);
+          if (t) {
+            const tr =
+              t.tr === '?' && t.isVerb && t.infinitive
+                ? getTurkishForInfinitive(t.infinitive) ?? t.tr
+                : t.tr;
+            setAnalysis(mapWordTipToAnalysis({ ...t, tr }));
+          } else {
+            setAnalysis({
+              turkish: '—',
+              is_verb: false,
+              infinitive: null,
+              tense: null,
+              person: null,
+              irregular: false,
+            });
+          }
+        } finally {
+          setLoadingTip(false);
+        }
+      })();
     },
-    [isOpen, setActiveTip, tokenKey, verbMatch, tip, value, context]
+    [isOpen, setActiveTip, tokenKey, value, context]
   );
 
   return (
@@ -603,31 +905,47 @@ function WordSpan({
           <span className="block font-semibold text-slate-900 dark:text-slate-100">
             {value}
           </span>
-          {loadingTip && !tip && (
-            <span className="block mt-0.5 text-slate-500 dark:text-slate-400 italic">…</span>
+          {loadingTip && (
+            <span className="block mt-1 text-slate-500 dark:text-slate-400">Analiz ediliyor…</span>
           )}
-          {tip && (
+          {!loadingTip && analysis && (
             <>
-              <span
-                className={
-                  'block mt-0.5 ' +
-                  (tip.tr === '?'
-                    ? 'text-slate-400 dark:text-slate-500 italic'
-                    : 'text-slate-700 dark:text-slate-200')
-                }
-              >
-                {tip.tr === '?' ? 'anlam belirsiz' : tip.tr}
-              </span>
-              {tip.isVerb && tip.infinitive && (
-                <span className="block mt-1 text-[11px] uppercase tracking-wider text-amber-600 dark:text-amber-400">
-                  mastar: {tip.infinitive}
-                  {tip.irregular ? ' · düzensiz' : ''}
+              {!analysis.is_verb && (
+                <span
+                  className={
+                    'block mt-0.5 ' +
+                    (analysis.turkish === '?'
+                      ? 'text-slate-400 dark:text-slate-500 italic'
+                      : 'text-slate-700 dark:text-slate-200')
+                  }
+                >
+                  {analysis.turkish === '?' ? 'anlam belirsiz' : analysis.turkish}
                 </span>
               )}
-              {tip.isVerb && (tip.tenseLabel || tip.person) && (
-                <span className="block text-[11px] text-slate-500 dark:text-slate-400">
-                  {[tip.tenseLabel, tip.person].filter(Boolean).join(' · ')}
-                </span>
+              {analysis.is_verb && (
+                <>
+                  {analysis.infinitive && (
+                    <span className="block mt-1 font-bold text-amber-800 dark:text-amber-200">
+                      {analysis.infinitive}
+                    </span>
+                  )}
+                  <span
+                    className={
+                      'block ' +
+                      (analysis.turkish === '?'
+                        ? 'mt-1 text-slate-400 dark:text-slate-500 italic'
+                        : 'mt-0.5 text-slate-700 dark:text-slate-200')
+                    }
+                  >
+                    {analysis.turkish === '?' ? 'anlam belirsiz' : analysis.turkish}
+                  </span>
+                  <span className="block mt-1 text-[11px] text-slate-500 dark:text-slate-400">
+                    {[analysis.tense, analysis.person].filter(Boolean).join(' · ')}
+                  </span>
+                  <span className="block text-[10px] text-slate-500">
+                    {analysis.irregular ? 'düzensiz' : 'düzenli'}
+                  </span>
+                </>
               )}
             </>
           )}
