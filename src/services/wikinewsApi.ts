@@ -11,6 +11,8 @@ export interface NewsListItem {
   title: string;
   timestamp?: string;
   pageUrl: string;
+  /** Sadece başlık üzerinden kaba seviye tahmini (tam metin açılınca güncellenir). */
+  level: ReadingLevel;
 }
 
 export interface NewsArticle {
@@ -20,6 +22,19 @@ export interface NewsArticle {
 }
 
 const API_BASE = 'https://es.wikinews.org/w/api.php';
+
+const PROXY = 'https://api.allorigins.win/get?url=';
+
+/** Tarayıcı CORS'u aşmak için allorigins üzerinden JSON alır. */
+export async function fetchWikinewsJson<T>(url: string): Promise<T> {
+  const res = await fetch(`${PROXY}${encodeURIComponent(url)}`);
+  if (!res.ok) throw new Error(`Proxy HTTP ${res.status}`);
+  const wrapper = (await res.json()) as { contents?: string };
+  if (typeof wrapper.contents !== 'string') {
+    throw new Error('Geçersiz proxy yanıtı');
+  }
+  return JSON.parse(wrapper.contents) as T;
+}
 
 /** recentchanges → son 20 benzersiz makale başlığı. */
 export async function listRecentArticles(limit = 30): Promise<NewsListItem[]> {
@@ -31,11 +46,11 @@ export async function listRecentArticles(limit = 30): Promise<NewsListItem[]> {
     rcprop: 'title|timestamp',
     rclimit: String(limit),
     format: 'json',
-    origin: '*',
   });
-  const res = await fetch(`${API_BASE}?${params.toString()}`);
-  if (!res.ok) throw new Error(`Wikinews list HTTP ${res.status}`);
-  const data = await res.json();
+  const url = `${API_BASE}?${params.toString()}`;
+  const data = await fetchWikinewsJson<{
+    query?: { recentchanges?: Array<{ title: string; timestamp?: string }> };
+  }>(url);
   const changes: Array<{ title: string; timestamp?: string }> =
     data?.query?.recentchanges ?? [];
 
@@ -47,10 +62,12 @@ export async function listRecentArticles(limit = 30): Promise<NewsListItem[]> {
     if (c.title.includes(':')) continue;
     if (seen.has(c.title)) continue;
     seen.add(c.title);
+    const pageUrl = `https://es.wikinews.org/wiki/${encodeURIComponent(c.title.replace(/ /g, '_'))}`;
     items.push({
       title: c.title,
       timestamp: c.timestamp,
-      pageUrl: `https://es.wikinews.org/wiki/${encodeURIComponent(c.title.replace(/ /g, '_'))}`,
+      pageUrl,
+      level: estimateLevel(c.title),
     });
     if (items.length >= 20) break;
   }
@@ -67,9 +84,10 @@ export async function fetchArticleExtract(title: string): Promise<NewsArticle> {
     format: 'json',
     origin: '*',
   });
-  const res = await fetch(`${API_BASE}?${params.toString()}`);
-  if (!res.ok) throw new Error(`Wikinews extract HTTP ${res.status}`);
-  const data = await res.json();
+  const url = `${API_BASE}?${params.toString()}`;
+  const data = await fetchWikinewsJson<{
+    query?: { pages?: Record<string, { title?: string; extract?: string }> };
+  }>(url);
   const pages = data?.query?.pages ?? {};
   const firstKey = Object.keys(pages)[0];
   const page = firstKey ? pages[firstKey] : null;
