@@ -31,6 +31,24 @@ export default function TenseCardView({ card }: { card: TenseCard }) {
         </p>
       </section>
 
+      {card.signal_words.length > 0 && (
+        <section>
+          <p className="text-[11px] sm:text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-2">
+            Sık eşleşen ifadeler
+          </p>
+          <div className="flex flex-wrap gap-1.5">
+            {card.signal_words.map((w) => (
+              <span
+                key={w}
+                className="inline-flex items-center rounded-full border border-slate-200/80 dark:border-white/10 bg-white/60 dark:bg-slate-800/50 px-2.5 py-0.5 text-xs text-slate-700 dark:text-slate-200"
+              >
+                {w}
+              </span>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* Çekim ekleri tablosu */}
       <section>
         <p className="text-[11px] sm:text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-2">
@@ -89,13 +107,15 @@ export default function TenseCardView({ card }: { card: TenseCard }) {
         </ul>
       </section>
 
-      {/* Karıştırma uyarısı */}
-      <section className={`rounded-xl ${theme.badgeBg} ${theme.accent} border px-3 py-2.5`}>
-        <p className={`text-[11px] sm:text-xs font-semibold uppercase tracking-wide ${theme.text} opacity-80 mb-1`}>
-          Karıştırma uyarısı
-        </p>
-        <p className={`text-sm leading-snug ${theme.text}`}>{card.confusion_warning}</p>
-      </section>
+      {/* Karıştırma uyarısı (yalnızca metin varsa) */}
+      {card.confusion_warning != null && card.confusion_warning !== '' && (
+        <section className={`rounded-xl ${theme.badgeBg} ${theme.accent} border px-3 py-2.5`}>
+          <p className={`text-[11px] sm:text-xs font-semibold uppercase tracking-wide ${theme.text} opacity-80 mb-1`}>
+            Karıştırma uyarısı
+          </p>
+          <p className={`text-sm leading-snug ${theme.text}`}>{card.confusion_warning}</p>
+        </section>
+      )}
     </div>
   );
 }
