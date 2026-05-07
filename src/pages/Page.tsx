@@ -992,6 +992,14 @@ export function Page() {
   const spanishVerbSet = useMemo(() => new Set(SPANISH_VERBS.map((v) =>
     v.infinitive.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
   )), []);
+  const spanishMeaningToInfinitiveMap = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const v of SPANISH_VERBS) {
+      const meaningKey = v.meaning_tr.toLowerCase().trim();
+      if (!m.has(meaningKey)) m.set(meaningKey, v.infinitive);
+    }
+    return m;
+  }, []);
   const displayMeaning = useMemo(() => {
     if (selectedLanguage === 'es') {
       return staticSpanishMeaning ?? 'Anlam bulunamadı';
@@ -1100,14 +1108,31 @@ export function Page() {
     const effectiveLang = langOverride ?? selectedLanguage;
     setError('');
     setReverseLookupInfo(null);
-    const toLoad = (overrideVerb ?? verbInput).trim();
+    const rawInput = (overrideVerb ?? verbInput).trim();
+    let toLoad = rawInput;
     if (effectiveLang === 'es') {
-      const key = toLoad
+      const key = rawInput
         .toLowerCase()
         .normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '');
-      if (!spanishVerbSet.has(key)) {
-        setError('Bu fiil bulunamadı. Listeden bir fiil seçin.');
+      if (spanishVerbSet.has(key)) {
+        toLoad = rawInput;
+      } else {
+        const byMeaning = spanishMeaningToInfinitiveMap.get(rawInput.toLowerCase().trim());
+        if (byMeaning) {
+          toLoad = byMeaning;
+          setVerbInput(sanitizeForDisplay(byMeaning));
+        } else {
+          setError('Bu fiil bulunamadı');
+          setVerbKey(null);
+          setConjugations(null);
+          return;
+        }
+      }
+    }
+    if (!toLoad) {
+      if (effectiveLang === 'es') {
+        setError('Bu fiil bulunamadı');
         setVerbKey(null);
         setConjugations(null);
         return;
@@ -1161,7 +1186,7 @@ export function Page() {
       setVerbKey(null);
       setConjugations(null);
     }
-  }, [verbInput, selectedTense, selectedLanguage, spanishVerbSet]);
+  }, [verbInput, selectedTense, selectedLanguage, spanishVerbSet, spanishMeaningToInfinitiveMap]);
 
   loadVerbRef.current = loadVerb;
 
@@ -2342,7 +2367,7 @@ export function Page() {
                     }
                   }}
                   onFocus={() => setAutocompleteClosed(false)}
-                  placeholder={selectedLanguage === 'es' ? 'Örn: hablar, ser...' : 'Örn: être, aller...'}
+                  placeholder={selectedLanguage === 'es' ? 'Örn: comer, gitmek, yazmak...' : 'Örn: être, aller...'}
                   className="absolute inset-0 w-full h-full rounded-xl border border-slate-200 dark:border-slate-700/50 bg-slate-50 dark:bg-slate-800/80 pl-4 pr-12 py-3 text-base text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 dark:focus:ring-indigo-400 dark:focus:border-indigo-400 transition-colors duration-300"
                   aria-label={t('fiil_girin')}
                   aria-autocomplete="list"
