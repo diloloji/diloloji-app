@@ -4,6 +4,7 @@ import { HelmetProvider } from 'react-helmet-async'
 import { ThemeProvider } from './contexts/ThemeContext'
 import './i18n'
 import './index.css'
+import './tokens.css'
 import App from './App.tsx'
 
 createRoot(document.getElementById('root')!).render(
