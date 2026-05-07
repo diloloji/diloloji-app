@@ -4395,6 +4395,4740 @@
       "es": "Yo movería los muebles para hacer más espacio en la sala",
       "tr": "Salonda daha fazla yer açmak için mobilyaları taşırdım",
       "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que muevas los muebles antes de que lleguen los invitados.",
+      "tr": "Misafirler gelmeden önce mobilyaları taşımanı umuyorum.",
+      "person": "tú"
+    }
+  },
+  "nacer": {
+    "Presente": {
+      "es": "Los bebés nacen en el hospital con la ayuda de doctores",
+      "tr": "Bebekler doktorların yardımıyla hastanede doğar",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermana pequeña nació en el hospital de la ciudad.",
+      "tr": "Küçük kız kardeşim şehrin hastanesinde doğdu.",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mis abuelos nacían en una época muy diferente a la nuestra.",
+      "tr": "Büyükanne ve büyükbabam bizimkinden çok farklı bir dönemde doğuyorlardı.",
+      "person": "ellos"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana pequeña ha nacido esta madrugada en el hospital.",
+      "tr": "Küçük kız kardeşim bu sabah hastanede doğdu.",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "El bebé nacerá en primavera según el médico.",
+      "tr": "Doktora göre bebek ilkbaharda doğacak.",
+      "person": "él/ella"
+    },
+    "Condicional": {
+      "es": "Si hubiera nacido en otra época, habría sido músico profesional.",
+      "tr": "Başka bir çağda doğsaydım, profesyonel müzisyen olurdum.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que nazca sano y sin complicaciones.",
+      "tr": "Sağlıklı ve komplikasyonsuz doğmasını umuyorum.",
+      "person": "él/ella"
+    }
+  },
+  "crecer": {
+    "Presente": {
+      "es": "Mi hija crece muy rápido, ya casi me alcanza en altura.",
+      "tr": "Kızım çok hızlı büyüyor, boyumla neredeyse aynı oluyor.",
+      "person": "él/ella"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermano creció mucho durante el verano pasado",
+      "tr": "Kardeşim geçen yaz boyunca çok büyüdü",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niño, crecía muy rápido cada verano.",
+      "tr": "Çocukken her yaz çok hızlı büyüyordum.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana ha crecido mucho desde la última vez que la vi",
+      "tr": "Kız kardeşim onu son gördüğümden beri çok büyüdü",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Mi hijo crecerá mucho durante el próximo año escolar.",
+      "tr": "Oğlum gelecek okul yılında çok büyüyecek.",
+      "person": "él"
+    },
+    "Condicional": {
+      "es": "Con más sol y agua, esta planta crecería mucho mejor.",
+      "tr": "Daha fazla güneş ve su ile bu bitki çok daha iyi büyürde.",
+      "person": "ella"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que mi hijo crezca sano y feliz.",
+      "tr": "Oğlumun sağlıklı ve mutlu büyümesini umuyorum.",
+      "person": "él"
+    }
+  },
+  "morir": {
+    "Presente": {
+      "es": "Las plantas se mueren si no las riegas regularmente",
+      "tr": "Bitkiler düzenli sulamazsan ölürler",
+      "person": "ellas"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi abuelo murió el año pasado después de una larga enfermedad.",
+      "tr": "Dedem geçen yıl uzun bir hastalıktan sonra öldü.",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi abuelo se moría de risa cuando contaba sus historias de juventud.",
+      "tr": "Dedem gençlik hikayelerini anlatırken gülmekten kırılıyordu.",
+      "person": "él"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi abuelo ha muerto hace tres meses y lo extraño mucho.",
+      "tr": "Dedem üç ay önce öldü ve onu çok özlüyorum.",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "Mi abuela dice que morirá en paz en su casa.",
+      "tr": "Büyükannem evinde huzur içinde öleceğini söylüyor.",
+      "person": "él/ella"
+    },
+    "Condicional": {
+      "es": "Sin agua en el desierto, moriría en pocos días.",
+      "tr": "Çölde su olmadan, birkaç gün içinde ölürdüm.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que mi abuelo no se muera pronto.",
+      "tr": "Dedemin yakında ölmemesini umuyorum.",
+      "person": "él"
+    }
+  },
+  "mentir": {
+    "Presente": {
+      "es": "Mi hermano siempre miente sobre sus notas del colegio.",
+      "tr": "Kardeşim okul notları hakkında hep yalan söyler.",
+      "person": "él"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer mi hermano me mintió sobre sus calificaciones del colegio.",
+      "tr": "Dün kardeşim okuldaki notları hakkında bana yalan söyledi.",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi hermano siempre mentía sobre sus notas del colegio",
+      "tr": "Kardeşim okul notları hakkında hep yalan söylerdi",
+      "person": "él"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermano me ha mentido sobre sus notas del colegio.",
+      "tr": "Kardeşim okul notları hakkında bana yalan söyledi.",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "Si me preguntan sobre el accidente, no mentiré a la policía.",
+      "tr": "Kaza hakkında bana sorarlarsa, polise yalan söylemeyeceğim.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Yo nunca mentiría a mis padres sobre algo tan importante",
+      "tr": "Böyle önemli bir konuda aileme asla yalan söylemem",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "No quiero que me mientas sobre lo que pasó ayer.",
+      "tr": "Dün olanlar hakkında bana yalan söylemeni istemiyorum.",
+      "person": "tú"
+    }
+  },
+  "divertir": {
+    "Presente": {
+      "es": "Los niños se divierten mucho jugando en el parque con sus amigos.",
+      "tr": "Çocuklar arkadaşlarıyla parkta oynarken çok eğleniyorlar.",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer nos divertimos mucho en la fiesta de cumpleaños de María.",
+      "tr": "Dün María'nın doğum günü partisinde çok eğlendik.",
+      "person": "nosotros"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niño, mi abuelo me divertía con sus historias graciosas.",
+      "tr": "Çocukken dedem beni komik hikâyeleriyle eğlendirirdi.",
+      "person": "él"
+    },
+    "Pretérito Perfecto": {
+      "es": "Los niños se han divertido mucho en el parque esta tarde.",
+      "tr": "Çocuklar bu öğleden sonra parkta çok eğlendiler.",
+      "person": "ellos"
+    },
+    "Futuro Simple": {
+      "es": "Mañana nos divertiremos mucho en la fiesta de cumpleaños.",
+      "tr": "Yarın doğum günü partisinde çok eğleneceğiz.",
+      "person": "nosotros"
+    },
+    "Condicional": {
+      "es": "Me divertiría mucho si fuéramos juntos al parque de diversiones.",
+      "tr": "Birlikte lunaparka gidersek çok eğlenirim.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que te diviertas mucho en la fiesta de cumpleaños.",
+      "tr": "Doğum günü partisinde çok eğlenmeni umuyorum.",
+      "person": "tú"
+    }
+  },
+  "partir": {
+    "Presente": {
+      "es": "Nosotros partimos hacia la playa cada verano con la familia.",
+      "tr": "Her yaz aileyle birlikte sahile doğru yola çıkarız.",
+      "person": "nosotros"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermana partió hacia Madrid ayer por la mañana.",
+      "tr": "Kız kardeşim dün sabah Madrid'e doğru yola çıktı.",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cada domingo partíamos temprano hacia la playa con la familia.",
+      "tr": "Her pazar ailecek sahile doğru erken yola çıkardık.",
+      "person": "nosotros"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermano ha partido hacia Madrid esta mañana para una reunión importante.",
+      "tr": "Kardeşim bu sabah önemli bir toplantı için Madrid'e doğru yola çıktı.",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "Mañana partiré temprano hacia la oficina para evitar el tráfico.",
+      "tr": "Yarın trafiği önlemek için ofise erken yola çıkacağım.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Si tuviera dinero, partiría mañana hacia Europa con mis amigos.",
+      "tr": "Param olsaydı, arkadaşlarımla birlikte yarın Avrupa'ya doğru yola çıkardım.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que partas mañana temprano para evitar el tráfico.",
+      "tr": "Trafiği önlemek için yarın erkenden ayrılmanı umuyorum.",
+      "person": "tú"
+    }
+  },
+  "compartir": {
+    "Presente": {
+      "es": "Mis hermanos y yo compartimos la pizza en la cena.",
+      "tr": "Kardeşlerim ve ben akşam yemeğinde pizzayı paylaşıyoruz.",
+      "person": "nosotros"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer compartí mi almuerzo con mi compañero de trabajo.",
+      "tr": "Dün öğle yemeğimi iş arkadaşımla paylaştım.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi hermana siempre compartía sus juguetes con los otros niños.",
+      "tr": "Kız kardeşim her zaman oyuncaklarını diğer çocuklarla paylaşırdı.",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Hemos compartido muchas experiencias juntos durante estos años",
+      "tr": "Bu yıllar boyunca birlikte birçok deneyimi paylaştık",
+      "person": "nosotros"
+    },
+    "Futuro Simple": {
+      "es": "Mañana compartiré mi almuerzo con mis compañeros de trabajo.",
+      "tr": "Yarın öğle yemeğimi iş arkadaşlarımla paylaşacağım.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "¿Compartirías tu experiencia con los nuevos estudiantes?",
+      "tr": "Deneyimini yeni öğrencilerle paylaşır mısın?",
+      "person": "tú"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que compartas tus experiencias con nosotros mañana.",
+      "tr": "Yarın deneyimlerini bizimle paylaşmanı umuyorum.",
+      "person": "tú"
+    }
+  },
+  "sonreír": {
+    "Presente": {
+      "es": "Siempre sonrío cuando veo a mi perro corriendo en el parque.",
+      "tr": "Parkta koşan köpeğimi gördüğümde hep gülümserim.",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermana sonrió cuando vio el regalo que le compré",
+      "tr": "Kız kardeşim ona aldığım hediyeyi gördüğünde gülümsedi",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niña, siempre sonreía en las fotos familiares.",
+      "tr": "Çocukken aile fotoğraflarında hep gülümserdim.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana ha sonreído mucho desde que llegó su novio.",
+      "tr": "Kız kardeşim, erkek arkadaşı geldiğinden beri çok gülümsüyor.",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Mañana cuando vea a mi nieta sonreiré de felicidad.",
+      "tr": "Yarın torunumu gördüğümde mutluluktan gülümseyeceğim.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Si me dijeras la verdad, sonreiría de felicidad.",
+      "tr": "Eğer bana gerçeği söylesen, mutluluktan gülümserdin.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que sonrías cuando veas la sorpresa que te preparé.",
+      "tr": "Sana hazırladığım sürprizi gördüğünde gülümseyeceğini umuyorum.",
+      "person": "tú"
+    }
+  },
+  "reír": {
+    "Presente": {
+      "es": "Los niños siempre ríen cuando ven dibujos animados en la televisión.",
+      "tr": "Çocuklar televizyonda çizgi film gördüklerinde her zaman gülerler.",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer mi hermana se rió mucho con la película de comedia.",
+      "tr": "Dün kız kardeşim komedi filmiyle çok güldü.",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi hermana se reía mucho cuando veía dibujos animados en la televisión.",
+      "tr": "Kız kardeşim televizyonda çizgi film izlerken çok gülüyordu.",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Hemos reído mucho con las bromas de mi hermano pequeño.",
+      "tr": "Küçük kardeşimin şakalarıyla çok güldük.",
+      "person": "nosotros"
+    },
+    "Futuro Simple": {
+      "es": "Mañana nos reiremos mucho cuando veamos esa película cómica.",
+      "tr": "Yarın o komik filmi izlediğimizde çok güleceğiz.",
+      "person": "nosotros"
+    },
+    "Condicional": {
+      "es": "Creo que te reirías mucho con esa comedia romántica",
+      "tr": "O romantik komediyi izlersen çok güleceğini düşünüyorum",
+      "person": "tú"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que te rías con mis chistes en la fiesta",
+      "tr": "Partide şakalarıma gülmeni umuyorum",
+      "person": "tú"
+    }
+  },
+  "llorar": {
+    "Presente": {
+      "es": "Los niños lloran cuando tienen hambre o sueño.",
+      "tr": "Çocuklar acıktıklarında veya uykuları geldiğinde ağlarlar.",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermana lloró mucho cuando se murió nuestro perro",
+      "tr": "Köpeğimiz öldüğünde kız kardeşim çok ağladı",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi hermana lloraba mucho cuando éramos pequeños",
+      "tr": "Kız kardeşim biz küçükken çok ağlardı",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana ha llorado toda la noche por la ruptura",
+      "tr": "Kız kardeşim ayrılık yüzünden bütün gece ağladı",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Mañana llorarás cuando veas la película tan triste",
+      "tr": "Yarın bu kadar üzücü filmi izlediğinde ağlayacaksın",
+      "person": "tú"
+    },
+    "Condicional": {
+      "es": "Si perdiera a mi perro, lloraría durante días sin parar.",
+      "tr": "Köpeğimi kaybetsem, durmadan günlerce ağlardım.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que no llores cuando veas la película",
+      "tr": "Filmi izlediğinde ağlamayacağını umuyorum",
+      "person": "tú"
+    }
+  },
+  "gritar": {
+    "Presente": {
+      "es": "Los niños gritan de emoción cuando ven los fuegos artificiales.",
+      "tr": "Çocuklar havai fişekleri gördüklerinde heyecandan bağırıyorlar.",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermana gritó cuando vio la araña en su cuarto.",
+      "tr": "Kız kardeşim odasında örümceği görünce bağırdı.",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi hermana siempre gritaba cuando veía películas de terror.",
+      "tr": "Kız kardeşim korku filmleri izlediğinde hep bağırırdı.",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana ha gritado toda la noche por las pesadillas.",
+      "tr": "Kız kardeşim kabuslar yüzünden bütün gece bağırdı.",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Mañana gritaré de alegría cuando reciba los resultados del examen.",
+      "tr": "Yarın sınav sonuçlarını aldığımda sevinçten bağıracağım.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Si viera una serpiente en mi cuarto, gritaría del susto.",
+      "tr": "Odamda bir yılan görsem, korkudan çığlık atarım.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que no grites cuando veas la sorpresa",
+      "tr": "Sürprizi gördüğünde bağırmayacağını umuyorum",
+      "person": "tú"
+    }
+  },
+  "susurrar": {
+    "Presente": {
+      "es": "Mi hermana me susurra secretos al oído cuando estamos juntas.",
+      "tr": "Kız kardeşim birlikte olduğumuzda kulağıma sırlar fısıldıyor.",
+      "person": "ella"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermana me susurró un secreto durante la cena familiar.",
+      "tr": "Kız kardeşim aile yemeği sırasında bana bir sır fısıldadı.",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi abuela me susurraba cuentos al oído antes de dormir",
+      "tr": "Büyükannem uyumadan önce kulağıma masallar fısıldardı",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana me ha susurrado un secreto durante la cena",
+      "tr": "Kız kardeşim akşam yemeği sırasında bana bir sır fısıldadı",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Mañana te susurraré palabras dulces al oído durante la cena.",
+      "tr": "Yarın akşam yemeği sırasında kulağına tatlı sözler fısıldayacağım.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Te susurraría secretos al oído si estuvieras aquí conmigo",
+      "tr": "Burada benimle olsaydın kulağına sırlar fısıldardım",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que me susurres palabras dulces al oído esta noche.",
+      "tr": "Bu gece kulağıma tatlı sözler fısırlaman için dua ediyorum.",
+      "person": "tú"
+    }
+  },
+  "tocar": {
+    "Presente": {
+      "es": "Mi hermana toca la guitarra todas las tardes en su habitación",
+      "tr": "Kız kardeşim her akşam odasında gitar çalıyor",
+      "person": "ella"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer mi hermano tocó la guitarra en la fiesta.",
+      "tr": "Dün kardeşim partide gitar çaldı.",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niño, tocaba la guitarra todas las tardes",
+      "tr": "Çocukken her öğleden sonra gitar çalardım",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana ha tocado el piano toda la mañana",
+      "tr": "Kız kardeşim bütün sabah piyano çaldı",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Mañana tocaré la guitarra en el concierto de la escuela.",
+      "tr": "Yarın okulun konserinde gitar çalacağım.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Si tuviera más tiempo, tocaría el piano todos los días",
+      "tr": "Daha fazla zamanım olsaydı, her gün piyano çalardım",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que toques la guitarra en la fiesta de mañana.",
+      "tr": "Yarınki partide gitar çalmanı umuyorum.",
+      "person": "tú"
+    }
+  },
+  "dibujar": {
+    "Presente": {
+      "es": "Mi hermana dibuja muy bien paisajes y retratos",
+      "tr": "Kız kardeşim manzara ve portreler çok iyi çiziyor",
+      "person": "él/ella"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer dibujé un retrato de mi hermana en mi cuaderno.",
+      "tr": "Dün defterimde kız kardeşimin bir portresini çizdim.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niña, dibujaba flores en mis cuadernos.",
+      "tr": "Çocukken defterlerime çiçekler çizerdim.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana ha dibujado un paisaje muy bonito para la clase de arte",
+      "tr": "Kız kardeşim sanat dersi için çok güzel bir manzara çizdi",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Mañana dibujaré un retrato de mi hermana para su cumpleaños.",
+      "tr": "Yarın kız kardeşimin doğum günü için onun bir portresini çizeceğim.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Si tuviera más tiempo, dibujaría un retrato de mi familia",
+      "tr": "Daha çok zamanım olsaydı, ailemin bir portresini çizerdim",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que mi hijo dibuje algo bonito en clase de arte.",
+      "tr": "Oğlumun sanat dersinde güzel bir şey çizmesini umuyorum.",
+      "person": "él"
+    }
+  },
+  "pintar": {
+    "Presente": {
+      "es": "Mi hermana pinta un hermoso paisaje en el parque cada domingo.",
+      "tr": "Kız kardeşim her pazar parkta güzel bir manzara resmi yapıyor.",
+      "person": "él/ella"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermana pintó su habitación de azul el fin de semana pasado.",
+      "tr": "Kız kardeşim geçen hafta sonu odasını maviye boyadı.",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niño, mi abuela pintaba hermosos paisajes en el parque.",
+      "tr": "Çocukken büyükannem parkta güzel manzaralar boyardı.",
+      "person": "ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana ha pintado su habitación de azul este fin de semana",
+      "tr": "Kız kardeşim bu hafta sonu odasını mavi boyamış",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Mañana pintaremos la habitación de los niños de color azul.",
+      "tr": "Yarın çocukların odasını mavi renge boyayacağız.",
+      "person": "nosotros"
+    },
+    "Condicional": {
+      "es": "Si tuviera tiempo, pintaría mi habitación de azul claro.",
+      "tr": "Zamanım olsaydı, odamı açık mavi boyardım.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que pintes tu habitación de color azul este fin de semana.",
+      "tr": "Bu hafta sonu odanı mavi renge boyamanı umuyorum.",
+      "person": "tú"
+    }
+  },
+  "fotografiar": {
+    "Presente": {
+      "es": "Mi hermana fotografía las flores del jardín todos los domingos",
+      "tr": "Kız kardeşim her pazar bahçedeki çiçekleri fotoğraflıyor",
+      "person": "ella"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer fotografié el atardecer desde la ventana de mi habitación",
+      "tr": "Dün odamın penceresinden gün batımını fotoğrafladım",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi hermano fotografiaba todos los momentos importantes de la familia",
+      "tr": "Kardeşim ailenin tüm önemli anlarını fotoğraflardı",
+      "person": "él"
+    },
+    "Pretérito Perfecto": {
+      "es": "Hemos fotografiado todos los monumentos importantes de la ciudad.",
+      "tr": "Şehrin tüm önemli anıtlarını fotoğrafladık.",
+      "person": "nosotros"
+    },
+    "Futuro Simple": {
+      "es": "Mañana fotografiaré el atardecer desde la playa con mis amigos.",
+      "tr": "Yarın arkadaşlarımla birlikte plajdan gün batımını fotoğraflayacağım.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Yo fotografiaría ese hermoso paisaje si tuviera mi cámara aquí.",
+      "tr": "Eğer kameramı burada olsaydı, o güzel manzarayı fotoğraflardım.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que fotografíes los momentos más bonitos del viaje.",
+      "tr": "Yolculuğun en güzel anlarını fotoğraflayacağını umuyorum.",
+      "person": "tú"
+    }
+  },
+  "filmar": {
+    "Presente": {
+      "es": "Mi hermano filma videos divertidos para su canal de YouTube",
+      "tr": "Kardeşim YouTube kanalı için eğlenceli videolar çekiyor",
+      "person": "él"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer filmé la fiesta de cumpleaños de mi hermana con el móvil",
+      "tr": "Dün kız kardeşimin doğum günü partisini telefonla filme aldım",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando éramos niños, mi hermano siempre filmaba nuestras vacaciones familiares.",
+      "tr": "Çocukken kardeşim hep aile tatillerimizi çekerdi.",
+      "person": "él"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermano ha filmado toda la boda con su nueva cámara.",
+      "tr": "Kardeşim tüm düğünü yeni kamerasıyla çekti.",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "Mañana filmaremos la boda de mi hermana en el jardín.",
+      "tr": "Yarın kız kardeşimin düğününü bahçede çekeceğiz.",
+      "person": "nosotros"
+    },
+    "Condicional": {
+      "es": "Mi hermano filmaría la boda si tuviera una cámara profesional.",
+      "tr": "Kardeşim profesyonel bir kamerası olsaydı düğünü çekerdi.",
+      "person": "él"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que filmes la boda de tu hermana este fin de semana.",
+      "tr": "Umarım bu hafta sonu kardeşinin düğününü çekersin.",
+      "person": "tú"
+    }
+  },
+  "grabar": {
+    "Presente": {
+      "es": "Grabo un video para mi canal de YouTube cada semana",
+      "tr": "Her hafta YouTube kanalım için bir video çekiyorum",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer grabé un video con mis amigos en el parque.",
+      "tr": "Dün parkta arkadaşlarımla bir video çektim.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi hermana grababa videos de TikTok todos los días en su cuarto.",
+      "tr": "Kız kardeşim her gün odasında TikTok videoları çekerdi.",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermano ha grabado un video divertido para sus redes sociales",
+      "tr": "Kardeşim sosyal medyaları için eğlenceli bir video kaydetmiş",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "Mañana grabaré un video para mi canal de YouTube",
+      "tr": "Yarın YouTube kanalım için bir video çekeceğim",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Me grabaría cantando pero me da mucha vergüenza hacerlo.",
+      "tr": "Şarkı söylerken kendimi kaydetmek isterdim ama bunu yapmaktan çok utanıyorum.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que graben el concierto esta noche",
+      "tr": "Umarım bu gece konseri kaydederler",
+      "person": "ellos"
+    }
+  },
+  "manejar": {
+    "Presente": {
+      "es": "Mi hermano maneja muy bien el coche nuevo",
+      "tr": "Kardeşim yeni arabayı çok iyi kullanıyor",
+      "person": "él"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer manejé el coche de mi hermano para ir al trabajo",
+      "tr": "Dün işe gitmek için kardeşimin arabasını kullandım",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi hermano manejaba el coche familiar cuando vivíamos en Madrid.",
+      "tr": "Kardeşim Madrid'de yaşarken aile arabasını kullanırdı.",
+      "person": "él"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermano ha manejado el coche de papá toda la semana.",
+      "tr": "Kardeşim bütün hafta babamın arabasını kullandı.",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "Mi hermano manejará el coche nuevo cuando cumpla dieciocho años.",
+      "tr": "Kardeşim on sekiz yaşını doldurduğunda yeni arabayı kullanacak.",
+      "person": "él"
+    },
+    "Condicional": {
+      "es": "Yo manejaría más despacio si hubiera mucho tráfico en la ciudad.",
+      "tr": "Şehirde çok trafik olsaydı daha yavaş araba kullanırdım.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que mi hermano maneje con cuidado en la carretera.",
+      "tr": "Umarım kardeşim yolda dikkatli araba kullanır.",
+      "person": "él"
+    }
+  },
+  "reparar": {
+    "Presente": {
+      "es": "Mi hermano repara computadoras en su tiempo libre",
+      "tr": "Kardeşim boş zamanlarında bilgisayar tamir eder",
+      "person": "él"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermano reparó la bicicleta rota el fin de semana pasado.",
+      "tr": "Kardeşim geçen hafta sonu bozuk bisikleti tamir etti.",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi padre reparaba coches en el garaje todos los fines de semana",
+      "tr": "Babam her hafta sonu garajda araba tamir ederdi",
+      "person": "él"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermano ha reparado la bicicleta esta mañana.",
+      "tr": "Kardeşim bu sabah bisikleti tamir etti.",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "Mañana repararé la bicicleta que se dañó el viernes",
+      "tr": "Yarın cuma günü bozulan bisikleti tamir edeceğim",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Mi hermano repararía la bicicleta si tuviera las herramientas necesarias.",
+      "tr": "Kardeşim gerekli aletleri olsaydı bisikleti tamir ederdi.",
+      "person": "él"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que el mecánico repare mi coche esta semana.",
+      "tr": "Umarım tamirci bu hafta arabamı tamir eder.",
+      "person": "él"
+    }
+  },
+  "crear": {
+    "Presente": {
+      "es": "Los artistas crean obras increíbles con mucha pasión y dedicación.",
+      "tr": "Sanatçılar büyük tutku ve özveriyle inanılmaz eserler yaratırlar.",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermano creó una cuenta nueva en redes sociales ayer.",
+      "tr": "Kardeşim dün sosyal medyada yeni bir hesap oluşturdu.",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi abuela creía que los niños debían acostarse temprano.",
+      "tr": "Büyükannem çocukların erken yatması gerektiğine inanıyordu.",
+      "person": "ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana ha creado una cuenta nueva en Instagram",
+      "tr": "Kız kardeşim Instagram'da yeni bir hesap oluşturdu",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Mi hermana creará una nueva empresa el próximo año",
+      "tr": "Kız kardeşim gelecek yıl yeni bir şirket kuracak",
+      "person": "ella"
+    },
+    "Condicional": {
+      "es": "Con más tiempo, crearía una aplicación para organizar mis tareas diarias.",
+      "tr": "Daha fazla zamanım olsa, günlük işlerimi organize etmek için bir uygulama yaratırdım.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que crees un proyecto innovador para la empresa.",
+      "tr": "Şirket için yenilikçi bir proje oluşturmanı umuyorum.",
+      "person": "tú"
+    }
+  },
+  "planear": {
+    "Presente": {
+      "es": "Siempre planeamos nuestras vacaciones con mucha anticipación",
+      "tr": "Tatillerimizi hep çok önceden planlarız",
+      "person": "nosotros"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer planeamos unas vacaciones familiares para el próximo verano.",
+      "tr": "Dün gelecek yaz için bir aile tatili planladık.",
+      "person": "nosotros"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cada verano planeábamos nuestras vacaciones familiares con mucha ilusión.",
+      "tr": "Her yaz aile tatillerimizi büyük bir heyecanla planlardık.",
+      "person": "nosotros"
+    },
+    "Pretérito Perfecto": {
+      "es": "Hemos planeado unas vacaciones increíbles para el próximo verano.",
+      "tr": "Gelecek yaz için harika bir tatil planladık.",
+      "person": "nosotros"
+    },
+    "Futuro Simple": {
+      "es": "Mañana planearemos nuestro viaje de vacaciones a México.",
+      "tr": "Yarın Meksika'ya tatil seyahatimizi planlayacağız.",
+      "person": "nosotros"
+    },
+    "Condicional": {
+      "es": "Nosotros planearíamos unas vacaciones en la playa si tuviéramos dinero suficiente.",
+      "tr": "Yeterli paramız olsaydı sahilde tatil planlardık.",
+      "person": "nosotros"
+    },
+    "Subjuntivo Presente": {
+      "es": "Es importante que planees tu viaje con anticipación.",
+      "tr": "Seyahatini önceden planlaман önemli.",
+      "person": "tú"
+    }
+  },
+  "organizar": {
+    "Presente": {
+      "es": "Mi hermana organiza una fiesta de cumpleaños para el sábado",
+      "tr": "Kız kardeşim cumartesi için bir doğum günü partisi organize ediyor",
+      "person": "él/ella"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer organicé una cena sorpresa para el cumpleaños de mi hermana",
+      "tr": "Dün kız kardeşimin doğum günü için sürpriz bir akşam yemeği organize ettim",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi madre organizaba todas las fiestas familiares cuando éramos pequeños.",
+      "tr": "Annem biz küçükken bütün aile kutlamalarını organize ederdi.",
+      "person": "él/ella/usted"
+    },
+    "Pretérito Perfecto": {
+      "es": "Hemos organizado una fiesta sorpresa para el cumpleaños de María.",
+      "tr": "María'nın doğum günü için sürpriz bir parti organize ettik.",
+      "person": "nosotros"
+    },
+    "Futuro Simple": {
+      "es": "Mañana organizaré una fiesta de cumpleaños para mi hermana",
+      "tr": "Yarın kız kardeşim için bir doğum günü partisi düzenleyeceğim",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Yo organizaría mejor mis archivos si tuviera más tiempo libre",
+      "tr": "Daha fazla boş zamanım olsaydı dosyalarımı daha iyi organize ederdim",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que organices bien la fiesta de cumpleaños este fin de semana.",
+      "tr": "Bu hafta sonu doğum günü partisini iyi organize etmeni umuyorum.",
+      "person": "tú"
+    }
+  },
+  "celebrar": {
+    "Presente": {
+      "es": "Mis amigos y yo celebramos mi cumpleaños en casa este fin de semana.",
+      "tr": "Arkadaşlarım ve ben bu hafta sonu evde doğum günümü kutluyoruz.",
+      "person": "nosotros"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer celebramos el cumpleaños de mi hermana en casa",
+      "tr": "Dün evde kız kardeşimin doğum gününü kutladık",
+      "person": "nosotros"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niña, celebraba mi cumpleaños en el parque con mis amigos.",
+      "tr": "Çocukken doğum günümü parkta arkadaşlarımla kutlardım.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "Hemos celebrado el cumpleaños de mi hermana en casa.",
+      "tr": "Kız kardeşimin doğum gününü evde kutladık.",
+      "person": "nosotros"
+    },
+    "Futuro Simple": {
+      "es": "Mañana celebraremos nuestro aniversario de bodas en casa",
+      "tr": "Yarın evlilik yıldönümümüzü evde kutlayacağız",
+      "person": "nosotros"
+    },
+    "Condicional": {
+      "es": "Celebraríamos tu cumpleaños en el restaurante italiano que te gusta",
+      "tr": "Doğum gününü sevdiğin İtalyan restoranında kutlardık",
+      "person": "nosotros"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que celebremos nuestro aniversario en un restaurante especial.",
+      "tr": "Yıldönümümüzü özel bir restoranda kutlamamızı umuyorum.",
+      "person": "nosotros"
+    }
+  },
+  "felicitar": {
+    "Presente": {
+      "es": "Te felicito por tu graduación, estoy muy orgulloso de ti.",
+      "tr": "Mezuniyetin için seni tebrik ediyorum, seninle çok gurur duyuyorum.",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer felicité a mi hermana por su nuevo trabajo en la empresa.",
+      "tr": "Dün kız kardeşimi şirketteki yeni işi için tebrik ettim.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mis abuelos siempre me felicitaban cuando sacaba buenas notas en el colegio.",
+      "tr": "Büyükanne ve büyükbabam okulda iyi notlar aldığımda beni her zaman kutlarlardı.",
+      "person": "ellos"
+    },
+    "Pretérito Perfecto": {
+      "es": "He felicitado a mi hermana por su graduación universitaria",
+      "tr": "Üniversite mezuniyeti için kız kardeşimi tebrik ettim",
+      "person": "yo"
+    },
+    "Futuro Simple": {
+      "es": "Mañana felicitaré a mi hermana por su graduación universitaria.",
+      "tr": "Yarın kız kardeşimi üniversite mezuniyeti için kutlayacağım.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Te felicitaría por tu ascenso si fuera verdad",
+      "tr": "Eğer gerçek olsaydı terfi ettiğin için seni tebrik ederdim",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que te feliciten por tu ascenso en el trabajo.",
+      "tr": "İşteki terfi için seni kutlamalarını umuyorum.",
+      "person": "ellos/ellas"
+    }
+  },
+  "saludar": {
+    "Presente": {
+      "es": "Siempre saludo a mis vecinos cuando salgo de casa",
+      "tr": "Evden çıktığımda komşularımı hep selamlarım",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "despedir": {
+    "Presente": {
+      "es": "La empresa despide a varios empleados por la crisis económica.",
+      "tr": "Şirket ekonomik kriz nedeniyle birkaç çalışanı işten çıkarıyor.",
+      "person": "la empresa (3. tekil kişi)"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer despidieron a mi compañero de trabajo por llegar tarde.",
+      "tr": "Dün iş arkadaşımı geç geldiği için işten çıkardılar.",
+      "person": "ellos"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cada viernes mi jefe despedía temprano a los empleados.",
+      "tr": "Her cuma patronum çalışanları erken işten çıkarırdı.",
+      "person": "él"
+    },
+    "Pretérito Perfecto": {
+      "es": "La empresa ha despedido a varios empleados este mes",
+      "tr": "Şirket bu ay birkaç çalışanını işten çıkardı",
+      "person": "la empresa (3ª persona singular)"
+    },
+    "Futuro Simple": {
+      "es": "Mañana despediré a los invitados después de la fiesta",
+      "tr": "Yarın partiden sonra misafirleri uğurlayacağım",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Si fuera el jefe, despediría a ese empleado inmediatamente.",
+      "tr": "Eğer patron olsaydım, o çalışanı hemen kovardım.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que no me despidan por llegar tarde otra vez.",
+      "tr": "Yine geç kaldığım için beni kovmazlar umarım.",
+      "person": "ellos"
+    }
+  },
+  "agradecer": {
+    "Presente": {
+      "es": "Te agradezco mucho tu ayuda con los deberes",
+      "tr": "Ödevlerde yardımın için sana çok teşekkür ederim",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermana me agradeció por ayudarla con la tarea de matemáticas.",
+      "tr": "Kız kardeşim matematik ödevinde ona yardım ettiğim için bana teşekkür etti.",
+      "person": "ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi abuela siempre me agradecía cuando la ayudaba con las compras.",
+      "tr": "Büyükannem alışverişte ona yardım ettiğimde bana hep teşekkür ederdi.",
+      "person": "ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana me ha agradecido por ayudarla con la mudanza",
+      "tr": "Kız kardeşim taşınmasında ona yardım ettiğim için bana teşekkür etti",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Te agradeceré siempre por todo lo que hiciste por mí.",
+      "tr": "Benim için yaptığın her şey için sana her zaman teşekkür edeceğim.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Te agradecería mucho si me pudieras ayudar con esto.",
+      "tr": "Bununla bana yardım edebilirsen çok müteşekkir olurum.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que agradezcas el regalo que te compré",
+      "tr": "Sana aldığım hediyeyi beğeneceğini umuyorum",
+      "person": "tú"
+    }
+  },
+  "disculpar": {
+    "Presente": {
+      "es": "Te disculpo por llegar tarde a la reunión",
+      "tr": "Toplantıya geç kaldığın için seni affediyorum",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermano se disculpó conmigo por llegar tarde a la cena",
+      "tr": "Kardeşim akşam yemeğine geç kaldığı için benden özür diledi",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Siempre disculpaba a su hermano cuando llegaba tarde a casa.",
+      "tr": "Kardeşi eve geç geldiğinde her zaman onu affederdi.",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana se ha disculpado por llegar tarde a la cena.",
+      "tr": "Kız kardeşim akşam yemeğine geç kaldığı için özür diledi.",
+      "person": "ella"
+    },
+    "Futuro Simple": {
+      "es": "Mañana te disculparás con tu hermana por lo que pasó",
+      "tr": "Yarın kardeşinle olan şey için ondan özür dileyeceksin",
+      "person": "tú"
+    },
+    "Condicional": {
+      "es": "¿Me disculparías si llego tarde a la reunión?",
+      "tr": "Toplantıya geç kalırsam beni bağışlar mısın?",
+      "person": "tú"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que me disculpes por llegar tarde a la cita.",
+      "tr": "Randevuya geç kaldığım için beni affetmeni umuyorum.",
+      "person": "tú"
+    }
+  },
+  "perdonar": {
+    "Presente": {
+      "es": "Te perdono por llegar tarde a nuestra cita",
+      "tr": "Randevumuza geç kaldığın için seni affediyorum",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermana me perdonó después de romper su collar favorito.",
+      "tr": "Kız kardeşim en sevdiği kolyesini kırdıktan sonra beni bağışladı.",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi madre siempre me perdonaba cuando llegaba tarde a casa.",
+      "tr": "Annem eve geç geldiğimde beni her zaman affederdi.",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana me ha perdonado por romper su teléfono móvil",
+      "tr": "Kız kardeşim cep telefonunu kırdığım için beni affetti",
+      "person": "ella"
+    },
+    "Futuro Simple": {
+      "es": "Mi madre me perdonará cuando le explique lo que pasó.",
+      "tr": "Anneme ne olduğunu açıkladığımda beni affedecek.",
+      "person": "él/ella"
+    },
+    "Condicional": {
+      "es": "Yo te perdonaría si me pidieras disculpas sinceramente.",
+      "tr": "Eğer samimi bir şekilde özür dilersen seni affederim.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que me perdones por llegar tarde a la cita.",
+      "tr": "Randevuya geç kaldığım için beni affetmeni umuyorum.",
+      "person": "tú"
+    }
+  },
+  "criticar": {
+    "Presente": {
+      "es": "Los estudiantes siempre critican las decisiones del director",
+      "tr": "Öğrenciler her zaman müdürün kararlarını eleştirirler",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermana criticó duramente la película que vimos anoche en el cine.",
+      "tr": "Kız kardeşim dün gece sinemada izlediğimiz filmi sert bir şekilde eleştirdi.",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi profesor siempre criticaba nuestros ensayos con mucho detalle",
+      "tr": "Öğretmenim her zaman makalelerimizi çok ayrıntılı bir şekilde eleştirirdi",
+      "person": "él"
+    },
+    "Pretérito Perfecto": {
+      "es": "Los expertos han criticado mucho la nueva política económica del gobierno",
+      "tr": "Uzmanlar hükümetin yeni ekonomi politikasını çok eleştirdiler",
+      "person": "ellos"
+    },
+    "Futuro Simple": {
+      "es": "Los críticos criticarán la nueva película en sus reseñas mañana.",
+      "tr": "Eleştirmenler yarın yeni filmi yorumlarında eleştirecekler.",
+      "person": "ellos"
+    },
+    "Condicional": {
+      "es": "Yo no criticaría su decisión sin conocer todos los detalles",
+      "tr": "Tüm detayları bilmeden onun kararını eleştirmezdim",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "No quiero que critiques mi forma de cocinar.",
+      "tr": "Yemek yapma şeklimi eleştirmeni istemiyorum.",
+      "person": "tú"
+    }
+  },
+  "alabar": {
+    "Presente": {
+      "es": "Los fanáticos siempre alaban a su equipo favorito de fútbol",
+      "tr": "Hayranlar her zaman favori futbol takımlarını överler",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "El profesor alabó el esfuerzo de los estudiantes en el examen.",
+      "tr": "Öğretmen öğrencilerin sınavdaki çabasını övdü.",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi abuela siempre alababa mis dibujos cuando era pequeño",
+      "tr": "Büyükannem küçükken çizimlerimi hep övüyordu",
+      "person": "mi abuela (ella)"
+    },
+    "Pretérito Perfecto": {
+      "es": "El profesor ha alabado mi trabajo en la presentación de hoy.",
+      "tr": "Öğretmen bugünkü sunumumdaki çalışmamı övdü.",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "Los críticos alabarán tu actuación en la obra de teatro.",
+      "tr": "Eleştirmenler tiyatro oyunundaki performansını övecekler.",
+      "person": "ellos"
+    },
+    "Condicional": {
+      "es": "Mi madre me alabaría si aprobara todos los exámenes este semestre.",
+      "tr": "Eğer bu dönem tüm sınavları geçersem annem beni övecekti.",
+      "person": "ella (mi madre)"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que el profesor alabe tu esfuerzo en el examen.",
+      "tr": "Umarım öğretmen sınavdaki çabanı över.",
+      "person": "él"
+    }
+  },
+  "admirar": {
+    "Presente": {
+      "es": "Admiro mucho la paciencia que tiene mi abuela con los niños.",
+      "tr": "Büyükannemin çocuklara karşı gösterdiği sabrı çok hayranlık duyuyorum.",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Siempre admiré la paciencia de mi abuela con nosotros.",
+      "tr": "Büyükannemin bize karşı sabrını hep hayranlıkla izledim.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niña, admiraba mucho a mi maestra de música.",
+      "tr": "Çocukken müzik öğretmenimi çok admirasyon duyardım.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "Siempre he admirado tu forma de resolver los problemas difíciles.",
+      "tr": "Zor sorunları çözme şeklini her zaman hayran olarak izlemişimdir.",
+      "person": "yo"
+    },
+    "Futuro Simple": {
+      "es": "Mañana visitaremos el museo y admiraremos las obras de arte clásico.",
+      "tr": "Yarın müzeyi ziyaret edeceğiz ve klasik sanat eserlerini hayranlıkla izleyeceğiz.",
+      "person": "nosotros"
+    },
+    "Condicional": {
+      "es": "Me gustaría que admiraras más el esfuerzo de tus padres",
+      "tr": "Ailənin çabasını daha çok takdir etmeni isterdim",
+      "person": "tú"
+    },
+    "Subjuntivo Presente": {
+      "es": "Es importante que admires el esfuerzo de tus compañeros de trabajo.",
+      "tr": "İş arkadaşlarının çabasını takdir etmen önemli.",
+      "person": "tú"
+    }
+  },
+  "odiar": {
+    "Presente": {
+      "es": "Mi hermana odia las matemáticas porque le parecen muy difíciles",
+      "tr": "Kız kardeşim matematiği seviyor çünkü ona çok zor geliyor",
+      "person": "ella"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermana odió la película de terror que vimos anoche.",
+      "tr": "Kız kardeşim dün gece izlediğimiz korku filminden nefret etti.",
+      "person": "ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niño odiaba comer verduras en el almuerzo",
+      "tr": "Çocukken öğle yemeğinde sebze yemeyi nefret ederdim",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "Siempre he odiado las películas de terror porque me dan pesadillas.",
+      "tr": "Korku filmlerinden hep nefret etmişimdir çünkü bana kabus görürler.",
+      "person": "yo"
+    },
+    "Futuro Simple": {
+      "es": "Creo que odiarás el nuevo horario de trabajo.",
+      "tr": "Yeni çalışma saatlerinden nefret edeceğini düşünüyorum.",
+      "person": "tú"
+    },
+    "Condicional": {
+      "es": "Yo odiaría tener que trabajar los fines de semana",
+      "tr": "Hafta sonları çalışmak zorunda kalmaktan nefret ederdim",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "No creo que María odie a su hermano menor",
+      "tr": "Maria'nın küçük kardeşinden nefret ettiğine inanmıyorum",
+      "person": "él/ella"
+    }
+  },
+  "enviar": {
+    "Presente": {
+      "es": "Mi hermana envía mensajes a sus amigos todos los días",
+      "tr": "Kız kardeşim her gün arkadaşlarına mesaj gönderiyor",
+      "person": "él/ella"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer envié un mensaje de texto a mi hermana.",
+      "tr": "Dün kız kardeşime bir metin mesajı gönderdim.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi abuela me enviaba cartas todos los meses cuando era niño.",
+      "tr": "Büyükannem ben çocukken her ay bana mektup gönderirdi.",
+      "person": "ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana ha enviado las invitaciones para su boda por correo electrónico.",
+      "tr": "Kız kardeşim düğünü için davetiyelerini e-posta ile gönderdi.",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Mañana enviaré el informe a mi jefe por correo electrónico.",
+      "tr": "Yarın raporu patronuma e-posta ile göndereceğim.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Yo te enviaría las fotos, pero no tengo internet ahora",
+      "tr": "Sana fotoğrafları gönderirdim ama şu an internetim yok",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que mi hermana me envíe las fotos de la fiesta.",
+      "tr": "Umarım kız kardeşim bana partinin fotoğraflarını gönderir.",
+      "person": "él/ella"
+    }
+  },
+  "mandar": {
+    "Presente": {
+      "es": "Mi jefe me manda un email todos los días",
+      "tr": "Patronum bana her gün e-posta gönderir",
+      "person": "él"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi jefe me mandó un email importante esta mañana.",
+      "tr": "Patronum bu sabah bana önemli bir e-posta gönderdi.",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi madre me mandaba cartas todas las semanas cuando estudiaba en el extranjero.",
+      "tr": "Yurtdışında okurken annem bana her hafta mektup gönderirdi.",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi jefe me ha mandado terminar el informe antes del viernes.",
+      "tr": "Patronum benden raporu cuma gününden önce bitirmemi istedi.",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "Mañana mandaré el paquete por correo urgente.",
+      "tr": "Yarın paketi acil posta ile göndereceğim.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Yo mandaría las invitaciones mañana si tuviera tiempo",
+      "tr": "Zamanım olsaydı davetleri yarın gönderirdim",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que mandes el paquete antes del viernes.",
+      "tr": "Umarım paketi cuma gününden önce gönderirsin.",
+      "person": "tú"
+    }
+  },
+  "ordenar": {
+    "Presente": {
+      "es": "Siempre ordeno mi cuarto antes de salir de casa",
+      "tr": "Evden çıkmadan önce her zaman odamı toplarım",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi madre ordenó toda la casa antes de que llegaran los invitados.",
+      "tr": "Annem misafirler gelmeden önce bütün evi topladı.",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi madre siempre ordenaba su habitación antes de salir",
+      "tr": "Annem her zaman çıkmadan önce odasını toplardı",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi madre ha ordenado que limpiemos la casa antes del domingo.",
+      "tr": "Annem pazar gününden önce evi temizlememizi emretti.",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Mañana ordenaré mi habitación antes de que lleguen mis padres",
+      "tr": "Yarın ailem gelmeden önce odamı düzenleyeceğim",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Yo ordenaría mi habitación si tuviera más tiempo libre",
+      "tr": "Daha fazla boş zamanım olsaydı odamı düzenlerim",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Es importante que ordenes tu habitación antes de salir.",
+      "tr": "Çıkmadan önce odanı toplamanın önemli.",
+      "person": "tú"
+    }
+  },
+  "prohibir": {
+    "Presente": {
+      "es": "Los padres prohíben a sus hijos usar el teléfono después de las diez.",
+      "tr": "Ebeveynler çocuklarının ondan sonra telefon kullanmasını yasaklıyor.",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer el director prohibió el uso de teléfonos en clase.",
+      "tr": "Dün müdür sınıfta telefon kullanımını yasakladı.",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi madre me prohibía salir tarde cuando era adolescente.",
+      "tr": "Ergenken annem geç çıkmamı yasaklardı.",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "El gobierno ha prohibido fumar en todos los restaurantes de la ciudad.",
+      "tr": "Hükümet şehirdeki tüm restoranlarda sigara içmeyi yasakladı.",
+      "person": "él/ella/usted"
+    },
+    "Futuro Simple": {
+      "es": "El gobierno prohibirá fumar en todos los parques públicos el próximo año.",
+      "tr": "Hükümet gelecek yıl tüm halka açık parklarda sigara içmeyi yasaklayacak.",
+      "person": "él/ella/usted"
+    },
+    "Condicional": {
+      "es": "Yo prohibiría fumar en todos los restaurantes de la ciudad",
+      "tr": "Şehirdeki tüm restoranlarda sigara içmeyi yasaklardım",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Es importante que prohíban fumar en todos los restaurantes",
+      "tr": "Tüm restoranlarda sigara içmeyi yasaklamaları önemli",
+      "person": "ellos"
+    }
+  },
+  "obligar": {
+    "Presente": {
+      "es": "La situación económica nos obliga a buscar un trabajo adicional.",
+      "tr": "Ekonomik durum bizi ek bir iş aramaya zorluyor.",
+      "person": "nosotros"
+    },
+    "Pretérito Indefinido": {
+      "es": "La lluvia me obligó a cancelar el picnic del domingo",
+      "tr": "Yağmur beni pazar günkü pikniği iptal etmeye zorladı",
+      "person": "él/ella (la lluvia)"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi madre me obligaba a estudiar dos horas todas las tardes.",
+      "tr": "Annem beni her öğleden sonra iki saat ders çalışmaya zorlardı.",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi madre me ha obligado a estudiar para el examen de mañana.",
+      "tr": "Annem yarınki sınav için çalışmaya beni zorladı.",
+      "person": "mi madre (ella)"
+    },
+    "Futuro Simple": {
+      "es": "La nueva ley obligará a las empresas a reducir sus emisiones.",
+      "tr": "Yeni yasa şirketleri emisyonlarını azaltmaya zorlayacak.",
+      "person": "él/ella"
+    },
+    "Condicional": {
+      "es": "Las circunstancias me obligarían a cambiar de trabajo.",
+      "tr": "Koşullar beni işimi değiştirmeye zorlardı.",
+      "person": "ellas"
+    },
+    "Subjuntivo Presente": {
+      "es": "Es importante que no obligues a tu hijo a estudiar tanto.",
+      "tr": "Oğlunu bu kadar çok çalışmaya zorlamamanın önemli.",
+      "person": "tú"
+    }
+  },
+  "sugerir": {
+    "Presente": {
+      "es": "Te sugiero que vayamos al nuevo restaurante italiano esta noche.",
+      "tr": "Bu akşam yeni İtalyan restoranına gitmemizi öneriyorum.",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermano me sugirió que visitara el nuevo restaurante italiano.",
+      "tr": "Kardeşim bana yeni İtalyan restoranını ziyaret etmemi önerdi.",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi mamá siempre me sugería que estudiara más para los exámenes.",
+      "tr": "Annem bana sınavlar için daha çok çalışmamı her zaman önerirdi.",
+      "person": "ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana me ha sugerido que vaya al médico esta semana",
+      "tr": "Kız kardeşim bu hafta doktora gitmemi önerdi",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Mañana te sugeriré algunos restaurantes buenos para la cita.",
+      "tr": "Yarın sana randevu için iyi restoranlar önereceğim.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Te sugeriría que vayas al médico si sigues con dolor",
+      "tr": "Eğer acın devam ederse doktora gitmeni öneririm",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Te recomiendo que le sugiera otra fecha para la reunión",
+      "tr": "Toplantı için ona başka bir tarih önermesini tavsiye ederim",
+      "person": "él/ella"
+    }
+  },
+  "aconsejar": {
+    "Presente": {
+      "es": "Te aconsejo que estudies más para el examen de mañana.",
+      "tr": "Yarınki sınav için daha çok çalışmanı tavsiye ederim.",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermana me aconsejó que estudiara medicina en la universidad",
+      "tr": "Kız kardeşim bana üniversitede tıp okumamı tavsiye etti",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi abuela siempre me aconsejaba que estudiara más para el futuro.",
+      "tr": "Büyükannem gelecek için daha çok çalışmam konusunda bana hep tavsiye verirdi.",
+      "person": "ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana me ha aconsejado que estudie medicina en la universidad.",
+      "tr": "Kız kardeşim bana üniversitede tıp okumamı tavsiye etti.",
+      "person": "él/ella (mi hermana)"
+    },
+    "Futuro Simple": {
+      "es": "Te aconsejaré sobre qué carrera estudiar cuando termine el bachillerato.",
+      "tr": "Lise bittiğinde hangi mesleği okuyacağın konusunda sana tavsiye vereceğim.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Te aconsejaría que hables con tu jefe sobre el aumento de salario.",
+      "tr": "Maaş artışı hakkında patronunla konuşmanı tavsiye ederim.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Es importante que me aconsejes antes de tomar esta decisión.",
+      "tr": "Bu kararı vermeden önce bana tavsiye vermen önemli.",
+      "person": "tú"
+    }
+  },
+  "advertir": {
+    "Presente": {
+      "es": "Te advierto que el examen será muy difícil mañana.",
+      "tr": "Seni uyarıyorum ki yarın sınav çok zor olacak.",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi madre me advirtió que no llegara tarde a casa.",
+      "tr": "Annem eve geç kalmamamı uyardı.",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi madre siempre me advertía sobre los peligros de la calle",
+      "tr": "Annem bana her zaman sokağın tehlikeleri hakkında uyarıda bulunurdu",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi madre me ha advertido sobre los peligros de conducir de noche.",
+      "tr": "Annem beni gece araba kullanmanın tehlikeleri hakkında uyardı.",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Te advertiré sobre los riesgos antes de que tomes la decisión.",
+      "tr": "Kararı vermeden önce seni riskler konusunda uyaracağım.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Te advertiría sobre los riesgos si fuera tu amigo",
+      "tr": "Eğer arkadaşın olsaydım seni riskler hakkında uyarırdım",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Es importante que te advierta sobre los riesgos del proyecto.",
+      "tr": "Projenin riskleri hakkında seni uyarmam önemli.",
+      "person": "yo"
+    }
+  },
+  "avisar": {
+    "Presente": {
+      "es": "Te aviso cuando llegue a casa esta noche.",
+      "tr": "Bu gece eve vardığımda seni haberdar ederim.",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermana me avisó sobre la reunión familiar del domingo.",
+      "tr": "Kız kardeşim bana pazar günkü aile toplantısı hakkında haber verdi.",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi madre siempre me avisaba cuando la cena estaba lista.",
+      "tr": "Annem yemek hazır olduğunda bana hep haber verirdi.",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "He avisado a mis padres que llegaré tarde a casa",
+      "tr": "Aileme eve geç geleceğimi haber verdim",
+      "person": "yo"
+    },
+    "Futuro Simple": {
+      "es": "Te avisaré cuando llegue a casa para que no te preocupes.",
+      "tr": "Eve vardığımda seni haberdar edeceğim ki endişelenmeyesin.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Te avisaría si hubiera algún problema con el proyecto",
+      "tr": "Projeyle ilgili herhangi bir sorun olsa sana haber verirdim",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Es importante que me avises cuando llegues a casa.",
+      "tr": "Eve vardığında bana haber vermen önemli.",
+      "person": "tú"
+    }
+  },
+  "informar": {
+    "Presente": {
+      "es": "El periodista informa sobre los acontecimientos del día en las noticias.",
+      "tr": "Gazeteci haberlerde günün olayları hakkında bilgi veriyor.",
+      "person": "él"
+    },
+    "Pretérito Indefinido": {
+      "es": "La profesora me informó sobre los resultados del examen ayer.",
+      "tr": "Öğretmen dün bana sınav sonuçları hakkında bilgi verdi.",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "El periodista informaba sobre los eventos locales todas las semanas.",
+      "tr": "Gazeteci her hafta yerel olaylar hakkında bilgi veriyordu.",
+      "person": "él"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi jefe me ha informado sobre los cambios en el horario",
+      "tr": "Patronum beni çalışma saatlerindeki değişiklikler hakkında bilgilendirdi",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "Mañana te informaré sobre los resultados del examen médico.",
+      "tr": "Yarın sana tıbbi muayene sonuçları hakkında bilgi vereceğim.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Te informaría sobre los resultados si tuviera más tiempo",
+      "tr": "Daha fazla zamanım olsaydı seni sonuçlar hakkında bilgilendirirdim",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Es importante que nos informes sobre cualquier cambio en el proyecto.",
+      "tr": "Projedeki herhangi bir değişiklik hakkında bizi bilgilendirmen önemli.",
+      "person": "tú"
+    }
+  },
+  "comunicar": {
+    "Presente": {
+      "es": "Me comunico con mi familia todos los días por teléfono",
+      "tr": "Ailemle her gün telefon aracılığıyla iletişim kuruyorum",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermana me comunicó la noticia por teléfono ayer por la noche.",
+      "tr": "Kız kardeşim dün gece telefonda haberi bana iletti.",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi hermana se comunicaba conmigo todos los días por WhatsApp",
+      "tr": "Kız kardeşim benimle her gün WhatsApp'tan iletişim kuruyordu",
+      "person": "ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Hemos comunicado la decisión a todo el equipo esta mañana",
+      "tr": "Bu sabah tüm takıma kararı ilettik",
+      "person": "nosotros"
+    },
+    "Futuro Simple": {
+      "es": "Mañana me comunicaré con el director para hablar del proyecto.",
+      "tr": "Yarın proje hakkında konuşmak için müdürle iletişim kuracağım.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Me comunicaría contigo más seguido si tuviera tiempo libre",
+      "tr": "Boş zamanım olsaydı seninle daha sık iletişim kurardım",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Es importante que te comuniques con tus padres regularmente.",
+      "tr": "Ailene düzenli olarak iletişim kurman önemli.",
+      "person": "tú"
+    }
+  },
+  "platicar": {
+    "Presente": {
+      "es": "Mi hermana y yo platicamos sobre nuestros planes para las vacaciones",
+      "tr": "Kız kardeşim ve ben tatil planlarımız hakkında konuşuyoruz",
+      "person": "nosotros"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer platicamos sobre nuestros planes de vacaciones durante el almuerzo.",
+      "tr": "Dün öğle yemeği sırasında tatil planlarımız hakkında konuştuk.",
+      "person": "nosotros"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niño, platicaba mucho con mi abuela en el jardín.",
+      "tr": "Çocukken büyükannemle bahçede çok sohbet ederdim.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "Hemos platicado sobre nuestros planes para las vacaciones de verano",
+      "tr": "Yaz tatili planlarımız hakkında konuştuk",
+      "person": "nosotros"
+    },
+    "Futuro Simple": {
+      "es": "Mañana platicaremos sobre nuestros planes de vacaciones en familia.",
+      "tr": "Yarın ailemizle tatil planlarımız hakkında konuşacağız.",
+      "person": "nosotros"
+    },
+    "Condicional": {
+      "es": "Me gustaría platicar contigo sobre nuestros planes de vacaciones.",
+      "tr": "Seninle tatil planlarımız hakkında sohbet etmek isterim.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que platiquemos sobre el viaje mañana por la tarde.",
+      "tr": "Yarın öğleden sonra seyahat hakkında konuşmamızı umuyorum.",
+      "person": "nosotros"
+    }
+  },
+  "conversar": {
+    "Presente": {
+      "es": "Mis hermanos conversan sobre sus planes para el fin de semana",
+      "tr": "Kardeşlerim hafta sonu planları hakkında konuşuyorlar",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer conversé con mi hermana sobre nuestros planes de vacaciones.",
+      "tr": "Dün kız kardeşimle tatil planlarımız hakkında konuştum.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cada tarde conversábamos sobre nuestros planes para el futuro.",
+      "tr": "Her akşam geleceğe dair planlarımız hakkında konuşurduk.",
+      "person": "nosotros"
+    },
+    "Pretérito Perfecto": {
+      "es": "Esta mañana he conversado con mi vecina sobre el nuevo restaurante.",
+      "tr": "Bu sabah komşumla yeni restoran hakkında konuştum.",
+      "person": "yo"
+    },
+    "Futuro Simple": {
+      "es": "Mañana conversaré con mi jefe sobre el aumento de sueldo.",
+      "tr": "Yarın patronumla maaş zammı hakkında konuşacağım.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Me gustaría conversar contigo sobre nuestros planes de viaje",
+      "tr": "Seyahat planlarımız hakkında seninle konuşmak isterdim",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que conversemos sobre el proyecto mañana en la reunión.",
+      "tr": "Yarın toplantıda proje hakkında konuşmamızı umuyorum.",
+      "person": "nosotros"
+    }
+  },
+  "discutir": {
+    "Presente": {
+      "es": "Mis padres discuten sobre el presupuesto familiar cada mes",
+      "tr": "Ailem her ay aile bütçesini tartışıyor",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer discutimos el problema con nuestros padres durante la cena.",
+      "tr": "Dün akşam yemeğinde ailelerimizle sorunu tartıştık.",
+      "person": "nosotros"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mis padres siempre discutían sobre el dinero cuando era pequeño",
+      "tr": "Küçükken ailem hep para konusunda tartışırdı",
+      "person": "ellos"
+    },
+    "Pretérito Perfecto": {
+      "es": "Hemos discutido el problema con nuestros vecinos esta mañana.",
+      "tr": "Bu sabah komşularımızla sorunu tartıştık.",
+      "person": "nosotros"
+    },
+    "Futuro Simple": {
+      "es": "Mañana discutiremos el proyecto en la reunión de trabajo",
+      "tr": "Yarın iş toplantısında projeyi tartışacağız",
+      "person": "nosotros"
+    },
+    "Condicional": {
+      "es": "Discutiríamos el problema si tuviéramos más tiempo disponible.",
+      "tr": "Eğer daha fazla vaktimiz olsaydı problemi tartışırdık.",
+      "person": "nosotros"
+    },
+    "Subjuntivo Presente": {
+      "es": "Es importante que discutamos este tema antes de decidir.",
+      "tr": "Karar vermeden önce bu konuyu tartışmamız önemli.",
+      "person": "nosotros"
+    }
+  },
+  "pelear": {
+    "Presente": {
+      "es": "Mis hermanos siempre pelean por el control remoto del televisor.",
+      "tr": "Kardeşlerim televizyonun kumandası için hep kavga ederler.",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer mis hermanos pelearon por el control remoto del televisor.",
+      "tr": "Dün kardeşlerim televizyonun kumandası için kavga ettiler.",
+      "person": "ellos"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando éramos niños, mi hermano y yo peleábamos por los juguetes.",
+      "tr": "Çocukken kardeşimle oyuncaklar için kavga ederdik.",
+      "person": "nosotros"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermano y yo hemos peleado por la herencia de nuestro padre.",
+      "tr": "Kardeşim ve ben babamızın mirası için kavga ettik.",
+      "person": "nosotros"
+    },
+    "Futuro Simple": {
+      "es": "Mañana pelearán los boxeadores en el campeonato mundial.",
+      "tr": "Yarın boksörler dünya şampiyonasında dövüşecekler.",
+      "person": "ellos"
+    },
+    "Condicional": {
+      "es": "Si fuera más joven, pelearía por mis derechos con más energía.",
+      "tr": "Daha genç olsaydım, haklarım için daha fazla enerjiyle savaşırdım.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que no pelees con tu hermano por eso.",
+      "tr": "Umarım bu yüzden kardeşinle kavga etmezsin.",
+      "person": "tú"
+    }
+  },
+  "atacar": {
+    "Presente": {
+      "es": "Los virus atacan principalmente a las personas con defensas bajas.",
+      "tr": "Virüsler esas olarak bağışıklığı düşük insanlara saldırır.",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "Los piratas atacaron el barco mercante durante la madrugada.",
+      "tr": "Korsanlar şafak vakti ticaret gemisine saldırdılar.",
+      "person": "ellos"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Los mosquitos me atacaban todas las noches en el camping.",
+      "tr": "Sivrisinekler kampta her gece bana saldırıyordu.",
+      "person": "ellos"
+    },
+    "Pretérito Perfecto": {
+      "es": "Los hackers han atacado el sistema de la empresa esta mañana",
+      "tr": "Hackerlar bu sabah şirketin sistemine saldırdı",
+      "person": "ellos"
+    },
+    "Futuro Simple": {
+      "es": "Los virus atacarán el sistema si no actualizamos el antivirus.",
+      "tr": "Antivirüsü güncellemediğimiz takdirde virüsler sisteme saldıracak.",
+      "person": "ellos"
+    },
+    "Condicional": {
+      "es": "Los soldados atacarían la fortaleza al amanecer si tuvieran más municiones.",
+      "tr": "Askerler daha fazla mühimmatları olsaydı şafakta kaleyi saldırırlardı.",
+      "person": "ellos"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que el virus no ataque a más personas",
+      "tr": "Virüsün daha fazla insana saldırmamasını umuyorum",
+      "person": "él"
+    }
+  },
+  "defender": {
+    "Presente": {
+      "es": "Mi hermano siempre defiende a sus amigos cuando alguien los critica.",
+      "tr": "Kardeşim birisi arkadaşlarını eleştirdiğinde onları her zaman savunur.",
+      "person": "él"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermano defendió a su amigo en el colegio ayer.",
+      "tr": "Kardeşim dün okulda arkadaşını savundu.",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi hermano siempre defendía a los niños más pequeños en el colegio.",
+      "tr": "Kardeşim okulda hep küçük çocukları korurdu.",
+      "person": "él"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermano ha defendido siempre a los animales abandonados",
+      "tr": "Kardeşim her zaman terk edilmiş hayvanları savundu",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "Mañana el abogado defenderá a su cliente en el juicio.",
+      "tr": "Yarın avukat müvekkilini mahkemede savunacak.",
+      "person": "él"
+    },
+    "Condicional": {
+      "es": "Yo defendería mis ideas aunque todos estuvieran en contra",
+      "tr": "Herkes karşı olsa bile fikirlerimi savunurdum",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Es importante que defendamos nuestros derechos como ciudadanos.",
+      "tr": "Vatandaşlar olarak haklarımızı savunmamız önemlidir.",
+      "person": "nosotros"
+    }
+  },
+  "escapar": {
+    "Presente": {
+      "es": "Los presos escapan de la cárcel durante la noche",
+      "tr": "Mahkumlar gece hapishaneden kaçıyor",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "El ladrón escapó de la prisión durante la noche",
+      "tr": "Hırsız gece hapisten kaçtı",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niño, siempre se me escapaba el hámster de la jaula.",
+      "tr": "Çocukken hamsterim kafesten hep kaçardı.",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi gato se ha escapado de casa esta mañana",
+      "tr": "Kedim bu sabah evden kaçtı",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "Mañana escaparemos de la ciudad para relajarnos en el campo.",
+      "tr": "Yarın dinlenmek için şehirden kaçıp kırlara gideceğiz.",
+      "person": "nosotros"
+    },
+    "Condicional": {
+      "es": "Si tuviera dinero, escaparía a una isla tropical este verano.",
+      "tr": "Param olsaydı, bu yaz tropikal bir adaya kaçardım.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que el prisionero no escape de la cárcel esta noche.",
+      "tr": "Bu gece mahkumun hapishaneden kaçmamasını umuyorum.",
+      "person": "él"
+    }
+  },
+  "huir": {
+    "Presente": {
+      "es": "Los turistas huyen del hotel cuando suena la alarma de incendio.",
+      "tr": "Turistler yangın alarmı çaldığında otelden kaçıyorlar.",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi gato huyó de casa cuando escuchó los fuegos artificiales",
+      "tr": "Kedim havai fişekleri duyunca evden kaçtı",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "El gato huía cada vez que sonaba el timbre de la puerta.",
+      "tr": "Kedi kapı zili çaldığında her seferinde kaçıyordu.",
+      "person": "él"
+    },
+    "Pretérito Perfecto": {
+      "es": "Los ladrones han huido antes de que llegara la policía",
+      "tr": "Hırsızlar polis gelmeden önce kaçtı",
+      "person": "ellos"
+    },
+    "Futuro Simple": {
+      "es": "Los turistas huirán del hotel si no mejoran el servicio.",
+      "tr": "Turistler hizmeti iyileştirmezlerse otelden kaçacaklar.",
+      "person": "ellos"
+    },
+    "Condicional": {
+      "es": "Si tuviera dinero suficiente, huiría a una isla tropical.",
+      "tr": "Yeterli param olsaydı, tropik bir adaya kaçardım.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Es importante que huyas de las malas influencias en la escuela.",
+      "tr": "Okuldaki kötü etkilerden kaçman önemli.",
+      "person": "tú"
+    }
+  },
+  "alcanzar": {
+    "Presente": {
+      "es": "Los niños no alcanzan el estante más alto de la cocina",
+      "tr": "Çocuklar mutfağın en yüksek rafına ulaşamıyorlar",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermana alcanzó sus metas profesionales después de mucho esfuerzo.",
+      "tr": "Kız kardeşim çok çaba harcadıktan sonra mesleki hedeflerine ulaştı.",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niño, no alcanzaba los estantes altos de la cocina.",
+      "tr": "Çocukken mutfağın yüksek raflarına ulaşamıyordum.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermano ha alcanzado sus metas profesionales este año",
+      "tr": "Kardeşim bu yıl mesleki hedeflerine ulaştı",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "Mañana alcanzaremos la cima de la montaña si el clima es bueno",
+      "tr": "Yarın hava güzel olursa dağın zirvesine ulaşacağız",
+      "person": "nosotros"
+    },
+    "Condicional": {
+      "es": "Con más tiempo alcanzaríamos nuestros objetivos fácilmente este año",
+      "tr": "Daha fazla zamanla bu yıl hedeflerimize kolayca ulaşırdık",
+      "person": "nosotros"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que alcances tus metas este año.",
+      "tr": "Bu yıl hedeflerine ulaşmanı umuyorum.",
+      "person": "tú"
+    }
+  },
+  "lograr": {
+    "Presente": {
+      "es": "Con mucho esfuerzo logro terminar todos mis proyectos a tiempo",
+      "tr": "Çok çaba göstererek tüm projelerimi zamanında bitirmeyi başarıyorum",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermana logró aprobar el examen de matemáticas después de estudiar mucho.",
+      "tr": "Kız kardeşim çok çalıştıktan sonra matematik sınavını geçmeyi başardı.",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niño, nunca lograba terminar mis tareas a tiempo.",
+      "tr": "Çocukken ödevlerimi hiç zamanında bitirmeyi başaramıyordum.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana ha logrado aprobar el examen de matemáticas después de estudiar mucho.",
+      "tr": "Kız kardeşim çok çalıştıktan sonra matematik sınavını geçmeyi başardı.",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Con mucha práctica, lograrás tocar la guitarra perfectamente.",
+      "tr": "Çok pratik yaparak gitarı mükemmel çalmayı başaracaksın.",
+      "person": "tú"
+    },
+    "Condicional": {
+      "es": "Con más tiempo, lograríamos terminar el proyecto perfectamente.",
+      "tr": "Daha fazla zamanla projeyi mükemmel bir şekilde bitirmeyi başarırdık.",
+      "person": "nosotros"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que logres terminar el proyecto antes del viernes.",
+      "tr": "Umarım projeyi cuma gününden önce bitirmeyi başarırsın.",
+      "person": "tú"
+    }
+  },
+  "intentar": {
+    "Presente": {
+      "es": "Siempre intento llegar temprano al trabajo por las mañanas",
+      "tr": "Her zaman sabahları işe erken gelmeye çalışırım",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer intenté llamarte pero tu teléfono estaba apagado.",
+      "tr": "Dün seni aramaya çalıştım ama telefonun kapalıydı.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mientras estudiaba, intentaba entender los problemas de matemáticas.",
+      "tr": "Ders çalışırken matematik problemlerini anlamaya çalışıyordum.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "He intentado llamarte varias veces pero no contestas.",
+      "tr": "Seni birkaç kez aramaya çalıştım ama cevap vermiyorsun.",
+      "person": "yo"
+    },
+    "Futuro Simple": {
+      "es": "Mañana intentaré cocinar paella para mis amigos que vienen a cenar.",
+      "tr": "Yarın akşam yemeğine gelen arkadaşlarım için paella yapmaya çalışacağım.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Yo intentaría aprender guitarra si tuviera más tiempo libre.",
+      "tr": "Daha fazla boş zamanım olsaydı gitar çalmayı öğrenmeye çalışırdım.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Es importante que intentes hacer ejercicio regularmente para tu salud.",
+      "tr": "Sağlığın için düzenli egzersiz yapmaya çalışman önemli.",
+      "person": "tú"
+    }
+  },
+  "probar": {
+    "Presente": {
+      "es": "Siempre pruebo la comida antes de servirla a mis invitados",
+      "tr": "Misafirlerime servis etmeden önce yemeği her zaman tadıyorum",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer probé el nuevo restaurante italiano del centro",
+      "tr": "Dün merkezde yeni İtalyan restoranını denedim",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niña, siempre probaba la comida antes de servirla.",
+      "tr": "Çocukken, yemeği servis etmeden önce her zaman tadına bakardım.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "He probado la nueva receta de mi abuela y está deliciosa",
+      "tr": "Büyükannemin yeni tarifini denedim ve çok lezzetli",
+      "person": "yo"
+    },
+    "Futuro Simple": {
+      "es": "Mañana probaremos el nuevo restaurante italiano del centro",
+      "tr": "Yarın merkezde bulunan yeni İtalyan restoranını deneyeceğiz",
+      "person": "nosotros"
+    },
+    "Condicional": {
+      "es": "Me gustaría probar ese restaurante italiano del centro",
+      "tr": "Merkezde bulunan o İtalyan restoranını denemek isterim",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que pruebes la comida que preparé para ti.",
+      "tr": "Senin için hazırladığım yemeği tatmanı umuyorum.",
+      "person": "tú"
+    }
+  },
+  "demostrar": {
+    "Presente": {
+      "es": "Los estudiantes demuestran su conocimiento en el examen final.",
+      "tr": "Öğrenciler final sınavında bilgilerini gösteriyorlar.",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer mi hermano demostró que sabía cocinar muy bien",
+      "tr": "Dün kardeşim çok iyi yemek pişirmeyi bildiğini kanıtladı",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi hermano siempre demostraba mucho cariño hacia nuestros abuelos.",
+      "tr": "Kardeşim her zaman büyükanne ve büyükbabamıza çok sevgi gösterirdi.",
+      "person": "él"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermano ha demostrado mucha paciencia con los niños pequeños.",
+      "tr": "Kardeşim küçük çocuklara karşı çok sabır gösterdi.",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "Mañana demostraré a mis padres que puedo ser responsable con mi dinero.",
+      "tr": "Yarın aileme paramla sorumlu olabileceğimi göstereceğim.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Con más tiempo, te demostraría cómo cocinar paella perfectamente.",
+      "tr": "Daha fazla zamanım olsaydı, sana paellayı mükemmel nasıl pişireceğini gösterirdim.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Es importante que demuestres tu amor con acciones diarias.",
+      "tr": "Sevgini günlük eylemlerle göstermen önemlidir.",
+      "person": "tú"
+    }
+  },
+  "mostrar": {
+    "Presente": {
+      "es": "Mi hermana me muestra las fotos de su viaje a París",
+      "tr": "Kız kardeşim bana Paris seyahatinin fotoğraflarını gösteriyor",
+      "person": "él/ella"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer mi hermana me mostró las fotos de su viaje a París.",
+      "tr": "Dün kız kardeşim bana Paris seyahatinin fotoğraflarını gösterdi.",
+      "person": "ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi hermana me mostraba sus dibujos cuando éramos pequeños.",
+      "tr": "Kız kardeşim küçükken bana resimlerini gösterirdi.",
+      "person": "ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana me ha mostrado las fotos de su viaje a París.",
+      "tr": "Kız kardeşim bana Paris seyahatinin fotoğraflarını gösterdi.",
+      "person": "ella"
+    },
+    "Futuro Simple": {
+      "es": "Mañana te mostraré las fotos de mis vacaciones en Italia.",
+      "tr": "Yarın sana İtalya'daki tatilimin fotoğraflarını göstereceğim.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Te mostraría las fotos de mi viaje si tuviera tiempo.",
+      "tr": "Zamanım olsa sana seyahatimdeki fotoğrafları gösterirdim.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que me muestres las fotos de tu viaje.",
+      "tr": "Seyahatinin fotoğraflarını bana göstermeni umuyorum.",
+      "person": "tú"
+    }
+  },
+  "enseñar": {
+    "Presente": {
+      "es": "Mi hermana enseña matemáticas a estudiantes de secundaria",
+      "tr": "Kız kardeşim lise öğrencilerine matematik öğretiyor",
+      "person": "él/ella"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi profesora me enseñó matemáticas el año pasado.",
+      "tr": "Öğretmenim bana geçen yıl matematik öğretti.",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi profesora nos enseñaba matemáticas con mucha paciencia todos los días",
+      "tr": "Öğretmenim her gün bize matematiği çok sabırla öğretirdi",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana me ha enseñado a cocinar platos tradicionales este año.",
+      "tr": "Kız kardeşim bu yıl bana geleneksel yemekler yapmayı öğretti.",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Mi hermana enseñará matemáticas en la universidad el próximo año.",
+      "tr": "Kız kardeşim gelecek yıl üniversitede matematik öğretecek.",
+      "person": "él/ella"
+    },
+    "Condicional": {
+      "es": "Me enseñarías a cocinar paella si tuvieras tiempo",
+      "tr": "Zamanın olsa bana paella yapmayı öğretir miydin",
+      "person": "tú"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que el profesor me enseñe matemáticas este año.",
+      "tr": "Umarım öğretmen bu yıl bana matematik öğretir.",
+      "person": "él"
+    }
+  },
+  "practicar": {
+    "Presente": {
+      "es": "Practico piano todos los días para mejorar mi técnica",
+      "tr": "Tekniğimi geliştirmek için her gün piyano çalışıyorum",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer practiqué guitarra durante dos horas en mi habitación",
+      "tr": "Dün odamda iki saat gitar çalıştım",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niño practicaba fútbol todos los días después del colegio.",
+      "tr": "Çocukken okuldan sonra her gün futbol antrenmanı yapardım.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "Hemos practicado español durante dos horas esta mañana.",
+      "tr": "Bu sabah iki saat İspanyolca çalıştık.",
+      "person": "nosotros"
+    },
+    "Futuro Simple": {
+      "es": "Mañana practicaré piano durante dos horas antes del concierto.",
+      "tr": "Yarın konserden önce iki saat piyano çalışacağım.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Yo practicaría más piano si tuviera tiempo libre.",
+      "tr": "Boş zamanım olsaydı daha çok piyano çalışırdım.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Es importante que practiques el piano todos los días.",
+      "tr": "Her gün piyano çalışman önemli.",
+      "person": "tú"
+    }
+  },
+  "mejorar": {
+    "Presente": {
+      "es": "Mi hermana mejora mucho en matemáticas con las clases particulares.",
+      "tr": "Kız kardeşim özel derslerle matematikte çok gelişiyor.",
+      "person": "él/ella"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermana mejoró mucho en matemáticas el año pasado",
+      "tr": "Kız kardeşim geçen yıl matematikte çok gelişti",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi hermana mejoraba sus notas estudiando todas las tardes en casa",
+      "tr": "Kız kardeşim her öğleden sonra evde ders çalışarak notlarını iyileştiriyordu",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana ha mejorado mucho en matemáticas este semestre.",
+      "tr": "Kız kardeşim bu dönem matematikte çok gelişti.",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Con más práctica, mejorarás tu nivel de español rápidamente.",
+      "tr": "Daha fazla pratikle, İspanyolca seviyeni hızla geliştireceksin.",
+      "person": "tú"
+    },
+    "Condicional": {
+      "es": "Con más práctica mejorarías mucho tu pronunciación en francés.",
+      "tr": "Daha fazla pratikle Fransızca telaffuzunu çok geliştirebilirsin.",
+      "person": "tú"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que mejores pronto de tu resfriado.",
+      "tr": "Soğuk algınlığından çabuk iyileşmeni umuyorum.",
+      "person": "tú"
+    }
+  },
+  "empeorar": {
+    "Presente": {
+      "es": "Mi dolor de cabeza empeora cuando trabajo mucho en la computadora.",
+      "tr": "Bilgisayarda çok çalıştığımda baş ağrım kötüleşiyor.",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "La situación económica empeoró mucho después de la pandemia.",
+      "tr": "Ekonomik durum pandemiden sonra çok kötüleşti.",
+      "person": "él/ella/usted"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Su estado de salud empeoraba cada día que pasaba",
+      "tr": "Sağlık durumu geçen her gün daha da kötüleşiyordu",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi dolor de cabeza ha empeorado desde esta mañana",
+      "tr": "Bu sabahtan beri baş ağrım daha da kötüleşti",
+      "person": "él/ella (mi dolor)"
+    },
+    "Futuro Simple": {
+      "es": "Si no te cuidas, tu resfriado empeorará mucho más.",
+      "tr": "Eğer kendine dikkat etmezsen, nezlen çok daha kötüleşecek.",
+      "person": "tú"
+    },
+    "Condicional": {
+      "es": "Sin tratamiento médico, tu condición empeoraría rápidamente.",
+      "tr": "Tıbbi tedavi olmadan durumun hızla kötüleşirdi.",
+      "person": "tú"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que tu dolor de cabeza no empeore durante el día.",
+      "tr": "Baş ağrının gün içinde daha da kötüleşmemesini umuyorum.",
+      "person": "él/ella/usted"
+    }
+  },
+  "curar": {
+    "Presente": {
+      "es": "El médico cura a los pacientes con mucha dedicación y cariño.",
+      "tr": "Doktor hastaları büyük özveri ve sevgiyle iyileştiriyor.",
+      "person": "él"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi abuela me curó el resfriado con remedios caseros",
+      "tr": "Büyükannem ev ilaçlarıyla nezlemi iyileştirdi",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi abuela curaba los resfriados con remedios caseros muy efectivos.",
+      "tr": "Büyükannem soğuk algınlığını çok etkili ev ilaçlarıyla iyileştirirdi.",
+      "person": "ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "El médico ha curado a muchos pacientes este año.",
+      "tr": "Doktor bu yıl birçok hastayı iyileştirdi.",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "El médico curará tu herida en unos días.",
+      "tr": "Doktor senin yaran birkaç gün içinde iyileştirecek.",
+      "person": "él"
+    },
+    "Condicional": {
+      "es": "Con más tiempo, los médicos curarían mejor a los pacientes.",
+      "tr": "Daha fazla zamanla, doktorlar hastaları daha iyi iyileştirebilirdi.",
+      "person": "ellos"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que el médico cure a mi hermano pronto.",
+      "tr": "Umarım doktor kardeşimi yakında iyileştirir.",
+      "person": "él"
+    }
+  },
+  "enfermar": {
+    "Presente": {
+      "es": "Mi hermana se enferma frecuentemente durante el invierno frío.",
+      "tr": "Kız kardeşim soğuk kış aylarında sık sık hastalanır.",
+      "person": "él/ella"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermana se enfermó durante las vacaciones y tuvimos que regresar temprano.",
+      "tr": "Kız kardeşim tatil sırasında hastalandı ve erken dönmek zorunda kaldık.",
+      "person": "él/ella (mi hermana)"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niño, me enfermaba frecuentemente en invierno.",
+      "tr": "Çocukken, kışın sık sık hastalanırdım.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana se ha enfermado después de comer mariscos en mal estado",
+      "tr": "Kız kardeşim bozuk deniz ürünleri yedikten sonra hastalandı",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Si no te abrigas bien, te enfermarás con este frío.",
+      "tr": "Eğer iyi giyinmezsen, bu soğukta hastalanacaksın.",
+      "person": "tú"
+    },
+    "Condicional": {
+      "es": "Si no te abrigaras bien, te enfermarías con este frío",
+      "tr": "Eğer iyi giyinmeseydin, bu soğukta hastalanırdın",
+      "person": "tú"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que no te enfermes con este frío tan intenso.",
+      "tr": "Bu kadar yoğun soğukta hastalanmamanı umuyorum.",
+      "person": "tú"
+    }
+  },
+  "doler": {
+    "Presente": {
+      "es": "Me duele la cabeza desde esta mañana",
+      "tr": "Bu sabahtan beri başım ağrıyor",
+      "person": "me (bana - dolaylı nesne)"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer me dolió mucho la cabeza después del trabajo.",
+      "tr": "Dün işten sonra başım çok ağrıdı.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Me dolía mucho la cabeza cuando estudiaba para el examen.",
+      "tr": "Sınava çalışırken başım çok ağrıyordu.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "Me ha dolido mucho la cabeza desde esta mañana",
+      "tr": "Bu sabahtan beri başım çok ağrıyor",
+      "person": "yo"
+    },
+    "Futuro Simple": {
+      "es": "Después de correr tanto, me dolerán las piernas mañana.",
+      "tr": "Bu kadar koştuktan sonra, yarın bacaklarım ağrıyacak.",
+      "person": "ellas"
+    },
+    "Condicional": {
+      "es": "Si no descansaras, te dolería mucho la espalda mañana",
+      "tr": "Eğer dinlenmezsen, yarın sırtın çok ağrırdı",
+      "person": "tú"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que no te duela la cabeza después del examen.",
+      "tr": "Sınavdan sonra başın ağrımamasını umuyorum.",
+      "person": "tú"
+    }
+  },
+  "lastimar": {
+    "Presente": {
+      "es": "No quiero lastimar tus sentimientos con mis palabras",
+      "tr": "Sözlerimle duygularını incitmek istemiyorum",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer me lastimé la rodilla jugando fútbol con mis amigos.",
+      "tr": "Dün arkadaşlarımla futbol oynarken dizimi incittim.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niño, siempre me lastimaba jugando en el parque.",
+      "tr": "Çocukken parkta oynarken hep kendimi yaralardım.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermano se ha lastimado la rodilla jugando fútbol en el parque.",
+      "tr": "Kardeşim parkta futbol oynarken dizini incitti.",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "Si no tienes cuidado, te lastimarás con el cuchillo",
+      "tr": "Eğer dikkatli olmazsan, bıçakla kendini yaralayacaksın",
+      "person": "tú"
+    },
+    "Condicional": {
+      "es": "No te lastimaría nunca, eres muy importante para mí.",
+      "tr": "Seni asla incitmezdim, benim için çok önemlisin.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que no te lastimes cuando juegues fútbol mañana.",
+      "tr": "Yarın futbol oynarken sakatlanmamanı umuyorum.",
+      "person": "tú"
+    }
+  },
+  "cortar": {
+    "Presente": {
+      "es": "Mi mamá corta las verduras para la cena",
+      "tr": "Annem akşam yemeği için sebzeleri kesiyor",
+      "person": "él/ella"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer me corté el dedo mientras preparaba la cena",
+      "tr": "Dün akşam yemeği hazırlarken parmağımı kestim",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi abuela cortaba las verduras mientras preparaba la cena.",
+      "tr": "Büyükannem akşam yemeğini hazırlarken sebzeleri kesiyordu.",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana se ha cortado el pelo en la peluquería nueva",
+      "tr": "Kız kardeşim yeni kuaförsalonda saçını kestirdi",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Mañana cortaré el césped del jardín después del desayuno.",
+      "tr": "Yarın kahvaltıdan sonra bahçenin çimlerini keseceğim.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "¿Cortarías el césped si te pagara veinte euros?",
+      "tr": "Sana yirmi euro versem çimi biçer misin?",
+      "person": "tú"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que cortes el césped antes del domingo",
+      "tr": "Pazar gününden önce çimi keseni umuyorum",
+      "person": "tú"
+    }
+  },
+  "quemar": {
+    "Presente": {
+      "es": "Mi hermana quema las tostadas todas las mañanas",
+      "tr": "Kız kardeşim her sabah ekmekleri yakıyor",
+      "person": "él/ella"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer quemé la cena porque se me olvidó bajar el fuego.",
+      "tr": "Dün akşam yemeğini yaktım çünkü ateşi kısmayı unuttum.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi abuela quemaba leña en la chimenea todas las noches de invierno.",
+      "tr": "Büyükannem kış gecelerinde şöminede odun yakardı.",
+      "person": "ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana ha quemado la cena otra vez esta noche",
+      "tr": "Kız kardeşim bu akşam yemeği yine yakmış",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Mañana quemaremos las hojas secas del jardín",
+      "tr": "Yarın bahçedeki kuru yaprakları yakacağız",
+      "person": "nosotros"
+    },
+    "Condicional": {
+      "es": "Yo quemaría esas cartas viejas si tuviera tiempo",
+      "tr": "Zamanım olsa o eski mektupları yakardım",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que no quemes la comida otra vez.",
+      "tr": "Umarım yemeği bir daha yakmazsın.",
+      "person": "tú"
+    }
+  },
+  "congelar": {
+    "Presente": {
+      "es": "Siempre congelo la carne cuando llego del supermercado",
+      "tr": "Süpermarketten geldiğimde eti her zaman dondururum",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer congelé las verduras que compré en el mercado.",
+      "tr": "Dün pazarda aldığım sebzeleri dondurdum.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niña, mi abuela congelaba las verduras del jardín.",
+      "tr": "Çocukken büyükannem bahçedeki sebzeleri dondururdu.",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana ha congelado las verduras para la cena de mañana.",
+      "tr": "Kız kardeşim yarının akşam yemeği için sebzeleri dondurdu.",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Mañana congelaré la carne que compré en el mercado.",
+      "tr": "Yarın marketten aldığım eti donduracağım.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Si tuviera más espacio, congelaría todas las verduras del jardín.",
+      "tr": "Eğer daha fazla yerim olsaydı, bahçedeki bütün sebzeleri dondururdum.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que no se congele el agua de las tuberías esta noche.",
+      "tr": "Bu gece boruların suyu donmasın diye umuyorum.",
+      "person": "él/ella/usted"
+    }
+  },
+  "calentar": {
+    "Presente": {
+      "es": "Mi madre calienta la sopa en la estufa para la cena",
+      "tr": "Annem akşam yemeği için ocakta çorbayı ısıtıyor",
+      "person": "ella"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer calenté la sopa en el microondas para la cena.",
+      "tr": "Dün akşam yemeği için çorbayı mikrodalgada ısıttım.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi abuela siempre calentaba la leche antes de dormir",
+      "tr": "Büyükannem uyumadan önce hep sütü ısıtırdı",
+      "person": "ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi madre ha calentado la cena para nosotros.",
+      "tr": "Annem bizim için akşam yemeğini ısıttı.",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Mi hermana calentará la cena cuando llegue del trabajo.",
+      "tr": "Kız kardeşim işten gelince akşam yemeğini ısıtacak.",
+      "person": "ella"
+    },
+    "Condicional": {
+      "es": "¿Podrías calentar la comida en el microondas?",
+      "tr": "Yemeği mikrodalgada ısıtır mısın?",
+      "person": "tú"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que calientes la sopa antes de servirla.",
+      "tr": "Çorbayı servisten önce ısıtmanı umuyorum.",
+      "person": "tú"
+    }
+  },
+  "enfriar": {
+    "Presente": {
+      "es": "Abro la ventana para enfriar la habitación",
+      "tr": "Odayı serinletmek için pencereyi açıyorum",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi madre enfrió la sopa antes de servirla a los niños.",
+      "tr": "Annem çorbayı çocuklara servisten önce soğuttu.",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi abuela enfriaba la sopa soplándola antes de dármela.",
+      "tr": "Büyükannem çorbayı üfleyerek soğutup bana verirdi.",
+      "person": "ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "He enfriado la sopa porque estaba muy caliente para los niños",
+      "tr": "Çorbayı soğuttum çünkü çocuklar için çok sıcaktı",
+      "person": "yo"
+    },
+    "Futuro Simple": {
+      "es": "Mañana enfriaré la cerveza en el refrigerador para la fiesta.",
+      "tr": "Yarın parti için biraları buzdolabında soğutacağım.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Con este calor, enfriaríamos las bebidas en el congelador",
+      "tr": "Bu sıcakta içecekleri dondurucuda soğuturuz",
+      "person": "nosotros"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que se enfríe la sopa antes de servirla",
+      "tr": "Servis etmeden önce çorbanın soğumasını umuyorum",
+      "person": "él/ella"
+    }
+  },
+  "hervir": {
+    "Presente": {
+      "es": "Mi madre hierve los huevos para el desayuno todas las mañanas",
+      "tr": "Annem her sabah kahvaltı için yumurta haşlıyor",
+      "person": "él/ella"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer hervimos los huevos para hacer ensalada rusa",
+      "tr": "Dün Rus salatası yapmak için yumurtaları haşladık",
+      "person": "nosotros"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi abuela hervía las verduras mientras preparaba la sopa.",
+      "tr": "Büyükannem çorbayı hazırlarken sebzeleri kaynatıyordu.",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi madre ha hervido las verduras para la cena de esta noche.",
+      "tr": "Annem bu akşamki yemek için sebzeleri kaynatmış.",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Mañana herviré agua para preparar té con miel",
+      "tr": "Yarın ballı çay hazırlamak için su kaynatacağım",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Yo herviría más agua para hacer pasta para todos",
+      "tr": "Hepsi için makarna yapmak üzere daha fazla su kaynatırım",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que el agua hierva pronto para hacer té.",
+      "tr": "Çay yapmak için suyun çabuk kaynamasını umuyorum.",
+      "person": "él/ella"
+    }
+  },
+  "freír": {
+    "Presente": {
+      "es": "Mi madre fríe pescado fresco para la cena de esta noche.",
+      "tr": "Annem bu akşamki yemek için taze balık kızartıyor.",
+      "person": "él/ella (mi madre)"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer freí unas papas deliciosas para la cena familiar.",
+      "tr": "Dün aile yemeği için lezzetli patatesler kızarttım.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi abuela freía papas todos los domingos por la mañana.",
+      "tr": "Büyükannem her pazar sabahı patates kızartırdı.",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi madre ha frito pollo para la cena de esta noche",
+      "tr": "Annem bu akşamki yemek için tavuk kızartmış",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Mañana freíré unas papas para acompañar el pollo asado.",
+      "tr": "Yarın kızarmış tavuğa eşlik etmek için patates kızartacağım.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Yo freiría las papas si tuviera aceite suficiente",
+      "tr": "Yeterli yağım olsaydı patatesleri kızartırdım",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que mi madre fría las papas para la cena.",
+      "tr": "Umarım annem akşam yemeği için patatesleri kızartır.",
+      "person": "él/ella"
+    }
+  },
+  "asar": {
+    "Presente": {
+      "es": "Mi madre asa la carne en la parrilla todos los domingos.",
+      "tr": "Annem her pazar eti ızgarada kızartır.",
+      "person": "él/ella"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer asé el pollo en la parrilla para la cena familiar.",
+      "tr": "Dün akşam yemeği için tavuğu ızgarada pişirdim.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi abuela asaba las verduras lentamente mientras contaba historias de su juventud.",
+      "tr": "Büyükannem gençlik hikayelerini anlatırken sebzeleri yavaşça kavuruyordu.",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "He asado la carne en la parrilla para la cena de esta noche.",
+      "tr": "Bu akşamki yemek için eti ızgarada pişirdim.",
+      "person": "yo"
+    },
+    "Futuro Simple": {
+      "es": "Mañana asaré pollo con verduras para la cena familiar.",
+      "tr": "Yarın aile yemeği için sebzeli tavuk ızgara yapacağım.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Si tuviera más tiempo, asaría el pollo en el horno.",
+      "tr": "Daha fazla zamanım olsaydı, tavuğu fırında pişirirdim.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que ases bien la carne para la cena.",
+      "tr": "Akşam yemeği için eti iyi pişirmeni umuyorum.",
+      "person": "tú"
+    }
+  },
+  "mezclar": {
+    "Presente": {
+      "es": "Mi hermana mezcla los ingredientes para hacer una torta",
+      "tr": "Kız kardeşim pasta yapmak için malzemeleri karıştırıyor",
+      "person": "él/ella"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer mezclé los ingredientes y preparé una deliciosa torta de chocolate.",
+      "tr": "Dün malzemeleri karıştırdım ve lezzetli bir çikolatalı pasta hazırladım.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi abuela siempre mezclaba los ingredientes con mucho cariño",
+      "tr": "Büyükannem malzemeleri her zaman çok sevgiyle karıştırırdı",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana ha mezclado todos los ingredientes para hacer la torta",
+      "tr": "Kız kardeşim pastayı yapmak için tüm malzemeleri karıştırdı",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Mañana mezclaré todos los ingredientes para hacer el pastel.",
+      "tr": "Yarın pastayı yapmak için tüm malzemeleri karıştıracağım.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Yo mezclaría chocolate y vainilla para hacer un helado delicioso.",
+      "tr": "Lezzetli bir dondurma yapmak için çikolata ve vanilyayı karıştırırdım.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que mezcles bien los ingredientes para la torta",
+      "tr": "Pasta için malzemeleri iyi karıştırmanı umuyorum",
+      "person": "tú"
+    }
+  },
+  "revolver": {
+    "Presente": {
+      "es": "Mi hermana revuelve la sopa mientras habla por teléfono",
+      "tr": "Kız kardeşim telefonla konuşurken çorbayı karıştırıyor",
+      "person": "él/ella"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer revolví todos los papeles buscando mi pasaporte.",
+      "tr": "Dün pasaportumu ararken bütün kağıtları karıştırdım.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi hermana revolvía los huevos mientras yo preparaba el desayuno.",
+      "tr": "Ben kahvaltı hazırlarken kız kardeşim yumurtaları karıştırıyordu.",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana ha revuelto toda la cocina buscando las llaves del coche.",
+      "tr": "Kız kardeşim arabanın anahtarlarını ararken bütün mutfağı alt üst etti.",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Mañana revolveré los papeles de mi escritorio para encontrar el contrato.",
+      "tr": "Yarın sözleşmeyi bulmak için masamdaki kağıtları karıştıracağım.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Si tuviera tiempo, revolverían toda la casa buscando las llaves.",
+      "tr": "Eğer zamanları olsaydı, anahtarları ararken bütün evi altüst ederlerdi.",
+      "person": "ellos"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que revuelvas bien los huevos antes de cocinarlos.",
+      "tr": "Yumurtaları pişirmeden önce iyice karıştırmanı umuyorum.",
+      "person": "tú"
+    }
+  },
+  "batir": {
+    "Presente": {
+      "es": "Mi hermana bate los huevos para hacer el pastel de chocolate.",
+      "tr": "Kız kardeşim çikolatalı pasta yapmak için yumurtaları çırpıyor.",
+      "person": "él/ella"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermana batió los huevos para hacer el pastel de chocolate.",
+      "tr": "Kız kardeşim çikolatalı pasta yapmak için yumurtaları çırptı.",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi abuela batía los huevos todas las mañanas para hacer tortillas.",
+      "tr": "Büyükannem tortilla yapmak için her sabah yumurtaları çırpardı.",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana ha batido los huevos para hacer el pastel.",
+      "tr": "Kız kardeşim pasta yapmak için yumurtaları çırptı.",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Mañana batiré los huevos para hacer el pastel de cumpleaños.",
+      "tr": "Yarın doğum günü pastası yapmak için yumurtaları çırpacağım.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Con más huevos batiría un pastel más esponjoso para la fiesta",
+      "tr": "Daha fazla yumurta ile parti için daha yumuşak bir pasta çırpardım",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Es importante que batas los huevos antes de añadir la harina.",
+      "tr": "Unu eklemeden önce yumurtaları çırpman önemlidir.",
+      "person": "tú"
+    }
+  },
+  "pelar": {
+    "Presente": {
+      "es": "Mi madre pela las papas para hacer el almuerzo",
+      "tr": "Annem öğle yemeği yapmak için patatesleri soyuyor",
+      "person": "él/ella"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer pelé tres manzanas para hacer la tarta de cumpleaños",
+      "tr": "Dün doğum günü pastası yapmak için üç elma soyduk",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi abuela pelaba las papas mientras cocinaba el almuerzo.",
+      "tr": "Büyükannem öğle yemeğini pişirirken patatesleri soyuyordu.",
+      "person": "ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi madre ha pelado las papas para hacer puré.",
+      "tr": "Annem püre yapmak için patatesleri soydu.",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Mañana pelaré las papas para hacer puré.",
+      "tr": "Yarın püre yapmak için patatesleri soyacağım.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Yo pelaría las patatas si tuviera tiempo para cocinar",
+      "tr": "Eğer yemek yapmak için zamanım olsaydı patatesleri soyardım",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que peles las papas antes de cocinarlas.",
+      "tr": "Patates pişirmeden önce soymanı umuyorum.",
+      "person": "tú"
+    }
+  },
+  "picar": {
+    "Presente": {
+      "es": "Mi hermana pica las cebollas para hacer la ensalada",
+      "tr": "Kız kardeşim salata yapmak için soğanları doğruyor",
+      "person": "él/ella"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer me picó una abeja mientras caminaba por el jardín.",
+      "tr": "Dün bahçede yürürken bir arı beni soktu.",
+      "person": "3ª persona singular (ella - la abeja)"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Los mosquitos me picaban todas las noches en el campamento de verano.",
+      "tr": "Sivrisinekler yaz kampında beni her gece sokuyordu.",
+      "person": "ellos"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana se ha picado el dedo mientras cortaba verduras",
+      "tr": "Kız kardeşim sebze doğrarken parmağını kesti",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Mañana picaré las verduras para hacer la ensalada.",
+      "tr": "Yarın salata yapmak için sebzeleri doğrayacağım.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Me picarían los mosquitos si no usara repelente",
+      "tr": "Kovucu kullanmasam sivrisinekler beni sokardı",
+      "person": "ellos"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que no te pique ningún mosquito en el camping.",
+      "tr": "Kampta hiçbir sivrisineğin seni sokmamasını umuyorum.",
+      "person": "tú"
+    }
+  },
+  "rallar": {
+    "Presente": {
+      "es": "Mi madre ralla el queso para la pasta de esta noche.",
+      "tr": "Annem bu akşamki makarna için peyniri rendeleyor.",
+      "person": "él/ella"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer rallé queso para la pasta que preparamos en casa.",
+      "tr": "Dün evde hazırladığımız makarna için peynir rendelerim.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi abuela rallaba queso fresco todas las mañanas para el desayuno.",
+      "tr": "Büyükannem her sabah kahvaltı için taze peynir rendelerdi.",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "He rallado queso parmesano para la pasta de esta noche.",
+      "tr": "Bu akşamki makarna için parmesan peyniri rendeledim.",
+      "person": "yo"
+    },
+    "Futuro Simple": {
+      "es": "Mañana rallaré queso fresco para preparar la lasaña de domingo.",
+      "tr": "Yarın pazar günkü lazanya için taze peynir rendeleceğim.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "¿Rallarías un poco de queso para la pasta?",
+      "tr": "Makarna için biraz peynir rendeleyebilir misin?",
+      "person": "tú"
+    },
+    "Subjuntivo Presente": {
+      "es": "Es importante que ralle el queso antes de servir la pasta.",
+      "tr": "Makarnayı servis etmeden önce peyniri rendelemesi önemli.",
+      "person": "él/ella"
+    }
+  },
+  "medir": {
+    "Presente": {
+      "es": "Mi hermana mide su altura cada mes para ver si crece.",
+      "tr": "Kız kardeşim büyüyüp büyümediğini görmek için her ay boyunu ölçüyor.",
+      "person": "él/ella"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer medí la mesa para ver si cabía en la sala.",
+      "tr": "Dün masayı salona sığıp sığmayacağını görmek için ölçtüm.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi madre medía los ingredientes cuidadosamente cuando hacía pasteles.",
+      "tr": "Annem pasta yaparken malzemeleri dikkatli bir şekilde ölçerdi.",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana ha medido la temperatura del bebé tres veces hoy",
+      "tr": "Kız kardeşim bugün bebeğin ateşini üç kez ölçtü",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Mañana mediré la temperatura del agua antes de bañar al bebé.",
+      "tr": "Yarın bebeği yıkamadan önce suyun sıcaklığını ölçeceğim.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Mi madre mediría los ingredientes antes de hacer el pastel",
+      "tr": "Annem pastayı yapmadan önce malzemeleri ölçerdi",
+      "person": "él/ella"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que midas bien los ingredientes para la receta.",
+      "tr": "Tarif için malzemeleri iyi ölçmeni umuyorum.",
+      "person": "tú"
+    }
+  },
+  "pesar": {
+    "Presente": {
+      "es": "A pesar de la lluvia, salimos a caminar por el parque.",
+      "tr": "Yağmura rağmen parkta yürüyüşe çıktık.",
+      "person": "nosotros"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer pesé las manzanas en el mercado antes de comprarlas.",
+      "tr": "Dün elmaları satın almadan önce pazarda tarttım.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niño, pesaba solo 30 kilos y era muy delgado.",
+      "tr": "Çocukken sadece 30 kilo geliyordum ve çok zayıftım.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "He pesado los ingredientes para hacer el pastel de chocolate",
+      "tr": "Çikolatalı pasta yapmak için malzemeleri tarttım",
+      "person": "yo"
+    },
+    "Futuro Simple": {
+      "es": "Mañana pesaré los ingredientes para hacer el pastel de cumpleaños.",
+      "tr": "Yarın doğum günü pastasını yapmak için malzemeleri tartacağım.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Si fuera más joven, no pesaría tanto mi decisión",
+      "tr": "Daha genç olsaydım, kararımı bu kadar ağır vermezdim",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que peses los ingredientes antes de cocinar.",
+      "tr": "Yemek yapmadan önce malzemeleri tartmanı umuyorum.",
+      "person": "tú"
+    }
+  },
+  "calcular": {
+    "Presente": {
+      "es": "Yo calculo los gastos del mes antes de hacer compras",
+      "tr": "Alışveriş yapmadan önce ayın giderlerini hesaplıyorum",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer calculé los gastos del mes y me sorprendí mucho",
+      "tr": "Dün ayın masraflarını hesapladım ve çok şaşırdım",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Antes calculaba mis gastos mensuales en una libreta pequeña.",
+      "tr": "Eskiden aylık harcamalarımı küçük bir defterde hesaplardım.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermano ha calculado todos los gastos del viaje a España.",
+      "tr": "Kardeşim İspanya seyahatinin tüm masraflarını hesapladı.",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "Mañana calcularé cuánto dinero necesitamos para las vacaciones",
+      "tr": "Yarın tatil için ne kadar paraya ihtiyacımız olduğunu hesaplayacağım",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Yo calcularía el costo total antes de hacer la compra",
+      "tr": "Alışverişi yapmadan önce toplam maliyeti hesaplardım",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que calcules bien los gastos del viaje antes de reservar.",
+      "tr": "Rezervasyon yapmadan önce seyahat masraflarını iyi hesaplamanı umuyorum.",
+      "person": "tú"
+    }
+  },
+  "sumar": {
+    "Presente": {
+      "es": "Mi hermana suma los gastos de la semana cada domingo.",
+      "tr": "Kız kardeşim her pazar haftanın masraflarını toplar.",
+      "person": "él/ella"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermana sumó todos los gastos del viaje familiar.",
+      "tr": "Kız kardeşim aile gezisinin tüm masraflarını topladı.",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niño, siempre sumaba los números en mi cabeza.",
+      "tr": "Çocukken hep kafamda sayıları toplardım.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "He sumado todos los gastos del mes y el resultado es preocupante.",
+      "tr": "Ayın tüm masraflarını topladım ve sonuç endişe verici.",
+      "person": "yo"
+    },
+    "Futuro Simple": {
+      "es": "Mañana sumaré todos los gastos del mes para hacer el presupuesto.",
+      "tr": "Yarın bütçeyi yapmak için ayın tüm harcamalarını toplayacağım.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Con una calculadora, sumarías estos números más rápido",
+      "tr": "Bir hesap makinesiyle bu sayıları daha hızlı toplardın",
+      "person": "tú"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que sumes todos los gastos antes de salir.",
+      "tr": "Çıkmadan önce tüm masrafları toplamını çıkarmanı umuyorum.",
+      "person": "tú"
+    }
+  },
+  "restar": {
+    "Presente": {
+      "es": "A mi hermano le restan dos materias para graduarse de la universidad.",
+      "tr": "Kardeşimin üniversiteden mezun olması için iki dersi kaldı.",
+      "person": "tercera persona (le restan)"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermana me restó importancia a mis preocupaciones ayer.",
+      "tr": "Kız kardeşim dün endişelerime önem vermedi.",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niño, siempre me restaban puntos por llegar tarde.",
+      "tr": "Çocukken, geç geldiğim için hep puanımı düşürürlerdi.",
+      "person": "ellos/ellas"
+    },
+    "Pretérito Perfecto": {
+      "es": "He restado los gastos del total y nos sobran cincuenta euros.",
+      "tr": "Harcamaları toplam tutardan çıkardım ve elli euro kaldı.",
+      "person": "yo"
+    },
+    "Futuro Simple": {
+      "es": "Mañana le restaré diez puntos a tu calificación final.",
+      "tr": "Yarın senin final notundan on puan çıkaracağım.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Si tuvieras más tiempo, me restarías importancia a los problemas",
+      "tr": "Eğer daha fazla zaman olsaydı, sorunları önemsizleştirirdin",
+      "person": "tú"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que le restes importancia a sus comentarios negativos.",
+      "tr": "Onun olumsuz yorumlarına önem vermemeni umuyorum.",
+      "person": "tú"
+    }
+  },
+  "multiplicar": {
+    "Presente": {
+      "es": "Los conejos se multiplican muy rápido en primavera",
+      "tr": "Tavşanlar ilkbaharda çok hızlı çoğalır",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "Los conejos se multiplicaron rápidamente en el jardín este verano.",
+      "tr": "Tavşanlar bu yaz bahçede hızla çoğaldı.",
+      "person": "ellos"
+    },
+    "Pretérito Imperfecto": {
+      "es": "En la escuela, mi profesor multiplicaba los números en la pizarra.",
+      "tr": "Okulda öğretmenim tahtada sayıları çarpıyordu.",
+      "person": "él"
+    },
+    "Pretérito Perfecto": {
+      "es": "Los problemas se han multiplicado desde que comenzó la crisis económica.",
+      "tr": "Ekonomik kriz başladığından beri sorunlar çoğaldı.",
+      "person": "ellos"
+    },
+    "Futuro Simple": {
+      "es": "Los problemas se multiplicarán si no actuamos pronto",
+      "tr": "Eğer çabuk hareket etmezsek sorunlar çoğalacak",
+      "person": "ellos"
+    },
+    "Condicional": {
+      "es": "Si tuvieras más tiempo, multiplicarías tus ganancias fácilmente.",
+      "tr": "Daha fazla vaktın olsaydı, kazancını kolayca katlarındın.",
+      "person": "tú"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que multipliques los ingredientes para más invitados.",
+      "tr": "Daha fazla misafir için malzemeleri çoğaltmanı umuyorum.",
+      "person": "tú"
+    }
+  },
+  "dividir": {
+    "Presente": {
+      "es": "Mis hermanos y yo dividimos la pizza en ocho pedazos.",
+      "tr": "Kardeşlerim ve ben pizzayı sekiz parçaya bölüyoruz.",
+      "person": "nosotros"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer dividimos la cuenta del restaurante entre todos los amigos.",
+      "tr": "Dün restoran hesabını tüm arkadaşlar arasında böldük.",
+      "person": "nosotros"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niño, mi hermano y yo dividíamos siempre los dulces.",
+      "tr": "Çocukken kardeşim ve ben şekerleri hep paylaşırdık.",
+      "person": "nosotros"
+    },
+    "Pretérito Perfecto": {
+      "es": "Hemos dividido la pizza en ocho pedazos para todos.",
+      "tr": "Pizzayı herkes için sekiz parçaya böldük.",
+      "person": "nosotros"
+    },
+    "Futuro Simple": {
+      "es": "Mañana dividiremos la cuenta del restaurante entre todos nosotros.",
+      "tr": "Yarın restoran hesabını aramızda paylaşacağız.",
+      "person": "nosotros"
+    },
+    "Condicional": {
+      "es": "Yo dividiría la pizza en ocho pedazos para todos.",
+      "tr": "Pizzayı herkes için sekiz parçaya bölerrim.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que dividas la cuenta entre todos nosotros.",
+      "tr": "Hesabı hepimiz arasında bölmeni umuyorum.",
+      "person": "tú"
+    }
+  },
+  "resolver": {
+    "Presente": {
+      "es": "Mi hermana siempre resuelve los problemas de matemáticas muy rápido",
+      "tr": "Kız kardeşim matematik problemlerini her zaman çok hızlı çözer",
+      "person": "ella"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermano resolvió el problema de matemáticas en cinco minutos.",
+      "tr": "Kardeşim matematik problemini beş dakikada çözdü.",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era estudiante, siempre resolvía los problemas de matemáticas rápidamente.",
+      "tr": "Öğrenciyken matematik problemlerini hep hızlıca çözerdim.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermano ha resuelto el problema de matemáticas muy rápido",
+      "tr": "Kardeşim matematik problemini çok hızlı çözdü",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "Mañana resolveremos este problema juntos en la reunión.",
+      "tr": "Yarın toplantıda bu sorunu birlikte çözeceğiz.",
+      "person": "nosotros"
+    },
+    "Condicional": {
+      "es": "Con más tiempo, yo resolvería este problema matemático fácilmente.",
+      "tr": "Daha fazla zamanla, bu matematik problemini kolayca çözerdim.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que resuelvas el problema antes del viernes.",
+      "tr": "Umarım problemi cuma gününden önce çözersin.",
+      "person": "tú"
+    }
+  },
+  "analizar": {
+    "Presente": {
+      "es": "Los científicos analizan los resultados del experimento en el laboratorio.",
+      "tr": "Bilim insanları laboratuvarda deneyin sonuçlarını analiz ediyor.",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "El detective analizó todas las pruebas del caso ayer.",
+      "tr": "Dedektif dün davanın tüm delillerini analiz etti.",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi hermano analizaba los datos mientras yo preparaba el café.",
+      "tr": "Kardeşim ben kahve hazırlarken verileri analiz ediyordu.",
+      "person": "él"
+    },
+    "Pretérito Perfecto": {
+      "es": "He analizado todos los datos del proyecto esta mañana",
+      "tr": "Bu sabah projenin tüm verilerini analiz ettim",
+      "person": "yo"
+    },
+    "Futuro Simple": {
+      "es": "Mañana analizaremos los resultados del examen con el profesor",
+      "tr": "Yarın profesörle birlikte sınav sonuçlarını analiz edeceğiz",
+      "person": "nosotros"
+    },
+    "Condicional": {
+      "es": "Yo analizaría los datos antes de tomar una decisión importante.",
+      "tr": "Önemli bir karar vermeden önce verileri analiz ederdim.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que analices bien los datos antes de decidir.",
+      "tr": "Karar vermeden önce verileri iyi analiz etmeni umuyorum.",
+      "person": "tú"
+    }
+  },
+  "investigar": {
+    "Presente": {
+      "es": "Los científicos investigan las causas del cambio climático",
+      "tr": "Bilim insanları iklim değişikliğinin nedenlerini araştırıyor",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "La policía investigó el robo durante toda la semana pasada.",
+      "tr": "Polis geçen hafta boyunca hırsızlığı araştırdı.",
+      "person": "él/ella/usted"
+    },
+    "Pretérito Imperfecto": {
+      "es": "La policía investigaba el robo cuando encontraron las pruebas",
+      "tr": "Polis kanıtları bulduğunda hırsızlığı araştırıyordu",
+      "person": "ella (la policía)"
+    },
+    "Pretérito Perfecto": {
+      "es": "La policía ha investigado el robo durante toda la semana.",
+      "tr": "Polis tüm hafta boyunca hırsızlığı araştırdı.",
+      "person": "ella (la policía)"
+    },
+    "Futuro Simple": {
+      "es": "La policía investigará el robo que ocurrió anoche en el banco.",
+      "tr": "Polis dün gece bankada meydana gelen soygunu araştıracak.",
+      "person": "tercera persona singular (ella)"
+    },
+    "Condicional": {
+      "es": "Si fuera detective, investigaría todos los casos sin resolver",
+      "tr": "Eğer dedektif olsaydım, çözülmemiş tüm davaları araştırırdım",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Es importante que investigues este caso antes del lunes.",
+      "tr": "Bu davayı pazartesiden önce araştırman önemli.",
+      "person": "tú"
+    }
+  },
+  "descubrir": {
+    "Presente": {
+      "es": "Cada día descubro algo nuevo sobre mi vecino.",
+      "tr": "Her gün komşum hakkında yeni bir şey keşfediyorum.",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer descubrí que mi hermana había estado mintiendo sobre sus notas",
+      "tr": "Dün kız kardeşimin notları hakkında yalan söylediğini keşfettim",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cada día descubría algo nuevo sobre mi vecina misteriosa.",
+      "tr": "Her gün gizemli komşum hakkında yeni bir şey keşfediyordum.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana ha descubierto una nueva cafetería en el centro de la ciudad",
+      "tr": "Kız kardeşim şehir merkezinde yeni bir kafeterya keşfetti",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Mañana descubriremos si conseguiste el trabajo que querías.",
+      "tr": "Yarın istediğin işi alıp almadığını öğreneceğiz.",
+      "person": "nosotros"
+    },
+    "Condicional": {
+      "es": "Con más tiempo, descubriríamos la verdad sobre este misterio.",
+      "tr": "Daha fazla zamanla, bu gizemin gerçeğini keşfederiz.",
+      "person": "nosotros"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que descubras algo interesante en tu viaje a México.",
+      "tr": "Meksika'ya yaptığın seyahatte ilginç bir şeyler keşfetmeni umuyorum.",
+      "person": "tú"
+    }
+  },
+  "inventar": {
+    "Presente": {
+      "es": "Los niños inventan historias increíbles cuando juegan en el parque.",
+      "tr": "Çocuklar parkta oynarken inanılmaz hikayeler uydururlar.",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermano inventó una excusa para no ir a la escuela",
+      "tr": "Kardeşim okula gitmemek için bir bahane uydurdu",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niño, inventaba historias increíbles para mis amigos.",
+      "tr": "Çocukken arkadaşlarım için inanılmaz hikayeler uydururdum.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermano ha inventado una excusa para no ir a la escuela.",
+      "tr": "Kardeşim okula gitmemek için bir bahane uydurdu.",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "Los científicos inventarán nuevas tecnologías para combatir el cambio climático.",
+      "tr": "Bilim insanları iklim değişikliğiyle mücadele etmek için yeni teknolojiler icat edecekler.",
+      "person": "ellos"
+    },
+    "Condicional": {
+      "es": "Si tuviera más tiempo, inventaría una máquina para lavar platos automáticamente.",
+      "tr": "Daha fazla zamanım olsaydı, otomatik bulaşık yıkayan bir makine icat ederdim.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que inventes una buena excusa para llegar tarde.",
+      "tr": "Geç kalmak için iyi bir bahane uydurmanı umuyorum.",
+      "person": "tú"
+    }
+  },
+  "imaginar": {
+    "Presente": {
+      "es": "Imagino que llegarás tarde a la reunión de mañana",
+      "tr": "Yarınki toplantıya geç kalacağını düşünüyorum",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer imaginé cómo sería vivir en París con mi familia",
+      "tr": "Dün ailemiyle Paris'te yaşamanın nasıl olacağını hayal ettim",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niña, siempre imaginaba que era una princesa en mi cuarto.",
+      "tr": "Küçükken hep odamda bir prenses olduğumu hayal ederdim.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "He imaginado cómo sería vivir en París toda mi vida",
+      "tr": "Tüm hayatım boyunca Paris'te yaşamanın nasıl olacağını hayal ettim",
+      "person": "yo"
+    },
+    "Futuro Simple": {
+      "es": "Mañana imaginaré cómo será mi vida en diez años.",
+      "tr": "Yarın on yıl sonra hayatımın nasıl olacağını hayal edeceğim.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Nunca imaginaría que mi hermano se casaría tan joven",
+      "tr": "Kardeşimin bu kadar genç yaşta evleneceğini asla hayal etmezdim",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que imagines un futuro mejor para todos nosotros.",
+      "tr": "Hepimiz için daha iyi bir gelecek hayal etmeni umuyorum.",
+      "person": "tú"
+    }
+  },
+  "soñar": {
+    "Presente": {
+      "es": "Todas las noches sueño con viajar por el mundo",
+      "tr": "Her gece dünyayı dolaşmayı hayal ediyorum",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Anoche soñé que volaba sobre las montañas de mi pueblo.",
+      "tr": "Dün gece memleketimin dağları üzerinde uçtuğumu rüya gördüm.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niña, soñaba con ser doctora y ayudar a las personas.",
+      "tr": "Çocukken doktor olmayı ve insanlara yardım etmeyi hayal ederdim.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "Esta noche he soñado con mi abuela que murió el año pasado",
+      "tr": "Bu gece geçen yıl ölen büyükannemle rüya gördüm",
+      "person": "yo"
+    },
+    "Futuro Simple": {
+      "es": "Esta noche soñaré con mis vacaciones en la playa.",
+      "tr": "Bu gece sahildeki tatilimi rüyamda göreceğim.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Yo soñaría con viajar por todo el mundo si tuviera dinero",
+      "tr": "Param olsaydı tüm dünyayı gezmekle ilgili hayal kurardım",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que sueñes con cosas bonitas esta noche.",
+      "tr": "Bu gece güzel şeyler hayal etmeni umuyorum.",
+      "person": "tú"
+    }
+  },
+  "despertar": {
+    "Presente": {
+      "es": "Siempre me despierto temprano para hacer ejercicio",
+      "tr": "Egzersiz yapmak için her zaman erken uyanırım",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermana se despertó muy temprano para ir al trabajo",
+      "tr": "Kız kardeşim işe gitmek için çok erken uyandı",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niño, mi madre me despertaba a las siete cada mañana.",
+      "tr": "Çocukken annem beni her sabah yedide uyandırırdı.",
+      "person": "ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana se ha despertado muy temprano para ir al trabajo.",
+      "tr": "Kız kardeşim işe gitmek için çok erken uyandı.",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Mañana me despertaré temprano para ir al gimnasio.",
+      "tr": "Yarın spor salonuna gitmek için erken uyanacağım.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Me despertaría más temprano si no fuera tan difícil",
+      "tr": "Eğer bu kadar zor olmasaydı daha erken uyanırdım",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que mi hermano despierte temprano mañana para el viaje.",
+      "tr": "Yolculuk için kardeşimin yarın erken uyanmasını umuyorum.",
+      "person": "él"
+    }
+  },
+  "acostar": {
+    "Presente": {
+      "es": "Siempre acuesto a mi hijo a las nueve de la noche",
+      "tr": "Oğlumu her zaman akşam saat dokuzda yatırırım",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer acosté a mi hijo a las nueve de la noche",
+      "tr": "Dün gece dokuzda oğlumu yatırdım",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi madre me acostaba temprano cuando era pequeño",
+      "tr": "Annem küçükken beni erken yatırırdı",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Los niños se han acostado muy tarde esta noche",
+      "tr": "Çocuklar bu gece çok geç yattı",
+      "person": "ellos"
+    },
+    "Futuro Simple": {
+      "es": "Mañana acostaré a los niños temprano porque tienen escuela.",
+      "tr": "Yarın çocukları erken yatıracağım çünkü okulları var.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Me acostaría temprano si no tuviera tanto trabajo pendiente.",
+      "tr": "Eğer bu kadar bekleyen işim olmasaydı erken yatardım.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que acuestes a los niños temprano esta noche.",
+      "tr": "Bu gece çocukları erken yatırmanı umuyorum.",
+      "person": "tú"
+    }
+  },
+  "levantar": {
+    "Presente": {
+      "es": "Mi hermana se levanta temprano todos los días para ir al trabajo.",
+      "tr": "Kız kardeşim her gün işe gitmek için erken kalkar.",
+      "person": "él/ella"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer me levanté muy temprano para ir al trabajo",
+      "tr": "Dün işe gitmek için çok erken kalktım",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi madre me levantaba muy temprano cuando era niño",
+      "tr": "Çocukken annem beni çok erken kaldırırdı",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermano se ha levantado muy temprano para ir al trabajo.",
+      "tr": "Kardeşim işe gitmek için çok erken kalktı.",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "Mañana me levantaré temprano para ir al gimnasio.",
+      "tr": "Yarın spor salonuna gitmek için erken kalkacağım.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Me levantaría más temprano si no fuera tan difícil",
+      "tr": "Bu kadar zor olmasaydı daha erken kalkardım",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que te levantes temprano mañana para el viaje.",
+      "tr": "Yarın yolculuk için erken kalkmanı umuyorum.",
+      "person": "tú"
+    }
+  },
+  "sentar": {
+    "Presente": {
+      "es": "Mi madre sienta al bebé en la silla alta",
+      "tr": "Annem bebeği mama sandalyesine oturtyor",
+      "person": "él/ella"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi abuela se sentó en su silla favorita para tejer.",
+      "tr": "Büyükannem örgü örmek için en sevdiği sandalyeye oturdu.",
+      "person": "él/ella (se sentó)"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi abuela siempre se sentaba en esa silla para tejer por las tardes",
+      "tr": "Büyükannem öğleden sonra örgü örmek için her zaman o sandalyeye otururdu",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana se ha sentado en el sofá para ver televisión.",
+      "tr": "Kız kardeşim televizyon izlemek için kanepeye oturdu.",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Mañana sentaré a mi hijo en su nueva silla alta.",
+      "tr": "Yarın oğlumu yeni mama sandalyesine oturtacağım.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Me sentaría en el sofá si no estuviera tan cansado",
+      "tr": "Eğer bu kadar yorgun olmasaydım kanepeye otururdum",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que te sientes en la primera fila del teatro.",
+      "tr": "Tiyatronun ön sırasına oturmanı umuyorum.",
+      "person": "tú"
+    }
+  },
+  "parar": {
+    "Presente": {
+      "es": "Los autobuses paran en esta esquina cada diez minutos.",
+      "tr": "Otobüsler bu köşede her on dakikada bir duruyor.",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer paré en la gasolinera para llenar el tanque",
+      "tr": "Dün depoyu doldurmak için benzin istasyonunda durdum",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niño, mi abuelo nunca paraba de contar historias interesantes.",
+      "tr": "Çocukken büyükbabam hiç ilginç hikayeler anlatmayı bırakmazdı.",
+      "person": "él"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermano ha parado de fumar hace dos meses.",
+      "tr": "Kardeşim iki ay önce sigara içmeyi bıraktı.",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "Mañana pararé en la gasolinera para llenar el tanque.",
+      "tr": "Yarın depoyu doldurmak için benzin istasyonunda duracağım.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Si tuviera más tiempo, pararía en esa cafetería nueva",
+      "tr": "Daha fazla zamanım olsaydı, o yeni kafeteryaya uğrardım",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que pares de fumar porque es malo para tu salud.",
+      "tr": "Sigara içmeyi bırakmanı umuyorum çünkü sağlığın için kötü.",
+      "person": "tú"
+    }
+  },
+  "continuar": {
+    "Presente": {
+      "es": "Los estudiantes continúan trabajando en sus proyectos finales.",
+      "tr": "Öğrenciler final projelerinde çalışmaya devam ediyorlar.",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "Después del descanso continuamos trabajando en el proyecto hasta muy tarde",
+      "tr": "Moladan sonra çok geç saatlere kadar projede çalışmaya devam ettik",
+      "person": "nosotros"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mis padres continuaban discutiendo mientras yo hacía la tarea",
+      "tr": "Ben ödevimi yaparken ailem tartışmaya devam ediyordu",
+      "person": "ellos"
+    },
+    "Pretérito Perfecto": {
+      "es": "Hemos continuado trabajando en el proyecto toda la semana",
+      "tr": "Bütün hafta boyunca projede çalışmaya devam ettik",
+      "person": "nosotros"
+    },
+    "Futuro Simple": {
+      "es": "Mañana continuaré estudiando para el examen de matemáticas.",
+      "tr": "Yarın matematik sınavı için çalışmaya devam edeceğim.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Continuarían estudiando si tuvieran más tiempo libre",
+      "tr": "Daha fazla boş zamanları olsaydı çalışmaya devam ederlerdi",
+      "person": "ellos"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que continúes estudiando español este año.",
+      "tr": "Bu yıl İspanyolca çalışmaya devam etmeni umuyorum.",
+      "person": "tú"
+    }
+  },
+  "comenzar": {
+    "Presente": {
+      "es": "Mañana comienzo mi nuevo trabajo en la oficina",
+      "tr": "Yarın ofiste yeni işime başlıyorum",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermana comenzó a estudiar medicina el año pasado en Madrid.",
+      "tr": "Kız kardeşim geçen yıl Madrid'de tıp okumaya başladı.",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niño, siempre comenzaba mis tareas después de cenar.",
+      "tr": "Çocukken, ödevlerime hep akşam yemeğinden sonra başlardım.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana ha comenzado a estudiar francés en la universidad",
+      "tr": "Kız kardeşim üniversitede Fransızca çalışmaya başladı",
+      "person": "ella"
+    },
+    "Futuro Simple": {
+      "es": "Mañana comenzaré mi nuevo trabajo en la oficina",
+      "tr": "Yarın ofiste yeni işime başlayacağım",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Yo comenzaría la dieta el lunes si tuviera más motivación",
+      "tr": "Daha fazla motivasyonum olsaydı pazartesi diyete başlardım",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que comiences a estudiar para el examen mañana.",
+      "tr": "Yarın sınav için çalışmaya başlamanı umuyorum.",
+      "person": "tú"
+    }
+  },
+  "iniciar": {
+    "Presente": {
+      "es": "Siempre inicio mi día con un café y el periódico",
+      "tr": "Günüme her zaman bir kahve ve gazete ile başlarım",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermana inició clases de piano el mes pasado",
+      "tr": "Kız kardeşim geçen ay piyano derslerine başladı",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niño, iniciaba cada día con mucho entusiasmo.",
+      "tr": "Çocukken her güne büyük bir coşkuyla başlardım.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "Hemos iniciado un nuevo proyecto en la oficina esta semana",
+      "tr": "Bu hafta ofiste yeni bir projeye başladık",
+      "person": "nosotros"
+    },
+    "Futuro Simple": {
+      "es": "Mañana iniciaré un nuevo curso de francés en la universidad.",
+      "tr": "Yarın üniversitede yeni bir Fransızca kursuna başlayacağım.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Yo iniciaría el proyecto mañana si tuviera más tiempo",
+      "tr": "Daha fazla zamanım olsaydı projeyi yarın başlatırdım",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que inicies tu proyecto antes del viernes.",
+      "tr": "Umuyorum ki projenizi Cuma'dan önce başlatırsınız.",
+      "person": "tú"
+    }
+  },
+  "finalizar": {
+    "Presente": {
+      "es": "Normalmente finalizo mi trabajo a las seis de la tarde",
+      "tr": "Normalde işimi akşam altıda bitiririm",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer finalizamos el proyecto de matemáticas para la universidad.",
+      "tr": "Dün üniversite için matematik projesini bitirdik.",
+      "person": "nosotros"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Siempre finalizaba mis tareas antes de salir con amigos.",
+      "tr": "Arkadaşlarımla çıkmadan önce her zaman görevlerimi bitirirdim.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "Ya he finalizado mi trabajo de matemáticas para mañana",
+      "tr": "Yarın için matematik ödevimi çoktan bitirdim",
+      "person": "yo"
+    },
+    "Futuro Simple": {
+      "es": "Mañana finalizaré el proyecto que he estado preparando toda la semana.",
+      "tr": "Yarın bütün hafta hazırladığım projeyi bitireceğim.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Si tuviera más tiempo, finalizaría el proyecto esta semana.",
+      "tr": "Eğer daha fazla zamanım olsaydı, projeyi bu hafta bitirirdim.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que finalices el proyecto antes del viernes.",
+      "tr": "Umarım projeyi cuma gününden önce bitirirsin.",
+      "person": "tú"
+    }
+  },
+  "completar": {
+    "Presente": {
+      "es": "Siempre completo mis tareas antes de salir con amigos",
+      "tr": "Arkadaşlarımla çıkmadan önce her zaman ödevlerimi tamamlarım",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer completé todos los ejercicios de matemáticas antes de cenar",
+      "tr": "Dün akşam yemeğinden önce tüm matematik alıştırmalarını tamamladım",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era estudiante, completaba mis tareas antes de cenar",
+      "tr": "Öğrenciyken, akşam yemeğinden önce ödevlerimi tamamlardım",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "Hoy he completado todos mis ejercicios de matemáticas.",
+      "tr": "Bugün matematik alıştırmalarımın hepsini tamamladım.",
+      "person": "yo"
+    },
+    "Futuro Simple": {
+      "es": "Mañana completaré mi tarea de matemáticas antes de salir",
+      "tr": "Yarın çıkmadan önce matematik ödevimi tamamlayacağım",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Con más tiempo completaría mi proyecto de pintura este fin de semana.",
+      "tr": "Daha fazla zamanım olsaydı bu hafta sonu boyama projemi tamamlardım.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que completes el proyecto antes del viernes.",
+      "tr": "Umarım projeyi cuma gününden önce tamamlarsın.",
+      "person": "tú"
+    }
+  },
+  "faltar": {
+    "Presente": {
+      "es": "Me faltan dos ingredientes para completar la receta de paella.",
+      "tr": "Paella tarifini tamamlamak için iki malzemem eksik.",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer me faltó dinero para comprar el regalo de cumpleaños.",
+      "tr": "Dün doğum günü hediyesini almak için param yetmedi.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Me faltaban cinco euros para comprar el libro que quería",
+      "tr": "İstediğim kitabı almak için beş eurom eksikti",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "Me ha faltado tiempo para terminar el proyecto de trabajo.",
+      "tr": "İş projesini bitirmek için zamanım yetmedi.",
+      "person": "yo"
+    },
+    "Futuro Simple": {
+      "es": "Te faltarán solo dos semanas para terminar el proyecto.",
+      "tr": "Projeyi bitirmek için sadece iki haftaya ihtiyacın olacak.",
+      "person": "tú"
+    },
+    "Condicional": {
+      "es": "Me faltarían dos horas más para terminar este proyecto",
+      "tr": "Bu projeyi bitirmek için iki saat daha eksik olurdu",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que no te falte dinero para el viaje",
+      "tr": "Yolculuk için paran eksik olmamasını umuyorum",
+      "person": "tú"
+    }
+  },
+  "sobrar": {
+    "Presente": {
+      "es": "Después de la cena siempre sobra mucha comida en casa",
+      "tr": "Akşam yemeğinden sonra evde hep çok yemek artar",
+      "person": "3ª persona singular"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer preparé mucha comida y sobró bastante para hoy",
+      "tr": "Dün çok yemek hazırladım ve bugün için epey arttı",
+      "person": "3ª persona singular (sobró)"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Siempre nos sobraba comida después de las cenas familiares.",
+      "tr": "Aile yemeklerinden sonra her zaman yemeğimiz artardı.",
+      "person": "nosotros"
+    },
+    "Pretérito Perfecto": {
+      "es": "Nos ha sobrado mucha comida después de la fiesta",
+      "tr": "Partiden sonra çok fazla yemeğimiz arttı",
+      "person": "nosotros"
+    },
+    "Futuro Simple": {
+      "es": "Si cocinas tanto arroz, sobrará comida para mañana",
+      "tr": "Bu kadar pilav pişirirsen, yarın için yemek artacak",
+      "person": "tercera persona singular (él/ella)"
+    },
+    "Condicional": {
+      "es": "Si compráramos menos comida, nos sobraría dinero para las vacaciones.",
+      "tr": "Daha az yemek satın alsaydık, tatil için paramız artar/kalırdı.",
+      "person": "nosotros"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que nos sobre dinero para las vacaciones de verano.",
+      "tr": "Yaz tatilleri için paramızın artmasını umuyorum.",
+      "person": "nosotros"
+    }
+  },
+  "actuar": {
+    "Presente": {
+      "es": "Mi hermano actúa de manera muy extraña últimamente",
+      "tr": "Kardeşim son zamanlarda çok garip davranıyor",
+      "person": "él"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermano actuó muy bien en la obra de teatro del colegio",
+      "tr": "Kardeşim okulun tiyatro oyununda çok iyi oynadı",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi hermano actuaba muy raro cuando llegaba tarde a casa.",
+      "tr": "Kardeşim eve geç geldiğinde çok tuhaf davranıyordu.",
+      "person": "él"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermano ha actuado muy bien en la obra de teatro",
+      "tr": "Kardeşim tiyatro oyununda çok iyi oynadı",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "Mañana actuará en el teatro principal de la ciudad",
+      "tr": "Yarın şehrin ana tiyatrosunda oynayacak",
+      "person": "él/ella"
+    },
+    "Condicional": {
+      "es": "Yo actuaría de manera diferente si tuviera otra oportunidad",
+      "tr": "Başka bir fırsatım olsaydı farklı davranırdım",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que actúes con más responsabilidad en el trabajo.",
+      "tr": "İş yerinde daha sorumlu davranmanı umuyorum.",
+      "person": "tú"
+    }
+  },
+  "adaptar": {
+    "Presente": {
+      "es": "Me adapto fácilmente a los cambios en el trabajo",
+      "tr": "İşteki değişikliklere kolayca uyum sağlıyorum",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermana se adaptó rápidamente a la nueva ciudad universitaria.",
+      "tr": "Kız kardeşim yeni üniversite şehrine hızlıca uyum sağladı.",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi hermano se adaptaba rápidamente a los nuevos colegios",
+      "tr": "Kardeşim yeni okullara hızlıca uyum sağlardı",
+      "person": "él"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermano se ha adaptado muy bien a su nueva escuela",
+      "tr": "Kardeşim yeni okuluna çok iyi adapte oldu",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "Los estudiantes se adaptarán rápidamente a las nuevas reglas del colegio.",
+      "tr": "Öğrenciler okulun yeni kurallarına hızlıca uyum sağlayacaklar.",
+      "person": "ellos"
+    },
+    "Condicional": {
+      "es": "Me adaptaría mejor a este trabajo si tuviera más experiencia",
+      "tr": "Daha fazla deneyimim olsaydı bu işe daha iyi uyum sağlardım",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que te adaptes rápido a tu nueva escuela.",
+      "tr": "Umarım yeni okuluna çabuk alışırsın.",
+      "person": "tú"
+    }
+  },
+  "afeitar": {
+    "Presente": {
+      "es": "Mi papá se afeita todas las mañanas antes de ir al trabajo",
+      "tr": "Babam her sabah işe gitmeden önce tıraş olur",
+      "person": "él"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi padre se afeitó la barba antes de ir al trabajo.",
+      "tr": "Babam işe gitmeden önce sakalını tıraş etti.",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi papá se afeitaba todas las mañanas antes de ir al trabajo.",
+      "tr": "Babam işe gitmeden önce her sabah tıraş olurdu.",
+      "person": "él"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi padre se ha afeitado la barba esta mañana antes del trabajo",
+      "tr": "Babam bu sabah işten önce sakalını tıraş oldu",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "Mañana me afeitaré antes de ir a la entrevista de trabajo.",
+      "tr": "Yarın iş mülakatına gitmeden önce tıraş olacağım.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Me afeitaría la barba si tuviera una cita importante",
+      "tr": "Önemli bir randevum olsaydı sakalımı tıraş ederdim",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que mi hermano se afeite antes de la boda.",
+      "tr": "Umarım kardeşim düğünden önce tıraş olur.",
+      "person": "él"
+    }
+  },
+  "agarrar": {
+    "Presente": {
+      "es": "Siempre agarro las llaves antes de salir de casa",
+      "tr": "Evden çıkmadan önce her zaman anahtarları alırım",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer agarré el último autobús para llegar a casa.",
+      "tr": "Dün eve ulaşmak için son otobüsü yakaladım.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niño, siempre agarraba la mano de mi madre.",
+      "tr": "Çocukken hep annemin elini tutardım.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "He agarrado las llaves del coche antes de salir de casa.",
+      "tr": "Evden çıkmadan önce arabanın anahtarlarını aldım.",
+      "person": "yo"
+    },
+    "Futuro Simple": {
+      "es": "Mañana agarraré el autobús temprano para llegar a tiempo al trabajo.",
+      "tr": "Yarın işe zamanında varmak için otobüsü erken tutacağım.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Si fuera tú, agarraría ese trabajo sin dudarlo",
+      "tr": "Senin yerinde olsam o işi düşünmeden kabul ederdim",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que agarres el autobús a tiempo esta mañana.",
+      "tr": "Bu sabah otobüsü zamanında yakalamanı umuyorum.",
+      "person": "tú"
+    }
+  },
+  "ahorrar": {
+    "Presente": {
+      "es": "Nosotros ahorramos dinero cada mes para las vacaciones de verano.",
+      "tr": "Biz yaz tatili için her ay para biriktiriyoruz.",
+      "person": "nosotros"
+    },
+    "Pretérito Indefinido": {
+      "es": "El año pasado ahorré dinero para comprar un coche nuevo.",
+      "tr": "Geçen yıl yeni bir araba almak için para biriktirdim.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era joven, ahorraba dinero para comprar una bicicleta nueva.",
+      "tr": "Gençken, yeni bir bisiklet almak için para biriktiriyordum.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "He ahorrado suficiente dinero para comprar el coche nuevo",
+      "tr": "Yeni arabayı satın almak için yeterli para biriktirdim",
+      "person": "yo"
+    },
+    "Futuro Simple": {
+      "es": "El próximo año ahorraré dinero para comprar una casa nueva.",
+      "tr": "Gelecek yıl yeni bir ev satın almak için para biriktireceğim.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Si trabajara medio tiempo, ahorraría menos dinero para las vacaciones.",
+      "tr": "Yarı zamanlı çalışsaydım, tatil için daha az para biriktirir(di)m.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Es importante que ahorres dinero para tu futuro",
+      "tr": "Geleceğin için para biriktirmen önemli",
+      "person": "tú"
+    }
+  },
+  "alquilar": {
+    "Presente": {
+      "es": "Mis padres alquilan un apartamento cerca del centro de la ciudad.",
+      "tr": "Ailem şehir merkezine yakın bir daire kiralıyor.",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mis padres alquilaron un apartamento en la playa el verano pasado.",
+      "tr": "Ailem geçen yaz sahilde bir daire kiraladı.",
+      "person": "ellos"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era estudiante, alquilaba un pequeño apartamento cerca de la universidad.",
+      "tr": "Öğrenciyken üniversitenin yakınında küçük bir daire kiralıyordum.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "Hemos alquilado una casa en la playa para las vacaciones de verano.",
+      "tr": "Yaz tatili için sahilde bir ev kiraladık.",
+      "person": "nosotros"
+    },
+    "Futuro Simple": {
+      "es": "El próximo mes alquilaremos un apartamento cerca de la universidad",
+      "tr": "Gelecek ay üniversiteye yakın bir daire kiralayacağız",
+      "person": "nosotros"
+    },
+    "Condicional": {
+      "es": "Yo alquilaría un apartamento cerca del centro si tuviera dinero.",
+      "tr": "Param olsaydı şehir merkezine yakın bir daire kiralardım.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Es importante que alquiles un apartamento cerca del trabajo.",
+      "tr": "İşyerine yakın bir daire kiralamanız önemlidir.",
+      "person": "tú"
+    }
+  },
+  "alzar": {
+    "Presente": {
+      "es": "Mi hermano alza la mano para hacer una pregunta en clase",
+      "tr": "Kardeşim sınıfta soru sormak için elini kaldırıyor",
+      "person": "él"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer me levanté temprano para ir al trabajo.",
+      "tr": "Dün işe gitmek için erken kalktım.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi abuela siempre alzaba la voz cuando nos portábamos mal.",
+      "tr": "Büyükannem kötü davrandığımızda hep sesini yükseltirdi.",
+      "person": "ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermano ha alzado la voz durante la discusión familiar",
+      "tr": "Kardeşim aile tartışması sırasında sesini yükseltti",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "Mañana alzaré la mano para hacer una pregunta en clase.",
+      "tr": "Yarın sınıfta soru sormak için elimi kaldıracağım.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Si tuviera más fuerza, alzaría esa caja pesada sin problemas.",
+      "tr": "Daha fazla gücüm olsaydı, o ağır kutuyu sorunsuz kaldırırdım.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que alces la mano si tienes alguna pregunta.",
+      "tr": "Eğer sorun varsa elini kaldırmanı umuyorum.",
+      "person": "tú"
+    }
+  },
+  "anunciar": {
+    "Presente": {
+      "es": "La empresa anuncia nuevos empleos para el próximo mes.",
+      "tr": "Şirket gelecek ay için yeni işler duyuruyor.",
+      "person": "ella"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermana anunció su compromiso en la cena familiar del domingo.",
+      "tr": "Kız kardeşim pazar günkü aile yemeğinde nişanını duyurdu.",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "La radio anunciaba las noticias mientras desayunábamos en familia",
+      "tr": "Aile olarak kahvaltı ederken radyo haberleri duyuruyordu",
+      "person": "la radio (3ª persona singular)"
+    },
+    "Pretérito Perfecto": {
+      "es": "La empresa ha anunciado nuevos empleos para el próximo mes",
+      "tr": "Şirket gelecek ay için yeni işler duyurdu",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "La empresa anunciará los resultados financieros la próxima semana.",
+      "tr": "Şirket gelecek hafta mali sonuçları açıklayacak.",
+      "person": "ella (la empresa)"
+    },
+    "Condicional": {
+      "es": "Yo anunciaría mi compromiso después de hablar con mis padres.",
+      "tr": "Aileme konuştuktan sonra nişanımı duyururdum.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que anuncien los resultados del concurso mañana.",
+      "tr": "Yarın yarışma sonuçlarını açıklamalarını umuyorum.",
+      "person": "ellos"
+    }
+  },
+  "apagar": {
+    "Presente": {
+      "es": "Siempre apago las luces antes de salir de casa",
+      "tr": "Evden çıkmadan önce her zaman ışıkları kapatırım",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer apagué las luces antes de salir de casa.",
+      "tr": "Dün evden çıkmadan önce ışıkları kapattım.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi hermano siempre apagaba las luces antes de dormir",
+      "tr": "Kardeşim yatmadan önce hep ışıkları söndürürdü",
+      "person": "él"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana ha apagado la televisión antes de salir",
+      "tr": "Kız kardeşim çıkmadan önce televizyonu kapatmış",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Apagaré las luces antes de salir de casa",
+      "tr": "Evden çıkmadan önce ışıkları kapatacağım",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "¿Podrías apagar la televisión antes de salir de casa?",
+      "tr": "Evden çıkmadan önce televizyonu kapatır mısın?",
+      "person": "tú"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que apagues las luces antes de salir de casa.",
+      "tr": "Evden çıkmadan önce ışıkları kapatmanı umuyorum.",
+      "person": "tú"
+    }
+  },
+  "apostar": {
+    "Presente": {
+      "es": "Siempre apuesto por mi equipo favorito en los partidos importantes",
+      "tr": "Önemli maçlarda her zaman favori takımıma bahis oynarım",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer aposté veinte euros en el partido de fútbol",
+      "tr": "Dün futbol maçına yirmi euro bahis oynadım",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Siempre apostaba en los caballos cuando iba al hipódromo",
+      "tr": "Hipodroma gittiğinde hep atlara bahis oynardı",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermano ha apostado todo su dinero en el partido de fútbol.",
+      "tr": "Kardeşim futbol maçına tüm parasını yatırdı.",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "Mañana apostaremos por el equipo local en el partido",
+      "tr": "Yarın maçta yerel takıma bahis oynayacağız",
+      "person": "nosotros"
+    },
+    "Condicional": {
+      "es": "Yo apostaría que mañana va a llover otra vez.",
+      "tr": "Yarın yine yağmur yağacağına bahse girerim.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "No creo que apuestes tanto dinero en ese partido",
+      "tr": "O maçta o kadar çok para bahse girdiğine inanmıyorum",
+      "person": "tú"
+    }
+  },
+  "apretar": {
+    "Presente": {
+      "es": "Aprieto el botón del ascensor para subir al tercer piso",
+      "tr": "Üçüncü kata çıkmak için asansörün düğmesine basıyorum",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer apreté el botón equivocado del ascensor y subí al piso incorrecto.",
+      "tr": "Dün asansörde yanlış düğmeye bastım ve yanlış kata çıktım.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi hermana siempre apretaba fuerte mi mano cuando tenía miedo.",
+      "tr": "Kız kardeşim korktuğunda hep elimi sıkı sıkıya tutardı.",
+      "person": "ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "He apretado tanto el frasco que no puedo abrirlo ahora",
+      "tr": "Kavanozu o kadar sıkı kapattım ki şimdi açamıyorum",
+      "person": "yo"
+    },
+    "Futuro Simple": {
+      "es": "Mañana apretaré estos tornillos para reparar la mesa rota.",
+      "tr": "Yarın bu vidaları kırık masayı tamir etmek için sıkacağım.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Si fuera mi coche, apretaría el freno más suavemente",
+      "tr": "Eğer benim arabam olsaydı, freni daha yumuşak basardım",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que aprietes bien los tornillos de la mesa.",
+      "tr": "Masanın vidalarını iyice sıkmanı umuyorum.",
+      "person": "tú"
+    }
+  },
+  "aprobar": {
+    "Presente": {
+      "es": "Los profesores aprueban a los estudiantes que estudian mucho.",
+      "tr": "Öğretmenler çok çalışan öğrencileri geçirir.",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermana aprobó todos los exámenes de la universidad el año pasado.",
+      "tr": "Kız kardeşim geçen yıl üniversitedeki tüm sınavları geçti.",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi padre siempre aprobaba mis decisiones cuando era joven.",
+      "tr": "Gençken babam her zaman kararlarımı onaylardı.",
+      "person": "él"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana ha aprobado todas las materias este semestre.",
+      "tr": "Kız kardeşim bu dönem tüm dersleri geçti.",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Creo que aprobaré el examen de matemáticas este viernes.",
+      "tr": "Bu cuma matematik sınavını geçeceğimi düşünüyorum.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Si estudiara más, aprobaría el examen de matemáticas fácilmente.",
+      "tr": "Daha çok çalışsaydım, matematik sınavını kolayca geçerdim.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que el profesor apruebe mi proyecto de investigación.",
+      "tr": "Profesörün araştırma projemi onaylamasını umuyorum.",
+      "person": "él"
+    }
+  },
+  "arreglar": {
+    "Presente": {
+      "es": "Mi padre siempre arregla el coche en el garaje los domingos.",
+      "tr": "Babam her pazar garajda arabayı tamir eder.",
+      "person": "él"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermano arregló la bicicleta rota el fin de semana pasado.",
+      "tr": "Kardeşim geçen hafta sonu bozuk bisikleti tamir etti.",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi papá siempre arreglaba el carro los fines de semana.",
+      "tr": "Babam her zaman hafta sonları arabayı tamir ederdi.",
+      "person": "él"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermano ha arreglado la bicicleta esta mañana.",
+      "tr": "Kardeşim bu sabah bisikleti tamir etti.",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "Mañana arreglaré mi bicicleta antes de ir al trabajo.",
+      "tr": "Yarın işe gitmeden önce bisikletimi tamir edeceğim.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Yo arreglaría mi cuarto si tuviera tiempo libre",
+      "tr": "Boş zamanım olsaydı odamı düzenlerdim",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que arregles tu cuarto antes de salir",
+      "tr": "Çıkmadan önce odanı topladığını umuyorum",
+      "person": "tú"
+    }
+  },
+  "asegurar": {
+    "Presente": {
+      "es": "Me aseguro de cerrar la puerta antes de salir",
+      "tr": "Çıkmadan önce kapıyı kapattığımdan emin oluyorum",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermano aseguró la casa antes de salir de vacaciones.",
+      "tr": "Kardeşim tatile çıkmadan önce evi sigortalattı.",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi madre siempre aseguraba las ventanas antes de salir de casa",
+      "tr": "Annem evden çıkmadan önce hep pencereleri kilitlerdik",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermano ha asegurado su coche nuevo contra todo riesgo",
+      "tr": "Kardeşim yeni arabasını kasko yaptırdı",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "Mañana me aseguraré de cerrar todas las ventanas antes de salir.",
+      "tr": "Yarın çıkmadan önce tüm pencereleri kapattığımdan emin olacağım.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Yo me aseguraría de llegar temprano a la entrevista de trabajo",
+      "tr": "İş görüşmesine erken varmayı garanti ederdim",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Es importante que asegures bien la puerta antes de salir",
+      "tr": "Çıkmadan önce kapıyı iyice kilitlemen önemli",
+      "person": "tú"
+    }
+  },
+  "asustar": {
+    "Presente": {
+      "es": "Los ruidos extraños de la noche me asustan mucho.",
+      "tr": "Gecenin garip sesleri beni çok korkutuyor.",
+      "person": "ellos/ellas"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermano me asustó cuando saltó detrás de la puerta",
+      "tr": "Kardeşim kapının arkasından atladığında beni korkuttu",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niño, los truenos me asustaban mucho.",
+      "tr": "Çocukken gök gürültüleri beni çok korkuturdu.",
+      "person": "ellos"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermano me ha asustado cuando salía de la ducha.",
+      "tr": "Kardeşim duştan çıkarken beni korkuttu.",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "Esa película de terror te asustará mucho esta noche.",
+      "tr": "O korku filmi bu gece seni çok korkutacak.",
+      "person": "tú"
+    },
+    "Condicional": {
+      "es": "Esa película de terror asustaría a cualquier niño pequeño.",
+      "tr": "O korku filmi herhangi bir küçük çocuğu korkutur.",
+      "person": "tercera persona singular"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que no se asusten cuando vean la cuenta del restaurante.",
+      "tr": "Restoran hesabını gördüklerinde korkmasınlar diye umuyorum.",
+      "person": "ellos"
+    }
+  },
+  "averiguar": {
+    "Presente": {
+      "es": "Siempre averiguo el precio antes de comprar algo",
+      "tr": "Her zaman bir şey satın almadan önce fiyatını öğrenirim",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer averigüé que mi hermana había conseguido el trabajo.",
+      "tr": "Dün kız kardeşimin işi aldığını öğrendim.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi hermana averiguaba los horarios de los trenes para el viaje.",
+      "tr": "Kız kardeşim yolculuk için tren saatlerini araştırıyordu.",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "He averiguado dónde vive mi nuevo vecino del quinto piso",
+      "tr": "Beşinci kattaki yeni komşumun nerede yaşadığını öğrendim",
+      "person": "yo"
+    },
+    "Futuro Simple": {
+      "es": "Mañana averiguaré qué pasó con mi pedido en línea",
+      "tr": "Yarın online siparişime ne olduğunu öğreneceğim",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Me gustaría averiguar qué pasó en la reunión de ayer",
+      "tr": "Dünkü toplantıda ne olduğunu öğrenmek isterdim",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que averigües la verdad sobre lo que pasó ayer.",
+      "tr": "Dün olanlar hakkındaki gerçeği öğrenmen/bulman umudu taşıyorum.",
+      "person": "tú"
+    }
+  },
+  "bañar": {
+    "Presente": {
+      "es": "Mi mamá baña a mi hermano pequeño todas las noches",
+      "tr": "Annem küçük kardeşimi her gece yıkıyor",
+      "person": "él/ella"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer bañé a mi perro en el jardín porque estaba muy sucio.",
+      "tr": "Dün köpeğimi bahçede yıkadım çünkü çok kirliydi.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi madre bañaba al bebé todas las noches antes de dormir.",
+      "tr": "Annem bebeği her gece uyumadan önce yıkardı.",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi madre ha bañado al bebé antes de dormir.",
+      "tr": "Annem bebeği uyumadan önce yıkadı.",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Mañana bañaré al perro en el jardín",
+      "tr": "Yarın köpeği bahçede yıkayacağım",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Yo bañaría al perro si tuviera tiempo hoy.",
+      "tr": "Bugün zamanım olsaydı köpeği yıkardım.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que bañes al perro antes de que entre a casa",
+      "tr": "Köpeği eve girmeden önce yıkamanı umuyorum",
+      "person": "tú"
+    }
+  },
+  "borrar": {
+    "Presente": {
+      "es": "Siempre borro los mensajes importantes por error",
+      "tr": "Önemli mesajları hep yanlışlıkla siliyorum",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer borré todos los archivos antiguos de mi computadora",
+      "tr": "Dün bilgisayarımdaki tüm eski dosyaları sildim",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era estudiante, siempre borraba mis errores con corrector líquido.",
+      "tr": "Öğrenciyken hep hatalarımı düzeltici sıvısıyla silerdim.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "He borrado todos los mensajes de mi ex novio.",
+      "tr": "Eski erkek arkadaşımın tüm mesajlarını sildim.",
+      "person": "yo"
+    },
+    "Futuro Simple": {
+      "es": "Mañana borraré todos los archivos innecesarios de mi computadora.",
+      "tr": "Yarın bilgisayarımdan gereksiz tüm dosyaları sileceğim.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Yo borraría todos mis errores del pasado si pudiera hacerlo.",
+      "tr": "Eğer yapabilseydim geçmişimdeki tüm hatalarımı silerdim.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que borres esos archivos antes de que llegue el jefe.",
+      "tr": "Patron gelmeden önce o dosyaları silmeni umuyorum.",
+      "person": "tú"
+    }
+  },
+  "botar": {
+    "Presente": {
+      "es": "Siempre boto la basura en el contenedor verde",
+      "tr": "Çöpü her zaman yeşil çöp konteynerine atarım",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer boté la basura antes de salir al trabajo.",
+      "tr": "Dün işe gitmeden önce çöpü attım.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi hermana siempre botaba la basura después de cenar.",
+      "tr": "Kız kardeşim her zaman yemekten sonra çöpü atardı.",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "He botado las botellas vacías en el contenedor de reciclaje.",
+      "tr": "Boş şişeleri geri dönüşüm konteynerine attım.",
+      "person": "yo"
+    },
+    "Futuro Simple": {
+      "es": "Mañana botaré estos papeles viejos a la basura.",
+      "tr": "Yarın bu eski kağıtları çöpe atacağım.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Si tuviera más espacio, botaría estos libros viejos",
+      "tr": "Daha fazla yerim olsaydı, bu eski kitapları atardım",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que no botes la comida que sobró ayer.",
+      "tr": "Dün artan yemeği atmamanı umuyorum.",
+      "person": "tú"
+    }
+  },
+  "brillar": {
+    "Presente": {
+      "es": "Las estrellas brillan intensamente en el cielo nocturno.",
+      "tr": "Yıldızlar gece gökyüzünde yoğun bir şekilde parlıyor.",
+      "person": "ellas"
+    },
+    "Pretérito Indefinido": {
+      "es": "Las estrellas brillaron toda la noche en el cielo despejado.",
+      "tr": "Yıldızlar açık gökyüzünde bütün gece parladı.",
+      "person": "ellas"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Las estrellas brillaban intensamente en el cielo nocturno de verano.",
+      "tr": "Yıldızlar yaz gecesinin gökyüzünde yoğun bir şekilde parlıyordu.",
+      "person": "ellas"
+    },
+    "Pretérito Perfecto": {
+      "es": "Las estrellas han brillado toda la noche en el cielo despejado.",
+      "tr": "Yıldızlar açık gökyüzünde bütün gece parladılar.",
+      "person": "ellas"
+    },
+    "Futuro Simple": {
+      "es": "El sol brillará mañana después de esta tormenta tan fuerte.",
+      "tr": "Bu kadar şiddetli fırtınadan sonra yarın güneş parlayacak.",
+      "person": "él"
+    },
+    "Condicional": {
+      "es": "Con mejor iluminación, esa joya brillaría mucho más en el escaparate.",
+      "tr": "Daha iyi aydınlatma ile o mücevher vitrinde çok daha fazla parlardı.",
+      "person": "ella"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que el sol brille mañana para nuestro picnic.",
+      "tr": "Pikniğimiz için yarın güneşin parlamasını umuyorum.",
+      "person": "él"
+    }
+  },
+  "calmar": {
+    "Presente": {
+      "es": "Mi madre siempre me calma cuando estoy nervioso antes de los exámenes.",
+      "tr": "Annem sınavlardan önce gergin olduğumda beni her zaman sakinleştirir.",
+      "person": "ella"
+    },
+    "Pretérito Indefinido": {
+      "es": "La madre calmó a su bebé que lloraba toda la noche",
+      "tr": "Anne bütün gece ağlayan bebeğini sakinleştirdi",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi madre siempre me calmaba cuando tenía pesadillas de niño.",
+      "tr": "Annem çocukken kabus gördüğümde beni hep sakinleştirirdi.",
+      "person": "ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi madre ha calmado a mi hermano pequeño después de la pesadilla.",
+      "tr": "Annem küçük kardeşimi kabusun ardından sakinleştirdi.",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "La música clásica calmará tu mente después del trabajo estresante.",
+      "tr": "Klasik müzik stresli işten sonra zihnini sakinleştirecek.",
+      "person": "3ª persona singular (ella - la música)"
+    },
+    "Condicional": {
+      "es": "Una música suave calmaría los nervios del bebé",
+      "tr": "Yumuşak bir müzik bebeğin sinirlerini sakinleştirecekti",
+      "person": "él/ella"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que te calmes antes de hablar con tu jefe.",
+      "tr": "Patronunla konuşmadan önce sakinleşmeni umuyorum.",
+      "person": "tú"
+    }
+  },
+  "cargar": {
+    "Presente": {
+      "es": "Mi hermano carga su teléfono todas las noches antes de dormir",
+      "tr": "Kardeşim her gece yatmadan önce telefonunu şarj ediyor",
+      "person": "él"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer cargué mi teléfono toda la noche porque se había agotado.",
+      "tr": "Dün telefonumu bütün gece şarj ettim çünkü bitmiş.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mientras mi hermano cargaba las maletas, yo esperaba en el coche.",
+      "tr": "Kardeşim bavulları yüklerken, ben arabada bekliyordum.",
+      "person": "él"
     }
   }
 }

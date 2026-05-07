@@ -21,7 +21,7 @@ import { SPANISH_VERBS } from '../data/spanish-data';
 import { getVerbExample } from '../data/verbExamples';
 import { getTenseExplanation } from '../data/tenseExplanations';
 import { getVerbMetadata } from '../data/verbMetadata';
-import { VERB_LEVELS, CEFR_LEVELS, CEFR_COLORS, type CEFRLevel } from '../data/verbLevels';
+import { VERB_LEVELS, CEFR_LEVELS, type CEFRLevel } from '../data/verbLevels';
 import { fetchVerbTranslationFromGroq, fetchAIVerbExamples, type AIVerbExample } from '../services/dictionaryApi';
 import { getMistakes, getDueMistakes, addMistake, updateMistakeReview, type MistakeEntry } from '../utils/mistakeBank';
 import { getConjugationRule } from '../utils/conjugationRules';
@@ -761,6 +761,8 @@ export function Page() {
   const [tenseDropdownOpen, setTenseDropdownOpen] = useState(false);
   /** Mobilde sol panel (fiil seçimi) varsayılan kapalı; Fiil Seç ile açılır, fiil seçilince kapanır */
   const [leftPanelOpen, setLeftPanelOpen] = useState(false);
+  const [levelSectionOpen, setLevelSectionOpen] = useState(false);
+  const [irregularSectionOpen, setIrregularSectionOpen] = useState(false);
   const tenseDropdownRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!tenseDropdownOpen) return;
@@ -2307,7 +2309,7 @@ export function Page() {
         </div>
         <div className={`flex flex-col md:grid md:grid-cols-12 md:items-start transition-all duration-300 ${viewMode === 'simple' ? 'gap-4 md:gap-6' : 'gap-6 md:gap-8'}`}>
           {/* Sol sütun: Kontrol paneli — mobilde toggle ile aç/kapa, desktop'ta her zaman görünür */}
-          <aside data-print-hide className="flex flex-col gap-4 md:col-span-4 order-1 print:hidden md:sticky md:top-6 md:self-start transition-opacity duration-300">
+          <aside data-print-hide className="flex flex-col gap-4 md:col-span-4 order-1 print:hidden md:sticky md:top-6 md:self-start transition-opacity duration-300 max-h-[100vh] overflow-y-auto ui-scrollbar-thin">
             {/* Mobilde: Fiil Seç toggle; desktop'ta gizli (panel aşağıda her zaman gösterilir) */}
             <button
               type="button"
@@ -2368,7 +2370,7 @@ export function Page() {
                   }}
                   onFocus={() => setAutocompleteClosed(false)}
                   placeholder={selectedLanguage === 'es' ? 'Örn: comer, gitmek, yazmak...' : 'Örn: être, aller...'}
-                  className="absolute inset-0 w-full h-full rounded-xl border border-slate-200 dark:border-slate-700/50 bg-slate-50 dark:bg-slate-800/80 pl-4 pr-12 py-3 text-base text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 dark:focus:ring-indigo-400 dark:focus:border-indigo-400 transition-colors duration-300"
+                  className="ui-input absolute inset-0 w-full h-full min-h-[44px] rounded-xl border pl-4 pr-12 py-3 text-base text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[var(--accent-purple)] transition-colors duration-300"
                   aria-label={t('fiil_girin')}
                   aria-autocomplete="list"
                   aria-expanded={autocompleteSuggestions.length > 0 && !autocompleteClosed}
@@ -2505,10 +2507,17 @@ export function Page() {
             </div>
 
             {/* ── Seviyelere Göre Keşfet ── */}
-            <div className="flex flex-col gap-2">
-              <p className="text-xs font-medium text-slate-500 dark:text-slate-500 select-none">
-                Seviyelere Göre Keşfet
-              </p>
+            <div className="flex flex-col gap-2 border-t border-[var(--border-subtle)] pt-3">
+              <button
+                type="button"
+                onClick={() => setLevelSectionOpen((v) => !v)}
+                className="ui-accordion-trigger flex w-full items-center justify-between rounded-md px-2 py-1.5 text-left"
+                aria-expanded={levelSectionOpen}
+              >
+                <p className="ui-section-title select-none">Seviyelere Göre Keşfet</p>
+                <span className={`text-[var(--text-muted)] transition-transform ${levelSectionOpen ? 'rotate-180' : ''}`} aria-hidden>▾</span>
+              </button>
+              <div className={`${levelSectionOpen ? 'block' : 'hidden'} md:block`}>
               {/* Seviye butonları */}
               <div className="flex gap-1.5">
                 {CEFR_LEVELS.map((lvl) => {
@@ -2518,10 +2527,10 @@ export function Page() {
                       key={lvl}
                       type="button"
                       onClick={() => setSelectedCEFRLevel(isActive ? null : lvl)}
-                      className={`flex-1 rounded-lg border py-1.5 text-xs font-bold tracking-wide transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${
+                      className={`flex-1 rounded-[var(--radius-sm)] border py-1.5 text-xs font-bold tracking-wide transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[var(--accent-purple)] ${
                         isActive
-                          ? `${CEFR_COLORS[lvl].btn} shadow-md border-transparent`
-                          : 'border-slate-200/50 dark:border-slate-700/40 bg-white/5 dark:bg-slate-800/30 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100/60 dark:hover:bg-slate-700/40'
+                          ? 'border-transparent bg-[var(--accent-purple)] text-[var(--text-primary)] shadow-md'
+                          : 'border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]'
                       }`}
                     >
                       {lvl}
@@ -2550,21 +2559,31 @@ export function Page() {
                         setAutocompleteClosed(true);
                         loadVerb(verb);
                       }}
-                      className={`rounded-lg border px-2.5 py-1 text-xs font-medium transition-all duration-150 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 active:scale-95 ${CEFR_COLORS[selectedCEFRLevel].chip}`}
+                      className="rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--bg-elevated)] px-2.5 py-1 text-xs font-medium text-[var(--text-primary)] transition-all duration-150 focus:outline-none focus:ring-1 focus:ring-[var(--accent-purple)] active:scale-95 hover:bg-[var(--bg-hover)]"
                     >
                       {verb}
                     </button>
                   ))}
                 </motion.div>
               )}
+              </div>
             </div>
 
             {selectedLanguage === 'es' && (
-              <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-1.5">
-                  <p className="text-xs font-medium text-slate-500 dark:text-slate-500 select-none">
-                    ZAMANA GÖRE DÜZENSİZ FİİLLER
+              <div className="flex flex-col gap-2 border-t border-[var(--border-subtle)] pt-3">
+                <button
+                  type="button"
+                  onClick={() => setIrregularSectionOpen((v) => !v)}
+                  className="ui-accordion-trigger flex items-center justify-between gap-1.5 rounded-md px-2 py-1.5 text-left"
+                  aria-expanded={irregularSectionOpen}
+                >
+                  <p className="ui-section-title select-none">
+                    Zamana Göre Düzensiz Fiiller
                   </p>
+                  <span className={`text-[var(--text-muted)] transition-transform ${irregularSectionOpen ? 'rotate-180' : ''}`} aria-hidden>▾</span>
+                </button>
+                <div className={`${irregularSectionOpen ? 'block' : 'hidden'} md:block space-y-2`}>
+                <div className="flex items-center gap-1.5 px-2">
                   <span
                     className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-slate-300/80 dark:border-slate-600 text-[10px] font-bold text-slate-500 dark:text-slate-400 cursor-help"
                     title="Bu zamanda kök değişimi veya istisnai çekim içeren fiiller"
@@ -2574,14 +2593,14 @@ export function Page() {
                   </span>
                 </div>
 
-                <div className="relative">
+                <div className="relative px-2">
                   <select
                     value={irregularTenseFilter}
                     onChange={(e) => {
                       setIrregularTenseFilter(e.target.value);
                       setShowAllIrregulars(false);
                     }}
-                    className="w-full h-10 rounded-xl border border-slate-200 dark:border-slate-700/50 bg-slate-50 dark:bg-slate-800/80 px-3 pr-8 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-colors"
+                    className="ui-input w-full h-10 rounded-[var(--radius-md)] border px-3 pr-8 text-sm text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-purple)] transition-colors"
                     aria-label="Düzensiz fiiller için zaman seç"
                   >
                     {IRREGULAR_TENSE_OPTIONS_ES.map((opt) => (
@@ -2599,7 +2618,7 @@ export function Page() {
                   </p>
                 ) : (
                   <>
-                    <div className="flex flex-wrap gap-1.5">
+                    <div className="flex flex-wrap gap-1.5 px-2">
                       {visibleIrregularVerbs.map((verb) => (
                         <button
                           key={`irr-${irregularTenseFilter}-${verb}`}
@@ -2611,7 +2630,7 @@ export function Page() {
                             setAutocompleteClosed(true);
                             loadVerb(verb);
                           }}
-                          className="rounded-lg border border-violet-500/25 bg-violet-500/10 px-2.5 py-1 text-xs font-medium text-violet-700 dark:text-violet-300 hover:bg-violet-500/20 hover:border-violet-500/50 transition-all duration-150 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 active:scale-95"
+                          className="rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--bg-elevated)] px-2.5 py-1 text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-all duration-150 focus:outline-none focus:ring-1 focus:ring-[var(--accent-purple)] active:scale-95"
                         >
                           {verb}
                         </button>
@@ -2621,13 +2640,14 @@ export function Page() {
                       <button
                         type="button"
                         onClick={() => setShowAllIrregulars(true)}
-                        className="self-start text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-300 transition-colors"
+                        className="self-start px-2 text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
                       >
                         + {irregularVerbsForSelectedTense.length - 12} tane daha göster
                       </button>
                     )}
                   </>
                 )}
+                </div>
               </div>
             )}
 
@@ -2637,7 +2657,7 @@ export function Page() {
               <button
                 type="button"
                 onClick={() => setTenseDropdownOpen((o) => !o)}
-                className="w-full h-12 rounded-xl border border-slate-200 dark:border-slate-700/50 bg-slate-50 dark:bg-slate-800/80 px-4 py-3 text-left text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 dark:focus:ring-indigo-400 dark:focus:border-indigo-400 transition-colors duration-300 flex items-center justify-between gap-2"
+                className="ui-input w-full h-12 min-h-[44px] rounded-xl border px-4 py-3 text-left text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-purple)] transition-colors duration-300 flex items-center justify-between gap-2"
                 aria-label={t('zaman_secin')}
                 aria-expanded={tenseDropdownOpen}
                 aria-haspopup="listbox"
@@ -2658,7 +2678,7 @@ export function Page() {
                 <div className="max-h-[min(18rem,60vh)] overflow-y-auto py-2">
                   {tenseGroupsForLang.map((group) => (
                     <div key={group.mood} className="px-3 pb-1 pt-2 first:pt-0">
-                      <p className="text-xs font-medium tracking-wide text-slate-500 dark:text-slate-400 px-3 py-1 select-none">
+                      <p className="px-3 py-1 text-xs italic font-medium tracking-wide text-[var(--text-muted)] select-none">
                         {group.label}
                       </p>
                       <div className="space-y-0.5 mt-0.5">
@@ -2676,7 +2696,7 @@ export function Page() {
                                 setSelectedTense(t.id);
                                 setTenseDropdownOpen(false);
                               }}
-                              className="w-full flex items-center justify-between gap-2 rounded-lg px-3 py-2.5 text-left text-sm text-slate-800 dark:text-slate-100 hover:bg-indigo-500/20 transition-colors duration-200"
+                    className="w-full flex items-center justify-between gap-2 rounded-[var(--radius-sm)] px-3 py-2.5 text-left text-sm text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors duration-200"
                             >
                               <span>{t.label}</span>
                               {isSelected && (
@@ -3016,39 +3036,41 @@ export function Page() {
         {mode !== 'review' && mode !== 'starred' && (
           <section className={`rounded-2xl bg-white dark:bg-slate-800/80 shadow-md dark:shadow-none border border-slate-200 dark:border-slate-700/50 overflow-visible backdrop-blur-md transition-all duration-300 min-h-[400px] print:shadow-none print:border print:border-slate-200 ${viewMode === 'simple' ? 'mb-4 mt-0 pt-2' : 'mb-4 mt-6 md:mt-0'}`}>
             {/* Kart başlığı sekmeleri — her zaman görünür (Basit ve Detaylı) */}
-            <div className="flex justify-start md:justify-center overflow-x-auto overflow-y-hidden scrollbar-hide print:hidden pt-3 pb-2 sm:pt-4 sm:pb-3 px-1 -mx-1">
-              <div className="flex items-center gap-1 p-1 bg-slate-800/60 backdrop-blur-sm border border-slate-700 rounded-full w-max min-w-0 flex-nowrap shadow-inner" role="tablist" aria-label="Mod">
+            <div className="flex justify-start md:justify-center overflow-x-auto overflow-y-hidden scrollbar-hide print:hidden pt-3 pb-2 sm:pt-4 sm:pb-3 px-1 -mx-1 border-b border-[var(--border)]">
+              <div className="flex items-center gap-1 w-max min-w-0 flex-nowrap" role="tablist" aria-label="Mod">
               <button
                 type="button"
                 onClick={() => setMode('learning')}
-                className={`px-3 py-1.5 md:px-5 md:py-2 rounded-full text-xs md:text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer shrink-0 ${
+                className={`px-3 py-2 md:px-5 md:py-2 rounded-t-md text-xs md:text-sm font-medium border-b-2 transition-all duration-300 ease-in-out cursor-pointer shrink-0 min-h-[44px] ${
                   mode === 'learning'
-                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
-                    : 'bg-transparent text-slate-400 hover:text-slate-200'
+                    ? 'border-[var(--accent-purple)] text-[var(--text-primary)]'
+                    : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                 }`}
                 title="Alt+L"
               >
-                {t('ogrenme')}
+                <span className="sm:hidden">Öğren</span>
+                <span className="hidden sm:inline">{t('ogrenme')}</span>
               </button>
               <button
                 type="button"
                 onClick={() => setMode('quiz')}
-                className={`px-3 py-1.5 md:px-5 md:py-2 rounded-full text-xs md:text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer shrink-0 ${
+                className={`px-3 py-2 md:px-5 md:py-2 rounded-t-md text-xs md:text-sm font-medium border-b-2 transition-all duration-300 ease-in-out cursor-pointer shrink-0 min-h-[44px] ${
                   mode === 'quiz'
-                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
-                    : 'bg-transparent text-slate-400 hover:text-slate-200'
+                    ? 'border-[var(--accent-purple)] text-[var(--text-primary)]'
+                    : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                 }`}
                 title="Alt+Q"
               >
-                {t('alistirma')}
+                <span className="sm:hidden">Alıştır</span>
+                <span className="hidden sm:inline">{t('alistirma')}</span>
               </button>
               <button
                 type="button"
                 onClick={() => setMode('time-attack')}
-                className={`px-3 py-1.5 md:px-5 md:py-2 rounded-full text-xs md:text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer shrink-0 ${
+                className={`px-3 py-2 md:px-5 md:py-2 rounded-t-md text-xs md:text-sm font-medium border-b-2 transition-all duration-300 ease-in-out cursor-pointer shrink-0 min-h-[44px] ${
                   mode === 'time-attack'
-                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
-                    : 'bg-transparent text-slate-400 hover:text-slate-200'
+                    ? 'border-[var(--accent-purple)] text-[var(--text-primary)]'
+                    : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                 }`}
                 title={t('zamana_karsi')}
               >
@@ -3057,10 +3079,10 @@ export function Page() {
               <button
                 type="button"
                 onClick={() => setMode('compare')}
-                className={`px-3 py-1.5 md:px-5 md:py-2 rounded-full text-xs md:text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer shrink-0 ${
+                className={`px-3 py-2 md:px-5 md:py-2 rounded-t-md text-xs md:text-sm font-medium border-b-2 transition-all duration-300 ease-in-out cursor-pointer shrink-0 min-h-[44px] ${
                   mode === 'compare'
-                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
-                    : 'bg-transparent text-slate-400 hover:text-slate-200'
+                    ? 'border-[var(--accent-purple)] text-[var(--text-primary)]'
+                    : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                 }`}
                 title={t('kiyaslama')}
               >
@@ -3629,7 +3651,7 @@ export function Page() {
                                         {marker}
                                       </button>
                                       {isOpen && (
-                                        <div className="absolute left-0 top-full mt-1 z-20 w-64 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 shadow-xl">
+                                        <div className="ui-tooltip absolute left-0 top-full mt-1 z-20 w-64 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 shadow-xl">
                                           <p className="text-xs text-slate-700 dark:text-slate-200">
                                             {marker}, {verbKey} en este tiempo verbal.
                                           </p>
@@ -3914,7 +3936,7 @@ export function Page() {
                           {marker}
                         </button>
                         {isOpen && (
-                          <div className="absolute left-0 top-full mt-1 z-20 w-64 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 shadow-xl">
+                          <div className="ui-tooltip absolute left-0 top-full mt-1 z-20 w-64 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 shadow-xl">
                             <p className="text-xs text-slate-700 dark:text-slate-200">
                               {marker}, {verbKey ?? 'yo'} en contexto real.
                             </p>
@@ -3936,10 +3958,10 @@ export function Page() {
               yalnızca 'Detaylı' modundaki araç grubu (tense rozeti, Ezber
               Modu, Sete Ekle, Yazdır) ortadan fade ile girip/çıkar.
             */}
-            <div className="border-b border-slate-200 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/50 px-5 sm:px-6 py-3 sm:py-3.5 transition-colors duration-300">
+            <div className="border-b border-[var(--border)] bg-[var(--bg-surface)] px-5 sm:px-6 py-4 transition-colors duration-300">
               <div className="flex flex-col md:flex-row flex-wrap items-start md:items-center justify-between gap-1.5 md:gap-x-3 md:gap-y-2 text-center sm:text-left">
                 <div className="flex items-center gap-2 min-w-0 order-1">
-                  <h2 className="font-bold text-slate-800 dark:text-slate-100 capitalize text-xl tracking-tight">{verbKey}</h2>
+                  <h2 className="font-bold text-[var(--text-primary)] capitalize text-[length:var(--font-size-2xl)] tracking-tight">{verbKey}</h2>
                   {randomVerbMode && (
                     <span className="inline-flex items-center gap-1 rounded-full bg-indigo-100 dark:bg-indigo-500/25 text-indigo-700 dark:text-indigo-300 text-xs font-medium px-2.5 py-0.5 shrink-0" title="Rastgele mod açık">
                       🎲 Rastgele Mod Aktif
@@ -3964,7 +3986,7 @@ export function Page() {
                     <SpeakerIcon className="w-5 h-5" />
                   </button>
                 </div>
-                <span className="text-slate-500 dark:text-slate-400 italic text-lg flex-1 min-w-0 order-2 flex justify-center items-center gap-2">
+                <span className="italic text-[var(--text-secondary)] text-[length:var(--font-size-lg)] flex-1 min-w-0 order-2 flex justify-center items-center gap-2">
                   {isMeaningLoading ? (
                     <div className="h-5 w-24 bg-slate-700/50 dark:bg-slate-600/50 rounded animate-pulse" aria-hidden />
                   ) : (
@@ -4110,7 +4132,7 @@ export function Page() {
               {(() => {
                 const meta = getVerbMetadata(verbKey, selectedLanguage, !isIrregularVerb(verbKey, selectedLanguage));
                 return (
-                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 border-t border-slate-200/80 dark:border-slate-600/80 pt-2 mt-2">
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 border-t border-[var(--border-subtle)] pt-2 mt-2">
                     <AnimatePresence initial={false}>
                       {viewMode === 'detailed' && (
                         <motion.span
@@ -4121,8 +4143,8 @@ export function Page() {
                           transition={{ duration: 0.2 }}
                           className="inline-flex items-center overflow-hidden"
                         >
-                          <span className="inline-flex items-center rounded-lg bg-slate-100/90 dark:bg-slate-800/30 border border-slate-300 dark:border-slate-700 px-2 py-0.5 text-xs font-medium text-slate-600 dark:text-slate-400 cursor-default select-none whitespace-nowrap">
-                            Mastar: <span className="ml-0.5 font-semibold text-slate-800 dark:text-slate-100">{meta.infinitive}</span>
+                          <span className="inline-flex items-center rounded-[var(--radius-sm)] bg-[var(--bg-elevated)] border border-[var(--border)] px-2 py-0.5 text-[length:var(--font-size-xs)] font-medium text-[var(--text-secondary)] cursor-default select-none whitespace-nowrap">
+                            Mastar: <span className="ml-0.5 font-semibold text-[var(--text-primary)]">{meta.infinitive}</span>
                           </span>
                         </motion.span>
                       )}
@@ -4135,16 +4157,16 @@ export function Page() {
                           transition={{ duration: 0.2, delay: 0.03 }}
                           className="inline-flex items-center overflow-hidden"
                         >
-                          <span className="inline-flex items-center rounded-lg bg-slate-100/90 dark:bg-slate-800/30 border border-slate-300 dark:border-slate-700 px-2 py-0.5 text-xs font-medium text-slate-600 dark:text-slate-400 cursor-default select-none whitespace-nowrap">
-                            Ulaç: <span className="ml-0.5 font-semibold text-slate-800 dark:text-slate-100">{meta.gerund}</span>
+                          <span className="inline-flex items-center rounded-[var(--radius-sm)] bg-[var(--bg-elevated)] border border-[var(--border)] px-2 py-0.5 text-[length:var(--font-size-xs)] font-medium text-[var(--text-secondary)] cursor-default select-none whitespace-nowrap">
+                            Ulaç: <span className="ml-0.5 font-semibold text-[var(--text-primary)]">{meta.gerund}</span>
                           </span>
                         </motion.span>
                       )}
                     </AnimatePresence>
-                    <span className="inline-flex items-center rounded-lg bg-slate-100/90 dark:bg-slate-800/30 border border-slate-300 dark:border-slate-700 px-2 py-0.5 text-xs font-medium text-slate-600 dark:text-slate-400 cursor-default select-none">
-                      Geçmiş Ortaç: <span className="ml-0.5 font-semibold text-slate-800 dark:text-slate-100">{meta.pastParticiple}</span>
+                    <span className="inline-flex items-center rounded-[var(--radius-sm)] bg-[var(--bg-elevated)] border border-[var(--border)] px-2 py-0.5 text-[length:var(--font-size-xs)] font-medium text-[var(--text-secondary)] cursor-default select-none">
+                      Geçmiş Ortaç: <span className="ml-0.5 font-semibold text-[var(--text-primary)]">{meta.pastParticiple}</span>
                     </span>
-                    <span className={`inline-flex items-center rounded-lg border border-slate-300 dark:border-slate-700 px-2 py-0.5 text-xs font-semibold cursor-default select-none ${meta.isRegular ? 'bg-emerald-500/10 dark:bg-slate-800/30 text-emerald-700 dark:text-emerald-400' : 'bg-amber-500/10 dark:bg-slate-800/30 text-amber-800 dark:text-amber-400'}`}>
+                    <span className={`inline-flex items-center rounded-[var(--radius-sm)] border border-[var(--border)] px-2 py-0.5 text-[length:var(--font-size-xs)] font-semibold cursor-default select-none ${meta.isRegular ? 'bg-[color:rgba(34,197,94,0.2)] text-[var(--accent-green)]' : 'bg-[color:rgba(245,158,11,0.2)] text-[var(--accent-amber)]'}`}>
                       {meta.isRegular ? 'Kurallı' : 'Düzensiz'}
                     </span>
                     <AnimatePresence initial={false}>
@@ -4171,7 +4193,7 @@ export function Page() {
                   <button
                     type="button"
                     onClick={() => setRegimeOpen((v) => !v)}
-                    className="w-full flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 hover:bg-slate-100/70 dark:hover:bg-slate-800/60 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
+                    className="ui-accordion-trigger w-full flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
                     aria-expanded={regimeOpen}
                     aria-controls="verb-regime-panel"
                   >
@@ -4227,7 +4249,7 @@ export function Page() {
                   <button
                     type="button"
                     onClick={() => setCollocationOpen((v) => !v)}
-                    className="w-full flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 hover:bg-slate-100/70 dark:hover:bg-slate-800/60 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
+                    className="ui-accordion-trigger w-full flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
                     aria-expanded={collocationOpen}
                     aria-controls="verb-collocations-panel"
                   >
@@ -4307,7 +4329,7 @@ export function Page() {
                   <button
                     type="button"
                     onClick={() => setRegionalOpen((v) => !v)}
-                    className="w-full flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 hover:bg-slate-100/70 dark:hover:bg-slate-800/60 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
+                    className="ui-accordion-trigger w-full flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
                     aria-expanded={regionalOpen}
                     aria-controls="regional-variants-panel"
                   >
@@ -4505,9 +4527,9 @@ export function Page() {
             ) : (
             <>
             {/* İki sütun: tekil (Je, Tu, Il) | çoğul (Nous, Vous, Ils) — dikey alan yarıya iner */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-[var(--space-3)]">
               {[pronounsForLang.slice(0, 3), pronounsForLang.slice(3, 6)].map((group, colIndex) => (
-                <ul key={colIndex} className="divide-y divide-slate-100 dark:divide-slate-700/50">
+                <ul key={colIndex} className="space-y-[var(--space-3)]">
                   {group.map(({ id, label }) => {
                     const homophoneInfo = selectedLanguage === 'fr' ? getHomophoneInfo(id) : null;
                     const displayText = formatConjugationForDisplay(conjugationsForDisplay[id], id, selectedLanguage, isReflexive, isNegative);
@@ -4516,12 +4538,12 @@ export function Page() {
                     return (
                       <li
                         key={id}
-                        className={`group grid grid-cols-[5.5rem_1fr_auto] items-center gap-3 sm:gap-4 px-4 sm:px-6 py-2.5 sm:py-3 transition-all duration-300 ease-in-out ${activeRecallMode ? 'cursor-default' : ''} ${homophoneInfo ? 'border-l-2 border-l-amber-400/50 dark:border-l-amber-500/40 pl-4 sm:pl-5' : ''}`}
+                        className={`group grid grid-cols-1 sm:grid-cols-[5.5rem_1fr_auto] items-center gap-[var(--space-3)] px-[var(--space-4)] py-[var(--space-3)] min-h-[44px] rounded-[var(--radius-sm)] border border-[var(--border-subtle)] transition-all duration-300 ease-in-out hover:bg-[var(--bg-elevated)] ${activeRecallMode ? 'cursor-default' : ''} ${homophoneInfo ? 'border-l-2 border-l-amber-400/50 dark:border-l-amber-500/40' : ''}`}
                         title={homophoneInfo ? `Bu ${homophoneInfo.count} çekimin yazılışı farklı olsa da okunuşu aynıdır: [${homophoneInfo.key}]` : undefined}
                       >
-                        <span className="text-slate-600 dark:text-slate-300 font-semibold">{label}</span>
+                        <span className="text-[var(--text-muted)] text-[length:var(--font-size-sm)] font-semibold">{label}</span>
                         <span
-                          className={`min-w-0 truncate text-right transition-all duration-300 ease-in-out ${activeRecallMode ? 'blur-md group-hover:blur-none' : ''}`}
+                          className={`min-w-0 truncate text-right text-[var(--text-primary)] text-[length:var(--font-size-base)] font-medium transition-all duration-300 ease-in-out ${activeRecallMode ? 'blur-md group-hover:blur-none' : ''}`}
                         >
                           <ConjugationWithStemSuffix
                             text={displayText}
@@ -4609,12 +4631,12 @@ export function Page() {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, ease: 'easeOut' }}
-                className="mx-4 sm:mx-0 mt-4 rounded-xl border border-indigo-500/20 dark:border-indigo-400/20 bg-white/5 dark:bg-white/[0.04] backdrop-blur-sm p-4 transition-all duration-300 ease-in-out"
+                className="mx-4 sm:mx-0 mt-4 rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] backdrop-blur-sm p-4 transition-all duration-300 ease-in-out ui-fade-in"
               >
-                <div className="flex items-center gap-2 mb-3 pb-2 border-b border-indigo-500/10 dark:border-indigo-400/10">
+                <div className="flex items-center gap-2 mb-3 pb-2 border-b border-[var(--border-subtle)]">
                   <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-indigo-500/20 text-sm" aria-hidden>💡</span>
-                  <h4 className="text-xs font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400">
-                    AI Örnek Cümleler
+                  <h4 className="ui-section-title font-bold text-[var(--text-muted)]">
+                    ÖRNEK CÜMLELER
                   </h4>
                   <span className="text-[10px] font-medium text-slate-500 dark:text-slate-500 ml-auto">
                     {tensesForLang.find((x) => x.id === selectedTense)?.label ?? selectedTense}
@@ -4638,10 +4660,14 @@ export function Page() {
                   <button
                     type="button"
                     onClick={generateAISentences}
-                    className="group w-full flex items-center justify-center gap-2 rounded-lg border border-indigo-500/30 dark:border-indigo-400/30 bg-indigo-500/[0.03] dark:bg-indigo-500/[0.06] px-4 py-3 text-sm font-medium text-indigo-600 dark:text-indigo-300 hover:bg-indigo-500/10 dark:hover:bg-indigo-500/15 hover:border-indigo-500/50 dark:hover:border-indigo-400/50 hover:shadow-[0_0_20px_-5px_rgba(99,102,241,0.4)] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
+                    className={`group flex items-center gap-2 rounded-[var(--radius-md)] px-[var(--space-4)] py-[var(--space-2)] text-[length:var(--font-size-sm)] font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[var(--accent-purple)] ${
+                      staticExample?.es && staticExample?.tr
+                        ? 'ml-auto ui-btn-ghost'
+                        : 'ui-btn-secondary'
+                    }`}
                   >
                     <span className="text-base transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12" aria-hidden>✨</span>
-                    <span>AI Analizi Başlat</span>
+                    <span>{staticExample?.es && staticExample?.tr ? 'Daha fazla örnek →' : 'AI Analizi Başlat'}</span>
                   </button>
                 )}
                 {aiExamplesLoading && (
