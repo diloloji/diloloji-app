@@ -16529,6 +16529,6518 @@
       "es": "Mi abuelo fabricaba muebles de madera en su taller todos los días",
       "tr": "Dedem her gün atölyesinde ahşap mobilyalar üretirdi",
       "person": "él"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermano ha fabricado una mesa de madera para el jardín.",
+      "tr": "Kardeşim bahçe için ahşap bir masa yaptı.",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "La empresa fabricará nuevos teléfonos móviles el próximo año.",
+      "tr": "Şirket gelecek yıl yeni cep telefonları üretecek.",
+      "person": "ella (la empresa)"
+    },
+    "Condicional": {
+      "es": "Con más tiempo, fabricaríamos muebles de mejor calidad en el taller.",
+      "tr": "Daha fazla zamanımız olsaydı, atölyede daha kaliteli mobilyalar üretirdik.",
+      "person": "nosotros"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que la empresa fabrique productos más ecológicos este año.",
+      "tr": "Şirketin bu yıl daha ekolojik ürünler üretmesini umuyorum.",
+      "person": "la empresa (3. tekil şahıs)"
     }
+  },
+  "facilitar": {
+    "Presente": {
+      "es": "La nueva aplicación facilita mucho el proceso de compra online",
+      "tr": "Yeni uygulama online alışveriş sürecini çok kolaylaştırıyor",
+      "person": "él/ella"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermano me facilitó los documentos para el trámite ayer.",
+      "tr": "Kardeşim dün işlem için bana belgeleri kolaylaştırdı/sağladı.",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi hermana siempre facilitaba las tareas del hogar cuando éramos niños.",
+      "tr": "Kız kardeşim çocukken ev işlerini hep kolaylaştırırdı.",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana me ha facilitado los documentos para el trámite",
+      "tr": "Kız kardeşim bana işlem için belgeleri kolaylaştırdı",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "La nueva aplicación facilitará el acceso a la información médica.",
+      "tr": "Yeni uygulama tıbbi bilgilere erişimi kolaylaştıracak.",
+      "person": "3ª persona singular (ella)"
+    },
+    "Condicional": {
+      "es": "Esta aplicación facilitaría mucho el trabajo de los estudiantes.",
+      "tr": "Bu uygulama öğrencilerin işini çok kolaylaştırır.",
+      "person": "él/ella/usted"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que este programa facilite el aprendizaje de los estudiantes.",
+      "tr": "Bu programın öğrencilerin öğrenmesini kolaylaştırmasını umuyorum.",
+      "person": "él/ella/usted"
+    }
+  },
+  "fascinar": {
+    "Presente": {
+      "es": "Me fascina la música clásica porque me relaja mucho",
+      "tr": "Klasik müzik beni çok büyülüyor çünkü beni çok rahatlatıyor",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "A mi hermana le fascinó la película de terror que vimos anoche",
+      "tr": "Kız kardeşim dün gece izlediğimiz korku filminden çok etkilendi",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niña me fascinaban los cuentos de hadas.",
+      "tr": "Çocukken peri masalları beni büyülüyordu.",
+      "person": "a mí (1. tekil şahıs)"
+    },
+    "Pretérito Perfecto": {
+      "es": "A María le han fascinado siempre los documentales sobre la naturaleza.",
+      "tr": "María'yı doğa belgeselleri her zaman büyülemiştir.",
+      "person": "él/ella (María)"
+    },
+    "Futuro Simple": {
+      "es": "A mi hermana le fascinará conocer París el próximo verano.",
+      "tr": "Kız kardeşimi gelecek yaz Paris'i tanımak büyüleyecek.",
+      "person": "él/ella (le fascinará)"
+    },
+    "Condicional": {
+      "es": "Me fascinaría conocer otros países y culturas diferentes",
+      "tr": "Başka ülkeleri ve farklı kültürleri tanımak beni büyülerdi",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que te fascinen los libros de ciencia ficción",
+      "tr": "Bilim kurgu kitaplarının seni büyülemesini umuyorum",
+      "person": "tú"
+    }
+  },
+  "financiar": {
+    "Presente": {
+      "es": "Mi padre financia mis estudios universitarios cada semestre",
+      "tr": "Babam her dönem üniversite eğitimimi finanse ediyor",
+      "person": "él"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mis padres financiaron mis estudios universitarios el año pasado.",
+      "tr": "Ailem geçen yıl üniversite eğitimimi finanse etti.",
+      "person": "ellos"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi padre financiaba mis estudios universitarios cuando trabajaba en el banco.",
+      "tr": "Babam bankada çalışırken üniversite eğitimimi finanse ediyordu.",
+      "person": "él"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermano ha financiado la compra de su nuevo apartamento",
+      "tr": "Kardeşim yeni dairesinin alımını finanse etti",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "El banco financiará nuestro proyecto de construcción el próximo año.",
+      "tr": "Banka önümüzdeki yıl inşaat projemizi finanse edecek.",
+      "person": "él"
+    },
+    "Condicional": {
+      "es": "El banco financiaría el proyecto si tuviéramos mejores garantías",
+      "tr": "Bankamızın daha iyi garantileri olsaydı projeyi finanse ederdi",
+      "person": "él"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que el banco financie nuestro proyecto de negocio.",
+      "tr": "Bankanın iş projemizi finanse etmesini umuyorum.",
+      "person": "él/ella/usted"
+    }
+  },
+  "flotar": {
+    "Presente": {
+      "es": "Las hojas secas flotan en la superficie del lago",
+      "tr": "Kuru yapraklar gölün yüzeyinde yüzüyor",
+      "person": "ellas"
+    },
+    "Pretérito Indefinido": {
+      "es": "El globo flotó en el aire durante toda la fiesta de cumpleaños.",
+      "tr": "Balon doğum günü partisi boyunca havada yüzdü.",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Las hojas secas flotaban suavemente sobre la superficie del lago.",
+      "tr": "Kuru yapraklar gölün yüzeyinde yumuşakça yüzüyordu.",
+      "person": "ellas"
+    },
+    "Pretérito Perfecto": {
+      "es": "El globo ha flotado en el aire durante toda la mañana",
+      "tr": "Balon bütün sabah boyunca havada yüzdü",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "Las hojas secas flotarán en el lago durante el otoño.",
+      "tr": "Kuru yapraklar sonbaharda gölde yüzecek.",
+      "person": "ellas"
+    },
+    "Condicional": {
+      "es": "Si tuviera más dinero, flotaría en una piscina privada todo el día.",
+      "tr": "Daha fazla param olsaydı, bütün gün özel havuzda yüzerdim.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que el globo flote en el aire sin problemas.",
+      "tr": "Balonun havada sorunsuz yüzmesini umuyorum.",
+      "person": "él/ella"
+    }
+  },
+  "fracasar": {
+    "Presente": {
+      "es": "Los estudiantes fracasan en el examen cuando no estudian suficiente",
+      "tr": "Öğrenciler yeterince çalışmadıklarında sınavda başarısız olurlar",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermano fracasó en el examen de matemáticas el mes pasado.",
+      "tr": "Kardeşim geçen ay matematik sınavında başarısız oldu.",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Siempre fracasaba en los exámenes de matemáticas cuando era estudiante.",
+      "tr": "Öğrenciyken matematik sınavlarında hep başarısız olurdum.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermano ha fracasado en el examen de conducir otra vez.",
+      "tr": "Kardeşim ehliyet sınavında yine başarısız oldu.",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "Si no estudias más, fracasarás en el examen final.",
+      "tr": "Daha fazla çalışmazsan final sınavında başarısız olacaksın.",
+      "person": "tú"
+    },
+    "Condicional": {
+      "es": "Sin tu ayuda, fracasaríamos en este proyecto tan importante.",
+      "tr": "Senin yardımın olmasa, bu çok önemli projede başarısız olurduk.",
+      "person": "nosotros"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que no fracases en el examen de mañana.",
+      "tr": "Yarınki sınavda başarısız olmamanı umuyorum.",
+      "person": "tú"
+    }
+  },
+  "generar": {
+    "Presente": {
+      "es": "Las plantas generan oxígeno durante el proceso de fotosíntesis",
+      "tr": "Bitkiler fotosentez süreci boyunca oksijen üretir",
+      "person": "ellas"
+    },
+    "Pretérito Indefinido": {
+      "es": "El nuevo proyecto generó muchas oportunidades de trabajo en la ciudad.",
+      "tr": "Yeni proje şehirde birçok iş fırsatı yarattı.",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "La fábrica generaba mucha contaminación en el río",
+      "tr": "Fabrika nehirde çok fazla kirlilik yaratıyordu",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "La nueva campaña publicitaria ha generado mucho interés entre los consumidores.",
+      "tr": "Yeni reklam kampanyası tüketiciler arasında çok ilgi uyandırdı.",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Esta nueva tecnología generará muchas oportunidades de trabajo en el futuro.",
+      "tr": "Bu yeni teknoloji gelecekte birçok iş fırsatı yaratacak.",
+      "person": "ella (esta tecnología)"
+    },
+    "Condicional": {
+      "es": "Ese proyecto generaría muchos empleos en nuestra ciudad",
+      "tr": "O proje şehrimizde çok iş imkanı yaratırdı",
+      "person": "él/ella/eso"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que el proyecto genere buenos resultados para la empresa.",
+      "tr": "Projenin şirket için iyi sonuçlar üretmesini umuyorum.",
+      "person": "él/ella"
+    }
+  },
+  "girar": {
+    "Presente": {
+      "es": "Mi hermana gira la perilla de la radio para cambiar de estación.",
+      "tr": "Kız kardeşim istasyon değiştirmek için radyonun düğmesini çeviriyor.",
+      "person": "él/ella"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer giré la llave pero la puerta no se abrió.",
+      "tr": "Dün anahtarı çevirdim ama kapı açılmadı.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi hermana giraba la llave pero la puerta no se abría.",
+      "tr": "Kız kardeşim anahtarı çeviriyordu ama kapı açılmıyordu.",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana ha girado la llave pero la puerta no se abre.",
+      "tr": "Kız kardeşim anahtarı çevirdi ama kapı açılmıyor.",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Mañana giraremos a la derecha en la próxima esquina",
+      "tr": "Yarın bir sonraki köşede sağa döneceğiz",
+      "person": "nosotros"
+    },
+    "Condicional": {
+      "es": "En esa situación, yo giraría a la derecha inmediatamente.",
+      "tr": "O durumda, hemen sağa dönerim.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que gires a la derecha en el próximo semáforo.",
+      "tr": "Umarım bir sonraki ışıkta sağa dönersin.",
+      "person": "tú"
+    }
+  },
+  "gobernar": {
+    "Presente": {
+      "es": "El presidente gobierna el país con sabiduría y experiencia.",
+      "tr": "Başkan ülkeyi bilgelik ve deneyimle yönetiyor.",
+      "person": "él"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi abuelo gobernó este pueblo durante veinte años con sabiduría.",
+      "tr": "Dedem bu kasabayı yirmi yıl boyunca bilgelikle yönetti.",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi abuelo siempre decía que gobernar un país era muy difícil.",
+      "tr": "Dedem her zaman bir ülkeyi yönetmenin çok zor olduğunu söylerdi.",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "El presidente ha gobernado el país durante ocho años consecutivos.",
+      "tr": "Başkan ülkeyi art arda sekiz yıl boyunca yönetmiştir.",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "El nuevo presidente gobernará el país con políticas más progresistas.",
+      "tr": "Yeni başkan ülkeyi daha ilerici politikalarla yönetecek.",
+      "person": "él"
+    },
+    "Condicional": {
+      "es": "Yo gobernaría el país de manera más justa y transparente.",
+      "tr": "Ülkeyi daha adil ve şeffaf bir şekilde yönetirdim.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que el nuevo alcalde gobierne con justicia y transparencia.",
+      "tr": "Yeni belediye başkanının adalet ve şeffaflıkla yönetmesini umuyorum.",
+      "person": "él"
+    }
+  },
+  "guiar": {
+    "Presente": {
+      "es": "Mi hermano guía a los turistas por el centro histórico",
+      "tr": "Kardeşim turistleri tarihi merkezde rehberlik ediyor",
+      "person": "él"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermano me guió por las calles del centro histórico",
+      "tr": "Kardeşim beni tarihi merkezin sokaklarında yönlendirdi",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi padre me guiaba por la ciudad cuando era pequeño",
+      "tr": "Babam küçükken beni şehirde yönlendirirdi",
+      "person": "él"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermano ha guiado el grupo de turistas por toda la ciudad",
+      "tr": "Kardeşim turist grubunu şehrin her yerinde rehberlik etti",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "Mañana guiaré a los turistas por el centro histórico de la ciudad.",
+      "tr": "Yarın turistleri şehrin tarihi merkezinde gezdireceğim.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Me gustaría que me guiaras por el centro de la ciudad.",
+      "tr": "Beni şehir merkezinde gezdirmeni isterdim.",
+      "person": "tú"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que el guía nos guíe por el sendero correcto.",
+      "tr": "Rehberin bizi doğru patikadan yönlendirmesini umuyorum.",
+      "person": "él"
+    }
+  },
+  "heredar": {
+    "Presente": {
+      "es": "Mi hermano hereda la casa de nuestros abuelos este año.",
+      "tr": "Kardeşim bu yıl büyükanne ve büyükbabamın evini miras alıyor.",
+      "person": "él"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermano heredó la casa de nuestros abuelos el año pasado.",
+      "tr": "Kardeşim geçen yıl büyükanne ve büyükbabamızın evini miras aldı.",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi abuelo heredaba las tierras de su padre cada generación",
+      "tr": "Dedem her nesilde babasının topraklarını miras alırdı",
+      "person": "él"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana ha heredado la casa de nuestros abuelos este año.",
+      "tr": "Kız kardeşim bu yıl büyükanne ve büyükbabamızın evini miras aldı.",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Mi hermano heredará la casa de nuestros abuelos el próximo año.",
+      "tr": "Kardeşim gelecek yıl büyükanne ve büyükbabamızın evini miras alacak.",
+      "person": "él"
+    },
+    "Condicional": {
+      "es": "Mi hermana heredaría la casa si papá no cambia el testamento.",
+      "tr": "Babam vasiyetnameyi değiştirmezse kız kardeşim evi miras alacaktı.",
+      "person": "ella"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que mi hijo herede las mejores cualidades de su padre.",
+      "tr": "Oğlumun babasının en iyi özelliklerini miras almasını umuyorum.",
+      "person": "él"
+    }
+  },
+  "honrar": {
+    "Presente": {
+      "es": "Nosotros honramos la memoria de nuestros abuelos cada domingo.",
+      "tr": "Her pazar büyükanne ve büyükbabalarımızın anısını onurlandırıyoruz.",
+      "person": "nosotros"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer honré a mi abuelo visitando su tumba con flores.",
+      "tr": "Dün dedemizi çiçeklerle mezarını ziyaret ederek onurlandırdım.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi abuelo siempre honraba a sus padres con gran respeto y cariño.",
+      "tr": "Dedem her zaman anne babasını büyük saygı ve sevgiyle onurlandırırdı.",
+      "person": "él"
+    },
+    "Pretérito Perfecto": {
+      "es": "Hemos honrado la memoria de nuestro abuelo con esta ceremonia.",
+      "tr": "Bu törenle dedemizin anısını onurlandırdık.",
+      "person": "nosotros"
+    },
+    "Futuro Simple": {
+      "es": "Mañana honraré la memoria de mi abuelo en el cementerio.",
+      "tr": "Yarın mezarlıkta dedemin anısını onurlandıracağım.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Yo honraría a mis padres con mis logros profesionales.",
+      "tr": "Mesleki başarılarımla ailemi onurlandırırım.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que honres la memoria de tu abuelo con tus acciones.",
+      "tr": "Dedeni eylemlerinle onurlandırmanı umuyorum.",
+      "person": "tú"
+    }
+  },
+  "identificar": {
+    "Presente": {
+      "es": "Los médicos identifican la enfermedad con los síntomas del paciente.",
+      "tr": "Doktorlar hastanın belirtileriyle hastalığı teşhis ediyorlar.",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "La policía identificó al sospechoso gracias a las cámaras de seguridad",
+      "tr": "Polis, güvenlik kameraları sayesinde şüpheliyi tespit etti",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Los testigos no identificaban al sospechoso en la rueda de reconocimiento.",
+      "tr": "Tanıklar şüpheliyi teşhis safında tanıyamıyorlardı.",
+      "person": "ellos"
+    },
+    "Pretérito Perfecto": {
+      "es": "Hemos identificado el problema con tu computadora esta mañana.",
+      "tr": "Bu sabah bilgisayarındaki sorunu tespit ettik.",
+      "person": "nosotros"
+    },
+    "Futuro Simple": {
+      "es": "El médico identificará la causa de tu dolor mañana.",
+      "tr": "Doktor yarın ağrının nedenini tespit edecek.",
+      "person": "él"
+    },
+    "Condicional": {
+      "es": "Con mejor iluminación, identificaríamos fácilmente al ladrón en el video.",
+      "tr": "Daha iyi aydınlatma ile videodaki hırsızı kolayca tanımlayabilirdik.",
+      "person": "nosotros"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que te identifiques con los personajes de la película",
+      "tr": "Umarım filmin karakterleriyle kendini özdeşleştirirsin",
+      "person": "tú"
+    }
+  },
+  "ignorar": {
+    "Presente": {
+      "es": "Mi hermano siempre ignora mis consejos sobre el dinero.",
+      "tr": "Kardeşim para konusundaki tavsiyelerimi hep görmezden gelir.",
+      "person": "él"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermano ignoró completamente mis consejos sobre el trabajo",
+      "tr": "Kardeşim iş hakkındaki tavsiyelerimi tamamen görmezden geldi",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niño, siempre ignoraba los consejos de mi madre.",
+      "tr": "Çocukken, annemin tavsiyelerini hep görmezden gelirdim.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "He ignorado completamente sus mensajes durante toda la semana",
+      "tr": "Bütün hafta boyunca onun mesajlarını tamamen görmezden geldim",
+      "person": "yo"
+    },
+    "Futuro Simple": {
+      "es": "Mañana ignoraré todos los mensajes de mi ex novio.",
+      "tr": "Yarın eski erkek arkadaşımın tüm mesajlarını görmezden geleceğim.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Yo ignoraría sus comentarios negativos si fuera tú",
+      "tr": "Senin yerinde olsam onun olumsuz yorumlarını görmezden gelirdim",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Es mejor que ignores los comentarios negativos en redes sociales.",
+      "tr": "Sosyal medyadaki olumsuz yorumları görmezden gelmen daha iyi.",
+      "person": "tú"
+    }
+  },
+  "imitar": {
+    "Presente": {
+      "es": "Los niños imitan a sus padres cuando juegan en casa",
+      "tr": "Çocuklar evde oynarken ebeveynlerini taklit ederler",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermana imitó perfectamente la voz de nuestra madre por teléfono",
+      "tr": "Kız kardeşim telefonda annemizin sesini mükemmel bir şekilde taklit etti",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niño, imitaba a mi hermano mayor en todo.",
+      "tr": "Çocukken, ağabeyimi her şeyde taklit ederdim.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hijo ha imitado perfectamente el acento de su profesor de inglés",
+      "tr": "Oğlum İngilizce öğretmeninin aksanını mükemmel bir şekilde taklit etti",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "Los niños imitarán a sus padres cuando sean mayores.",
+      "tr": "Çocuklar büyüdüklerinde ebeveynlerini taklit edecekler.",
+      "person": "ellos"
+    },
+    "Condicional": {
+      "es": "Yo imitaría a mi profesor de matemáticas para hacer reír a mis amigos",
+      "tr": "Matematik öğretmenimi taklit ederim arkadaşlarımı güldürmek için",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Es importante que el niño no imite comportamientos agresivos de la televisión.",
+      "tr": "Çocuğun televizyondaki saldırgan davranışları taklit etmemesi önemlidir.",
+      "person": "él"
+    }
+  },
+  "implantar": {
+    "Presente": {
+      "es": "Los médicos implantan un marcapasos al paciente esta mañana",
+      "tr": "Doktorlar bu sabah hastaya kalp pili implante ediyorlar",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "El dentista me implantó un nuevo diente la semana pasada.",
+      "tr": "Diş hekimi geçen hafta bana yeni bir diş implant etti.",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Los médicos implantaban marcapasos con mucha frecuencia en ese hospital.",
+      "tr": "Doktorlar o hastanede çok sık kalp pili takıyorlardı.",
+      "person": "ellos"
+    },
+    "Pretérito Perfecto": {
+      "es": "El dentista me ha implantado una corona nueva esta mañana",
+      "tr": "Diş hekimi bu sabah bana yeni bir kron taktı",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "El dentista me implantará una nueva corona el próximo mes.",
+      "tr": "Diş hekimi gelecek ay bana yeni bir kuron implante edecek.",
+      "person": "él"
+    },
+    "Condicional": {
+      "es": "El dentista implantaría el diente nuevo la próxima semana",
+      "tr": "Diş hekimi gelecek hafta yeni dişi implante ederdi",
+      "person": "él"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que el cirujano implante el marcapasos sin complicaciones.",
+      "tr": "Cerrahın kalp pilini komplikasyonsuz implante etmesini umuyorum.",
+      "person": "él"
+    }
+  },
+  "imprimir": {
+    "Presente": {
+      "es": "Cada mañana imprimo los documentos que necesito para el trabajo",
+      "tr": "Her sabah işim için ihtiyacım olan belgeleri yazdırırım",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer imprimí los documentos para la reunión de trabajo",
+      "tr": "Dün iş toplantısı için belgeleri yazdırdım",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Antes mi hermano imprimía todas las fotos de sus viajes.",
+      "tr": "Eskiden kardeşim seyahatlerinin bütün fotoğraflarını basardı.",
+      "person": "él"
+    },
+    "Pretérito Perfecto": {
+      "es": "He impreso todos los documentos para la reunión de mañana",
+      "tr": "Yarınki toplantı için tüm belgeleri yazdırdım",
+      "person": "yo"
+    },
+    "Futuro Simple": {
+      "es": "Mañana imprimiré los documentos para la reunión",
+      "tr": "Yarın toplantı için belgeleri yazdıracağım",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Imprimiría los documentos si tuviera tinta en la impresora.",
+      "tr": "Yazıcıda mürekkep olsaydı belgeleri yazdırırdım.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que imprimas los documentos antes de la reunión",
+      "tr": "Toplantıdan önce belgeleri yazdırmanı umuyorum",
+      "person": "tú"
+    }
+  },
+  "incitar": {
+    "Presente": {
+      "es": "Los comentarios negativos incitan a los jóvenes a la violencia.",
+      "tr": "Olumsuz yorumlar gençleri şiddete teşvik ediyor.",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "El político incitó a la multitud con su discurso apasionado.",
+      "tr": "Politikacı tutkulu konuşmasıyla kalabalığı kışkırttı.",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi hermano siempre me incitaba a hacer travesuras cuando éramos niños",
+      "tr": "Kardeşim çocukken beni hep yaramazlık yapmaya teşvik ederdi",
+      "person": "él"
+    },
+    "Pretérito Perfecto": {
+      "es": "Los manifestantes han incitado a la violencia durante la protesta",
+      "tr": "Göstericiler protesto sırasında şiddete teşvik ettiler",
+      "person": "ellos"
+    },
+    "Futuro Simple": {
+      "es": "El discurso del líder incitará a los jóvenes a protestar mañana.",
+      "tr": "Liderin konuşması yarın gençleri protesto etmeye teşvik edecek.",
+      "person": "él"
+    },
+    "Condicional": {
+      "es": "Sus palabras incitarían a la gente a protestar en las calles",
+      "tr": "Onun sözleri insanları sokaklarda protesto yapmaya teşvik ederdi",
+      "person": "él/ella"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que no incites a los estudiantes a hacer trampa.",
+      "tr": "Umarım öğrencileri kopya çekmeye teşvik etmezsin.",
+      "person": "tú"
+    }
+  },
+  "incorporar": {
+    "Presente": {
+      "es": "La empresa incorpora nuevas tecnologías para mejorar su productividad este año.",
+      "tr": "Şirket bu yıl verimliliğini artırmak için yeni teknolojiler dahil ediyor.",
+      "person": "la empresa (3. tekil şahıs)"
+    },
+    "Pretérito Indefinido": {
+      "es": "La empresa incorporó nuevas tecnologías para mejorar la productividad.",
+      "tr": "Şirket verimliliği artırmak için yeni teknolojiler dahil etti.",
+      "person": "él/ella/usted"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi hermana incorporaba nuevos ingredientes a sus recetas cada semana.",
+      "tr": "Kız kardeşim her hafta tariflerine yeni malzemeler katardı.",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "La empresa ha incorporado nuevas tecnologías para mejorar la productividad.",
+      "tr": "Şirket verimliliği artırmak için yeni teknolojiler dahil etti.",
+      "person": "ella (la empresa)"
+    },
+    "Futuro Simple": {
+      "es": "La empresa incorporará nuevas tecnologías el próximo año.",
+      "tr": "Şirket gelecek yıl yeni teknolojileri dahil edecek.",
+      "person": "ella (la empresa)"
+    },
+    "Condicional": {
+      "es": "Yo incorporaría más verduras a mi dieta para estar más sano.",
+      "tr": "Daha sağlıklı olmak için diyetime daha fazla sebze katardım.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Es importante que incorpores más verduras en tu dieta diaria.",
+      "tr": "Günlük diyetinde daha fazla sebze bulundurman önemli.",
+      "person": "tú"
+    }
+  },
+  "indicar": {
+    "Presente": {
+      "es": "Te indico el camino más rápido para llegar al centro",
+      "tr": "Sana merkeze ulaşmak için en hızlı yolu gösteriyorum",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "El médico me indicó que tomara estas pastillas tres veces al día.",
+      "tr": "Doktor bana bu hapları günde üç kez almamı söyledi.",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "El GPS indicaba la ruta más rápida hacia el centro de la ciudad.",
+      "tr": "GPS şehir merkezine en hızlı rotayı gösteriyordu.",
+      "person": "él"
+    },
+    "Pretérito Perfecto": {
+      "es": "El médico me ha indicado que tome estas pastillas dos veces al día",
+      "tr": "Doktor bana bu hapları günde iki kez almamı söyledi",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "El médico te indicará el tratamiento adecuado para tu enfermedad.",
+      "tr": "Doktor hastalığın için uygun tedaviyi belirtecek.",
+      "person": "él"
+    },
+    "Condicional": {
+      "es": "El médico me indicaría el mejor tratamiento para mi dolor de espalda.",
+      "tr": "Doktor bana sırt ağrım için en iyi tedaviyi önerirdi.",
+      "person": "él"
+    },
+    "Subjuntivo Presente": {
+      "es": "Es importante que indiques la dirección correcta en el mapa.",
+      "tr": "Haritada doğru yönü göstermen önemli.",
+      "person": "tú"
+    }
+  },
+  "influir": {
+    "Presente": {
+      "es": "Los padres siempre influyen en las decisiones de sus hijos.",
+      "tr": "Ebeveynler her zaman çocuklarının kararlarını etkiler.",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermano mayor influyó mucho en mi decisión de estudiar medicina.",
+      "tr": "Ağabeyim tıp okuma kararımı çok etkiledi.",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Sus padres influían mucho en sus decisiones académicas durante la universidad.",
+      "tr": "Üniversite döneminde ailesi onun akademik kararlarını çok etkiliyordu.",
+      "person": "ellos"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana ha influido mucho en mi decisión de estudiar medicina.",
+      "tr": "Kız kardeşim tıp okuma kararımı çok etkiledi.",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Tu decisión influirá mucho en el futuro de la empresa.",
+      "tr": "Senin kararın şirketin geleceğini çok etkileyecek.",
+      "person": "tu decisión (3ª persona singular)"
+    },
+    "Condicional": {
+      "es": "Sus consejos influirían mucho en mi decisión final sobre el trabajo.",
+      "tr": "Onun tavsiyeleri iş hakkındaki nihai kararımı çok etkileyecekti.",
+      "person": "ellos"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que no influyas en su decisión de estudiar medicina.",
+      "tr": "Tıp okuma kararını etkilememen için umuyorum.",
+      "person": "tú"
+    }
+  },
+  "insertar": {
+    "Presente": {
+      "es": "Inserto la tarjeta de memoria en la cámara digital",
+      "tr": "Hafıza kartını dijital kameraya takıyorum",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer inserté mis datos personales en el formulario online",
+      "tr": "Dün kişisel bilgilerimi çevrimiçi formda girdim",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi hermano insertaba monedas en la máquina expendedora cada día",
+      "tr": "Kardeşim her gün otomat makinesine bozuk para atardı",
+      "person": "él"
+    },
+    "Pretérito Perfecto": {
+      "es": "He insertado la tarjeta de memoria en la cámara para guardar las fotos",
+      "tr": "Fotoğrafları kaydetmek için hafıza kartını kameraya taktım",
+      "person": "yo"
+    },
+    "Futuro Simple": {
+      "es": "Mañana insertaré la nueva tarjeta de memoria en mi cámara",
+      "tr": "Yarın yeni hafıza kartını kamerama takacağım",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "¿Dónde insertarías esta información en el documento?",
+      "tr": "Bu bilgiyi belgede nereye eklerdin?",
+      "person": "tú"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que insertes la tarjeta correctamente en el cajero automático.",
+      "tr": "Kartı ATM'ye doğru şekilde sokmanı umuyorum.",
+      "person": "tú"
+    }
+  },
+  "inspirar": {
+    "Presente": {
+      "es": "Tu historia de superación me inspira mucho cada día",
+      "tr": "Üstesinden gelme hikayen beni her gün çok ilham veriyor",
+      "person": "tú"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi profesora de arte me inspiró a seguir pintando cuando era joven.",
+      "tr": "Sanat öğretmenim gençken resim yapmaya devam etmem için bana ilham verdi.",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi profesora de arte me inspiraba mucho cuando era joven",
+      "tr": "Gençken sanat öğretmenim bana çok ilham veriyordu",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi profesora de arte me ha inspirado a seguir pintando",
+      "tr": "Sanat öğretmenim resim yapmaya devam etmem için beni ilham verdi",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Su historia de superación inspirará a muchos jóvenes del barrio.",
+      "tr": "Onun başarı hikayesi mahalledeki birçok genci ilham verecek.",
+      "person": "él/ella"
+    },
+    "Condicional": {
+      "es": "Tu historia de vida inspiraría a muchas personas jóvenes",
+      "tr": "Hayat hikayen birçok genç insana ilham verirdi",
+      "person": "tú"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que esta música te inspire a seguir adelante.",
+      "tr": "Bu müziğin seni ilerlemeye ilham vermesini umuyorum.",
+      "person": "tú"
+    }
+  },
+  "integrar": {
+    "Presente": {
+      "es": "Los nuevos estudiantes se integran rápidamente al grupo de clase",
+      "tr": "Yeni öğrenciler sınıf grubuna hızlıca uyum sağlıyor",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermano se integró rápidamente al nuevo equipo de trabajo",
+      "tr": "Kardeşim yeni iş ekibine hızlıca uyum sağladı",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Los nuevos estudiantes se integraban poco a poco al grupo de la clase",
+      "tr": "Yeni öğrenciler sınıf grubuna yavaş yavaş uyum sağlıyorlardı",
+      "person": "ellos"
+    },
+    "Pretérito Perfecto": {
+      "es": "Los nuevos estudiantes se han integrado muy bien al grupo",
+      "tr": "Yeni öğrenciler gruba çok iyi uyum sağladılar",
+      "person": "ellos"
+    },
+    "Futuro Simple": {
+      "es": "Mi hermano se integrará al nuevo equipo de trabajo mañana.",
+      "tr": "Kardeşim yarın yeni çalışma ekibine katılacak.",
+      "person": "él"
+    },
+    "Condicional": {
+      "es": "Me integraría mejor al equipo si tuviera más confianza",
+      "tr": "Daha fazla güvenim olsaydı takıma daha iyi uyum sağlardım",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que se integre bien al nuevo equipo de trabajo",
+      "tr": "Yeni çalışma ekibine iyi entegre olmasını umuyorum",
+      "person": "él/ella"
+    }
+  },
+  "intercambiar": {
+    "Presente": {
+      "es": "Los estudiantes intercambian libros y apuntes antes del examen.",
+      "tr": "Öğrenciler sınavdan önce kitap ve notlarını değiş tokuş ediyorlar.",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer intercambié mi número de teléfono con una compañera de clase.",
+      "tr": "Dün sınıf arkadaşımla telefon numaralarımızı değiştik.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Los niños intercambiaban cartas de Pokémon durante el recreo.",
+      "tr": "Çocuklar teneffüste Pokémon kartlarını değiş tokuş ediyorlardı.",
+      "person": "ellos"
+    },
+    "Pretérito Perfecto": {
+      "es": "Hemos intercambiado números de teléfono para mantenernos en contacto.",
+      "tr": "İletişim halinde kalmak için telefon numaralarımızı değiştik.",
+      "person": "nosotros"
+    },
+    "Futuro Simple": {
+      "es": "Mañana intercambiaremos nuestros números de teléfono después de la clase",
+      "tr": "Yarın dersten sonra telefon numaralarımızı değiştireceğiz",
+      "person": "nosotros"
+    },
+    "Condicional": {
+      "es": "Yo intercambiaría mi teléfono por uno más moderno",
+      "tr": "Telefonumu daha modern biriyle değişirdim",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que intercambiemos los regalos en Navidad",
+      "tr": "Noel'de hediyeleri değiştirmemizi umuyorum",
+      "person": "nosotros"
+    }
+  },
+  "interpretar": {
+    "Presente": {
+      "es": "El actor interpreta muy bien su papel en la obra",
+      "tr": "Aktör oyundaki rolünü çok iyi canlandırıyor",
+      "person": "él"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer interpretó una canción muy hermosa en el concierto",
+      "tr": "Dün konserde çok güzel bir şarkı seslendirdi",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi hermana interpretaba muy bien las canciones de Shakira cuando era pequeña.",
+      "tr": "Kız kardeşim küçükken Shakira'nın şarkılarını çok iyi yorumlardı.",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana ha interpretado muy bien su papel en la obra de teatro.",
+      "tr": "Kız kardeşim tiyatro oyunundaki rolünü çok iyi canlandırdı.",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Mañana interpretaré una canción en el concierto de la escuela.",
+      "tr": "Yarın okul konserinde bir şarkı seslendirecegim.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Yo interpretaría esa canción en el concierto si tuviera más tiempo",
+      "tr": "Daha fazla zamanım olsaydı o şarkıyı konserde yorumlardım",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que interpretes bien tu papel en la obra de teatro.",
+      "tr": "Tiyatro oyunundaki rolünü iyi canlandırmanı umuyorum.",
+      "person": "tú"
+    }
+  },
+  "introducir": {
+    "Presente": {
+      "es": "Introduzco mi tarjeta de crédito en el cajero automático",
+      "tr": "Kredi kartımı ATM'ye sokuyorum",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermano introdujo la llave en la cerradura muy despacio.",
+      "tr": "Kardeşim anahtarı kilide çok yavaşça soktu.",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi hermana siempre introducía la llave muy despacio en la cerradura",
+      "tr": "Kız kardeşim anahtarı her zaman kilide çok yavaşça sokardı",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermano ha introducido cambios importantes en su empresa este año.",
+      "tr": "Kardeşim bu yıl şirketinde önemli değişiklikler getirdi.",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "Mañana introduciré las nuevas reglas en la reunión del equipo.",
+      "tr": "Yarın ekip toplantısında yeni kuralları tanıtacağım.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Yo introduciría algunas reformas en el sistema educativo del país",
+      "tr": "Ülkenin eğitim sisteminde bazı reformlar yapardım",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que te introduzcas en el mundo del arte.",
+      "tr": "Sanat dünyasına girmen/adım atman umuduyla.",
+      "person": "tú"
+    }
+  },
+  "justificar": {
+    "Presente": {
+      "es": "Siempre justifico mis decisiones con argumentos sólidos",
+      "tr": "Kararlarımı her zaman sağlam argümanlarla gerekçelendiririm",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermano justificó su ausencia con una excusa poco creíble.",
+      "tr": "Kardeşim yokluğunu pek inandırıcı olmayan bir bahaneyle haklı gösterdi.",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Siempre justificaba sus errores culpando a los demás por todo.",
+      "tr": "Hatalarını her zaman başkalarını suçlayarak haklı çıkarmaya çalışırdı.",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Él ha justificado su ausencia con un certificado médico.",
+      "tr": "O, yokluğunu tıbbi sertifika ile haklı gösterdi.",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "Mañana justificaré mi decisión ante el comité directivo",
+      "tr": "Yarın kararımı yönetim kuruluna gerekçelendireceğim",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Yo justificaría mi decisión si me dieran la oportunidad",
+      "tr": "Eğer bana fırsat verseler kararımı gerekçelendirirdim",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "No creo que justifiques tu comportamiento de ayer",
+      "tr": "Dünkü davranışını haklı göstereceğini sanmıyorum",
+      "person": "tú"
+    }
+  },
+  "limitar": {
+    "Presente": {
+      "es": "Los padres limitan el tiempo de videojuegos de sus hijos.",
+      "tr": "Ebeveynler çocuklarının video oyun süresini sınırlandırır.",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "El médico limitó mi consumo de azúcar después del análisis.",
+      "tr": "Doktor tahlilden sonra şeker tüketimimi sınırladı.",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mis padres limitaban mi tiempo de videojuegos cuando era niño.",
+      "tr": "Çocukken ailem video oyun süreme sınır koyardı.",
+      "person": "ellos"
+    },
+    "Pretérito Perfecto": {
+      "es": "He limitado mi tiempo en redes sociales para estudiar más",
+      "tr": "Daha çok çalışmak için sosyal medyadaki zamanımı sınırladım",
+      "person": "yo"
+    },
+    "Futuro Simple": {
+      "es": "El médico limitará las visitas para que el paciente descanse mejor.",
+      "tr": "Doktor, hastanın daha iyi dinlenmesi için ziyaretleri sınırlayacak.",
+      "person": "él"
+    },
+    "Condicional": {
+      "es": "Yo limitaría el uso del teléfono durante las comidas familiares.",
+      "tr": "Aile yemekleri sırasında telefon kullanımını sınırlandırırdım.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que el médico limite el azúcar en mi dieta.",
+      "tr": "Doktorun diyetimdeki şekeri sınırlamasını umuyorum.",
+      "person": "él"
+    }
+  },
+  "localizar": {
+    "Presente": {
+      "es": "No logro localizar las llaves de mi coche en ninguna parte",
+      "tr": "Arabamın anahtarlarını hiçbir yerde bulamıyorum",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer localicé las llaves que había perdido en el sofá",
+      "tr": "Dün kanapede kaybettiğim anahtarları buldum",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "No podía localizar mis llaves por ningún lado esta mañana.",
+      "tr": "Bu sabah anahtarlarımı hiçbir yerde bulamıyordum.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "He localizado las llaves que perdí ayer en el sofá",
+      "tr": "Dün kaybettiğim anahtarları kanepede buldum",
+      "person": "yo"
+    },
+    "Futuro Simple": {
+      "es": "La policía localizará al sospechoso antes del amanecer",
+      "tr": "Polis şüpheliyi şafaktan önce bulacak",
+      "person": "él/ella"
+    },
+    "Condicional": {
+      "es": "Con mejor señal, localizaríamos el restaurante más fácilmente",
+      "tr": "Daha iyi sinyal olsaydı, restoran kolayca bulurduk",
+      "person": "nosotros"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que localices las llaves que perdiste ayer",
+      "tr": "Dün kaybettiğin anahtarları bulmanı umuyorum",
+      "person": "tú"
+    }
+  },
+  "meditar": {
+    "Presente": {
+      "es": "Cada mañana medito durante veinte minutos antes de desayunar",
+      "tr": "Her sabah kahvaltıdan önce yirmi dakika meditasyon yapıyorum",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer medité durante una hora antes de dormir",
+      "tr": "Dün uyumadan önce bir saat boyunca meditasyon yaptım",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi abuela meditaba todas las mañanas en el jardín antes del desayuno.",
+      "tr": "Büyükannem her sabah kahvaltıdan önce bahçede meditasyon yapardı.",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "He meditado todas las mañanas durante esta semana.",
+      "tr": "Bu hafta boyunca her sabah meditasyon yaptım.",
+      "person": "yo"
+    },
+    "Futuro Simple": {
+      "es": "Mañana meditaré en el parque para relajarme después del trabajo",
+      "tr": "Yarın işten sonra rahatlamak için parkta meditasyon yapacağım",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Si tuviera más tiempo libre, meditaría todas las mañanas",
+      "tr": "Daha fazla boş zamanım olsaydı, her sabah meditasyon yapardım",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Es importante que medites antes de tomar decisiones importantes.",
+      "tr": "Önemli kararlar almadan önce meditasyon yapman önemlidir.",
+      "person": "tú"
+    }
+  },
+  "mencionar": {
+    "Presente": {
+      "es": "Mi profesora siempre menciona la importancia de estudiar cada día",
+      "tr": "Öğretmenim her zaman her gün çalışmanın önemini belirtir",
+      "person": "ella"
+    },
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "merecer": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": {
+      "es": "Has merecido este ascenso por tu gran esfuerzo",
+      "tr": "Bu terfiyi büyük çaban sayesinde hak ettin",
+      "person": "tú"
+    },
+    "Futuro Simple": {
+      "es": "Después de tanto esfuerzo, merecerás unas vacaciones largas.",
+      "tr": "Bu kadar çabadan sonra, uzun bir tatili hak edeceksin.",
+      "person": "tú"
+    },
+    "Condicional": {
+      "es": "Después de tanto esfuerzo, merecerías unas vacaciones largas.",
+      "tr": "Bu kadar çabadan sonra uzun bir tatayı hak ederdin.",
+      "person": "tú"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que merezcas esa promoción en el trabajo.",
+      "tr": "Umarım işte o terfiyi hak edersin.",
+      "person": "tú"
+    }
+  },
+  "modificar": {
+    "Presente": {
+      "es": "Los desarrolladores modifican el código cada semana para mejorarlo.",
+      "tr": "Geliştiriciler kodu geliştirmek için her hafta değiştiriyorlar.",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer modifiqué el horario de trabajo para terminar más temprano.",
+      "tr": "Dün daha erken bitirmek için çalışma saatlerini değiştirdim.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi hermana modificaba constantemente la decoración de su cuarto",
+      "tr": "Kız kardeşim odasının dekorasyonunu sürekli değiştiriyordu",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "He modificado la configuración de mi teléfono para ahorrar batería.",
+      "tr": "Pil tasarrufu için telefonumun ayarlarını değiştirdim.",
+      "person": "yo"
+    },
+    "Futuro Simple": {
+      "es": "Mañana modificaré el diseño de mi página web",
+      "tr": "Yarın web sitemin tasarımını değiştireceğim",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Yo modificaría el horario para tener más tiempo libre",
+      "tr": "Daha fazla boş zamanım olması için programı değiştirirdim",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Es importante que modifiques tu horario de estudio para los exámenes.",
+      "tr": "Sınavlar için ders çalışma programını değiştirmen önemli.",
+      "person": "tú"
+    }
+  },
+  "motivar": {
+    "Presente": {
+      "es": "Mi entrenador me motiva mucho para mejorar mi rendimiento deportivo.",
+      "tr": "Antrenörüm spor performansımı geliştirmem için beni çok motive ediyor.",
+      "person": "él"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermana me motivó a estudiar medicina el año pasado.",
+      "tr": "Kız kardeşim geçen yıl tıp okumam için beni motive etti.",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi entrenador me motivaba mucho durante los entrenamientos de fútbol.",
+      "tr": "Antrenörüm futbol antrenmanları sırasında beni çok motive ediyordu.",
+      "person": "él"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi entrenador me ha motivado mucho para seguir adelante.",
+      "tr": "Antrenörüm devam etmem için beni çok motive etti.",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "El nuevo entrenador motivará a todo el equipo para ganar el campeonato.",
+      "tr": "Yeni antrenör şampiyonluğu kazanmak için tüm takımı motive edecek.",
+      "person": "él"
+    },
+    "Condicional": {
+      "es": "Un buen profesor motivaría a sus estudiantes a seguir aprendiendo siempre.",
+      "tr": "İyi bir öğretmen öğrencilerini her zaman öğrenmeye devam etmeleri için motive ederdi.",
+      "person": "él/ella"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que el entrenador motive a los jugadores antes del partido.",
+      "tr": "Umarım antrenör maçtan önce oyuncuları motive eder.",
+      "person": "él"
+    }
+  },
+  "negociar": {
+    "Presente": {
+      "es": "Siempre negociamos el precio cuando compramos un coche usado.",
+      "tr": "Kullanılmış araba aldığımızda her zaman fiyat pazarlığı yaparız.",
+      "person": "nosotros"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer negoció con el jefe para obtener un aumento de sueldo.",
+      "tr": "Dün patronuyla maaş zammı almak için pazarlık yaptı.",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi padre siempre negociaba los precios en el mercado local.",
+      "tr": "Babam yerel pazarda her zaman fiyatlarda pazarlık yapardı.",
+      "person": "él"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi jefe ha negociado un mejor contrato con los proveedores",
+      "tr": "Patronum tedarikçilerle daha iyi bir sözleşme pazarlık etti",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "Mañana negociaré el precio del coche con el vendedor.",
+      "tr": "Yarın satıcıyla arabanın fiyatını pazarlık edeceğim.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Yo negociaría un mejor precio si tuviera más tiempo",
+      "tr": "Daha fazla zamanım olsaydı daha iyi bir fiyat pazarlık ederdim",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que negocie un mejor precio con el vendedor.",
+      "tr": "Satıcıyla daha iyi bir fiyat müzakere etmesini umuyorum.",
+      "person": "él/ella"
+    }
+  },
+  "obedecer": {
+    "Presente": {
+      "es": "Los niños obedecen a sus padres cuando les hablan con cariño.",
+      "tr": "Çocuklar, ebeveynleri onlarla sevgiyle konuştuğunda onlara itaat ederler.",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermano obedeció a mis padres y llegó temprano a casa.",
+      "tr": "Kardeşim anne babama itaat etti ve eve erken geldi.",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niño, siempre obedecía a mis padres sin cuestionar.",
+      "tr": "Çocukken, hep anne babamı sorgulamadan dinlerdim.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermano siempre ha obedecido las reglas de casa",
+      "tr": "Kardeşim her zaman evin kurallarına itaat etmiştir",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "Los niños obedecerán a sus padres cuando entiendan las reglas.",
+      "tr": "Çocuklar kuralları anladıklarında ebeveynlerine itaat edecekler.",
+      "person": "ellos"
+    },
+    "Condicional": {
+      "es": "Si fueras mi jefe, te obedecería sin cuestionar tus órdenes.",
+      "tr": "Eğer patronum olsaydın, emirlerini sorgulamadan sana itaat ederdim.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Es importante que los niños obedezcan a sus padres.",
+      "tr": "Çocukların anne babalarına itaat etmesi önemlidir.",
+      "person": "ellos"
+    }
+  },
+  "abandonar": {
+    "Presente": {
+      "es": "Los estudiantes abandonan la clase cuando el profesor llega tarde",
+      "tr": "Öğrenciler öğretmen geç geldiğinde sınıfı terk ediyor",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermano abandonó sus estudios el año pasado para trabajar.",
+      "tr": "Kardeşim geçen yıl çalışmak için okulu bıraktı.",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niño, mi padre abandonaba la casa muy temprano.",
+      "tr": "Çocukken babam evi çok erken terk ederdi.",
+      "person": "él"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermano ha abandonado los estudios para trabajar en el extranjero",
+      "tr": "Kardeşim yurtdışında çalışmak için okulu bıraktı",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "Mañana abandonaré mi trabajo para empezar mi propio negocio",
+      "tr": "Yarın kendi işimi kurmak için işimi bırakacağım",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Yo nunca abandonaría a mis hijos por dinero o fama.",
+      "tr": "Asla çocuklarımı para ya da şöhret için terk etmezdim.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que no abandones tus sueños por las dificultades.",
+      "tr": "Zorluklar yüzünden hayallerini bırakmaman için dua ediyorum.",
+      "person": "tú"
+    }
+  },
+  "absorber": {
+    "Presente": {
+      "es": "La esponja absorbe toda el agua del fregadero rápidamente.",
+      "tr": "Sünger lavabodaki tüm suyu hızla emiyor.",
+      "person": "3ª persona singular (ella)"
+    },
+    "Pretérito Indefinido": {
+      "es": "La esponja absorbió toda el agua del suelo rápidamente.",
+      "tr": "Sünger yerdeki tüm suyu hızlıca emdi.",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "La esponja absorbía toda el agua del suelo mojado",
+      "tr": "Sünger ıslak zemindeki tüm suyu emiyordu",
+      "person": "ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "La esponja ha absorbido toda el agua del suelo",
+      "tr": "Sünger yerdeki tüm suyu emdi",
+      "person": "ella"
+    },
+    "Futuro Simple": {
+      "es": "La esponja absorberá toda el agua del suelo",
+      "tr": "Sünger yerdeki tüm suyu emecek",
+      "person": "la esponja (3ª persona singular)"
+    },
+    "Condicional": {
+      "es": "Esta esponja absorbería mejor el agua si fuera más grande.",
+      "tr": "Bu sünger daha büyük olsaydı suyu daha iyi emerdi.",
+      "person": "ella"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que la esponja absorba toda el agua del suelo.",
+      "tr": "Süngerın yerdeki bütün suyu emmesini umuyorum.",
+      "person": "la esponja (3. tekil şahıs)"
+    }
+  },
+  "acompañar": {
+    "Presente": {
+      "es": "Mi hermana me acompaña al médico cuando estoy enfermo.",
+      "tr": "Kız kardeşim hasta olduğumda beni doktora eşlik ediyor.",
+      "person": "él/ella"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermana me acompañó al médico ayer por la tarde",
+      "tr": "Kız kardeşim dün öğleden sonra beni doktora eşlik etti",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi hermana siempre me acompañaba al colegio cuando éramos pequeños",
+      "tr": "Küçükken ablam beni hep okula kadar götürürdü",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana me ha acompañado al médico esta mañana.",
+      "tr": "Kız kardeşim bu sabah beni doktora eşlik etti.",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Mañana te acompañaré al médico para el chequeo.",
+      "tr": "Yarın kontrol için seni doktora eşlik edeceğim.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Te acompañaría al médico si tuviera tiempo libre",
+      "tr": "Boş zamanım olsaydı seni doktora eşlik ederdim",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que mi hermana me acompañe al médico mañana.",
+      "tr": "Umarım kız kardeşim yarın beni doktora eşlik eder.",
+      "person": "él/ella"
+    }
+  },
+  "acordar": {
+    "Presente": {
+      "es": "Siempre acuerdo con mi hermana sobre las películas que vemos",
+      "tr": "Kız kardeşimle izlediğimiz filmler konusunda her zaman anlaşırım",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer acordamos reunirnos en el café a las tres de la tarde",
+      "tr": "Dün öğleden sonra saat üçte kafede buluşmaya karar verdik",
+      "person": "nosotros"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niño, me acordaba siempre de mi abuela",
+      "tr": "Çocukken büyükannemi hep hatırlardım",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana ha acordado reunirse con nosotros mañana por la tarde",
+      "tr": "Kız kardeşim yarın öğleden sonra bizimle buluşmaya karar verdi",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Mañana me acordaré de comprar el regalo para mi hermana.",
+      "tr": "Yarın kız kardeşim için hediye almayı hatırlayacağım.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Me dijo que se acordaría de traer los documentos mañana.",
+      "tr": "Yarın belgeleri getirmeyi hatırlayacağını söyledi.",
+      "person": "él/ella"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que te acuerdes de comprar leche en el supermercado.",
+      "tr": "Marketten süt almayı hatırladığını umuyorum.",
+      "person": "tú"
+    }
+  },
+  "acostumbrar": {
+    "Presente": {
+      "es": "Me acostumbro a levantarme temprano para ir al trabajo.",
+      "tr": "İşe gitmek için erken kalkmaya alışıyorum.",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermana se acostumbró rápidamente a vivir en Madrid.",
+      "tr": "Kız kardeşim Madrid'de yaşamaya çabuk alıştı.",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niño me acostumbraba a dormir con la luz encendida.",
+      "tr": "Çocukken ışık açık uyumaya alışıktım.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana se ha acostumbrado a vivir sola en Madrid.",
+      "tr": "Kız kardeşim Madrid'de tek başına yaşamaya alıştı.",
+      "person": "ella"
+    },
+    "Futuro Simple": {
+      "es": "Mi hijo se acostumbrará pronto a su nueva escuela.",
+      "tr": "Oğlum yakında yeni okuluna alışacak.",
+      "person": "él"
+    },
+    "Condicional": {
+      "es": "Te acostumbrarías más rápido si practicaras español todos los días.",
+      "tr": "Her gün İspanyolca pratik yapsan daha hızlı alışırdın.",
+      "person": "tú"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que te acostumbres pronto a vivir en Madrid.",
+      "tr": "Umarım Madrid'de yaşamaya çabuk alışırsın.",
+      "person": "tú"
+    }
+  },
+  "activar": {
+    "Presente": {
+      "es": "Siempre activo la alarma antes de salir de casa.",
+      "tr": "Evden çıkmadan önce her zaman alarmı aktive ederim.",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer activé la alarma antes de salir de casa.",
+      "tr": "Dün evden çıkmadan önce alarmı açtım.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi hermano siempre activaba la alarma antes de salir de casa.",
+      "tr": "Kardeşim evden çıkmadan önce her zaman alarmı açardı.",
+      "person": "él"
+    },
+    "Pretérito Perfecto": {
+      "es": "He activado la alarma antes de salir de casa",
+      "tr": "Evden çıkmadan önce alarmı aktif hale getirdim",
+      "person": "yo"
+    },
+    "Futuro Simple": {
+      "es": "Mañana activaré la alarma para despertarme temprano.",
+      "tr": "Yarın erken uyanmak için alarmı açacağım.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Si tuviera la contraseña, activaría el sistema de seguridad inmediatamente.",
+      "tr": "Eğer şifrem olsaydı, güvenlik sistemini hemen aktive ederdim.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Es importante que actives la alarma antes de salir de casa.",
+      "tr": "Evden çıkmadan önce alarmı açman önemli.",
+      "person": "tú"
+    }
+  },
+  "acudir": {
+    "Presente": {
+      "es": "Siempre acudo al médico cuando me siento mal",
+      "tr": "Kendimi kötü hissettiğimde hep doktora giderim",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer acudí al médico porque me dolía mucho la cabeza.",
+      "tr": "Dün başım çok ağrıdığı için doktora gittim.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niño, acudía a la biblioteca todos los sábados con mi abuela.",
+      "tr": "Çocukken her cumartesi büyükannemle birlikte kütüphaneye giderdim.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "He acudido al médico esta mañana por el dolor de cabeza",
+      "tr": "Bu sabah baş ağrısı yüzünden doktora gittim",
+      "person": "yo"
+    },
+    "Futuro Simple": {
+      "es": "Mañana acudiremos al médico para el chequeo anual.",
+      "tr": "Yarın yıllık kontrolümüz için doktora gideceğiz.",
+      "person": "nosotros"
+    },
+    "Condicional": {
+      "es": "Yo acudiría al médico si el dolor no mejora.",
+      "tr": "Ağrı geçmezse doktora giderdim.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Es importante que acudas al médico si sigues con fiebre.",
+      "tr": "Ateşin devam ediyorsa doktora gitmen önemli.",
+      "person": "tú"
+    }
+  },
+  "acusar": {
+    "Presente": {
+      "es": "Los vecinos acusan al dueño del perro de no limpiar",
+      "tr": "Komşular köpek sahibini temizlik yapmamakla suçluyorlar",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi vecino me acusó de hacer ruido por las noches",
+      "tr": "Komşum beni geceleri gürültü yaptığım için suçladı",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mis padres siempre me acusaban de llegar tarde a casa.",
+      "tr": "Ailem beni eve hep geç geldiğim için suçlardı.",
+      "person": "ellos"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi vecino me ha acusado de hacer mucho ruido por las noches.",
+      "tr": "Komşum beni geceleri çok gürültü yaptığım için suçladı.",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "La policía acusará al sospechoso de robo mañana por la mañana.",
+      "tr": "Polis şüpheliyi yarın sabah hırsızlıkla suçlayacak.",
+      "person": "él/ella"
+    },
+    "Condicional": {
+      "es": "Yo nunca acusaría a mi hermano sin pruebas concretas.",
+      "tr": "Kardeşimi somut kanıtlar olmadan asla suçlamazdım.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "No creo que él la acuse sin tener pruebas suficientes.",
+      "tr": "Yeterli kanıtı olmadan onu suçlayacağını sanmıyorum.",
+      "person": "él"
+    }
+  },
+  "adoptar": {
+    "Presente": {
+      "es": "Mi hermana adopta un perro del refugio de animales",
+      "tr": "Kız kardeşim hayvan barınağından bir köpek sahipleniyor",
+      "person": "él/ella"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mis padres adoptaron a mi hermana menor hace cinco años",
+      "tr": "Ailem küçük kız kardeşimi beş yıl önce evlat edindi",
+      "person": "ellos"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mis abuelos adoptaban niños abandonados cuando eran jóvenes",
+      "tr": "Büyükanne ve büyükbabam gençken terk edilmiş çocukları evlat edinirlerdi",
+      "person": "ellos"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana ha adoptado un cachorro de la perrera municipal",
+      "tr": "Kız kardeşim belediye barınağından bir köpek yavrusu sahiplendi",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Mi hermana adoptará un perro del refugio el próximo mes",
+      "tr": "Kız kardeşim gelecek ay barınaktan bir köpek sahiplenecek",
+      "person": "él/ella"
+    },
+    "Condicional": {
+      "es": "Nosotros adoptaríamos un perro si tuviéramos más espacio en casa",
+      "tr": "Evde daha fazla yerimiz olsaydı bir köpek sahiplenirdik",
+      "person": "nosotros"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que adoptes una mascota pronto",
+      "tr": "Umarım yakında bir evcil hayvan sahiplenirsin",
+      "person": "tú"
+    }
+  },
+  "afirmar": {
+    "Presente": {
+      "es": "Los científicos afirman que el cambio climático es real",
+      "tr": "Bilim insanları iklim değişikliğinin gerçek olduğunu iddia ediyor",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "El testigo afirmó que vio al sospechoso cerca del banco",
+      "tr": "Tanık şüpheliyi bankanın yakınında gördüğünü doğruladı",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi profesor siempre afirmaba que la práctica hace al maestro.",
+      "tr": "Öğretmenim her zaman pratik ustayı yarattığını söylerdi.",
+      "person": "él"
+    },
+    "Pretérito Perfecto": {
+      "es": "El director ha afirmado que los resultados serán publicados mañana.",
+      "tr": "Direktör sonuçların yarın yayınlanacağını doğruladı.",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "El testigo afirmará que vio al sospechoso cerca del lugar",
+      "tr": "Tanık şüpheliyi yerin yakınında gördüğünü ileri sürecek",
+      "person": "él/ella"
+    },
+    "Condicional": {
+      "es": "El testigo afirmaría que vio al sospechoso en el lugar del crimen.",
+      "tr": "Tanık, şüpheliyi suç mahallinde gördüğünü iddia ederdi.",
+      "person": "él"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que Juan afirme su compromiso con el proyecto mañana.",
+      "tr": "Umarım Juan yarın projeye olan bağlılığını onaylar.",
+      "person": "él"
+    }
+  },
+  "agregar": {
+    "Presente": {
+      "es": "Siempre agrego sal a la pasta mientras cocino",
+      "tr": "Yemek yaparken makarnaya her zaman tuz eklerim",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermana agregó sal extra a la sopa porque estaba desabrida.",
+      "tr": "Kız kardeşim çorbaya fazladan tuz ekledi çünkü tatsızdı.",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi abuela siempre agregaba canela a sus postres caseros.",
+      "tr": "Büyükannem ev yapımı tatlılarına hep tarçın katardı.",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "He agregado más sal a la sopa porque estaba sosa.",
+      "tr": "Çorbaya daha fazla tuz ekledim çünkü tuzsuzdu.",
+      "person": "yo"
+    },
+    "Futuro Simple": {
+      "es": "Mañana agregaré más fotos a mi álbum de viajes.",
+      "tr": "Yarın seyahat albümüme daha fazla fotoğraf ekleyeceğim.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Yo agregaría más sal a la sopa si fuera necesario.",
+      "tr": "Gerekli olsaydı çorbaya daha fazla tuz eklerdi.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que agregues más sal a la sopa.",
+      "tr": "Umarım çorbaya daha fazla tuz eklersin.",
+      "person": "tú"
+    }
+  },
+  "agrupar": {
+    "Presente": {
+      "es": "Los estudiantes se agrupan por edades para el proyecto",
+      "tr": "Öğrenciler proje için yaşlarına göre gruplandı",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "La profesora agrupó a los estudiantes en equipos de cuatro personas",
+      "tr": "Öğretmen öğrencileri dört kişilik takımlar halinde grupladı",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Los estudiantes se agrupaban por edades durante el recreo",
+      "tr": "Öğrenciler teneffüste yaşlarına göre gruplaşıyorlardı",
+      "person": "ellos"
+    },
+    "Pretérito Perfecto": {
+      "es": "Los estudiantes han agrupado las sillas para trabajar en equipo.",
+      "tr": "Öğrenciler takım halinde çalışmak için sandalyeleri gruplandırdılar.",
+      "person": "ellos"
+    },
+    "Futuro Simple": {
+      "es": "Mañana agruparemos a los estudiantes por nivel de inglés",
+      "tr": "Yarın öğrencileri İngilizce seviyelerine göre gruplayacağız",
+      "person": "nosotros"
+    },
+    "Condicional": {
+      "es": "Yo agruparía a los estudiantes por nivel de conocimiento",
+      "tr": "Öğrencileri bilgi seviyelerine göre gruplandırırdım",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Es importante que agrupemos a los estudiantes por nivel",
+      "tr": "Öğrencileri seviyelerine göre gruplamamız önemli",
+      "person": "nosotros"
+    }
+  },
+  "ajustar": {
+    "Presente": {
+      "es": "Mi hermana ajusta la temperatura del aire acondicionado cada mañana.",
+      "tr": "Kız kardeşim her sabah klimanın sıcaklığını ayarlıyor.",
+      "person": "él/ella"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermano ajustó la televisión antes de la película",
+      "tr": "Kardeşim filmden önce televizyonu ayarladı",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi padre siempre ajustaba el televisor antes de ver las noticias.",
+      "tr": "Babam haberleri izlemeden önce her zaman televizyonu ayarlardı.",
+      "person": "él"
+    },
+    "Pretérito Perfecto": {
+      "es": "He ajustado la temperatura del aire acondicionado para que esté más fresco.",
+      "tr": "Klimanın sıcaklığını daha serin olması için ayarladım.",
+      "person": "yo"
+    },
+    "Futuro Simple": {
+      "es": "Mañana ajustaré la configuración de mi teléfono móvil.",
+      "tr": "Yarın cep telefonumun ayarlarını düzenleyeceğim.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Yo ajustaría el horario de trabajo para tener más tiempo libre",
+      "tr": "Daha fazla boş zaman sahibi olmak için çalışma saatlerini ayarlardım",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que ajustes bien el horario de trabajo.",
+      "tr": "Çalışma programını iyi ayarlaman umarım.",
+      "person": "tú"
+    }
+  },
+  "alegrar": {
+    "Presente": {
+      "es": "Me alegro mucho de verte después de tanto tiempo",
+      "tr": "Seni bu kadar uzun zaman sonra gördüğüme çok sevindim",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermana se alegró mucho cuando recibió la carta de aceptación",
+      "tr": "Kız kardeşim kabul mektubunu aldığında çok sevindi",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi abuela siempre se alegraba cuando llegábamos a visitarla los domingos.",
+      "tr": "Büyükannem pazar günleri onu ziyarete geldiğimizde hep sevinirdi.",
+      "person": "ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Tu visita me ha alegrado mucho el día de hoy.",
+      "tr": "Senin ziyaretin bugün beni çok sevindirdi.",
+      "person": "tú"
+    },
+    "Futuro Simple": {
+      "es": "Tu visita me alegrará mucho después de tanto tiempo separados.",
+      "tr": "Bu kadar uzun süre ayrı kaldıktan sonra ziyaretin beni çok sevindirecek.",
+      "person": "tú"
+    },
+    "Condicional": {
+      "es": "Me alegraría mucho verte en mi fiesta de cumpleaños",
+      "tr": "Doğum günü partimde seni görmek beni çok mutlu ederdi",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que te alegres cuando veas tu regalo de cumpleaños.",
+      "tr": "Doğum günü hediyeni gördüğünde sevinmeni umuyorum.",
+      "person": "tú"
+    }
+  },
+  "alejar": {
+    "Presente": {
+      "es": "Mi hermana aleja el teléfono de los niños durante la cena.",
+      "tr": "Kız kardeşim akşam yemeği sırasında telefonu çocuklardan uzaklaştırıyor.",
+      "person": "él/ella"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer me alejé del centro porque había mucho tráfico.",
+      "tr": "Dün çok trafik olduğu için merkezden uzaklaştım.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niño, siempre me alejaba de los perros grandes.",
+      "tr": "Çocukken hep büyük köpeklerden uzaklaşırdım.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermano se ha alejado mucho de la familia últimamente.",
+      "tr": "Kardeşim son zamanlarda aileden çok uzaklaştı.",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "Mañana alejaré mi escritorio de la ventana para concentrarme mejor.",
+      "tr": "Yarın daha iyi konsantre olmak için masamı pencereden uzaklaştıracağım.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Yo me alejaría de esa situación si fuera tú",
+      "tr": "Senin yerinde olsam o durumdan uzaklaşırdım",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que te alejes de esas malas compañías.",
+      "tr": "O kötü arkadaşlardan uzaklaşmanı umuyorum.",
+      "person": "tú"
+    }
+  },
+  "alojar": {
+    "Presente": {
+      "es": "Mi hermana aloja a estudiantes extranjeros en su casa durante el verano.",
+      "tr": "Kız kardeşim yaz boyunca evinde yabancı öğrencileri ağırlıyor.",
+      "person": "él/ella"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mis padres alojaron a unos turistas franceses durante el verano.",
+      "tr": "Ailem yaz boyunca birkaç Fransız turisti misafir etti.",
+      "person": "ellos"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi abuela siempre alojaba a los familiares que venían de visita.",
+      "tr": "Büyükannem ziyarete gelen akrabaları hep evinde misafir ederdi.",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Hemos alojado a mis primos en la habitación de invitados",
+      "tr": "Kuzenlerimi misafir odasında ağırladık",
+      "person": "nosotros"
+    },
+    "Futuro Simple": {
+      "es": "El hotel alojará a todos los invitados de la boda.",
+      "tr": "Otel düğünün tüm misafirlerini ağırlayacak.",
+      "person": "él"
+    },
+    "Condicional": {
+      "es": "¿Podrías alojar a mi primo durante el fin de semana?",
+      "tr": "Hafta sonu boyunca kuzenimi misafir edebilir misin?",
+      "person": "tú"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que mis padres alojen a mi amigo este fin de semana.",
+      "tr": "Umarım ailem bu hafta sonu arkadaşımı misafir eder.",
+      "person": "ellos"
+    }
+  },
+  "andar": {
+    "Presente": {
+      "es": "Mis abuelos andan en bicicleta por el parque todas las mañanas",
+      "tr": "Büyükanne ve büyükbabam her sabah parkta bisiklet sürüyorlar",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer anduve por el parque con mi perro durante una hora.",
+      "tr": "Dün köpeğimle birlikte parkta bir saat yürüdüm.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niño, andaba en bicicleta por el parque todos los días.",
+      "tr": "Çocukken her gün parkta bisiklet sürerdim.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "Esta mañana he andado dos kilómetros por el parque",
+      "tr": "Bu sabah parkta iki kilometre yürüdüm",
+      "person": "yo"
+    },
+    "Futuro Simple": {
+      "es": "Mañana andaré por el parque con mi perro durante una hora.",
+      "tr": "Yarın köpeğimle birlikte parkta bir saat yürüyeceğim.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Si tuviera más tiempo libre, andaría por el parque todas las mañanas.",
+      "tr": "Daha fazla boş zamanım olsaydı, her sabah parkta yürürdüm.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que andes con cuidado por la noche",
+      "tr": "Geceleri dikkatli yürümeni umuyorum",
+      "person": "tú"
+    }
+  },
+  "animar": {
+    "Presente": {
+      "es": "Mis amigos siempre me animan cuando tengo problemas en el trabajo.",
+      "tr": "Arkadaşlarım işte sorunlarım olduğunda beni hep cesaretlendirirler.",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermana me animó a participar en el concurso de baile",
+      "tr": "Kız kardeşim beni dans yarışmasına katılmaya teşvik etti",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi hermana siempre me animaba cuando tenía problemas en el colegio.",
+      "tr": "Kız kardeşim okulda sorunlarım olduğunda beni hep cesaretlendirirdi.",
+      "person": "ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana me ha animado a estudiar para el examen de mañana.",
+      "tr": "Kız kardeşim beni yarınki sınav için çalışmaya teşvik etti.",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Mi hermana me animará a participar en el concurso de talentos.",
+      "tr": "Kız kardeşim beni yetenek yarışmasına katılmam için cesaretlendirecek.",
+      "person": "ella"
+    },
+    "Condicional": {
+      "es": "Te animaría a venir con nosotros al concierto esta noche.",
+      "tr": "Bu gece bizimle konsere gelmen için seni cesaretlendirirdim.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que te animes a venir a la fiesta conmigo.",
+      "tr": "Umarım benimle partiye gelmeye cesaret edersin.",
+      "person": "tú"
+    }
+  },
+  "anotar": {
+    "Presente": {
+      "es": "Anoto las fechas importantes en mi agenda personal",
+      "tr": "Önemli tarihleri kişisel ajandama not alıyorum",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer anoté tu número de teléfono en mi agenda",
+      "tr": "Dün telefon numaranı ajandama not ettim",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi hermana anotaba todos los gastos en su cuaderno cada noche",
+      "tr": "Kız kardeşim her gece tüm harcamaları defterine kaydederdi",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "He anotado todos los datos importantes en mi cuaderno de trabajo.",
+      "tr": "Çalışma defterime tüm önemli verileri not aldım.",
+      "person": "yo"
+    },
+    "Futuro Simple": {
+      "es": "Mañana anotaré todos los gastos del viaje en mi cuaderno.",
+      "tr": "Yarın seyahatin tüm masraflarını defterime not alacağım.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Yo anotaría todos los gastos si tuviera más tiempo",
+      "tr": "Daha fazla zamanım olsaydı bütün harcamaları not alırdım",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Es importante que anotes la dirección en tu cuaderno",
+      "tr": "Adresi defterine yazman önemli",
+      "person": "tú"
+    }
+  },
+  "antender": {
+    "Presente": {
+      "es": "No entiendo por qué llegaste tan tarde anoche",
+      "tr": "Dün gece neden bu kadar geç geldiğini anlamıyorum",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer entendí por qué mi hermana estaba tan triste.",
+      "tr": "Dün kız kardeşimin neden bu kadar üzgün olduğunu anladım.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era estudiante, no entendía las matemáticas muy bien.",
+      "tr": "Öğrenciyken matematiği pek iyi anlamıyordum.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana ha atendido muy bien a los clientes hoy.",
+      "tr": "Kız kardeşim bugün müşterilere çok iyi hizmet etti.",
+      "person": "ella"
+    },
+    "Futuro Simple": {
+      "es": "Mañana entenderás por qué tomé esa decisión tan difícil.",
+      "tr": "Yarın o kadar zor kararı neden aldığımı anlayacaksın.",
+      "person": "tú"
+    },
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "aparcar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "apartar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "aplaudir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "apreciar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "apresurar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "aprovechar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "argüir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "armar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "arrancar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "arrepentir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "asistir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "asociar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "asumir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "atender": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "atraer": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "atrapar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "autorizar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "balancear": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "bautizar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "beneficiar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "besar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "brincar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "caber": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "calificar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "cansar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "caracterizar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "carecer": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "causar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "centrar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "cercar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "charlar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "chocar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "colocar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "combatir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "combinar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "cometer": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "comparar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "comportar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "computar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "concebir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "concluir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "condenar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "confesar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "consentir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "consolar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "constituir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "consumir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "contactar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "contener": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "contrastar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "contratar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "convencer": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "coordinar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "cubrir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "cultivar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "definir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "depender": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "depositar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "desaparecer": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "descender": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "deshacer": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "destacar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "dialogar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "explotar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "refugiar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "restaurar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "suspirar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "temblar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "vigilar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "zurrar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "abofetear": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "aclarar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "adorar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "aflojar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "ahogar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "aliviar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "amarrar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "aplazar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "arrugar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "barajar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "bronzear": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "canalizar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "captar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "certificar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "chantajear": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "cicatrizar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "climatizar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "colapsar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "compactar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "consoladar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "contemplar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "contraatar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "cronometrar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "cuadrar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "curtir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "deambular": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "declamar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "defraudar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "degustar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "delirar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "demorar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "derretir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "desfilar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "deslizar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "despegar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "desplazar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "desplomar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "destellar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "destinar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "desviar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "dilatar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "disimular": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "dobladillar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "dramatizar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "ebullir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "eclipsar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "economizar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "edificar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "ejecutar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "embarcar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "empacar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "empujar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "encerrar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "encoger": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "enderezar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "enlargar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "ensanchar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "entorpecer": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "entregar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "equilibrar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "erradicar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "escupir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "esforzar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "esparcir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "esquivar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "estornudar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "estrangular": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "estremecer": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "exagerar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "excavar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "exhalar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "expulsar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "extender": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "extraer": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "falsificar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "fantasear": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "fermentar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "flanquear": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "forzar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "fumigar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "galvanizar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "galopar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "gargarizar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "gesticular": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "gimotear": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "gotear": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "graduar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "gruñir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "halagar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "hibernar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "hinchar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "hipnotizar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "hospedar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "humillar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "idealizar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "impedir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "impresionar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "inclinar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "incrementar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "inflamar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "inhalar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "inmunizar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "interceptar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "interrogar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "intuir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "invadir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "jadear": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "jalear": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "lamber": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "licuar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "liquidar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "lubricar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "maltratar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "manipular": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "maquillar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "marchar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "materializar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "mediar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "memorizar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "menospreciar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "metabolizar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "modernizar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "mojar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "monopolizar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "abrazar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "acelgar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "acercar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "aguantar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "alargar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "alumbrar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "amargar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "anhelar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "apoyar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "archivar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "articular": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "asaltar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "asomar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "aturdir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "avivar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "bandear": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "blanquear": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "bombardear": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "broncear": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "calibrar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "callar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "capear": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "carbonizar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "cavar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "centralizar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "chapotear": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "chisporrotear": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "cincelar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "clamar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "clarificar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "codificar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "coexistir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "colonizar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "colorear": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "comercializar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "compaginar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "compensar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "complacer": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "conceder": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "condicionar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "confeccionar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "congratular": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "constelar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "contradecir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "convalecer": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "convivir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "coronar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "corroborar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "cristalizar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "cuajar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "custodiar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "debilitar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "decretar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "degenerar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "delatar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "demoler": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "departir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "derrochar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "desatar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "desbordar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "descargar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "desembarcar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "desenfocar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "deshidratar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "deslumbrar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "desobedecer": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "desquebrajar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "desterrar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "deteriorar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "devaluar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "diagnosticar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "dificultar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "digitalizar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "discernir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "diseñar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "disfrazar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "disparar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "divagar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "diversificar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "domesticar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "efectuar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "ejemplificar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "electrolyzer": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "emitir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "empañar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "empellar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "enajenar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "encajar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "encomendar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "enfatizar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "enlazar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "enmarcar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "ensalzar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "entornar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "entrenar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "enumerar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "equipar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "escasear": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "escoger": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "esfumar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "espaciar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "especializar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "espesar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "estabilizar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "adornar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "agitar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "aliar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "amplificar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "arder": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "aterrizar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "ausentar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "aventurar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "balbucear": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "bambolear": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "bifurcar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "blindar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "bosquejar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "brindar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "bronquear": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "burlar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "cabecear": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "caducar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "camuflar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "capitalizar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "catalogar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "cauterizar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "ceñir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "cernir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "chillar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "chorrear": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "chupar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "cifrar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "cimentar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "clonar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "coagular": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "coincidir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "comerciar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "compilar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "comprimir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "conciliar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "condensar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "conjurar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "conmemorar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "conspirar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "contagiar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "contornear": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "convergir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "convocar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "cordializar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "correlacionar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "cortocircuitar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "cosechar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "coser": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "crujir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "decaer": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "defecar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "deletrear": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "denegar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "deportar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "derrocar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "desafiar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "desangrar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "desarticular": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "descifrar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "desdeñar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "desempeñar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "desentrañar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "desesperanzar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "desgastar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "deshonrar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "designar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "desintegrar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "desmantelar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "desovar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "despilfarrar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "despojar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "desteñir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "destituir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "desvanecer": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "detallar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "detonar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "dictaminar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "dimensionar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "disciplinar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "discriminar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "diseccionar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "disentir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "disolver": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "documentar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "dosificar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "ejercitar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "electrificar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "emanar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "embaucar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "embrujar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "empalidecer": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "emular": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "encarcelar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "encauzar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "enfrascar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "operar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "reflejar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "procesar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "supervisar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "optimizar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "transportar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "transformar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "representar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "presentar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "respetar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "reprochar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "reemplazar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "perfeccionar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "sincronizar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "sistematizar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "socializar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "solidificar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "solucionar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "subrayar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "supervisionar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "suplementar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "suscribir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "sustituir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "tantear": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "tatuar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "teclear": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "telefonear": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "templar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "tender": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "teorizar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "terciar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "testimoniar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "tildar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "titular": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "tolerar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "totalizar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "traicionar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "tramitar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "tranquilizar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "transmitir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "trasladar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "trazar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "triunfar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "ultrajar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "unificar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "universalizar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "urbanizar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "urgir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "usurpar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "vacilar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "validar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "variar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "velar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "vengar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "ventear": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "verificar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "versar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "vestir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "vibrar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "vincular": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "violar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "visualizar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "vocalizar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "vulgarizar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "yacer": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "zabullir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "zaherir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "zampar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "zapatear": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "zumbar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "procurar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "promover": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "proponer": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "proporcionar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "proseguir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "protocolizar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "provocar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "proyectar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "purificar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "quebrar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "racionalizar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "radicalizar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "ratificar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "reaccionar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "realizar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "reanudar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "rebobinar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "rechazar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "recitar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "reclamar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "reconocer": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "recrear": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "rectificar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "recurrir": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "redactar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "redondear": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "reformar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "reforzar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "refutar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "registrar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "reglamentar": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
+  },
+  "regular": {
+    "Presente": null,
+    "Pretérito Indefinido": null,
+    "Pretérito Imperfecto": null,
+    "Pretérito Perfecto": null,
+    "Futuro Simple": null,
+    "Condicional": null,
+    "Subjuntivo Presente": null
   }
 }
