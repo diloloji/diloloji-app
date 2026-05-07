@@ -138,7 +138,7 @@ export default function Navbar({ onLoginClick, onLogoutClick, isLoggedIn, printH
               <img
                 src={mounted && isDark ? '/logo-dark.svg' : '/logo-light.svg'}
                 alt="Diloloji"
-                className="h-8 sm:h-9 w-auto shrink-0"
+                className="h-12 sm:h-14 w-auto shrink-0"
               />
             </Link>
           </div>

@@ -4185,6 +4185,216 @@
       "es": "Mis padres siempre invitan a los vecinos a cenar los domingos",
       "tr": "Ailem her pazar komşuları akşam yemeğine davet eder",
       "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer invité a mis amigos a cenar en casa.",
+      "tr": "Dün arkadaşlarımı evde yemeğe davet ettim.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era joven, mi abuela me invitaba a cocinar con ella.",
+      "tr": "Gençken büyükannem beni onunla yemek yapmaya davet ederdi.",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "María ha invitado a todos sus amigos a la fiesta de cumpleaños.",
+      "tr": "María tüm arkadaşlarını doğum günü partisine davet etti.",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Mañana invitaré a mis amigos a cenar en casa.",
+      "tr": "Yarın arkadaşlarımı evde yemeğe davet edeceğim.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Te invitaría a cenar pero no tengo dinero suficiente",
+      "tr": "Seni yemeğe davet ederdim ama yeterli param yok",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que Juan nos invite a su fiesta de cumpleaños.",
+      "tr": "Juan'ın bizi doğum günü partisine davet etmesini umuyorum.",
+      "person": "él"
+    }
+  },
+  "regresar": {
+    "Presente": {
+      "es": "Siempre regreso a casa después del trabajo",
+      "tr": "Her zaman işten sonra eve dönerim",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi hermana regresó de su viaje a Europa la semana pasada",
+      "tr": "Kız kardeşim geçen hafta Avrupa seyahatinden döndü",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niño, regresaba de la escuela caminando todos los días",
+      "tr": "Çocukken her gün okuldan yürüyerek eve dönerdim",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana ha regresado de su viaje a Europa muy contenta.",
+      "tr": "Kız kardeşim Avrupa seyahatinden çok mutlu bir şekilde döndü.",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Mi hermana regresará de su viaje a Europa el próximo martes.",
+      "tr": "Kız kardeşim gelecek salı Avrupa seyahatinden dönecek.",
+      "person": "él/ella"
+    },
+    "Condicional": {
+      "es": "Si tuviera dinero, regresaría a mi país natal este verano.",
+      "tr": "Param olsaydı, bu yaz doğduğum ülkeye geri dönerdim.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que regreses pronto de tu viaje de trabajo.",
+      "tr": "İş seyahatinden yakında döneceğini umuyorum.",
+      "person": "tú"
+    }
+  },
+  "quedar": {
+    "Presente": {
+      "es": "Mañana quedamos en el café a las cinco",
+      "tr": "Yarın beşte kafede buluşuyoruz",
+      "person": "nosotros"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer quedé con mis amigos para ir al cine",
+      "tr": "Dün arkadaşlarımla sinemaya gitmek için buluştum",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niño, siempre quedaba con mis amigos en el parque.",
+      "tr": "Çocukken hep arkadaşlarımla parkta buluşurdum.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "Hemos quedado en el café a las tres de la tarde",
+      "tr": "Öğleden sonra saat üçte kafede buluşmak üzere anlaştık",
+      "person": "nosotros"
+    },
+    "Futuro Simple": {
+      "es": "Mañana quedaremos en el café para estudiar juntos.",
+      "tr": "Yarın birlikte çalışmak için kafede buluşacağız.",
+      "person": "nosotros"
+    },
+    "Condicional": {
+      "es": "¿Te quedarías conmigo esta noche si te lo pidiera?",
+      "tr": "Senden ricam etseydim bu gece benimle kalır mıydın?",
+      "person": "tú"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que te quedes en casa esta noche.",
+      "tr": "Bu gece evde kalmanı umuyorum.",
+      "person": "tú"
+    }
+  },
+  "beber": {
+    "Presente": {
+      "es": "Mi hermano bebe café todas las mañanas antes de ir al trabajo",
+      "tr": "Kardeşim her sabah işe gitmeden önce kahve içer",
+      "person": "él"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer bebí mucha agua después de correr en el parque.",
+      "tr": "Dün parkta koştuktan sonra çok su içtim.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niño, bebía mucha leche con galletas.",
+      "tr": "Çocukken bisküviyle çok süt içerdim.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermano ha bebido demasiado café esta mañana y está muy nervioso",
+      "tr": "Kardeşim bu sabah çok fazla kahve içti ve çok gergin",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "Mañana beberemos vino tinto en la cena con mis padres",
+      "tr": "Yarın ailemle akşam yemeğinde kırmızı şarap içeceğiz",
+      "person": "nosotros"
+    },
+    "Condicional": {
+      "es": "Si tuviera sed, bebería un vaso de agua fría.",
+      "tr": "Susuz olsaydım, bir bardak soğuk su içerdim.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que bebas mucha agua durante el ejercicio.",
+      "tr": "Egzersiz sırasında bol su içmeni umuyorum.",
+      "person": "tú"
+    }
+  },
+  "romper": {
+    "Presente": {
+      "es": "Mi hermano siempre rompe sus juguetes cuando se enfada mucho.",
+      "tr": "Kardeşim çok sinirlendiğinde her zaman oyuncaklarını kırıyor.",
+      "person": "él"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer mi hermano rompió el vaso de cristal en la cocina",
+      "tr": "Dün kardeşim mutfakta kristal bardağı kırdı",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niño, siempre rompía mis juguetes por accidente.",
+      "tr": "Çocukken hep oyuncaklarımı kazayla kırardım.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana ha roto el jarrón de la abuela esta mañana",
+      "tr": "Kız kardeşim bu sabah büyükannemin vazosunu kırdı",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Si sigues jugando tan bruscamente, romperás tu juguete favorito.",
+      "tr": "Eğer bu kadar sert oynamaya devam edersen, en sevdiğin oyuncağını kıracaksın.",
+      "person": "tú"
+    },
+    "Condicional": {
+      "es": "Si fuera más cuidadoso, no rompería tantos platos en la cocina.",
+      "tr": "Eğer daha dikkatli olsaydım, mutfakta bu kadar çok tabak kırmazdım.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que no rompas el jarrón de la abuela.",
+      "tr": "Büyükannenin vazosunu kırmamanı umuyorum.",
+      "person": "tú"
+    }
+  },
+  "mover": {
+    "Presente": {
+      "es": "Muevo los muebles para limpiar mejor el salón.",
+      "tr": "Salonu daha iyi temizlemek için mobilyaları hareket ettiriyorum.",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer moví todos los muebles para limpiar la casa",
+      "tr": "Dün evi temizlemek için bütün mobilyaları hareket ettirdim",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niño, mi abuelo movía las fichas de ajedrez lentamente.",
+      "tr": "Çocukken dedem satranç taşlarını yavaşça hareket ettirirdi.",
+      "person": "él"
+    },
+    "Pretérito Perfecto": {
+      "es": "Esta mañana he movido todos los muebles para limpiar mejor",
+      "tr": "Bu sabah daha iyi temizlik yapmak için tüm mobilyaları hareket ettirdim",
+      "person": "yo"
+    },
+    "Futuro Simple": {
+      "es": "Mañana moveremos los muebles para limpiar mejor la sala",
+      "tr": "Yarın salonu daha iyi temizlemek için mobilyaları yerinden oynatacağız",
+      "person": "nosotros"
+    },
+    "Condicional": {
+      "es": "Yo movería los muebles para hacer más espacio en la sala",
+      "tr": "Salonda daha fazla yer açmak için mobilyaları taşırdım",
+      "person": "yo"
     }
   }
 }
