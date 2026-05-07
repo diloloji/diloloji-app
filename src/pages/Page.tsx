@@ -15,6 +15,7 @@ import {
 import { formatConjugation } from '../conjugation/stemSuffix';
 import { checkPasséComposéLogic } from '../conjugation/passeCompose';
 import { getRandomVerbForLang } from '../data/commonVerbs';
+import { getRandomVerbSpanish } from '../data/spanish';
 import { isIrregularVerb } from '../data/irregularVerbs';
 import { getTranslationOrPlaceholder } from '../data/dictionary';
 import { SPANISH_VERBS } from '../data/spanish-data';
@@ -131,14 +132,7 @@ interface TimeAttackScoreEntry {
 const TIME_ATTACK_STORAGE_KEY_PREFIX = 'diloloji-time-attack-scores';
 const TIME_ATTACK_MAX_ENTRIES = 50;
 const EXERCISE_MODE_PREFERENCE_KEY = 'exercise_mode_preference';
-const IRREGULAR_TENSE_OPTIONS_ES = [
-  { id: 'presente', label: 'Presente' },
-  { id: 'preterito', label: 'Pretérito Indefinido' },
-  { id: 'imperfecto', label: 'Pretérito Imperfecto' },
-  { id: 'futuro', label: 'Futuro Simple' },
-  { id: 'condicional', label: 'Condicional' },
-  { id: 'subjuntivo-presente', label: 'Subjuntivo Presente' },
-] as const;
+const VERB_HISTORY_STORAGE_KEY = 'verb_history_v1';
 const SYNONYM_REGISTER_STYLES: Record<'formal' | 'informal' | 'neutral', string> = {
   formal: 'bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/35',
   informal: 'bg-orange-500/15 text-orange-700 dark:text-orange-300 border-orange-500/35',
@@ -593,7 +587,6 @@ export function Page() {
   const [activeTimeMarkerTip, setActiveTimeMarkerTip] = useState<string | null>(null);
   const [collocationLevelFilter, setCollocationLevelFilter] = useState<'A1' | 'A2' | 'B1'>('A1');
   const [activeCollocationTip, setActiveCollocationTip] = useState<string | null>(null);
-  const [irregularTenseFilter, setIrregularTenseFilter] = useState<string>('presente');
   const [showAllIrregulars, setShowAllIrregulars] = useState(false);
   /** AI ile üretilen örnek cümleler (fiil + zaman değişiminde yeniden istek) */
   const [aiExamples, setAIExamples] = useState<AIVerbExample[]>([]);
@@ -615,6 +608,8 @@ export function Page() {
   const [isMeaningLoading, setIsMeaningLoading] = useState(false);
   const [selectedTense, setSelectedTense] = useState<string>(() => getTenses('es')[0].id);
   const [mode, setMode] = useState<Mode>('learning');
+  const [shortcutFlashMode, setShortcutFlashMode] = useState<Mode | null>(null);
+  const [shortcutHelpOpen, setShortcutHelpOpen] = useState(false);
   const [userAnswers, setUserAnswers] = useState<Record<string, string>>(() => getInitialUserAnswers('es'));
   const [quizFeedback, setQuizFeedback] = useState<Record<string, 'correct' | 'wrong' | 'typo' | null>>(() =>
     Object.fromEntries(getPronouns('es').map((p) => [p.id, null as 'correct' | 'wrong' | null]))
@@ -640,7 +635,7 @@ export function Page() {
   const [showHints, setShowHints] = useState(false);
   const [error, setError] = useState('');
   const [showCongrats, setShowCongrats] = useState(false);
-  const [randomVerbMode, setRandomVerbMode] = useState(false);
+  const [randomVerbMode] = useState(false);
   const [combo, setCombo] = useState(0);
   const [totalScore, setTotalScore] = useState(0);
   const [comboDisplay, setComboDisplay] = useState<{ show: boolean; value: number }>({ show: false, value: 0 });
@@ -660,6 +655,9 @@ export function Page() {
   const [isReflexive, setIsReflexive] = useState(false);
   const [isNegative, setIsNegative] = useState(false);
   const [copiedRowKey, setCopiedRowKey] = useState<string | null>(null);
+  const [staticExampleSpeaking, setStaticExampleSpeaking] = useState(false);
+  const [staticExampleCopied, setStaticExampleCopied] = useState(false);
+  const staticExampleCopyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   /** Quiz görünümü: 'focus' = tekli soru, 'list' = liste */
   const [quizLayout, setQuizLayout] = useState<'list' | 'focus'>(() => {
@@ -682,6 +680,7 @@ export function Page() {
 
   /** Yıldızlı fiiller — localStorage ile senkron */
   const [starredVerbs, setStarredVerbs] = useState<string[]>([]);
+  const [verbHistory, setVerbHistory] = useState<string[]>([]);
 
   /** Aktivite haritası (heatmap) modalı açık mı */
   const [showActivityModal, setShowActivityModal] = useState(false);
@@ -717,6 +716,7 @@ export function Page() {
   const timeAttackTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const timeAttackXpAwardedRef = useRef(false);
   const timeAttackSaveDoneRef = useRef(false);
+  const shortcutFlashTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   /** Zamana Karşı bittiğinde bir kez XP ver (skor/10); tekrar oynayınca sıfırla */
   useEffect(() => {
@@ -752,6 +752,13 @@ export function Page() {
     setTimeAttackLastScores(lastFive);
     setTimeAttackIsNewRecord(timeAttackScore >= prevBest && timeAttackScore > 0);
   }, [timeAttackGameOver, timeAttackScore, timeAttackMaxCombo, timeAttackQuestion, selectedLanguage, timeAttackDifficulty]);
+
+  const triggerModeFromShortcut = useCallback((nextMode: Mode) => {
+    setMode(nextMode);
+    setShortcutFlashMode(nextMode);
+    if (shortcutFlashTimeoutRef.current) clearTimeout(shortcutFlashTimeoutRef.current);
+    shortcutFlashTimeoutRef.current = setTimeout(() => setShortcutFlashMode(null), 100);
+  }, []);
 
   useEffect(() => {
     if (!timeAttackGameOver) timeAttackSaveDoneRef.current = false;
@@ -1006,6 +1013,16 @@ export function Page() {
     }
     return dynamicMeaning || getTranslationOrPlaceholder(verbKey ?? '', selectedLanguage);
   }, [selectedLanguage, staticSpanishMeaning, dynamicMeaning, verbKey]);
+  const getHistoryMeaning = useCallback((verb: string) => {
+    if (selectedLanguage === 'es') {
+      const key = verb
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '');
+      return spanishMeaningMap.get(key) ?? 'Anlam bulunamadı';
+    }
+    return getTranslationOrPlaceholder(verb, selectedLanguage);
+  }, [selectedLanguage, spanishMeaningMap]);
   const staticExample = useMemo((): StaticExample => {
     if (selectedLanguage !== 'es' || !verbKey) return null;
     const byVerb = (exampleSentences as Record<string, Record<string, StaticExample>>)[verbKey];
@@ -1051,11 +1068,11 @@ export function Page() {
     const out: string[] = [];
     for (const verb of verbList) {
       if (!isIrregularVerb(verb, 'es')) continue;
-      const m = getSafeConjugationMap(verb, irregularTenseFilter, 'es');
+      const m = getSafeConjugationMap(verb, selectedTense, 'es');
       if (m && Object.keys(m).length > 0) out.push(verb);
     }
     return out;
-  }, [selectedLanguage, verbList, irregularTenseFilter, getSafeConjugationMap]);
+  }, [selectedLanguage, verbList, selectedTense, getSafeConjugationMap]);
   const visibleIrregularVerbs = useMemo(
     () => (showAllIrregulars ? irregularVerbsForSelectedTense : irregularVerbsForSelectedTense.slice(0, 12)),
     [showAllIrregulars, irregularVerbsForSelectedTense]
@@ -1322,6 +1339,102 @@ export function Page() {
     setError('Yeni rastgele fiil seçilemedi. Lütfen tekrar deneyin.');
   }, [selectedTense, selectedLanguage, verbKey, resetSmartHintsAll]);
 
+  const pickNewExerciseVerb = useCallback(() => {
+    const exclude = verbKey ?? undefined;
+    setAutocompleteClosed(true);
+    const normalizedExclude = exclude
+      ? exclude.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      : null;
+    for (let attempt = 0; attempt < 25; attempt++) {
+      let nextVerb = '';
+      if (selectedLanguage === 'es') {
+        const candidate = getRandomVerbSpanish(exclude);
+        const normalizedCandidate = candidate.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        if (normalizedExclude && normalizedCandidate === normalizedExclude) continue;
+        if (!spanishVerbSet.has(normalizedCandidate)) continue;
+        nextVerb = candidate;
+      } else {
+        const candidate = getRandomVerbForLang(selectedLanguage, exclude);
+        if (!candidate) continue;
+        nextVerb = candidate;
+      }
+      const result = getConjugationsForLang(nextVerb, selectedTense, selectedLanguage);
+      if (!result.ok) continue;
+      const verified = verifyConjugationMap(result.conjugations, selectedTense, selectedLanguage);
+      const safeInfinitive = sanitizeForDisplay(result.infinitive);
+      setVerbInput(safeInfinitive);
+      setVerbKey(safeInfinitive);
+      setConjugations(verified);
+      setLeftPanelOpen(false);
+      setError('');
+      setExerciseMode('focus');
+      setMode('quiz');
+      setUserAnswers(getInitialUserAnswers(selectedLanguage));
+      setQuizFeedback({ je: null, tu: null, il: null, nous: null, vous: null, ils: null } as Record<string, 'correct' | 'wrong' | 'typo' | null>);
+      setQuizPasséHint({ je: null, tu: null, il: null, nous: null, vous: null, ils: null });
+      resetSmartHintsAll();
+      setShowHints(false);
+      setShowCongrats(false);
+      setCurrentFocusIndex(0);
+      requestAnimationFrame(() => quizInputRefs.current[0]?.focus());
+      return;
+    }
+    setError('Yeni fiil yüklenemedi. Lütfen tekrar deneyin.');
+  }, [verbKey, selectedLanguage, selectedTense, spanishVerbSet, setExerciseMode, resetSmartHintsAll]);
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      const key = e.key.toLowerCase();
+      const target = e.target as HTMLElement | null;
+      const tag = target?.tagName?.toLowerCase();
+      const isEditing =
+        !!target &&
+        (tag === 'input' ||
+          tag === 'textarea' ||
+          target.isContentEditable);
+
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+
+      if (key === 't') {
+        e.preventDefault();
+        verbInputRef.current?.focus();
+        return;
+      }
+
+      if (isEditing) return;
+
+      if (key === '1') {
+        e.preventDefault();
+        triggerModeFromShortcut('learning');
+      } else if (key === '2') {
+        e.preventDefault();
+        triggerModeFromShortcut('quiz');
+      } else if (key === '3') {
+        e.preventDefault();
+        triggerModeFromShortcut('time-attack');
+      } else if (key === '4') {
+        e.preventDefault();
+        triggerModeFromShortcut('compare');
+      } else if (key === 'r') {
+        e.preventDefault();
+        pickRandomVerb();
+      } else if (key === 'f') {
+        if (!verbKey) return;
+        e.preventDefault();
+        toggleStar(verbKey);
+      } else if (key === '?' || (key === 'escape' && shortcutHelpOpen)) {
+        e.preventDefault();
+        setShortcutHelpOpen((v) => (key === 'escape' ? false : !v));
+      }
+    };
+
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      if (shortcutFlashTimeoutRef.current) clearTimeout(shortcutFlashTimeoutRef.current);
+    };
+  }, [pickRandomVerb, shortcutHelpOpen, triggerModeFromShortcut, verbKey]);
+
   useEffect(() => {
     const mq = window.matchMedia('(min-width: 768px)');
     const handler = () => setLeftPanelOpen(mq.matches);
@@ -1448,9 +1561,6 @@ export function Page() {
 
   useEffect(() => {
     setShowAllIrregulars(false);
-    if (selectedLanguage !== 'es') return;
-    const exists = IRREGULAR_TENSE_OPTIONS_ES.some((x) => x.id === selectedTense);
-    setIrregularTenseFilter(exists ? selectedTense : 'presente');
   }, [selectedLanguage, selectedTense]);
 
   // Sayfa ilk açılışta veya yeni fiil seçildiğinde ilgili ilk input'a odaklan
@@ -1482,7 +1592,42 @@ export function Page() {
   useEffect(() => {
     return () => {
       if (comboDisplayTimeoutRef.current) clearTimeout(comboDisplayTimeoutRef.current);
+      if (staticExampleCopyTimeoutRef.current) clearTimeout(staticExampleCopyTimeoutRef.current);
+      if (typeof window !== 'undefined' && window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
     };
+  }, []);
+
+  const speakStaticExample = useCallback((text: string) => {
+    if (typeof window === 'undefined' || !window.speechSynthesis || !text.trim()) return;
+    if (staticExampleSpeaking) {
+      window.speechSynthesis.cancel();
+      setStaticExampleSpeaking(false);
+      return;
+    }
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = 'es-ES';
+    utter.onend = () => setStaticExampleSpeaking(false);
+    utter.onerror = () => setStaticExampleSpeaking(false);
+    setStaticExampleSpeaking(true);
+    window.speechSynthesis.speak(utter);
+  }, [staticExampleSpeaking]);
+
+  const copyStaticExample = useCallback(async (text: string) => {
+    if (!text.trim()) return;
+    try {
+      await navigator.clipboard.writeText(text);
+      setStaticExampleCopied(true);
+      if (staticExampleCopyTimeoutRef.current) clearTimeout(staticExampleCopyTimeoutRef.current);
+      staticExampleCopyTimeoutRef.current = setTimeout(() => {
+        setStaticExampleCopied(false);
+        staticExampleCopyTimeoutRef.current = null;
+      }, 2000);
+    } catch {
+      setStaticExampleCopied(false);
+    }
   }, []);
 
   // Hata Bankası: sayfa yüklendiğinde localStorage'dan oku
@@ -1494,6 +1639,32 @@ export function Page() {
   useEffect(() => {
     setStarredVerbs(getStarredVerbs());
   }, []);
+
+  // Geçmiş: localStorage'dan yükle
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(VERB_HISTORY_STORAGE_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw) as string[];
+      if (Array.isArray(parsed)) setVerbHistory(parsed.filter((v) => typeof v === 'string').slice(0, 10));
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  // Fiil yüklendikçe geçmişe ekle (en yeni üstte, max 10)
+  useEffect(() => {
+    if (!verbKey) return;
+    setVerbHistory((prev) => {
+      const next = [verbKey, ...prev.filter((v) => v !== verbKey)].slice(0, 10);
+      try {
+        localStorage.setItem(VERB_HISTORY_STORAGE_KEY, JSON.stringify(next));
+      } catch {
+        // ignore
+      }
+      return next;
+    });
+  }, [verbKey]);
 
   // Otomatik tamamlama: dışarı tıklanınca kapat
   useEffect(() => {
@@ -2437,6 +2608,69 @@ export function Page() {
               )}
             </div>
 
+            {/* Zaman seçimi — custom dropdown (glassmorphism, kategoriler, check ikonu, animasyon) */}
+            <div className="w-full flex-shrink-0 flex flex-col relative overflow-visible" ref={tenseDropdownRef}>
+              <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">{t('zaman_secin')}</label>
+              <button
+                type="button"
+                onClick={() => setTenseDropdownOpen((o) => !o)}
+                className="w-full h-12 rounded-xl border border-slate-200 dark:border-slate-700/50 bg-slate-50 dark:bg-slate-800/80 px-4 py-3 text-left text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 dark:focus:ring-indigo-400 dark:focus:border-indigo-400 transition-colors duration-300 flex items-center justify-between gap-2"
+                aria-label={t('zaman_secin')}
+                aria-expanded={tenseDropdownOpen}
+                aria-haspopup="listbox"
+                id="tense-trigger"
+              >
+                <span className="truncate">{tenseLabel}</span>
+                <svg className="w-5 h-5 shrink-0 text-slate-400 dark:text-slate-500 transition-transform duration-200" style={{ transform: tenseDropdownOpen ? 'rotate(180deg)' : 'none' }} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              <div
+                role="listbox"
+                aria-labelledby="tense-trigger"
+                className={`absolute left-0 right-0 top-full mt-1 z-[100] rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl shadow-2xl overflow-hidden transition-all duration-200 ease-out ${
+                  tenseDropdownOpen ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-[0.98] pointer-events-none'
+                }`}
+              >
+                <div className="max-h-[min(18rem,60vh)] overflow-y-auto py-2">
+                  {tenseGroupsForLang.map((group) => (
+                    <div key={group.mood} className="px-3 pb-1 pt-2 first:pt-0">
+                      <p className="text-xs font-medium tracking-wide text-slate-500 dark:text-slate-400 px-3 py-1 select-none">
+                        {group.label}
+                      </p>
+                      <div className="space-y-0.5 mt-0.5">
+                        {group.tenseIds.map((id) => {
+                          const t = tensesForLang.find((x) => x.id === id);
+                          if (!t) return null;
+                          const isSelected = selectedTense === t.id;
+                          return (
+                            <button
+                              key={t.id}
+                              type="button"
+                              role="option"
+                              aria-selected={isSelected}
+                              onClick={() => {
+                                setSelectedTense(t.id);
+                                setTenseDropdownOpen(false);
+                              }}
+                              className="w-full flex items-center justify-between gap-2 rounded-lg px-3 py-2.5 text-left text-sm text-slate-800 dark:text-slate-100 hover:bg-indigo-500/20 transition-colors duration-200"
+                            >
+                              <span>{t.label}</span>
+                              {isSelected && (
+                                <svg className="w-5 h-5 shrink-0 text-indigo-500 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                </svg>
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
             {/* ── Favorilerim ── */}
             <div className="flex flex-col gap-2">
               <button
@@ -2574,25 +2808,6 @@ export function Page() {
                   </span>
                 </div>
 
-                <div className="relative">
-                  <select
-                    value={irregularTenseFilter}
-                    onChange={(e) => {
-                      setIrregularTenseFilter(e.target.value);
-                      setShowAllIrregulars(false);
-                    }}
-                    className="w-full h-10 rounded-xl border border-slate-200 dark:border-slate-700/50 bg-slate-50 dark:bg-slate-800/80 px-3 pr-8 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-colors"
-                    aria-label="Düzensiz fiiller için zaman seç"
-                  >
-                    {IRREGULAR_TENSE_OPTIONS_ES.map((opt) => (
-                      <option key={opt.id} value={opt.id}>
-                        {opt.label}
-                      </option>
-                    ))}
-                  </select>
-                  <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">▾</span>
-                </div>
-
                 {irregularVerbsForSelectedTense.length === 0 ? (
                   <p className="rounded-lg border border-dashed border-slate-200/60 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/40 px-3 py-3 text-xs text-slate-500 dark:text-slate-500 italic text-center">
                     Bu zamanda kayıtlı düzensiz fiil bulunamadı
@@ -2602,10 +2817,9 @@ export function Page() {
                     <div className="flex flex-wrap gap-1.5">
                       {visibleIrregularVerbs.map((verb) => (
                         <button
-                          key={`irr-${irregularTenseFilter}-${verb}`}
+                          key={`irr-${selectedTense}-${verb}`}
                           type="button"
                           onClick={() => {
-                            setSelectedTense(irregularTenseFilter);
                             setVerbInput(verb);
                             setError('');
                             setAutocompleteClosed(true);
@@ -2631,92 +2845,68 @@ export function Page() {
               </div>
             )}
 
-            {/* Zaman seçimi — custom dropdown (glassmorphism, kategoriler, check ikonu, animasyon) */}
-            <div className="w-full flex-shrink-0 flex flex-col relative overflow-visible" ref={tenseDropdownRef}>
-              <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">{t('zaman_secin')}</label>
-              <button
-                type="button"
-                onClick={() => setTenseDropdownOpen((o) => !o)}
-                className="w-full h-12 rounded-xl border border-slate-200 dark:border-slate-700/50 bg-slate-50 dark:bg-slate-800/80 px-4 py-3 text-left text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 dark:focus:ring-indigo-400 dark:focus:border-indigo-400 transition-colors duration-300 flex items-center justify-between gap-2"
-                aria-label={t('zaman_secin')}
-                aria-expanded={tenseDropdownOpen}
-                aria-haspopup="listbox"
-                id="tense-trigger"
-              >
-                <span className="truncate">{tenseLabel}</span>
-                <svg className="w-5 h-5 shrink-0 text-slate-400 dark:text-slate-500 transition-transform duration-200" style={{ transform: tenseDropdownOpen ? 'rotate(180deg)' : 'none' }} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              <div
-                role="listbox"
-                aria-labelledby="tense-trigger"
-                className={`absolute left-0 right-0 top-full mt-1 z-[100] rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl shadow-2xl overflow-hidden transition-all duration-200 ease-out ${
-                  tenseDropdownOpen ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-[0.98] pointer-events-none'
-                }`}
-              >
-                <div className="max-h-[min(18rem,60vh)] overflow-y-auto py-2">
-                  {tenseGroupsForLang.map((group) => (
-                    <div key={group.mood} className="px-3 pb-1 pt-2 first:pt-0">
-                      <p className="text-xs font-medium tracking-wide text-slate-500 dark:text-slate-400 px-3 py-1 select-none">
-                        {group.label}
-                      </p>
-                      <div className="space-y-0.5 mt-0.5">
-                        {group.tenseIds.map((id) => {
-                          const t = tensesForLang.find((x) => x.id === id);
-                          if (!t) return null;
-                          const isSelected = selectedTense === t.id;
-                          return (
-                            <button
-                              key={t.id}
-                              type="button"
-                              role="option"
-                              aria-selected={isSelected}
-                              onClick={() => {
-                                setSelectedTense(t.id);
-                                setTenseDropdownOpen(false);
-                              }}
-                              className="w-full flex items-center justify-between gap-2 rounded-lg px-3 py-2.5 text-left text-sm text-slate-800 dark:text-slate-100 hover:bg-indigo-500/20 transition-colors duration-200"
-                            >
-                              <span>{t.label}</span>
-                              {isSelected && (
-                                <svg className="w-5 h-5 shrink-0 text-indigo-500 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                </svg>
-                              )}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
+            {verbHistory.length > 0 && (
+              <div className="flex flex-col gap-2">
+                <p className="text-xs font-medium text-slate-500 dark:text-slate-500 select-none">
+                  Gecmis
+                </p>
+                <div className="flex flex-col gap-1.5">
+                  {verbHistory.map((verb) => (
+                    <button
+                      key={`history-${verb}`}
+                      type="button"
+                      onClick={() => {
+                        setVerbInput(verb);
+                        setError('');
+                        setAutocompleteClosed(true);
+                        loadVerb(verb);
+                      }}
+                      className="group flex items-center justify-between gap-2 rounded-lg border border-slate-200/50 dark:border-slate-700/40 bg-white/5 dark:bg-slate-800/30 px-2.5 py-1.5 text-left hover:bg-slate-100/60 dark:hover:bg-slate-700/40 transition-all duration-150 focus:outline-none focus:ring-1 focus:ring-indigo-500/50"
+                    >
+                      <span className="truncate text-xs text-slate-700 dark:text-slate-200">
+                        <span className="font-medium">{verb}</span>
+                        <span className="text-slate-500 dark:text-slate-400"> · {getHistoryMeaning(verb)}</span>
+                      </span>
+                      <span
+                        role="button"
+                        tabIndex={0}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setVerbHistory((prev) => {
+                            const next = prev.filter((v) => v !== verb);
+                            try {
+                              localStorage.setItem(VERB_HISTORY_STORAGE_KEY, JSON.stringify(next));
+                            } catch {
+                              // ignore
+                            }
+                            return next;
+                          });
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key !== 'Enter' && e.key !== ' ') return;
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setVerbHistory((prev) => {
+                            const next = prev.filter((v) => v !== verb);
+                            try {
+                              localStorage.setItem(VERB_HISTORY_STORAGE_KEY, JSON.stringify(next));
+                            } catch {
+                              // ignore
+                            }
+                            return next;
+                          });
+                        }}
+                        className="shrink-0 rounded px-1 text-xs text-slate-400 dark:text-slate-500 hover:bg-slate-200/70 dark:hover:bg-slate-600 hover:text-slate-700 dark:hover:text-slate-200"
+                        aria-label={`${verb} gecmisinden sil`}
+                        title="Gecmisten sil"
+                      >
+                        ×
+                      </span>
+                    </button>
                   ))}
                 </div>
               </div>
-            </div>
-            {/* Rastgele Fiillerle Pratik Yap */}
-            <label className="flex items-center gap-2 mt-3 cursor-pointer group" title="Rastgele Fiillerle Pratik Yap">
-              <span className="relative inline-flex h-6 w-10 flex-shrink-0 cursor-pointer rounded-full border border-slate-200 dark:border-slate-600 bg-slate-100 dark:bg-slate-700/80 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 dark:focus:ring-offset-slate-800 group-hover:border-slate-300 dark:group-hover:border-slate-500">
-                <input
-                  type="checkbox"
-                  checked={randomVerbMode}
-                  onChange={(e) => {
-                    const on = e.target.checked;
-                    setRandomVerbMode(on);
-                    if (on) pickRandomVerb();
-                  }}
-                  className="sr-only"
-                  aria-label="Rastgele Fiillerle Pratik Yap"
-                />
-                <span
-                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white dark:bg-slate-200 shadow ring-0 transition duration-200 mt-0.5 ml-0.5 ${
-                    randomVerbMode ? 'translate-x-4' : 'translate-x-0'
-                  }`}
-                />
-              </span>
-              <span className="text-sm font-medium text-slate-600 dark:text-slate-400 group-hover:text-slate-800 dark:group-hover:text-slate-200">
-                Rastgele Fiillerle Pratik Yap
-              </span>
-            </label>
+            )}
           </div>
             </section>
             {/* Zaman açıklaması kartı — compact, seçilen zamana göre güncellenir */}
@@ -3025,7 +3215,7 @@ export function Page() {
                   mode === 'learning'
                     ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
                     : 'bg-transparent text-slate-400 hover:text-slate-200'
-                }`}
+                } ${shortcutFlashMode === 'learning' ? 'ring-2 ring-indigo-300/80 dark:ring-indigo-400 scale-[1.03]' : ''}`}
                 title="Alt+L"
               >
                 {t('ogrenme')}
@@ -3037,7 +3227,7 @@ export function Page() {
                   mode === 'quiz'
                     ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
                     : 'bg-transparent text-slate-400 hover:text-slate-200'
-                }`}
+                } ${shortcutFlashMode === 'quiz' ? 'ring-2 ring-indigo-300/80 dark:ring-indigo-400 scale-[1.03]' : ''}`}
                 title="Alt+Q"
               >
                 {t('alistirma')}
@@ -3049,7 +3239,7 @@ export function Page() {
                   mode === 'time-attack'
                     ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
                     : 'bg-transparent text-slate-400 hover:text-slate-200'
-                }`}
+                } ${shortcutFlashMode === 'time-attack' ? 'ring-2 ring-indigo-300/80 dark:ring-indigo-400 scale-[1.03]' : ''}`}
                 title={t('zamana_karsi')}
               >
                 {t('zamana_karsi')}
@@ -3061,7 +3251,7 @@ export function Page() {
                   mode === 'compare'
                     ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
                     : 'bg-transparent text-slate-400 hover:text-slate-200'
-                }`}
+                } ${shortcutFlashMode === 'compare' ? 'ring-2 ring-indigo-300/80 dark:ring-indigo-400 scale-[1.03]' : ''}`}
                 title={t('kiyaslama')}
               >
                 {t('kiyaslama')}
@@ -4566,8 +4756,28 @@ export function Page() {
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.2, ease: 'easeOut' }}
-                className="mx-4 sm:mx-0 mt-4 rounded-xl border border-emerald-500/20 dark:border-emerald-400/20 bg-emerald-500/[0.04] dark:bg-emerald-500/[0.08] p-4"
+                className="relative mx-4 sm:mx-0 mt-4 rounded-xl border border-emerald-500/20 dark:border-emerald-400/20 bg-emerald-500/[0.04] dark:bg-emerald-500/[0.08] p-4"
               >
+                <div className="absolute right-3 top-3 inline-flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => speakStaticExample(staticExample.es ?? '')}
+                    className="h-7 w-7 inline-flex items-center justify-center rounded-md border border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/20 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
+                    aria-label={staticExampleSpeaking ? 'Seslendirmeyi durdur' : 'Cumleyi seslendir'}
+                    title={staticExampleSpeaking ? 'Durdur' : 'Seslendir'}
+                  >
+                    {staticExampleSpeaking ? '■' : '🔊'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => copyStaticExample(staticExample.es ?? '')}
+                    className="h-7 inline-flex items-center justify-center rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 text-xs text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/20 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
+                    aria-label={staticExampleCopied ? 'Kopyalandi' : 'Cumleyi kopyala'}
+                    title={staticExampleCopied ? 'Kopyalandi' : 'Kopyala'}
+                  >
+                    {staticExampleCopied ? '✓ Kopyalandı' : '📋'}
+                  </button>
+                </div>
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-sm" aria-hidden>📌</span>
                   <h4 className="text-xs font-bold uppercase tracking-widest text-emerald-700 dark:text-emerald-300">
@@ -5165,6 +5375,13 @@ export function Page() {
                   >
                     Liste Modunda Gör
                   </button>
+                  <button
+                    type="button"
+                    onClick={pickNewExerciseVerb}
+                    className="rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold px-5 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 transition-colors duration-300"
+                  >
+                    🎲 Yeni Fiil
+                  </button>
                 </div>
               </div>
             )}
@@ -5511,6 +5728,54 @@ export function Page() {
       </main>
       )}
       {appMode === 'ezber' && <EzberMakinesi />}
+
+      <button
+        type="button"
+        onClick={() => setShortcutHelpOpen(true)}
+        className="fixed right-4 bottom-4 z-40 h-10 w-10 rounded-full border border-slate-300/70 dark:border-slate-600 bg-white/90 dark:bg-slate-800/90 text-slate-700 dark:text-slate-200 shadow-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+        aria-label="Klavye kısayolları"
+        title="Klavye kısayolları (?)"
+      >
+        ?
+      </button>
+
+      {shortcutHelpOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4"
+          onClick={() => setShortcutHelpOpen(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="shortcut-help-title"
+        >
+          <div
+            className="w-full max-w-md rounded-2xl border border-slate-200/70 dark:border-slate-700/70 bg-white dark:bg-slate-900 p-5 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between gap-3 mb-3">
+              <h3 id="shortcut-help-title" className="text-base font-bold text-slate-800 dark:text-slate-100">
+                Klavye Kısayolları
+              </h3>
+              <button
+                type="button"
+                onClick={() => setShortcutHelpOpen(false)}
+                className="rounded-lg px-2 py-1 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
+                aria-label="Kapat"
+              >
+                ✕
+              </button>
+            </div>
+            <ul className="space-y-2 text-sm text-slate-700 dark:text-slate-200">
+              <li><kbd className="px-2 py-0.5 rounded border border-slate-300 dark:border-slate-600">1</kbd> Ogrenme sekmesi</li>
+              <li><kbd className="px-2 py-0.5 rounded border border-slate-300 dark:border-slate-600">2</kbd> Alistirma sekmesi</li>
+              <li><kbd className="px-2 py-0.5 rounded border border-slate-300 dark:border-slate-600">3</kbd> Zamana Karsi sekmesi</li>
+              <li><kbd className="px-2 py-0.5 rounded border border-slate-300 dark:border-slate-600">4</kbd> Kiyaslama sekmesi</li>
+              <li><kbd className="px-2 py-0.5 rounded border border-slate-300 dark:border-slate-600">R</kbd> Rastgele fiil yukle</li>
+              <li><kbd className="px-2 py-0.5 rounded border border-slate-300 dark:border-slate-600">F</kbd> Favori ekle/cikar</li>
+              <li><kbd className="px-2 py-0.5 rounded border border-slate-300 dark:border-slate-600">T</kbd> Arama kutusuna odaklan</li>
+            </ul>
+          </div>
+        </div>
+      )}
 
       {/* Toast: Listeden silindi! 🎉 */}
       {toastMessage && (
