@@ -14,6 +14,8 @@ const TENSES = [
 const JSON_PATH = './example_sentences.json';
 const ERRORS_PATH = './errors.json';
 const JS_MODULE_PATH = './src/data/example_sentences.js';
+const SPANISH_DATA_PATH = './src/data/spanish-data.ts';
+const ESTIMATED_COST_PER_CALL_USD = 0.0004;
 
 function ensureAnthropicKey() {
   if (process.env.ANTHROPIC_API_KEY) return;
@@ -47,6 +49,22 @@ function parseJsonObject(text) {
   return JSON.parse(s.slice(start, end + 1));
 }
 
+function loadSpanishVerbListFromDataTs() {
+  if (!fs.existsSync(SPANISH_DATA_PATH)) return [];
+  const source = fs.readFileSync(SPANISH_DATA_PATH, 'utf8');
+  const out = [];
+  const re = /\{\s*infinitive:\s*'([^']+)'/g;
+  let m;
+  while ((m = re.exec(source)) !== null) {
+    out.push({ infinitive: m[1] });
+  }
+  return out;
+}
+
+function isMissingExample(value) {
+  return value == null;
+}
+
 async function generateExample(client, verb, tense) {
   const response = await client.messages.create({
     model: 'claude-sonnet-4-20250514',
@@ -75,26 +93,50 @@ async function main() {
   if (!process.env.ANTHROPIC_API_KEY) {
     throw new Error('ANTHROPIC_API_KEY bulunamadı (.env.local veya env)');
   }
-  const { verbList } = await import('./verb_list.js');
   const testLimit = Number(process.env.TEST_LIMIT || 0);
-  const sourceList = testLimit > 0 ? verbList.slice(0, testLimit) : verbList;
+  const allSpanishVerbs = loadSpanishVerbListFromDataTs();
+  const sourceList = testLimit > 0 ? allSpanishVerbs.slice(0, testLimit) : allSpanishVerbs;
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
   const results = {};
   const errors = [];
   let processed = 0;
-  const total = sourceList.length * TENSES.length;
 
   let existing = {};
   if (fs.existsSync(JSON_PATH)) {
     existing = JSON.parse(fs.readFileSync(JSON_PATH, 'utf8'));
   }
 
+  Object.assign(results, existing);
+
+  let completedVerbCount = 0;
+  const verbsToProcess = [];
+  let estimatedApiCallCount = 0;
   for (const verb of sourceList) {
+    const current = existing[verb.infinitive] || {};
+    const missingTenseCount = TENSES.reduce(
+      (acc, tense) => (isMissingExample(current[tense]) ? acc + 1 : acc),
+      0
+    );
+    if (missingTenseCount === 0) {
+      completedVerbCount++;
+      continue;
+    }
+    verbsToProcess.push(verb);
+    estimatedApiCallCount += missingTenseCount;
+  }
+  const total = verbsToProcess.length * TENSES.length;
+  const estimatedCost = estimatedApiCallCount * ESTIMATED_COST_PER_CALL_USD;
+  console.log(`Toplam fiil sayısı: ${sourceList.length}`);
+  console.log(`Zaten tamamlanmış fiil sayısı: ${completedVerbCount}`);
+  console.log(`İşlenecek fiil sayısı: ${verbsToProcess.length}`);
+  console.log(`Tahmini maliyet: $${estimatedCost.toFixed(4)}`);
+
+  for (const verb of verbsToProcess) {
     results[verb.infinitive] = existing[verb.infinitive] || {};
     for (const tense of TENSES) {
       processed++;
-      if (results[verb.infinitive][tense]) {
+      if (!isMissingExample(results[verb.infinitive][tense])) {
         console.log(`✓ Atlandı (${processed}/${total}): ${verb.infinitive} - ${tense}`);
         continue;
       }
