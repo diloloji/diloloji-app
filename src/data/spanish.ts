@@ -1,3 +1,5 @@
+import { SPANISH_VERBS } from './spanish-data';
+
 /**
  * İspanyolca dil verileri: zamirler, zamanlar, yaygın fiiller.
  * spanish-verbs kütüphanesi person: 0=yo, 1=tú, 2=él, 3=nosotros, 4=vosotros, 5=ellos.
@@ -167,5 +169,5 @@ export function getRandomVerbSpanish(exclude?: string): string {
 
 /** İspanyolca fiil listesi (otomatik tamamlama için) */
 export function getVerbListSpanish(): string[] {
-  return [...COMMON_SPANISH_VERBS];
+  return SPANISH_VERBS.map((v) => v.infinitive);
 }
