@@ -32,7 +32,7 @@ import { getFlashcardDecks, addCardToDeck, type FlashcardDeck } from '../utils/f
 import { useXp } from '../contexts/XpContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTranslation } from 'react-i18next';
-import { Info, List as ListIcon, Target as TargetIcon, BookOpen } from 'lucide-react';
+import { Info, BookOpen } from 'lucide-react';
 import EzberMakinesi from '../components/EzberMakinesi';
 import AuthModal from '../components/AuthModal';
 import Navbar from '../components/Navbar';
@@ -123,6 +123,15 @@ interface TimeAttackScoreEntry {
 
 const TIME_ATTACK_STORAGE_KEY_PREFIX = 'diloloji-time-attack-scores';
 const TIME_ATTACK_MAX_ENTRIES = 50;
+const EXERCISE_MODE_PREFERENCE_KEY = 'exercise_mode_preference';
+const IRREGULAR_TENSE_OPTIONS_ES = [
+  { id: 'presente', label: 'Presente' },
+  { id: 'preterito', label: 'Pretérito Indefinido' },
+  { id: 'imperfecto', label: 'Pretérito Imperfecto' },
+  { id: 'futuro', label: 'Futuro Simple' },
+  { id: 'condicional', label: 'Condicional' },
+  { id: 'subjuntivo-presente', label: 'Subjuntivo Presente' },
+] as const;
 const SYNONYM_REGISTER_STYLES: Record<'formal' | 'informal' | 'neutral', string> = {
   formal: 'bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/35',
   informal: 'bg-orange-500/15 text-orange-700 dark:text-orange-300 border-orange-500/35',
@@ -550,6 +559,8 @@ export function Page() {
   const [verbKey, setVerbKey] = useState<string | null>(null);
   const [selectedCEFRLevel, setSelectedCEFRLevel] = useState<CEFRLevel | null>(null);
   const [showFavorites, setShowFavorites] = useState(false);
+  const [irregularTenseFilter, setIrregularTenseFilter] = useState<string>('presente');
+  const [showAllIrregulars, setShowAllIrregulars] = useState(false);
   /** AI ile üretilen örnek cümleler (fiil + zaman değişiminde yeniden istek) */
   const [aiExamples, setAIExamples] = useState<AIVerbExample[]>([]);
   const [aiExamplesLoading, setAIExamplesLoading] = useState(false);
@@ -616,8 +627,15 @@ export function Page() {
   const [isNegative, setIsNegative] = useState(false);
   const [copiedRowKey, setCopiedRowKey] = useState<string | null>(null);
 
-  /** Quiz görünümü: 'list' = Liste, 'focus' = Odak modu (tek şahıs) */
-  const [quizLayout, setQuizLayout] = useState<'list' | 'focus'>('list');
+  /** Quiz görünümü: 'focus' = tekli soru, 'list' = liste */
+  const [quizLayout, setQuizLayout] = useState<'list' | 'focus'>(() => {
+    try {
+      const saved = localStorage.getItem(EXERCISE_MODE_PREFERENCE_KEY);
+      return saved === 'list' ? 'list' : 'focus';
+    } catch {
+      return 'focus';
+    }
+  });
   /** Odak modunda hangi şahısta olunduğu (0..5). 6 = tümü tamamlandı. */
   const [currentFocusIndex, setCurrentFocusIndex] = useState(0);
   /** Boş cevap gönderildiğinde sarsılacak input (pronoun id); 500ms sonra temizlenir */
@@ -881,6 +899,24 @@ export function Page() {
   const [reviewCorrect, setReviewCorrect] = useState(false);
   const reviewHadWrongRef = useRef(false);
 
+  const readExerciseModePreference = useCallback((): 'list' | 'focus' => {
+    try {
+      const saved = localStorage.getItem(EXERCISE_MODE_PREFERENCE_KEY);
+      return saved === 'list' ? 'list' : 'focus';
+    } catch {
+      return 'focus';
+    }
+  }, []);
+
+  const setExerciseMode = useCallback((layout: 'list' | 'focus') => {
+    setQuizLayout(layout);
+    try {
+      localStorage.setItem(EXERCISE_MODE_PREFERENCE_KEY, layout);
+    } catch {
+      // ignore
+    }
+  }, []);
+
   const verbInputRef = useRef<HTMLInputElement>(null);
   const reviewInputRef = useRef<HTMLInputElement>(null);
   const autocompleteWrapRef = useRef<HTMLDivElement>(null);
@@ -902,6 +938,20 @@ export function Page() {
 
   /** Otomatik tamamlama: Lefff fiil listesi (bir kez yükle). */
   const verbList = useMemo(() => getVerbListForLang(selectedLanguage), [selectedLanguage]);
+  const irregularVerbsForSelectedTense = useMemo(() => {
+    if (selectedLanguage !== 'es') return [];
+    const out: string[] = [];
+    for (const verb of verbList) {
+      if (!isIrregularVerb(verb, 'es')) continue;
+      const m = getSafeConjugationMap(verb, irregularTenseFilter, 'es');
+      if (m && Object.keys(m).length > 0) out.push(verb);
+    }
+    return out;
+  }, [selectedLanguage, verbList, irregularTenseFilter, getSafeConjugationMap]);
+  const visibleIrregularVerbs = useMemo(
+    () => (showAllIrregulars ? irregularVerbsForSelectedTense : irregularVerbsForSelectedTense.slice(0, 12)),
+    [showAllIrregulars, irregularVerbsForSelectedTense]
+  );
 
   /** Fiil ailesi: aynı çekim köküne sahip diğer fiiller (Fiil Aileleri bölümü için). */
   const verbFamily = useMemo(
@@ -1233,7 +1283,15 @@ export function Page() {
     setShowCongrats(false);
     setCombo(0);
     setCurrentFocusIndex(0);
-  }, [verbKey, selectedLanguage, pronounsForLang, resetSmartHintsAll]);
+    setQuizLayout(readExerciseModePreference());
+  }, [verbKey, selectedLanguage, pronounsForLang, resetSmartHintsAll, readExerciseModePreference]);
+
+  useEffect(() => {
+    setShowAllIrregulars(false);
+    if (selectedLanguage !== 'es') return;
+    const exists = IRREGULAR_TENSE_OPTIONS_ES.some((x) => x.id === selectedTense);
+    setIrregularTenseFilter(exists ? selectedTense : 'presente');
+  }, [selectedLanguage, selectedTense]);
 
   // Sayfa ilk açılışta veya yeni fiil seçildiğinde ilgili ilk input'a odaklan
   useEffect(() => {
@@ -1245,6 +1303,13 @@ export function Page() {
       quizInputRefs.current[0]?.focus();
     }
   }, [verbKey, mode]);
+
+  // Alıştırma sekmesi açıldığında kullanıcı tercihini uygula (varsayılan tekli).
+  useEffect(() => {
+    if (mode !== 'quiz') return;
+    setQuizLayout(readExerciseModePreference());
+    setCurrentFocusIndex(0);
+  }, [mode, readExerciseModePreference]);
 
   // Odak modunda tek input her şahıs değişiminde odaklansın
   useEffect(() => {
@@ -2333,6 +2398,78 @@ export function Page() {
                 </motion.div>
               )}
             </div>
+
+            {selectedLanguage === 'es' && (
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-1.5">
+                  <p className="text-xs font-medium text-slate-500 dark:text-slate-500 select-none">
+                    ZAMANA GÖRE DÜZENSİZ FİİLLER
+                  </p>
+                  <span
+                    className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-slate-300/80 dark:border-slate-600 text-[10px] font-bold text-slate-500 dark:text-slate-400 cursor-help"
+                    title="Bu zamanda kök değişimi veya istisnai çekim içeren fiiller"
+                    aria-label="Bu zamanda kök değişimi veya istisnai çekim içeren fiiller"
+                  >
+                    ℹ
+                  </span>
+                </div>
+
+                <div className="relative">
+                  <select
+                    value={irregularTenseFilter}
+                    onChange={(e) => {
+                      setIrregularTenseFilter(e.target.value);
+                      setShowAllIrregulars(false);
+                    }}
+                    className="w-full h-10 rounded-xl border border-slate-200 dark:border-slate-700/50 bg-slate-50 dark:bg-slate-800/80 px-3 pr-8 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-colors"
+                    aria-label="Düzensiz fiiller için zaman seç"
+                  >
+                    {IRREGULAR_TENSE_OPTIONS_ES.map((opt) => (
+                      <option key={opt.id} value={opt.id}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">▾</span>
+                </div>
+
+                {irregularVerbsForSelectedTense.length === 0 ? (
+                  <p className="rounded-lg border border-dashed border-slate-200/60 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/40 px-3 py-3 text-xs text-slate-500 dark:text-slate-500 italic text-center">
+                    Bu zamanda kayıtlı düzensiz fiil bulunamadı
+                  </p>
+                ) : (
+                  <>
+                    <div className="flex flex-wrap gap-1.5">
+                      {visibleIrregularVerbs.map((verb) => (
+                        <button
+                          key={`irr-${irregularTenseFilter}-${verb}`}
+                          type="button"
+                          onClick={() => {
+                            setSelectedTense(irregularTenseFilter);
+                            setVerbInput(verb);
+                            setError('');
+                            setAutocompleteClosed(true);
+                            loadVerb(verb);
+                          }}
+                          className="rounded-lg border border-violet-500/25 bg-violet-500/10 px-2.5 py-1 text-xs font-medium text-violet-700 dark:text-violet-300 hover:bg-violet-500/20 hover:border-violet-500/50 transition-all duration-150 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 active:scale-95"
+                        >
+                          {verb}
+                        </button>
+                      ))}
+                    </div>
+                    {!showAllIrregulars && irregularVerbsForSelectedTense.length > 12 && (
+                      <button
+                        type="button"
+                        onClick={() => setShowAllIrregulars(true)}
+                        className="self-start text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-300 transition-colors"
+                      >
+                        + {irregularVerbsForSelectedTense.length - 12} tane daha göster
+                      </button>
+                    )}
+                  </>
+                )}
+              </div>
+            )}
 
             {/* Zaman seçimi — custom dropdown (glassmorphism, kategoriler, check ikonu, animasyon) */}
             <div className="w-full flex-shrink-0 flex flex-col relative overflow-visible" ref={tenseDropdownRef}>
@@ -4234,7 +4371,21 @@ export function Page() {
                   */}
                   <button
                     type="button"
-                    onClick={() => setQuizLayout('list')}
+                    onClick={() => setExerciseMode('focus')}
+                    aria-pressed={quizLayout === 'focus'}
+                    title="Tekli soru modu"
+                    aria-label="Tekli soru modu"
+                    className={`flex items-center justify-center w-8 h-8 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 ${
+                      quizLayout === 'focus'
+                        ? 'bg-indigo-500/15 text-indigo-600 dark:text-indigo-300'
+                        : 'text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-white/10 hover:text-slate-600 dark:hover:text-slate-300'
+                    }`}
+                  >
+                    <span className="leading-none text-base" aria-hidden>☰</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setExerciseMode('list')}
                     aria-pressed={quizLayout === 'list'}
                     title="Liste görünümü"
                     aria-label="Liste görünümü"
@@ -4244,21 +4395,7 @@ export function Page() {
                         : 'text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-white/10 hover:text-slate-600 dark:hover:text-slate-300'
                     }`}
                   >
-                    <ListIcon className="w-4 h-4" strokeWidth={2} aria-hidden />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => { setQuizLayout('focus'); setCurrentFocusIndex(0); }}
-                    aria-pressed={quizLayout === 'focus'}
-                    title="Odak görünümü"
-                    aria-label="Odak görünümü"
-                    className={`flex items-center justify-center w-8 h-8 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 ${
-                      quizLayout === 'focus'
-                        ? 'bg-indigo-500/15 text-indigo-600 dark:text-indigo-300'
-                        : 'text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-white/10 hover:text-slate-600 dark:hover:text-slate-300'
-                    }`}
-                  >
-                    <TargetIcon className="w-4 h-4" strokeWidth={2} aria-hidden />
+                    <span className="leading-none text-sm tracking-[-0.15em]" aria-hidden>☰☰</span>
                   </button>
                   {selectedLanguage === 'es' && (
                     <button
@@ -4349,17 +4486,20 @@ export function Page() {
                 tekrar eden büyük pill yok.
               */}
               {(() => {
-                const answeredCount = pronounIds.filter((p) => quizFeedback[p] !== null).length;
                 const total = pronounIds.length;
-                const progressPct = total ? (answeredCount / total) * 100 : 0;
+                const progressCount =
+                  quizLayout === 'focus'
+                    ? Math.min(currentFocusIndex, total)
+                    : pronounIds.filter((p) => quizFeedback[p] !== null).length;
+                const progressPct = total ? (progressCount / total) * 100 : 0;
                 return (
                   <div className="mt-4 pt-3 border-t border-slate-100/80 dark:border-white/5">
                     <div className="flex items-center justify-between gap-2 mb-1.5">
                       <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                        {answeredCount} / {total} çekim
+                        {progressCount} / {total} çekim
                       </span>
                     </div>
-                    <div className="h-1 w-full rounded-full bg-slate-200/70 dark:bg-white/5 overflow-hidden" role="progressbar" aria-valuenow={answeredCount} aria-valuemin={0} aria-valuemax={total}>
+                    <div className="h-1 w-full rounded-full bg-slate-200/70 dark:bg-white/5 overflow-hidden" role="progressbar" aria-valuenow={progressCount} aria-valuemin={0} aria-valuemax={total}>
                       <div className="h-full bg-indigo-500 dark:bg-indigo-400 rounded-full transition-all duration-300" style={{ width: `${progressPct}%` }} />
                     </div>
                   </div>
@@ -4428,21 +4568,21 @@ export function Page() {
             {/* Odak modu: tüm şahıslar tamamlandı */}
             {quizLayout === 'focus' && currentFocusIndex >= pronounIds.length && (
               <div className="p-6 sm:p-8 text-center rounded-xl mx-4 mb-4 bg-gradient-to-br from-emerald-50 to-teal-50/80 dark:from-emerald-500/15 dark:to-teal-500/10 border border-emerald-200/80 dark:border-emerald-400/30" role="alert">
-                <p className="text-emerald-800 dark:text-emerald-200 font-bold text-xl">🎉 Mükemmel! Tüm çekimleri tamamladın.</p>
+                <p className="text-emerald-800 dark:text-emerald-200 font-bold text-xl">🎉 Tebrikler! Tüm çekimleri tamamladın</p>
                 <div className="flex flex-wrap justify-center gap-3 mt-6">
                   <button
                     type="button"
                     onClick={() => { resetQuiz(); setCurrentFocusIndex(0); requestAnimationFrame(() => quizInputRefs.current[0]?.focus()); }}
                     className="rounded-xl bg-emerald-600 dark:bg-emerald-500 text-white font-semibold px-5 py-2.5 hover:bg-emerald-700 dark:hover:bg-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-colors duration-300"
                   >
-                    Tekrar Oyna
+                    Tekrar Çöz
                   </button>
                   <button
                     type="button"
-                    onClick={() => { setVerbKey(null); setVerbInput(''); setCurrentFocusIndex(0); verbInputRef.current?.focus(); }}
+                    onClick={() => setExerciseMode('list')}
                     className="rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold px-5 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 transition-colors duration-300"
                   >
-                    Yeni Fiil
+                    Liste Modunda Gör
                   </button>
                 </div>
               </div>
