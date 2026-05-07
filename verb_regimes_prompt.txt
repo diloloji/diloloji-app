@@ -1,0 +1,4 @@
+İspanyolca'da edat alan en önemli 150 fiil için rejim verisi üret.
+Türkçe konuşanların en çok hata yaptığı fiillere öncelik ver.
+Her fiil için: preposition, pattern, turkish_note, examples (2 adet), common_mistakes.
+Sadece JSON object döndür, başka hiçbir şey yazma.

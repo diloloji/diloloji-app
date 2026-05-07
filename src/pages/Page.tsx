@@ -50,6 +50,11 @@ import {
 import SmartHintBubble from '../components/SmartHintBubble';
 import TenseCardOverlay from '../components/tenseCard/TenseCardOverlay';
 import { exampleSentences } from '../data/example_sentences';
+import { verbRegimes } from '../data/verb_regimes';
+import { collocations } from '../data/collocations';
+import { regionalVariants } from '../data/regional_variants';
+import { serEstarRules } from '../data/ser_estar';
+import { timeMarkers } from '../data/time_markers';
 import {
   fetchSynonyms,
   type VerbSynonymPayload,
@@ -144,6 +149,19 @@ type StaticExample = {
   tr?: string;
   person?: string;
 } | null;
+
+function markerColorClass(color: string): string {
+  const map: Record<string, string> = {
+    teal: 'border-teal-500/35 bg-teal-500/15 text-teal-700 dark:text-teal-300',
+    blue: 'border-blue-500/35 bg-blue-500/15 text-blue-700 dark:text-blue-300',
+    purple: 'border-violet-500/35 bg-violet-500/15 text-violet-700 dark:text-violet-300',
+    green: 'border-emerald-500/35 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300',
+    amber: 'border-amber-500/35 bg-amber-500/15 text-amber-700 dark:text-amber-300',
+    pink: 'border-pink-500/35 bg-pink-500/15 text-pink-700 dark:text-pink-300',
+    coral: 'border-orange-500/35 bg-orange-500/15 text-orange-700 dark:text-orange-300',
+  };
+  return map[color] ?? map.teal;
+}
 
 function storageKeyFor(difficulty: TimeAttackDifficulty): string {
   return `${TIME_ATTACK_STORAGE_KEY_PREFIX}-${difficulty}`;
@@ -566,6 +584,14 @@ export function Page() {
   const [verbKey, setVerbKey] = useState<string | null>(null);
   const [selectedCEFRLevel, setSelectedCEFRLevel] = useState<CEFRLevel | null>(null);
   const [showFavorites, setShowFavorites] = useState(false);
+  const [regimeOpen, setRegimeOpen] = useState(false);
+  const [collocationOpen, setCollocationOpen] = useState(false);
+  const [regionalOpen, setRegionalOpen] = useState(false);
+  const [serEstarOverlayOpen, setSerEstarOverlayOpen] = useState(false);
+  const [serEstarAnswer, setSerEstarAnswer] = useState<'ser' | 'estar' | null>(null);
+  const [activeTimeMarkerTip, setActiveTimeMarkerTip] = useState<string | null>(null);
+  const [collocationLevelFilter, setCollocationLevelFilter] = useState<'A1' | 'A2' | 'B1'>('A1');
+  const [activeCollocationTip, setActiveCollocationTip] = useState<string | null>(null);
   const [irregularTenseFilter, setIrregularTenseFilter] = useState<string>('presente');
   const [showAllIrregulars, setShowAllIrregulars] = useState(false);
   /** AI ile üretilen örnek cümleler (fiil + zaman değişiminde yeniden istek) */
@@ -948,6 +974,37 @@ export function Page() {
     if (!byVerb) return null;
     return byVerb[tenseLabel] ?? null;
   }, [selectedLanguage, verbKey, tenseLabel]);
+  const regimeInfo = useMemo(() => {
+    if (selectedLanguage !== 'es' || !verbKey) return null;
+    return (
+      verbRegimes[verbKey] ??
+      verbRegimes[
+        verbKey
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+      ] ??
+      null
+    );
+  }, [selectedLanguage, verbKey]);
+  const collocationItems = useMemo(() => {
+    if (selectedLanguage !== 'es' || !verbKey) return [];
+    const key = verbKey
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
+    return (collocations[verbKey] ?? collocations[key] ?? []).filter((x) => x.level === collocationLevelFilter);
+  }, [selectedLanguage, verbKey, collocationLevelFilter]);
+  const regionalInfo = useMemo(() => {
+    if (selectedLanguage !== 'es' || !verbKey) return null;
+    const key = verbKey
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
+    return regionalVariants[verbKey] ?? regionalVariants[key] ?? null;
+  }, [selectedLanguage, verbKey]);
+  const isSerEstarVerb = selectedLanguage === 'es' && (verbKey === 'ser' || verbKey === 'estar');
+  const selectedTenseMarkers = useMemo(() => timeMarkers[tenseLabel] ?? null, [tenseLabel]);
 
   /** Otomatik tamamlama: Lefff fiil listesi (bir kez yükle). */
   const verbList = useMemo(() => getVerbListForLang(selectedLanguage), [selectedLanguage]);
@@ -1298,6 +1355,17 @@ export function Page() {
     setCurrentFocusIndex(0);
     setQuizLayout(readExerciseModePreference());
   }, [verbKey, selectedLanguage, pronounsForLang, resetSmartHintsAll, readExerciseModePreference]);
+
+  useEffect(() => {
+    setRegimeOpen(false);
+    setCollocationOpen(false);
+    setRegionalOpen(false);
+    setSerEstarOverlayOpen(false);
+    setSerEstarAnswer(null);
+    setActiveTimeMarkerTip(null);
+    setActiveCollocationTip(null);
+    setCollocationLevelFilter('A1');
+  }, [verbKey, selectedLanguage]);
 
   useEffect(() => {
     setShowAllIrregulars(false);
@@ -3412,6 +3480,7 @@ export function Page() {
                     <p className="text-slate-500 dark:text-slate-400 text-sm mt-1.5">Yukarıdaki arama alanına fiil yazıp &quot;Göster&quot;e tıklayın.</p>
                   </div>
                 ) : (
+                  <>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6 items-stretch">
                     {compareSlots.map((slot) => {
                       const tenseLabel = tensesForLang.find((t) => t.id === slot.tense)?.label ?? '—';
@@ -3457,6 +3526,50 @@ export function Page() {
                       );
                     })}
                   </div>
+                  {selectedLanguage === 'es' && (
+                    <div className="mt-5 rounded-2xl border border-slate-200/40 dark:border-slate-700/50 bg-white/5 dark:bg-slate-800/25 p-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {compareSlots.slice(0, 2).map((slot) => {
+                          const label = tensesForLang.find((t) => t.id === slot.tense)?.label ?? slot.tense;
+                          const tm = timeMarkers[label];
+                          if (!tm) return null;
+                          return (
+                            <div key={`tm-compare-${slot.key}`}>
+                              <p className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">{label}</p>
+                              <div className="flex flex-wrap gap-1.5">
+                                {tm.markers.map((marker, i) => {
+                                  const tipKey = `compare-${slot.key}-${marker}-${i}`;
+                                  const isOpen = activeTimeMarkerTip === tipKey;
+                                  return (
+                                    <div key={tipKey} className="relative">
+                                      <button
+                                        type="button"
+                                        onClick={() => setActiveTimeMarkerTip((k) => (k === tipKey ? null : tipKey))}
+                                        className={`rounded-full border px-2.5 py-1 text-xs font-semibold ${markerColorClass(tm.color)}`}
+                                      >
+                                        {marker}
+                                      </button>
+                                      {isOpen && (
+                                        <div className="absolute left-0 top-full mt-1 z-20 w-64 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 shadow-xl">
+                                          <p className="text-xs text-slate-700 dark:text-slate-200">
+                                            {marker}, {verbKey} en este tiempo verbal.
+                                          </p>
+                                          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                                            → Bu zarf {label} ile tipik kullanılır.
+                                          </p>
+                                        </div>
+                                      )}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                  </>
                 )}
               </div>
               );
@@ -3500,6 +3613,100 @@ export function Page() {
 
         {(verbKey && conjugationsForDisplay && mode === 'learning') && (
           <div className="print-area">
+            {serEstarOverlayOpen && (
+              <div className="fixed inset-0 z-[120] bg-slate-950/70 backdrop-blur-sm p-3 sm:p-6 flex items-start sm:items-center justify-center">
+                <div className="w-full max-w-4xl max-h-[92vh] overflow-y-auto rounded-2xl border border-slate-200/70 dark:border-slate-700/70 bg-white dark:bg-slate-900 shadow-2xl p-4 sm:p-6">
+                  <div className="flex items-center justify-between gap-3 mb-3">
+                    <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">SER vs ESTAR — Karşılaştırmalı Mod</h3>
+                    <button
+                      type="button"
+                      onClick={() => setSerEstarOverlayOpen(false)}
+                      className="rounded-lg px-2 py-1 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
+                      aria-label="Kapat"
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3">
+                      <p className="font-bold text-emerald-800 dark:text-emerald-300 mb-1">SER</p>
+                      <p className="text-sm text-slate-700 dark:text-slate-200">Kalıcı özellikler</p>
+                    </div>
+                    <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3">
+                      <p className="font-bold text-amber-800 dark:text-amber-300 mb-1">ESTAR</p>
+                      <p className="text-sm text-slate-700 dark:text-slate-200">Geçici durumlar</p>
+                    </div>
+                  </div>
+
+                  <div className="my-4 h-px bg-slate-200 dark:bg-slate-700" />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {serEstarRules
+                      .filter((r) => r.verb === 'ser')
+                      .map((r, i) => (
+                        <div key={`ser-${i}`} className="rounded-xl border border-slate-200 dark:border-slate-700 p-3">
+                          <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">{r.category}</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{r.rule}</p>
+                          <ul className="mt-2 space-y-1">
+                            {r.examples.map((ex, j) => (
+                              <li key={j} className="text-sm text-slate-700 dark:text-slate-200">
+                                {ex.es} <span className="text-slate-500 dark:text-slate-400">→ {ex.tr}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))}
+                    {serEstarRules
+                      .filter((r) => r.verb === 'estar')
+                      .map((r, i) => (
+                        <div key={`estar-${i}`} className="rounded-xl border border-slate-200 dark:border-slate-700 p-3">
+                          <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">{r.category}</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{r.rule}</p>
+                          <ul className="mt-2 space-y-1">
+                            {r.examples.map((ex, j) => (
+                              <li key={j} className="text-sm text-slate-700 dark:text-slate-200">
+                                {ex.es} <span className="text-slate-500 dark:text-slate-400">→ {ex.tr}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))}
+                  </div>
+
+                  <div className="my-4 h-px bg-slate-200 dark:bg-slate-700" />
+                  <p className="text-sm font-medium text-slate-700 dark:text-slate-200">KURAL: &quot;¿Cómo estás?&quot; ✓  &quot;¿Cómo eres?&quot; ✗ (farklı anlam)</p>
+
+                  <div className="mt-4 rounded-xl border border-indigo-500/30 bg-indigo-500/10 p-3">
+                    <p className="text-sm font-semibold text-indigo-800 dark:text-indigo-300 mb-2">
+                      Mini Quiz: &quot;Soy/Estoy ___ médico?&quot;
+                    </p>
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setSerEstarAnswer('ser')}
+                        className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-sm hover:bg-slate-100 dark:hover:bg-slate-800"
+                      >
+                        Soy
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setSerEstarAnswer('estar')}
+                        className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-sm hover:bg-slate-100 dark:hover:bg-slate-800"
+                      >
+                        Estoy
+                      </button>
+                    </div>
+                    {serEstarAnswer && (
+                      <p className={`mt-2 text-sm ${serEstarAnswer === 'ser' ? 'text-emerald-700 dark:text-emerald-300' : 'text-rose-700 dark:text-rose-300'}`}>
+                        {serEstarAnswer === 'ser'
+                          ? 'Doğru: Meslek/kimlik için SER kullanılır → Soy médico.'
+                          : 'Yanlış: ESTAR geçici durumlar içindir; meslekte SER kullanılır.'}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
             {/* Yazdırma çalışma yaprağı — sadece @media print ile görünür */}
             <div className="hidden print:block print:bg-white print:text-black pb-8">
               {/* Başlık: Sol Diloloji + logo, Sağ Fiil Çalışma Yaprağı + tarih */}
@@ -3593,6 +3800,54 @@ export function Page() {
                 <p className="text-sm text-amber-800 dark:text-amber-400 leading-relaxed">
                   Dikkat: Bu düzensiz (irregular) bir fiildir. Kök değişimi veya istisnai çekim kuralları içerebilir.
                 </p>
+              </div>
+            )}
+            {isSerEstarVerb && (
+              <div className="mx-4 sm:mx-0 mb-4 rounded-xl border border-indigo-500/30 bg-indigo-500/10 dark:bg-indigo-500/15 px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <p className="text-sm font-semibold text-indigo-800 dark:text-indigo-200">
+                  ⚡ SER vs ESTAR — Karşılaştırmalı Mod
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setSerEstarOverlayOpen(true)}
+                  className="inline-flex items-center justify-center rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-3 py-2 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                >
+                  Her İkisini Karşılaştır
+                </button>
+              </div>
+            )}
+            {selectedLanguage === 'es' && selectedTenseMarkers && (
+              <div className="mx-4 sm:mx-0 mb-4 rounded-xl border border-slate-200/80 dark:border-slate-700/70 bg-white/70 dark:bg-slate-800/35 px-3 py-3">
+                <p className="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">
+                  {tenseLabel} ile kullanılır:
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {selectedTenseMarkers.markers.map((marker, i) => {
+                    const tipKey = `learn-${tenseLabel}-${marker}-${i}`;
+                    const isOpen = activeTimeMarkerTip === tipKey;
+                    return (
+                      <div key={tipKey} className="relative">
+                        <button
+                          type="button"
+                          onClick={() => setActiveTimeMarkerTip((k) => (k === tipKey ? null : tipKey))}
+                          className={`rounded-full border px-2.5 py-1 text-xs font-semibold ${markerColorClass(selectedTenseMarkers.color)}`}
+                        >
+                          {marker}
+                        </button>
+                        {isOpen && (
+                          <div className="absolute left-0 top-full mt-1 z-20 w-64 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 shadow-xl">
+                            <p className="text-xs text-slate-700 dark:text-slate-200">
+                              {marker}, {verbKey ?? 'yo'} en contexto real.
+                            </p>
+                            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                              → &quot;{marker}&quot; zarfı bu zamanla sık kullanılır.
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             )}
             {/*
@@ -3834,6 +4089,203 @@ export function Page() {
                   </div>
                 );
               })()}
+              {regimeInfo && (
+                <div className="mt-3 border-t border-slate-200/80 dark:border-slate-600/80 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setRegimeOpen((v) => !v)}
+                    className="w-full flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 hover:bg-slate-100/70 dark:hover:bg-slate-800/60 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
+                    aria-expanded={regimeOpen}
+                    aria-controls="verb-regime-panel"
+                  >
+                    <span className="text-xs font-bold tracking-wide text-slate-700 dark:text-slate-200">
+                      KULLANIM KALIPLARI
+                    </span>
+                    <span className={`text-slate-400 transition-transform ${regimeOpen ? 'rotate-180' : ''}`} aria-hidden>
+                      ▾
+                    </span>
+                  </button>
+                  <AnimatePresence initial={false}>
+                    {regimeOpen && (
+                      <motion.div
+                        id="verb-regime-panel"
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.2, ease: 'easeOut' }}
+                        className="overflow-hidden px-2 pb-1"
+                      >
+                        <div className="space-y-2 pt-2 text-sm">
+                          <p className="text-slate-700 dark:text-slate-200">
+                            <span className="font-semibold">{verbKey}</span> +{' '}
+                            <span className="inline-flex items-center rounded-full border border-orange-500/35 bg-orange-500/15 px-2 py-0.5 text-[11px] font-bold uppercase text-orange-700 dark:text-orange-300">
+                              {regimeInfo.preposition}
+                            </span>{' '}
+                            <span className="text-slate-600 dark:text-slate-300">→ {regimeInfo.pattern}</span>
+                          </p>
+                          <p className="text-amber-700 dark:text-amber-300 text-xs sm:text-sm">
+                            ⚠️ {regimeInfo.turkish_note}
+                          </p>
+                          <ul className="space-y-1">
+                            {regimeInfo.examples.map((ex, i) => (
+                              <li key={`${ex.es}-${i}`} className="text-slate-700 dark:text-slate-200">
+                                • {ex.es}{' '}
+                                <span className="text-slate-500 dark:text-slate-400">→ {ex.tr}</span>
+                              </li>
+                            ))}
+                          </ul>
+                          <p className="text-rose-700 dark:text-rose-300 text-xs sm:text-sm">
+                            ✗ Yaygın hata: &quot;{regimeInfo.common_mistakes}&quot;
+                          </p>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              )}
+              {selectedLanguage === 'es' && verbKey && (collocations[verbKey] || collocations[
+                verbKey.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+              ]) && (
+                <div className="mt-3 border-t border-slate-200/80 dark:border-slate-600/80 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setCollocationOpen((v) => !v)}
+                    className="w-full flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 hover:bg-slate-100/70 dark:hover:bg-slate-800/60 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
+                    aria-expanded={collocationOpen}
+                    aria-controls="verb-collocations-panel"
+                  >
+                    <span className="text-xs font-bold tracking-wide text-slate-700 dark:text-slate-200">
+                      YAYGIN KALIPLAR
+                    </span>
+                    <span className={`text-slate-400 transition-transform ${collocationOpen ? 'rotate-180' : ''}`} aria-hidden>
+                      ▾
+                    </span>
+                  </button>
+                  <AnimatePresence initial={false}>
+                    {collocationOpen && (
+                      <motion.div
+                        id="verb-collocations-panel"
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.2, ease: 'easeOut' }}
+                        className="overflow-hidden px-2 pb-1"
+                      >
+                        <div className="flex items-center gap-1.5 pt-2 pb-2">
+                          {(['A1', 'A2', 'B1'] as const).map((lvl) => (
+                            <button
+                              key={lvl}
+                              type="button"
+                              onClick={() => setCollocationLevelFilter(lvl)}
+                              className={`rounded-md border px-2 py-0.5 text-[11px] font-semibold transition-colors ${
+                                collocationLevelFilter === lvl
+                                  ? 'border-indigo-500/50 bg-indigo-500/15 text-indigo-700 dark:text-indigo-300'
+                                  : 'border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60'
+                              }`}
+                            >
+                              {lvl}
+                            </button>
+                          ))}
+                        </div>
+                        {collocationItems.length === 0 ? (
+                          <p className="text-xs text-slate-500 dark:text-slate-400 pb-2">Bu seviye için kalıp bulunamadı.</p>
+                        ) : (
+                          <ul className="space-y-1.5 pb-1">
+                            {collocationItems.map((item, i) => {
+                              const key = `${item.full}-${i}`;
+                              const tipOpen = activeCollocationTip === key;
+                              const exEs = `Normalmente ${item.full} en situaciones reales.`;
+                              const exTr = `Genelde "${item.tr}" ifadesini gerçek durumlarda kullanırım.`;
+                              return (
+                                <li key={key} className="relative">
+                                  <button
+                                    type="button"
+                                    onClick={() => setActiveCollocationTip((k) => (k === key ? null : key))}
+                                    className="w-full text-left rounded-lg border border-slate-200/80 dark:border-slate-700/70 bg-white/70 dark:bg-slate-800/40 px-2.5 py-2 hover:border-indigo-400/50 dark:hover:border-indigo-500/40 transition-colors"
+                                  >
+                                    <span className="text-sm text-slate-800 dark:text-slate-100 font-medium">{item.full}</span>
+                                    <span className="text-slate-500 dark:text-slate-400">  →  {item.tr}</span>
+                                    <span className="ml-2 inline-flex items-center rounded-full border border-slate-300 dark:border-slate-600 px-1.5 py-0.5 text-[10px] font-semibold text-slate-600 dark:text-slate-300">
+                                      {item.level}
+                                    </span>
+                                  </button>
+                                  {tipOpen && (
+                                    <div className="mt-1 rounded-lg border border-indigo-400/25 dark:border-indigo-400/30 bg-indigo-50/70 dark:bg-indigo-500/10 px-2.5 py-2 text-xs text-slate-700 dark:text-slate-200">
+                                      <p>• {exEs}</p>
+                                      <p className="text-slate-500 dark:text-slate-400">→ {exTr}</p>
+                                    </div>
+                                  )}
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        )}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              )}
+              {regionalInfo && (
+                <div className="mt-3 border-t border-slate-200/80 dark:border-slate-600/80 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setRegionalOpen((v) => !v)}
+                    className="w-full flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 hover:bg-slate-100/70 dark:hover:bg-slate-800/60 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
+                    aria-expanded={regionalOpen}
+                    aria-controls="regional-variants-panel"
+                  >
+                    <span className="text-xs font-bold tracking-wide text-slate-700 dark:text-slate-200">
+                      BÖLGESEL FARKLAR
+                    </span>
+                    <span className={`text-slate-400 transition-transform ${regionalOpen ? 'rotate-180' : ''}`} aria-hidden>
+                      ▾
+                    </span>
+                  </button>
+                  <AnimatePresence initial={false}>
+                    {regionalOpen && (
+                      <motion.div
+                        id="regional-variants-panel"
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.2, ease: 'easeOut' }}
+                        className="overflow-hidden px-2 pb-1"
+                      >
+                        <div className="pt-2 space-y-2">
+                          {regionalInfo.level === 'critical' ? (
+                            <div className="rounded-lg border border-rose-500/40 bg-rose-500/15 px-3 py-2 text-sm text-rose-800 dark:text-rose-200 font-medium">
+                              ⚠️ {regionalInfo.warning ?? 'Kritik bölgesel kullanım farkı var.'}
+                            </div>
+                          ) : (
+                            <div className="rounded-lg border border-blue-500/35 bg-blue-500/15 px-3 py-2 text-sm text-blue-800 dark:text-blue-200">
+                              Bölgesel kullanım notu: İspanya ve Latin Amerika kullanımını karşılaştır.
+                            </div>
+                          )}
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <div className="rounded-lg border border-slate-200/80 dark:border-slate-700/70 bg-white/70 dark:bg-slate-800/40 px-3 py-2">
+                              <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">🇪🇸 İspanya</p>
+                              <p className="text-sm text-slate-800 dark:text-slate-100">
+                                <span className="font-medium">Kullanım:</span> {regionalInfo.spain.usage}
+                              </p>
+                              <p className="text-sm text-slate-700 dark:text-slate-200">{regionalInfo.spain.meaning}</p>
+                              <p className="text-xs text-slate-500 dark:text-slate-400 italic mt-1">{regionalInfo.spain.example}</p>
+                            </div>
+                            <div className="rounded-lg border border-slate-200/80 dark:border-slate-700/70 bg-white/70 dark:bg-slate-800/40 px-3 py-2">
+                              <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">🌎 Latin Amerika</p>
+                              <p className="text-sm text-slate-800 dark:text-slate-100">
+                                <span className="font-medium">Kullanım:</span> {regionalInfo.latam.usage}
+                              </p>
+                              <p className="text-sm text-slate-700 dark:text-slate-200">{regionalInfo.latam.meaning}</p>
+                              <p className="text-xs text-slate-500 dark:text-slate-400 italic mt-1">{regionalInfo.latam.example}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              )}
               {/*
                 Alternatif formlar: Dönüşlü / Olumsuz — sadece Detaylı modda.
                 Çekim tablosunun yapısını bozmamak için yükseklik (height)

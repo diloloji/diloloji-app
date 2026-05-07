@@ -1,0 +1,3 @@
+İspanyolca'da İspanya ve Latin Amerika arasında anlamlı fark olan 80 fiil/kullanım için
+bölgesel varyant verisi üret. Kritik olanları (yanlış anlaşılma veya kaba anlam riski)
+level: "critical" olarak işaretle. Sadece JSON object döndür.
