@@ -608,8 +608,6 @@ export function Page() {
   const [isMeaningLoading, setIsMeaningLoading] = useState(false);
   const [selectedTense, setSelectedTense] = useState<string>(() => getTenses('es')[0].id);
   const [mode, setMode] = useState<Mode>('learning');
-  const [shortcutFlashMode, setShortcutFlashMode] = useState<Mode | null>(null);
-  const [shortcutHelpOpen, setShortcutHelpOpen] = useState(false);
   const [userAnswers, setUserAnswers] = useState<Record<string, string>>(() => getInitialUserAnswers('es'));
   const [quizFeedback, setQuizFeedback] = useState<Record<string, 'correct' | 'wrong' | 'typo' | null>>(() =>
     Object.fromEntries(getPronouns('es').map((p) => [p.id, null as 'correct' | 'wrong' | null]))
@@ -716,7 +714,6 @@ export function Page() {
   const timeAttackTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const timeAttackXpAwardedRef = useRef(false);
   const timeAttackSaveDoneRef = useRef(false);
-  const shortcutFlashTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   /** Zamana Karşı bittiğinde bir kez XP ver (skor/10); tekrar oynayınca sıfırla */
   useEffect(() => {
@@ -752,13 +749,6 @@ export function Page() {
     setTimeAttackLastScores(lastFive);
     setTimeAttackIsNewRecord(timeAttackScore >= prevBest && timeAttackScore > 0);
   }, [timeAttackGameOver, timeAttackScore, timeAttackMaxCombo, timeAttackQuestion, selectedLanguage, timeAttackDifficulty]);
-
-  const triggerModeFromShortcut = useCallback((nextMode: Mode) => {
-    setMode(nextMode);
-    setShortcutFlashMode(nextMode);
-    if (shortcutFlashTimeoutRef.current) clearTimeout(shortcutFlashTimeoutRef.current);
-    shortcutFlashTimeoutRef.current = setTimeout(() => setShortcutFlashMode(null), 100);
-  }, []);
 
   useEffect(() => {
     if (!timeAttackGameOver) timeAttackSaveDoneRef.current = false;
@@ -1381,59 +1371,6 @@ export function Page() {
     }
     setError('Yeni fiil yüklenemedi. Lütfen tekrar deneyin.');
   }, [verbKey, selectedLanguage, selectedTense, spanishVerbSet, setExerciseMode, resetSmartHintsAll]);
-
-  useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
-      const key = e.key.toLowerCase();
-      const target = e.target as HTMLElement | null;
-      const tag = target?.tagName?.toLowerCase();
-      const isEditing =
-        !!target &&
-        (tag === 'input' ||
-          tag === 'textarea' ||
-          target.isContentEditable);
-
-      if (e.metaKey || e.ctrlKey || e.altKey) return;
-
-      if (key === 't') {
-        e.preventDefault();
-        verbInputRef.current?.focus();
-        return;
-      }
-
-      if (isEditing) return;
-
-      if (key === '1') {
-        e.preventDefault();
-        triggerModeFromShortcut('learning');
-      } else if (key === '2') {
-        e.preventDefault();
-        triggerModeFromShortcut('quiz');
-      } else if (key === '3') {
-        e.preventDefault();
-        triggerModeFromShortcut('time-attack');
-      } else if (key === '4') {
-        e.preventDefault();
-        triggerModeFromShortcut('compare');
-      } else if (key === 'r') {
-        e.preventDefault();
-        pickRandomVerb();
-      } else if (key === 'f') {
-        if (!verbKey) return;
-        e.preventDefault();
-        toggleStar(verbKey);
-      } else if (key === '?' || (key === 'escape' && shortcutHelpOpen)) {
-        e.preventDefault();
-        setShortcutHelpOpen((v) => (key === 'escape' ? false : !v));
-      }
-    };
-
-    window.addEventListener('keydown', onKeyDown);
-    return () => {
-      window.removeEventListener('keydown', onKeyDown);
-      if (shortcutFlashTimeoutRef.current) clearTimeout(shortcutFlashTimeoutRef.current);
-    };
-  }, [pickRandomVerb, shortcutHelpOpen, triggerModeFromShortcut, verbKey]);
 
   useEffect(() => {
     const mq = window.matchMedia('(min-width: 768px)');
@@ -3215,7 +3152,7 @@ export function Page() {
                   mode === 'learning'
                     ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
                     : 'bg-transparent text-slate-400 hover:text-slate-200'
-                } ${shortcutFlashMode === 'learning' ? 'ring-2 ring-indigo-300/80 dark:ring-indigo-400 scale-[1.03]' : ''}`}
+                }`}
                 title="Alt+L"
               >
                 {t('ogrenme')}
@@ -3227,7 +3164,7 @@ export function Page() {
                   mode === 'quiz'
                     ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
                     : 'bg-transparent text-slate-400 hover:text-slate-200'
-                } ${shortcutFlashMode === 'quiz' ? 'ring-2 ring-indigo-300/80 dark:ring-indigo-400 scale-[1.03]' : ''}`}
+                }`}
                 title="Alt+Q"
               >
                 {t('alistirma')}
@@ -3239,7 +3176,7 @@ export function Page() {
                   mode === 'time-attack'
                     ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
                     : 'bg-transparent text-slate-400 hover:text-slate-200'
-                } ${shortcutFlashMode === 'time-attack' ? 'ring-2 ring-indigo-300/80 dark:ring-indigo-400 scale-[1.03]' : ''}`}
+                }`}
                 title={t('zamana_karsi')}
               >
                 {t('zamana_karsi')}
@@ -3251,7 +3188,7 @@ export function Page() {
                   mode === 'compare'
                     ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
                     : 'bg-transparent text-slate-400 hover:text-slate-200'
-                } ${shortcutFlashMode === 'compare' ? 'ring-2 ring-indigo-300/80 dark:ring-indigo-400 scale-[1.03]' : ''}`}
+                }`}
                 title={t('kiyaslama')}
               >
                 {t('kiyaslama')}
@@ -5728,54 +5665,6 @@ export function Page() {
       </main>
       )}
       {appMode === 'ezber' && <EzberMakinesi />}
-
-      <button
-        type="button"
-        onClick={() => setShortcutHelpOpen(true)}
-        className="fixed right-4 bottom-4 z-40 h-10 w-10 rounded-full border border-slate-300/70 dark:border-slate-600 bg-white/90 dark:bg-slate-800/90 text-slate-700 dark:text-slate-200 shadow-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
-        aria-label="Klavye kısayolları"
-        title="Klavye kısayolları (?)"
-      >
-        ?
-      </button>
-
-      {shortcutHelpOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4"
-          onClick={() => setShortcutHelpOpen(false)}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="shortcut-help-title"
-        >
-          <div
-            className="w-full max-w-md rounded-2xl border border-slate-200/70 dark:border-slate-700/70 bg-white dark:bg-slate-900 p-5 shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between gap-3 mb-3">
-              <h3 id="shortcut-help-title" className="text-base font-bold text-slate-800 dark:text-slate-100">
-                Klavye Kısayolları
-              </h3>
-              <button
-                type="button"
-                onClick={() => setShortcutHelpOpen(false)}
-                className="rounded-lg px-2 py-1 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
-                aria-label="Kapat"
-              >
-                ✕
-              </button>
-            </div>
-            <ul className="space-y-2 text-sm text-slate-700 dark:text-slate-200">
-              <li><kbd className="px-2 py-0.5 rounded border border-slate-300 dark:border-slate-600">1</kbd> Ogrenme sekmesi</li>
-              <li><kbd className="px-2 py-0.5 rounded border border-slate-300 dark:border-slate-600">2</kbd> Alistirma sekmesi</li>
-              <li><kbd className="px-2 py-0.5 rounded border border-slate-300 dark:border-slate-600">3</kbd> Zamana Karsi sekmesi</li>
-              <li><kbd className="px-2 py-0.5 rounded border border-slate-300 dark:border-slate-600">4</kbd> Kiyaslama sekmesi</li>
-              <li><kbd className="px-2 py-0.5 rounded border border-slate-300 dark:border-slate-600">R</kbd> Rastgele fiil yukle</li>
-              <li><kbd className="px-2 py-0.5 rounded border border-slate-300 dark:border-slate-600">F</kbd> Favori ekle/cikar</li>
-              <li><kbd className="px-2 py-0.5 rounded border border-slate-300 dark:border-slate-600">T</kbd> Arama kutusuna odaklan</li>
-            </ul>
-          </div>
-        </div>
-      )}
 
       {/* Toast: Listeden silindi! 🎉 */}
       {toastMessage && (
