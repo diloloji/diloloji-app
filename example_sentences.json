@@ -9129,6 +9129,376 @@
       "es": "Mientras mi hermano cargaba las maletas, yo esperaba en el coche.",
       "tr": "Kardeşim bavulları yüklerken, ben arabada bekliyordum.",
       "person": "él"
+    },
+    "Pretérito Perfecto": {
+      "es": "Hemos cargado todas las maletas en el coche para el viaje",
+      "tr": "Yolculuk için tüm bavulları arabaya yükledik",
+      "person": "nosotros"
+    },
+    "Futuro Simple": {
+      "es": "Mañana cargaré mi teléfono antes de salir de casa.",
+      "tr": "Yarın evden çıkmadan önce telefonumu şarj edeceğim.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Yo cargaría tu maleta si no fuera tan pesada",
+      "tr": "Bavulun bu kadar ağır olmasaydı taşırdım",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que cargues tu teléfono antes de salir de casa.",
+      "tr": "Evden çıkmadan önce telefonunu şarj etmeni umuyorum.",
+      "person": "tú"
+    }
+  },
+  "castigar": {
+    "Presente": {
+      "es": "Los padres castigan a los niños cuando no obedecen las reglas.",
+      "tr": "Ebeveynler kurallara uymadıklarında çocukları cezalandırır.",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "La profesora castigó a los estudiantes por hacer ruido en clase.",
+      "tr": "Öğretmen sınıfta gürültü yaptıkları için öğrencileri cezalandırdı.",
+      "person": "ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi madre me castigaba cuando llegaba tarde a casa.",
+      "tr": "Annem eve geç geldiğimde beni cezalandırırdı.",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi madre me ha castigado por llegar tarde a casa",
+      "tr": "Annem eve geç geldiğim için beni cezalandırdı",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Si no haces la tarea, tu madre te castigará sin televisión.",
+      "tr": "Eğer ödevini yapmazsan, annen seni televizyon yasağı ile cezalandıracak.",
+      "person": "él/ella"
+    },
+    "Condicional": {
+      "es": "Yo castigaría a mi hijo si rompiera la ventana",
+      "tr": "Oğlum camı kırsa onu cezalandırırdım",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que no castiguen a los niños por llegar tarde.",
+      "tr": "Çocukları geç kaldıkları için cezalandırmasınlar diye umuyorum.",
+      "person": "ellos"
+    }
+  },
+  "cazar": {
+    "Presente": {
+      "es": "Mi hermano caza conejos en el bosque todos los fines de semana",
+      "tr": "Kardeşim her hafta sonu ormanda tavşan avlar",
+      "person": "él"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi abuelo cazó un jabalí en el bosque el año pasado.",
+      "tr": "Dedem geçen yıl ormanda bir yaban domuzu avladı.",
+      "person": "él"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi abuelo cazaba conejos en el bosque cuando era joven.",
+      "tr": "Dedem gençken ormanda tavşan avlardı.",
+      "person": "él"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi padre ha cazado varios conejos este fin de semana.",
+      "tr": "Babam bu hafta sonu birkaç tavşan avladı.",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "Mañana mi hermano cazará conejos en el bosque con su rifle.",
+      "tr": "Yarın kardeşim ormanda tüfeğiyle tavşan avlayacak.",
+      "person": "él"
+    },
+    "Condicional": {
+      "es": "Mi abuelo cazaría venados en las montañas cuando era joven",
+      "tr": "Dedem gençken dağlarda geyik avlardı",
+      "person": "él"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que mi padre cace algunos patos este fin de semana.",
+      "tr": "Babamın bu hafta sonu birkaç ördek avlamasını umuyorum.",
+      "person": "él"
+    }
+  },
+  "cepillar": {
+    "Presente": {
+      "es": "Todas las mañanas me cepillo los dientes después de desayunar",
+      "tr": "Her sabah kahvaltıdan sonra dişlerimi fırçalarım",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer me cepillé los dientes tres veces después de las comidas",
+      "tr": "Dün yemeklerden sonra üç kez dişlerimi fırçaladım",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niño, mi madre me cepillaba los dientes cada noche.",
+      "tr": "Çocukken annem her gece dişlerimi fırçalardı.",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana se ha cepillado los dientes después de desayunar.",
+      "tr": "Kız kardeşim kahvaltıdan sonra dişlerini fırçaladı.",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Mañana me cepillaré los dientes antes de ir al trabajo.",
+      "tr": "Yarın işe gitmeden önce dişlerimi fırçalayacağım.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Yo me cepillaría los dientes después de comer algo dulce.",
+      "tr": "Tatlı bir şey yedikten sonra dişlerimi fırçalardım.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que te cepilles los dientes antes de dormir.",
+      "tr": "Uyumadan önce dişlerini fırçalamanı umuyorum.",
+      "person": "tú"
+    }
+  },
+  "cobrar": {
+    "Presente": {
+      "es": "Mi hermano cobra su sueldo cada viernes del mes",
+      "tr": "Kardeşim her ayın cuma günü maaşını alır",
+      "person": "él"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer cobré mi sueldo y pagué todas las facturas pendientes.",
+      "tr": "Dün maaşımı aldım ve bekleyen tüm faturaları ödedim.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi hermano cobraba su sueldo todos los viernes en el banco.",
+      "tr": "Kardeşim maaşını her cuma bankadan alırdı.",
+      "person": "él"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermano ha cobrado su primer sueldo este mes",
+      "tr": "Kardeşim bu ay ilk maaşını aldı",
+      "person": "él"
+    },
+    "Futuro Simple": {
+      "es": "Mañana cobraré mi salario y podré pagar las facturas.",
+      "tr": "Yarın maaşımı alacağım ve faturaları ödeyebileceğim.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "¿Cuánto cobrarías por arreglar mi computadora?",
+      "tr": "Bilgisayarımı tamir etmek için ne kadar para alırsın?",
+      "person": "tú"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que el banco no me cobre comisiones adicionales este mes.",
+      "tr": "Bu ay bankanın benden ek komisyon almamasını umuyorum.",
+      "person": "él/ella (banco)"
+    }
+  },
+  "colgar": {
+    "Presente": {
+      "es": "Mi hermana cuelga la ropa en el tendedero todas las mañanas",
+      "tr": "Kız kardeşim her sabah çamaşırları çamaşır ipine asar",
+      "person": "él/ella"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer colgué mi chaqueta en el armario después de llegar del trabajo.",
+      "tr": "Dün işten geldikten sonra ceketi dolaba astım.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era pequeña, colgaba mis dibujos en la pared del cuarto.",
+      "tr": "Küçükken odamın duvarına çizimlerimi asardım.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi hermana ha colgado los cuadros nuevos en la sala de estar.",
+      "tr": "Kız kardeşim oturma odasına yeni tabloları asmış.",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Mañana colgaré las fotos de las vacaciones en la pared",
+      "tr": "Yarın tatil fotoğraflarını duvara asacağım",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Si tuviera más espacio en la pared, colgaría más cuadros allí.",
+      "tr": "Duvarda daha fazla yerim olsaydı, oraya daha fazla tablo asardım.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que cuelgues la ropa antes de que llueva",
+      "tr": "Yağmur yağmadan önce çamaşırları asmanı umuyorum",
+      "person": "tú"
+    }
+  },
+  "confiar": {
+    "Presente": {
+      "es": "Confío en que mi hermana llegará a tiempo a la cita.",
+      "tr": "Kız kardeşimin randevuya zamanında geleceğine güveniyorum.",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Confié en mi hermano y no me decepcionó",
+      "tr": "Kardeşime güvendim ve beni hayal kırıklığına uğratmadı",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Antes mi hermana confiaba mucho en sus amigos del colegio.",
+      "tr": "Eskiden kız kardeşim okuldaki arkadaşlarına çok güvenirdi.",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "He confiado en ti desde el primer día que nos conocimos.",
+      "tr": "Tanıştığımız ilk günden beri sana güvendim.",
+      "person": "yo"
+    },
+    "Futuro Simple": {
+      "es": "Confiaré en tu decisión porque siempre has sido muy responsable.",
+      "tr": "Kararına güveneceğim çünkü her zaman çok sorumlu oldun.",
+      "person": "yo"
+    },
+    "Condicional": {
+      "es": "Yo confiaría más en él si fuera más honesto conmigo",
+      "tr": "Benimle daha dürüst olsaydı ona daha çok güvenirdim",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que confíes en mí para este proyecto importante.",
+      "tr": "Bu önemli proje için bana güvenmeni umuyorum.",
+      "person": "tú"
+    }
+  },
+  "confundir": {
+    "Presente": {
+      "es": "Siempre confundo los nombres de mis primos gemelos.",
+      "tr": "Hep ikiz kuzenlerimin isimlerini karıştırıyorum.",
+      "person": "yo"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer confundí a mi hermano gemelo con mi primo en la fiesta.",
+      "tr": "Dün partide ikiz kardeşimi kuzenimle karıştırdım.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era niño, siempre confundía a mis hermanos gemelos.",
+      "tr": "Çocukken ikiz kardeşlerimi hep karıştırırdım.",
+      "person": "yo"
+    },
+    "Pretérito Perfecto": {
+      "es": "He confundido tu hermana con tu prima en la fiesta",
+      "tr": "Partide kız kardeşini kuzeninle karıştırdım",
+      "person": "yo"
+    },
+    "Futuro Simple": {
+      "es": "Si cambias tanto de opinión, confundirás a todos los invitados.",
+      "tr": "Eğer bu kadar çok fikir değiştirirsen, tüm misafirleri şaşırtacaksın.",
+      "person": "tú"
+    },
+    "Condicional": {
+      "es": "Creo que te confundirías fácilmente en esa ciudad tan grande.",
+      "tr": "O kadar büyük şehirde kolayca şaşırırsın sanırım.",
+      "person": "tú"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que no confundas mi nombre con el de mi hermano.",
+      "tr": "Umarım benim adımı kardeşimin adıyla karıştırmazsın.",
+      "person": "tú"
+    }
+  },
+  "conservar": {
+    "Presente": {
+      "es": "Mi abuela conserva las frutas en mermelada para el invierno",
+      "tr": "Büyükannem kış için meyveleri reçel yaparak saklar",
+      "person": "ella"
+    },
+    "Pretérito Indefinido": {
+      "es": "Mi abuela conservó todas las cartas de amor de mi abuelo.",
+      "tr": "Büyükannem büyükbabamın bütün aşk mektuplarını sakladı.",
+      "person": "ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi abuela conservaba las verduras en frascos de vidrio",
+      "tr": "Büyükannem sebzeleri cam kavanozlarda saklardı",
+      "person": "él/ella"
+    },
+    "Pretérito Perfecto": {
+      "es": "Mi abuela ha conservado todas las cartas de mi abuelo durante años.",
+      "tr": "Büyükannem dedemin tüm mektuplarını yıllarca sakladı.",
+      "person": "él/ella"
+    },
+    "Futuro Simple": {
+      "es": "Conservaremos estos documentos importantes en la caja fuerte del banco.",
+      "tr": "Bu önemli belgeleri bankanın kasasında saklayacağız.",
+      "person": "nosotros"
+    },
+    "Condicional": {
+      "es": "Yo conservaría estas fotos en un álbum especial para recordar el viaje.",
+      "tr": "Bu fotoğrafları seyahati hatırlamak için özel bir albümde saklardım.",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Es importante que conservemos nuestras tradiciones familiares para las futuras generaciones.",
+      "tr": "Gelecek nesiller için aile geleneklerimizi korumamız önemlidir.",
+      "person": "nosotros"
+    }
+  },
+  "controlar": {
+    "Presente": {
+      "es": "Mi hermano controla la temperatura del aire acondicionado desde su teléfono.",
+      "tr": "Kardeşim klimanın sıcaklığını telefonundan kontrol ediyor.",
+      "person": "él"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer controló sus gastos para no gastar demasiado dinero.",
+      "tr": "Dün çok para harcamamak için harcamalarını kontrol etti.",
+      "person": "él/ella"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Mi padre controlaba el presupuesto familiar con mucha disciplina.",
+      "tr": "Babam aile bütçesini çok disiplinli bir şekilde kontrol ediyordu.",
+      "person": "él"
+    },
+    "Pretérito Perfecto": {
+      "es": "He controlado mis gastos este mes para ahorrar dinero",
+      "tr": "Bu ay para biriktirmek için harcamalarımı kontrol ettim",
+      "person": "yo"
+    },
+    "Futuro Simple": {
+      "es": "El médico controlará tu presión arterial la próxima semana.",
+      "tr": "Doktor gelecek hafta tansiyon değerlerini kontrol edecek.",
+      "person": "él"
+    },
+    "Condicional": {
+      "es": "Yo controlaría mejor mis gastos si tuviera más disciplina",
+      "tr": "Daha disiplinli olsaydım harcamalarımı daha iyi kontrol ederdim",
+      "person": "yo"
+    },
+    "Subjuntivo Presente": {
+      "es": "Espero que controles mejor tu temperamento en la reunión.",
+      "tr": "Toplantıda öfkeni daha iyi kontrol etmeni umuyorum.",
+      "person": "tú"
+    }
+  },
+  "copiar": {
+    "Presente": {
+      "es": "Los estudiantes copian los apuntes de la pizarra durante la clase.",
+      "tr": "Öğrenciler ders sırasında tahtadaki notları kopyalıyor.",
+      "person": "ellos"
+    },
+    "Pretérito Indefinido": {
+      "es": "Ayer copié todos los apuntes de matemáticas de mi compañero.",
+      "tr": "Dün arkadaşımın tüm matematik notlarını kopyaladım.",
+      "person": "yo"
+    },
+    "Pretérito Imperfecto": {
+      "es": "Cuando era estudiante, siempre copiaba los apuntes de mi compañera",
+      "tr": "Öğrenciyken hep arkadaşımın notlarını kopyalardım",
+      "person": "yo"
     }
   }
 }
