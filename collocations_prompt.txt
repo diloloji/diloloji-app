@@ -1,0 +1,3 @@
+İspanyolca'nın en sık kullanılan 100 fiili için kollokasyon verisi üret.
+Her fiil için en yaygın 4-6 fiil+isim kalıbı, Türkçe karşılığı ve CEFR seviyesi.
+Sadece JSON object döndür.
