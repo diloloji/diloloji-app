@@ -49,6 +49,7 @@ import {
 } from '../utils/hintEngine';
 import SmartHintBubble from '../components/SmartHintBubble';
 import TenseCardOverlay from '../components/tenseCard/TenseCardOverlay';
+import { exampleSentences } from '../data/example_sentences';
 import {
   fetchSynonyms,
   type VerbSynonymPayload,
@@ -137,6 +138,12 @@ const SYNONYM_REGISTER_STYLES: Record<'formal' | 'informal' | 'neutral', string>
   informal: 'bg-orange-500/15 text-orange-700 dark:text-orange-300 border-orange-500/35',
   neutral: 'bg-slate-500/15 text-slate-700 dark:text-slate-300 border-slate-500/35',
 };
+
+type StaticExample = {
+  es?: string;
+  tr?: string;
+  person?: string;
+} | null;
 
 function storageKeyFor(difficulty: TimeAttackDifficulty): string {
   return `${TIME_ATTACK_STORAGE_KEY_PREFIX}-${difficulty}`;
@@ -935,6 +942,12 @@ export function Page() {
   const timeAttackInputRef = useRef<HTMLInputElement>(null);
 
   const tenseLabel = tensesForLang.find((t) => t.id === selectedTense)?.label ?? selectedTense;
+  const staticExample = useMemo((): StaticExample => {
+    if (selectedLanguage !== 'es' || !verbKey) return null;
+    const byVerb = (exampleSentences as Record<string, Record<string, StaticExample>>)[verbKey];
+    if (!byVerb) return null;
+    return byVerb[tenseLabel] ?? null;
+  }, [selectedLanguage, verbKey, tenseLabel]);
 
   /** Otomatik tamamlama: Lefff fiil listesi (bir kez yükle). */
   const verbList = useMemo(() => getVerbListForLang(selectedLanguage), [selectedLanguage]);
@@ -4018,6 +4031,47 @@ export function Page() {
               ))}
             </div>
 
+            {staticExample?.es && staticExample?.tr && (
+              <motion.div
+                key={`static-example-${verbKey}-${selectedTense}`}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2, ease: 'easeOut' }}
+                className="mx-4 sm:mx-0 mt-4 rounded-xl border border-emerald-500/20 dark:border-emerald-400/20 bg-emerald-500/[0.04] dark:bg-emerald-500/[0.08] p-4"
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-sm" aria-hidden>📌</span>
+                  <h4 className="text-xs font-bold uppercase tracking-widest text-emerald-700 dark:text-emerald-300">
+                    Varsayılan Örnek
+                  </h4>
+                </div>
+                <p className="text-sm sm:text-base text-slate-800 dark:text-slate-100 italic">
+                  {(() => {
+                    const sentence = staticExample.es ?? '';
+                    const verb = (verbKey ?? '').trim();
+                    if (!verb) return sentence;
+                    const escaped = verb.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    const regex = new RegExp(`\\b(${escaped})\\b`, 'i');
+                    const m = sentence.match(regex);
+                    if (!m || typeof m.index !== 'number') return sentence;
+                    const start = m.index;
+                    const end = start + m[0].length;
+                    return (
+                      <>
+                        {sentence.slice(0, start)}
+                        <strong className="font-bold text-emerald-800 dark:text-emerald-200">
+                          {sentence.slice(start, end)}
+                        </strong>
+                        {sentence.slice(end)}
+                      </>
+                    );
+                  })()}
+                </p>
+                <p className="mt-1 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+                  {staticExample.tr}
+                </p>
+              </motion.div>
+            )}
 
             {/* AI Örnek Cümleler — manuel buton ile Groq'tan 2 cümle */}
             {verbKey && conjugations && !showAllTenses && (
