@@ -17,6 +17,7 @@ import { checkPasséComposéLogic } from '../conjugation/passeCompose';
 import { getRandomVerbForLang } from '../data/commonVerbs';
 import { isIrregularVerb } from '../data/irregularVerbs';
 import { getTranslationOrPlaceholder } from '../data/dictionary';
+import { SPANISH_VERBS } from '../data/spanish-data';
 import { getVerbExample } from '../data/verbExamples';
 import { getTenseExplanation } from '../data/tenseExplanations';
 import { getVerbMetadata } from '../data/verbMetadata';
@@ -968,6 +969,35 @@ export function Page() {
   const timeAttackInputRef = useRef<HTMLInputElement>(null);
 
   const tenseLabel = tensesForLang.find((t) => t.id === selectedTense)?.label ?? selectedTense;
+  const spanishMeaningMap = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const v of SPANISH_VERBS) {
+      const key = v.infinitive
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '');
+      if (!m.has(key)) m.set(key, v.meaning_tr);
+    }
+    return m;
+  }, []);
+  const staticSpanishMeaning = useMemo(() => {
+    if (selectedLanguage !== 'es' || !verbKey) return null;
+    const key = verbKey
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
+    const tr = spanishMeaningMap.get(key);
+    return tr && tr.trim().length > 0 ? tr : null;
+  }, [selectedLanguage, verbKey, spanishMeaningMap]);
+  const spanishVerbSet = useMemo(() => new Set(SPANISH_VERBS.map((v) =>
+    v.infinitive.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+  )), []);
+  const displayMeaning = useMemo(() => {
+    if (selectedLanguage === 'es') {
+      return staticSpanishMeaning ?? 'Anlam bulunamadı';
+    }
+    return dynamicMeaning || getTranslationOrPlaceholder(verbKey ?? '', selectedLanguage);
+  }, [selectedLanguage, staticSpanishMeaning, dynamicMeaning, verbKey]);
   const staticExample = useMemo((): StaticExample => {
     if (selectedLanguage !== 'es' || !verbKey) return null;
     const byVerb = (exampleSentences as Record<string, Record<string, StaticExample>>)[verbKey];
@@ -1071,6 +1101,18 @@ export function Page() {
     setError('');
     setReverseLookupInfo(null);
     const toLoad = (overrideVerb ?? verbInput).trim();
+    if (effectiveLang === 'es') {
+      const key = toLoad
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '');
+      if (!spanishVerbSet.has(key)) {
+        setError('Bu fiil bulunamadı. Listeden bir fiil seçin.');
+        setVerbKey(null);
+        setConjugations(null);
+        return;
+      }
+    }
     try {
       const result = getConjugationsForLang(toLoad, selectedTense, effectiveLang);
       if (result && result.ok) {
@@ -1119,7 +1161,7 @@ export function Page() {
       setVerbKey(null);
       setConjugations(null);
     }
-  }, [verbInput, selectedTense, selectedLanguage]);
+  }, [verbInput, selectedTense, selectedLanguage, spanishVerbSet]);
 
   loadVerbRef.current = loadVerb;
 
@@ -1289,10 +1331,16 @@ export function Page() {
   useEffect(() => {
     setAIExamples([]);
     setAIExamplesLoading(false);
-    setDynamicMeaning(null);
-    setTranslation(null);
+    if (selectedLanguage === 'es') {
+      const text = (staticSpanishMeaning ?? 'Anlam bulunamadı');
+      setDynamicMeaning(text);
+      setTranslation(text);
+    } else {
+      setDynamicMeaning(null);
+      setTranslation(null);
+    }
     setIsMeaningLoading(false);
-  }, [verbKey, selectedTense, selectedLanguage]);
+  }, [verbKey, selectedTense, selectedLanguage, staticSpanishMeaning]);
 
   /** Güncel fiil ref'i (stale response'ı önlemek için) */
   useEffect(() => {
@@ -1308,15 +1356,21 @@ export function Page() {
     const langLabel = selectedLanguage === 'fr' ? 'Fransızca' : 'İspanyolca';
     const tenseLbl = tensesForLang.find((t) => t.id === selectedTense)?.label ?? selectedTense;
     setAIExamplesLoading(true);
-    setIsMeaningLoading(true);
+    setIsMeaningLoading(selectedLanguage !== 'es');
     setAIExamples([]);
-    setDynamicMeaning(null);
-    setTranslation(null);
+    if (selectedLanguage !== 'es') {
+      setDynamicMeaning(null);
+      setTranslation(null);
+    }
     const currentVerb = verbKey;
     try {
+      const translationPromise =
+        selectedLanguage === 'es'
+          ? Promise.resolve({ translation: staticSpanishMeaning ?? 'Anlam bulunamadı' })
+          : fetchVerbTranslationFromGroq(verbKey, langLabel);
       const [examplesRes, translationRes] = await Promise.allSettled([
         fetchAIVerbExamples(verbKey, tenseLbl, langLabel),
-        fetchVerbTranslationFromGroq(verbKey, langLabel),
+        translationPromise,
       ]);
       // Sonuçlar dönerken kullanıcı başka fiile geçmişse eski veriyi UI'a yazma.
       if (verbKeyRef.current !== currentVerb) return;
@@ -1341,7 +1395,7 @@ export function Page() {
         setIsMeaningLoading(false);
       }
     }
-  }, [verbKey, selectedTense, selectedLanguage, tensesForLang, aiExamplesLoading]);
+  }, [verbKey, selectedTense, selectedLanguage, tensesForLang, aiExamplesLoading, staticSpanishMeaning]);
 
   // Yeni fiil yüklendiğinde quiz cevaplarını ve ipucunu sıfırla (doğru cevaplar kütüphaneden gelen conjugations ile güncellenir)
   useEffect(() => {
@@ -3888,10 +3942,8 @@ export function Page() {
                 <span className="text-slate-500 dark:text-slate-400 italic text-lg flex-1 min-w-0 order-2 flex justify-center items-center gap-2">
                   {isMeaningLoading ? (
                     <div className="h-5 w-24 bg-slate-700/50 dark:bg-slate-600/50 rounded animate-pulse" aria-hidden />
-                  ) : dynamicMeaning ? (
-                    <span className="italic text-slate-600 dark:text-slate-300">{dynamicMeaning}</span>
                   ) : (
-                    getTranslationOrPlaceholder(verbKey, selectedLanguage)
+                    <span className="italic text-slate-600 dark:text-slate-300">{displayMeaning}</span>
                   )}
                 </span>
                 {/*
@@ -4862,10 +4914,8 @@ export function Page() {
                 <span className="text-slate-500 dark:text-slate-400 italic text-lg flex-1 min-w-0 order-2 flex justify-center items-center gap-2">
                   {isMeaningLoading ? (
                     <div className="h-5 w-24 bg-slate-700/50 dark:bg-slate-600/50 rounded animate-pulse" aria-hidden />
-                  ) : dynamicMeaning ? (
-                    <span className="italic text-slate-600 dark:text-slate-300">{dynamicMeaning}</span>
                   ) : (
-                    getTranslationOrPlaceholder(verbKey, selectedLanguage)
+                    <span className="italic text-slate-600 dark:text-slate-300">{displayMeaning}</span>
                   )}
                 </span>
                 <div className="flex items-center gap-1 order-3 shrink-0">
