@@ -104,9 +104,11 @@ function AppContent() {
   }, []);
   return (
     <>
-      <Routes>
-        <Route path="*" element={<AnimatedRoutes />} />
-      </Routes>
+      <div className="pb-mobile-nav md:pb-0 min-h-0 w-full max-w-[100vw] min-w-0">
+        <Routes>
+          <Route path="*" element={<AnimatedRoutes />} />
+        </Routes>
+      </div>
       {!isCompleted && <OnboardingWizard />}
       <BottomNav />
     </>

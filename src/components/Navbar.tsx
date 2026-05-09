@@ -201,7 +201,7 @@ export default function Navbar({ onLoginClick, onLogoutClick, isLoggedIn, printH
     <>
       <header
         data-print-hide={printHide ? true : undefined}
-        className="sticky top-0 z-50 w-full bg-white/80 dark:bg-[#05080f]/80 backdrop-blur-md border-b border-slate-200/50 dark:border-white/5 transition-all duration-300 print:hidden"
+        className="sticky top-0 z-50 w-full max-w-[100vw] bg-white/80 dark:bg-[#05080f]/80 backdrop-blur-md border-b border-slate-200/50 dark:border-white/5 transition-all duration-300 print:hidden pt-[env(safe-area-inset-top,0px)]"
       >
         <div className="flex items-center justify-between w-full max-w-7xl mx-auto pl-1 pr-2 sm:pr-4 min-h-16 h-16 gap-2 sm:gap-4">
           {/* Sol — Logo (sadece ikon), sola yaslı */}

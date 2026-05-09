@@ -9,15 +9,8 @@
   body {
     overflow-x: hidden;
     min-height: 100dvh;
+    min-height: -webkit-fill-available;
     min-height: 100vh;
-  }
-  /* iOS: klavye açılınca zoom tetiklememek için form kontrolleri ≥16px (mobil) */
-  @media (max-width: 767px) {
-    input,
-    textarea,
-    select {
-      font-size: 1rem;
-    }
   }
   :root {
     --bg-elevated: rgb(255 255 255 / 0.94);
@@ -55,7 +48,19 @@
 }
 
 #root {
-  @apply w-full min-h-[100dvh] min-h-screen;
+  @apply w-full max-w-[100vw] min-h-[100dvh] min-h-screen min-w-0 overflow-x-hidden;
+}
+
+/* Mobil alt navigasyon (BottomNav, md’de gizli): içerik tab barın altında kalmasın */
+@layer utilities {
+  .pb-mobile-nav {
+    padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
+  }
+  @media (min-width: 768px) {
+    .pb-mobile-nav {
+      padding-bottom: 0;
+    }
+  }
 }
 
 /* Açılır liste (select): light ve dark modda okunaklı */
