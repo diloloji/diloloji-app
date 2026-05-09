@@ -6,8 +6,16 @@ const STORAGE_KEY = 'conjume-activity-history';
 
 export type ActivityHistory = Record<string, number>;
 
+/** Yerel takvim günü YYYY-MM-DD (heatmap / XP ile aynı anahtar). */
+export function formatLocalYMD(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
 function getTodayKey(): string {
-  return new Date().toISOString().slice(0, 10);
+  return formatLocalYMD(new Date());
 }
 
 function storageGet(): ActivityHistory {
@@ -55,9 +63,9 @@ export function getLastNDays(numDays: number): string[] {
   const out: string[] = [];
   const d = new Date();
   for (let i = numDays - 1; i >= 0; i--) {
-    const x = new Date(d);
+    const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
     x.setDate(x.getDate() - i);
-    out.push(x.toISOString().slice(0, 10));
+    out.push(formatLocalYMD(x));
   }
   return out;
 }

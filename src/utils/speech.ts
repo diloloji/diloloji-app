@@ -55,11 +55,12 @@ type SpeechRecognitionCtor = new () => MinimalRecognition;
 
 function getRecognitionCtor(): SpeechRecognitionCtor | null {
   if (typeof window === 'undefined') return null;
-  const g = window as unknown as {
-    SpeechRecognition?: SpeechRecognitionCtor;
-    webkitSpeechRecognition?: SpeechRecognitionCtor;
-  };
-  return g.SpeechRecognition || g.webkitSpeechRecognition || null;
+  /** Safari: webkitSpeechRecognition; Chromium: SpeechRecognition */
+  const SR =
+    (window as unknown as { SpeechRecognition?: SpeechRecognitionCtor }).SpeechRecognition ||
+    (window as unknown as { webkitSpeechRecognition?: SpeechRecognitionCtor }).webkitSpeechRecognition ||
+    null;
+  return SR ?? null;
 }
 
 export const sttSupported: boolean =
@@ -278,7 +279,7 @@ export interface ListenHandle {
 export interface ListenOptions {
   lang?: SpeechLang;
   maxAlternatives?: number;
-  /** true ise partial sonuçlar gelir (opts: interimResults). Varsayılan: false */
+  /** true ise partial sonuçlar gelir (interimResults). Varsayılan: true (alıştırma için anlık metin). */
   interim?: boolean;
   onStart?: () => void;
   onEnd?: () => void;
@@ -303,13 +304,18 @@ export function startListening(opts: ListenOptions = {}): ListenHandle {
   }
 
   const rec = new Ctor();
-  rec.lang = opts.lang ?? 'es-ES';
-  rec.interimResults = Boolean(opts.interim);
+  const lang = opts.lang ?? 'es-ES';
+  rec.lang = lang;
+  const useInterim = opts.interim !== false;
+  rec.interimResults = useInterim;
   rec.maxAlternatives = typeof opts.maxAlternatives === 'number' ? opts.maxAlternatives : 3;
-  rec.continuous = false;
+  /** interim açıkken sürekli dinle; kullanıcı Mic ile durdurana kadar parçalar gelir */
+  rec.continuous = useInterim;
 
   let stopped = false;
   let settled = false;
+  /** Manuel stop / final gelmeden önce son ara metin */
+  let lastInterimText = '';
 
   const promise = new Promise<
     { ok: true; result: ListenResult } | { ok: false; error: ListenError }
@@ -325,12 +331,21 @@ export function startListening(opts: ListenOptions = {}): ListenHandle {
     rec.onstart = () => opts.onStart?.();
     rec.onend = () => {
       opts.onEnd?.();
-      // onresult tetiklenmediyse boş geç — no-speech kabul et
+      if (!settled && lastInterimText.trim()) {
+        const t = lastInterimText.toLowerCase().trim();
+        settle({ ok: true, result: { alternatives: [t], transcript: t } });
+        return;
+      }
       if (!settled) {
         settle({ ok: false, error: { code: 'no-speech', message: 'Ses algılanmadı.' } });
       }
     };
     rec.onerror = (ev: MinimalRecognitionErrorEvent) => {
+      console.error('[SpeechRecognition] onerror', ev.error, ev.message ?? '');
+      /** stop() çağrısında tarayıcı genelde "aborted" gönderir; hata olarak çözmeyelim, onend biter. */
+      if (ev.error === 'aborted') {
+        return;
+      }
       const code: ListenErrorCode =
         ev.error === 'no-speech'
           ? 'no-speech'
@@ -346,25 +361,42 @@ export function startListening(opts: ListenOptions = {}): ListenHandle {
       settle({ ok: false, error: { code, message: ev.message || ev.error || 'Tanıma hatası.' } });
     };
     rec.onresult = (ev: MinimalRecognitionEvent) => {
-      const res = ev.results[0];
-      if (!res) return;
-      if (opts.interim && !res.isFinal) {
-        const txt = res[0]?.transcript ?? '';
-        opts.onInterim?.(txt);
-        return;
+      if (!ev.results || ev.results.length === 0) return;
+      const start = typeof ev.resultIndex === 'number' ? ev.resultIndex : 0;
+      let lastFinal: MinimalRecognitionResult | null = null;
+
+      for (let i = start; i < ev.results.length; i++) {
+        const result = ev.results[i];
+        if (!result) continue;
+        if (result.isFinal) {
+          lastFinal = result;
+        } else if (useInterim) {
+          const raw = (result[0]?.transcript ?? '').trim();
+          if (raw) {
+            lastInterimText = raw;
+            opts.onInterim?.(raw);
+          }
+        }
       }
+
+      if (!lastFinal) return;
+
       const alternatives: string[] = [];
-      for (let i = 0; i < res.length; i++) {
-        const t = res[i]?.transcript;
+      for (let i = 0; i < lastFinal.length; i++) {
+        const t = lastFinal[i]?.transcript;
         if (typeof t === 'string') {
           alternatives.push(t.toLowerCase().trim());
         }
+      }
+      const firstRaw = (lastFinal[0]?.transcript ?? '').trim();
+      if (alternatives.length === 0 && firstRaw) {
+        alternatives.push(firstRaw.toLowerCase());
       }
       settle({
         ok: true,
         result: {
           alternatives,
-          transcript: alternatives[0] ?? '',
+          transcript: alternatives[0] ?? firstRaw.toLowerCase(),
         },
       });
     };

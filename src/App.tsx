@@ -78,7 +78,7 @@ function PageTransition({ pathname }: { pathname: string }) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, transition: { duration: 0.2 } }}
       transition={{ duration: 0.3, ease: 'easeOut' }}
-      style={{ minHeight: '100vh' }}
+      style={{ minHeight: '100dvh' }}
     >
       <ErrorBoundary inline>
         {getPageElement(pathname)}

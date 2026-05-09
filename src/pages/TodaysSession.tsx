@@ -42,6 +42,7 @@ import {
 } from '../utils/dailyFlow';
 import { getDueMistakesByPriority } from '../utils/mistakeBank';
 import { TENSES_ES } from '../data/spanish';
+import DailyVerbWidget from '../components/DailyVerbWidget';
 
 /* ───────── Yardımcılar ───────── */
 
@@ -261,7 +262,7 @@ export default function TodaysSession() {
   const currentStep = plan.steps[stepIdx];
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0a0e17] text-slate-900 dark:text-slate-100 transition-colors duration-300">
+    <div className="min-h-[100dvh] min-h-screen overflow-x-hidden bg-slate-50 dark:bg-[#0a0e17] text-slate-900 dark:text-slate-100 transition-colors duration-300">
       <Helmet>
         <title>Bugünün Seansı — Conjume</title>
       </Helmet>
@@ -287,11 +288,14 @@ export default function TodaysSession() {
 
         <main className="relative max-w-2xl mx-auto px-4 sm:px-6 pt-8 pb-32">
           {phase === 'card' && (
-            <TodaysCard
-              state={state}
-              plan={plan}
-              onStart={startFlow}
-            />
+            <>
+              <TodaysCard
+                state={state}
+                plan={plan}
+                onStart={startFlow}
+              />
+              <DailyVerbWidget />
+            </>
           )}
 
           {phase === 'playing' && currentStep && (

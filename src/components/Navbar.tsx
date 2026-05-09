@@ -15,9 +15,14 @@ import LoginModal from './LoginModal';
 import XpProfileModal from './XpProfileModal';
 import { getDailyGoalSummary, updateDocumentTitle, DAILY_GOAL } from '../utils/dailyGoal';
 import AutoSpeakToggle from './speech/AutoSpeakToggle';
+import { getLevelVisual } from '../utils/xpLevelVisual';
+import { persistManualUiLocale } from '../i18n/index';
 
-function NavbarXpChip() {
-  const { level, title, xpProgress } = useXp();
+/** Mobilde: sadece seviye ikonu + sayı (kompakt) */
+function NavbarXpCompact() {
+  const { t } = useTranslation();
+  const { level, title } = useXp();
+  const lvVisual = getLevelVisual(level);
   const [open, setOpen] = useState(false);
   const anchorRef = useRef<HTMLButtonElement>(null);
   return (
@@ -26,12 +31,38 @@ function NavbarXpChip() {
         ref={anchorRef}
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="hidden sm:flex flex-col gap-0.5 min-w-[8.5rem] max-w-[11rem] rounded-lg px-2 py-1 border border-indigo-200/60 dark:border-indigo-500/25 bg-indigo-50/90 dark:bg-indigo-950/40 text-left transition-colors hover:bg-indigo-100/90 dark:hover:bg-indigo-900/35 focus:outline-none focus:ring-2 focus:ring-indigo-400/50"
-        title={`Seviye ${level} · ${title}`}
-        aria-label={`Seviye ${level}, ${title}. İlerlemeyi aç`}
+        className="md:hidden flex h-11 min-w-[44px] items-center justify-center gap-1 rounded-lg border border-indigo-200/60 dark:border-indigo-500/25 bg-indigo-50/90 dark:bg-indigo-950/40 px-2.5 text-left transition-colors hover:bg-indigo-100/90 dark:hover:bg-indigo-900/35 focus:outline-none focus:ring-2 focus:ring-indigo-400/50"
+        title={t('nav.levelTitle', { level, title })}
+        aria-label={`${t('nav.levelTitle', { level, title })}. ${t('nav.openProgress')}`}
+      >
+        <span className="text-lg leading-none" aria-hidden>
+          {lvVisual.emoji}
+        </span>
+        <span className="text-sm font-bold tabular-nums text-indigo-800 dark:text-indigo-200">Lv.{level}</span>
+      </button>
+      <XpProfileModal open={open} onClose={() => setOpen(false)} anchorRef={anchorRef} />
+    </>
+  );
+}
+
+function NavbarXpChip() {
+  const { t } = useTranslation();
+  const { level, title, xpProgress } = useXp();
+  const lvVisual = getLevelVisual(level);
+  const [open, setOpen] = useState(false);
+  const anchorRef = useRef<HTMLButtonElement>(null);
+  return (
+    <>
+      <button
+        ref={anchorRef}
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="hidden md:flex flex-col gap-0.5 min-w-[8.5rem] max-w-[11rem] rounded-lg px-2 py-1 border border-indigo-200/60 dark:border-indigo-500/25 bg-indigo-50/90 dark:bg-indigo-950/40 text-left transition-colors hover:bg-indigo-100/90 dark:hover:bg-indigo-900/35 focus:outline-none focus:ring-2 focus:ring-indigo-400/50"
+        title={t('nav.levelTitle', { level, title })}
+        aria-label={`${t('nav.levelTitle', { level, title })}. ${t('nav.openProgress')}`}
       >
         <span className="flex items-center gap-1 text-[11px] font-bold text-indigo-800 dark:text-indigo-200 leading-tight">
-          <span aria-hidden>🔥</span>
+          <span aria-hidden>{lvVisual.emoji}</span>
           <span className="tabular-nums">Lv.{level}</span>
           <span className="font-semibold truncate">{title}</span>
         </span>
@@ -44,7 +75,7 @@ function NavbarXpChip() {
         <span className="text-[9px] text-indigo-600/80 dark:text-indigo-300/70 tabular-nums">
           {xpProgress.xpForNextLevel != null
             ? `${xpProgress.xpInCurrentLevel} / ${xpProgress.xpNeededForNext} XP`
-            : 'Maks. seviye'}
+            : t('nav.maxLevel')}
         </span>
       </button>
       <XpProfileModal open={open} onClose={() => setOpen(false)} anchorRef={anchorRef} />
@@ -53,11 +84,18 @@ function NavbarXpChip() {
 }
 
 const MAIN_LINKS = [
-  { to: '/sozluk', labelKey: 'sozluk' },
-  { to: '/fiil-laboratuvari', labelKey: 'fiil_laboratuvari' },
-  { to: '/ezber-makinesi', labelKey: 'ezber_makinesi' },
-  { to: '/ogrenme', labelKey: 'ogrenme' },
+  { to: '/sozluk', labelKey: 'nav.dictionary' },
+  { to: '/fiil-laboratuvari', labelKey: 'nav.verbLab' },
+  { to: '/ezber-makinesi', labelKey: 'nav.memorizer' },
+  { to: '/ogrenme', labelKey: 'nav.learning' },
 ] as const;
+
+const UI_LOCALE_FLAGS: { lng: 'tr' | 'es' | 'fr' | 'en'; flag: string }[] = [
+  { lng: 'tr', flag: '🇹🇷' },
+  { lng: 'es', flag: '🇪🇸' },
+  { lng: 'fr', flag: '🇫🇷' },
+  { lng: 'en', flag: '🇬🇧' },
+];
 
 type HamburgerLinkItem = {
   to: string;
@@ -67,16 +105,16 @@ type HamburgerLinkItem = {
 };
 
 const HAMBURGER_LINKS: HamburgerLinkItem[] = [
-  { to: '/serbest', labelKey: 'serbest_mod', labelFallback: 'Serbest Mod' },
-  { to: '/historia', labelKey: 'historia', labelFallback: 'Historia Mode' },
-  { to: '/cloze-sprint', labelKey: 'cloze_sprint', labelFallback: 'Cloze Sprint' },
-  { to: '/okuma', labelKey: 'okuma', labelFallback: 'Okuma Pratiği' },
-  { to: '/haberler', labelKey: 'haberler', labelFallback: 'Okuma Modu (Haberler)' },
-  { to: '/syntax-lab', labelKey: 'syntax_lab', labelFallback: 'Cümle Laboratuvarı' },
-  { to: '/youtube-lab', labelKey: 'youtube_lab', labelFallback: 'YouTube Lab' },
-  { to: '/simulator', labelKey: 'simulator', labelFallback: 'Simülatör' },
-  { to: '/leaderboard', labelKey: 'leaderboard', labelFallback: 'Ligler' },
-  { to: '/profil', labelKey: 'profil', labelFallback: 'Profil', icon: User },
+  { to: '/serbest', labelKey: 'nav.secondary.freeMode', labelFallback: 'Serbest Mod' },
+  { to: '/historia', labelKey: 'nav.secondary.historia', labelFallback: 'Historia Mode' },
+  { to: '/cloze-sprint', labelKey: 'nav.secondary.clozeSprint', labelFallback: 'Cloze Sprint' },
+  { to: '/okuma', labelKey: 'nav.secondary.reading', labelFallback: 'Okuma Pratiği' },
+  { to: '/haberler', labelKey: 'nav.secondary.news', labelFallback: 'Okuma Modu (Haberler)' },
+  { to: '/syntax-lab', labelKey: 'nav.secondary.syntaxLab', labelFallback: 'Cümle Laboratuvarı' },
+  { to: '/youtube-lab', labelKey: 'nav.secondary.youtubeLab', labelFallback: 'YouTube Lab' },
+  { to: '/simulator', labelKey: 'nav.secondary.simulator', labelFallback: 'Simülatör' },
+  { to: '/leaderboard', labelKey: 'nav.secondary.leaderboard', labelFallback: 'Ligler' },
+  { to: '/profil', labelKey: 'nav.secondary.profile', labelFallback: 'Profil', icon: User },
 ];
 
 export type NavbarProps = {
@@ -155,8 +193,8 @@ export default function Navbar({ onLoginClick, onLogoutClick, isLoggedIn, printH
   const closeHamburger = () => setHamburgerOpen(false);
   const isActive = (path: string) => location.pathname === path;
 
-  const langLabel = (lng: string) =>
-    lng === 'tr' ? 'Türkçe' : lng === 'en' ? 'English' : lng === 'fr' ? 'Français' : 'Español';
+  const langLabel = (lng: 'tr' | 'en' | 'fr' | 'es') =>
+    ({ tr: t('langs.tr'), en: t('langs.en'), fr: t('langs.fr'), es: t('langs.es') }[lng]);
   const currentLang = (i18n.language || 'tr').slice(0, 2);
 
   return (
@@ -165,13 +203,13 @@ export default function Navbar({ onLoginClick, onLogoutClick, isLoggedIn, printH
         data-print-hide={printHide ? true : undefined}
         className="sticky top-0 z-50 w-full bg-white/80 dark:bg-[#05080f]/80 backdrop-blur-md border-b border-slate-200/50 dark:border-white/5 transition-all duration-300 print:hidden"
       >
-        <div className="flex items-center justify-between w-full max-w-7xl mx-auto pl-1 pr-4 h-16 gap-4">
+        <div className="flex items-center justify-between w-full max-w-7xl mx-auto pl-1 pr-2 sm:pr-4 min-h-16 h-16 gap-2 sm:gap-4">
           {/* Sol — Logo (sadece ikon), sola yaslı */}
           <div className="flex items-center shrink-0 min-w-0">
             <Link
               to="/"
               className="flex items-center transition-opacity hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 dark:focus:ring-offset-[#0a0e17] rounded-lg"
-              aria-label="Ana sayfa"
+              aria-label={t('nav.home')}
             >
               <img
                 src={mounted && isDark ? '/logo-dark.svg' : '/logo-light.svg'}
@@ -207,8 +245,29 @@ export default function Navbar({ onLoginClick, onLogoutClick, isLoggedIn, printH
           </nav>
 
           {/* Sağ — XP / günlük hedef, Giriş Yap, Pro'ya Geç, Hamburger (shrink-0) */}
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0 min-w-0">
+            <NavbarXpCompact />
             <NavbarXpChip />
+            <div className="hidden lg:flex items-center gap-0.5 shrink-0" role="group" aria-label={t('common.uiLanguage')}>
+              {UI_LOCALE_FLAGS.map(({ lng, flag }) => (
+                <button
+                  key={lng}
+                  type="button"
+                  onClick={() => {
+                    persistManualUiLocale(lng);
+                    void i18n.changeLanguage(lng);
+                  }}
+                  className={`min-h-[36px] min-w-[36px] rounded-lg text-base leading-none transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${
+                    currentLang === lng ? 'bg-indigo-500/20 ring-1 ring-indigo-400/40' : 'hover:bg-slate-100 dark:hover:bg-white/10'
+                  }`}
+                  title={t(`langs.${lng}` as 'langs.tr')}
+                  aria-label={t(`langs.${lng}` as 'langs.tr')}
+                  aria-pressed={currentLang === lng}
+                >
+                  <span aria-hidden>{flag}</span>
+                </button>
+              ))}
+            </div>
             <Link
               to="/"
               className={`hidden md:inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-[10px] font-semibold border transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400/50 ${
@@ -218,8 +277,8 @@ export default function Navbar({ onLoginClick, onLogoutClick, isLoggedIn, printH
                     ? 'border-amber-300/30 bg-amber-500/5 text-amber-600 dark:text-amber-300/90 hover:bg-amber-500/10'
                     : 'border-slate-200 dark:border-white/10 bg-slate-50/80 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10'
               }`}
-              title={`Günlük seri: ${dailyGoal.streak} gün · Bugün ${dailyGoal.todayCount}/${DAILY_GOAL}`}
-              aria-label={`Günlük seri ${dailyGoal.streak} gün, bugün ${dailyGoal.todayCount} / ${DAILY_GOAL} çekim`}
+              title={t('nav.dailyStreakTitle', { streak: dailyGoal.streak, today: dailyGoal.todayCount, goal: DAILY_GOAL })}
+              aria-label={t('nav.dailyStreakAria', { streak: dailyGoal.streak, today: dailyGoal.todayCount, goal: DAILY_GOAL })}
             >
               <span aria-hidden>🔥</span>
               <span className="tabular-nums">{dailyGoal.streak}</span>
@@ -229,26 +288,26 @@ export default function Navbar({ onLoginClick, onLogoutClick, isLoggedIn, printH
               <button
                 type="button"
                 onClick={openLoginModal}
-                aria-label="Oturum aç"
-                className="px-5 py-2.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-white bg-slate-100/80 dark:bg-white/5 hover:bg-slate-200/80 dark:hover:bg-white/10 border border-slate-200/50 dark:border-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shrink-0 whitespace-nowrap"
+                aria-label={t('nav.signInAria')}
+                className="hidden md:inline-flex px-5 py-2.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-white bg-slate-100/80 dark:bg-white/5 hover:bg-slate-200/80 dark:hover:bg-white/10 border border-slate-200/50 dark:border-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shrink-0 whitespace-nowrap"
               >
-                Giriş Yap
+                {t('nav.signIn')}
               </button>
             )}
             <Link
               to="/pricing"
-              className="px-5 py-2.5 rounded-lg text-sm font-medium bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-900 hover:from-amber-300 hover:via-yellow-300 hover:to-amber-400 shadow-md shadow-amber-500/25 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 dark:focus:ring-offset-[#0a0e17] flex items-center shrink-0 whitespace-nowrap"
+              className="hidden md:flex px-5 py-2.5 rounded-lg text-sm font-medium bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-900 hover:from-amber-300 hover:via-yellow-300 hover:to-amber-400 shadow-md shadow-amber-500/25 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 dark:focus:ring-offset-[#0a0e17] items-center shrink-0 whitespace-nowrap"
             >
-              🌟 Pro&apos;ya Geç
+              🌟 {t('nav.goPro')}
             </Link>
             <button
               type="button"
               onClick={() => setHamburgerOpen((o) => !o)}
-              className="h-10 w-10 flex items-center justify-center rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shrink-0"
+              className="h-11 w-11 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shrink-0 touch-manipulation"
               aria-expanded={hamburgerOpen}
-              aria-label={hamburgerOpen ? 'Menüyü kapat' : 'Menüyü aç'}
+              aria-label={hamburgerOpen ? t('nav.menuClose') : t('nav.menuOpen')}
             >
-              <Menu className="w-5 h-5" strokeWidth={2} aria-hidden />
+              <Menu className="w-6 h-6" strokeWidth={2} aria-hidden />
             </button>
           </div>
         </div>
@@ -268,32 +327,35 @@ export default function Navbar({ onLoginClick, onLogoutClick, isLoggedIn, printH
               onClick={closeHamburger}
             />
             <motion.div
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 12 }}
               transition={{ type: 'tween', duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
-              className="fixed top-0 right-0 bottom-0 z-50 w-full max-w-sm bg-white/95 dark:bg-[#0d1117]/95 backdrop-blur-xl border-l border-slate-200/50 dark:border-white/10 shadow-2xl flex flex-col"
+              className="fixed inset-0 z-50 flex flex-col bg-white/98 dark:bg-[#0d1117]/98 backdrop-blur-xl md:inset-y-0 md:left-auto md:right-0 md:top-0 md:bottom-0 md:w-full md:max-w-sm md:border-l md:border-slate-200/50 md:dark:border-white/10 md:shadow-2xl"
               role="dialog"
               aria-modal="true"
-              aria-label="Menü"
+              aria-label={t('nav.menu')}
             >
-              <div className="flex items-center justify-between h-16 px-4 border-b border-slate-200/50 dark:border-white/5 shrink-0">
-                <span className="font-bold text-slate-800 dark:text-white text-sm uppercase tracking-wider">
-                  Menü
+              <div
+                className="flex items-center justify-between h-16 px-4 border-b border-slate-200/50 dark:border-white/5 shrink-0"
+                style={{ paddingTop: 'max(0px, env(safe-area-inset-top))' }}
+              >
+                <span className="font-bold text-slate-800 dark:text-white text-base">
+                  {t('nav.menu')}
                 </span>
                 <button
                   type="button"
                   onClick={closeHamburger}
-                  className="h-9 w-9 flex items-center justify-center rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                  className="h-11 w-11 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 touch-manipulation"
                   aria-label="Menüyü kapat"
                 >
-                  <X className="w-5 h-5" strokeWidth={2} />
+                  <X className="w-6 h-6" strokeWidth={2} />
                 </button>
               </div>
 
-              <nav className="flex flex-col p-4 gap-1 overflow-y-auto">
-                {/* lg altında: 4 ana link de burada */}
-                <div className="lg:hidden flex flex-col gap-1">
+              <nav className="flex flex-col p-4 gap-1 overflow-y-auto flex-1 min-h-0 pb-[max(1rem,env(safe-area-inset-bottom))]">
+                {/* lg altında: 4 ana link — mobilde büyük dokunma alanı */}
+                <div className="lg:hidden flex flex-col gap-2">
                   {MAIN_LINKS.map(({ to, labelKey }) => {
                     const active = isActive(to);
                     return (
@@ -301,7 +363,7 @@ export default function Navbar({ onLoginClick, onLogoutClick, isLoggedIn, printH
                         key={to}
                         to={to}
                         onClick={closeHamburger}
-                        className={`w-full py-3 px-4 rounded-xl text-left text-sm font-medium whitespace-nowrap transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${
+                        className={`w-full min-h-[48px] flex items-center py-3 px-4 rounded-xl text-left text-base font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${
                           active
                             ? 'bg-indigo-500/20 dark:bg-indigo-400/20 text-indigo-700 dark:text-indigo-200'
                             : 'bg-slate-100/80 dark:bg-white/5 text-slate-700 dark:text-slate-200 hover:bg-slate-200/80 dark:hover:bg-white/10'
@@ -312,6 +374,16 @@ export default function Navbar({ onLoginClick, onLogoutClick, isLoggedIn, printH
                     );
                   })}
                   <div className="my-2 border-t border-slate-200/50 dark:border-white/10" />
+                </div>
+
+                <div className="lg:hidden flex flex-col gap-2 mb-1">
+                  <Link
+                    to="/pricing"
+                    onClick={closeHamburger}
+                    className="w-full min-h-[48px] flex items-center justify-center rounded-xl text-base font-bold bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-900 shadow-md"
+                  >
+                    🌟 {t('nav.goPro')}
+                  </Link>
                 </div>
 
                 {/* Cümle Laboratuvarı, Simülatör, Ligler, Profil */}
@@ -325,7 +397,7 @@ export default function Navbar({ onLoginClick, onLogoutClick, isLoggedIn, printH
                       key={to}
                       to={to}
                       onClick={closeHamburger}
-                      className={`w-full py-3 px-4 rounded-xl text-left text-sm font-medium whitespace-nowrap flex items-center gap-2 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${
+                      className={`w-full min-h-[48px] py-3 px-4 rounded-xl text-left text-base font-medium flex items-center gap-3 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${
                         active
                           ? 'bg-indigo-500/20 dark:bg-indigo-400/20 text-indigo-700 dark:text-indigo-200'
                           : 'bg-slate-100/80 dark:bg-white/5 text-slate-700 dark:text-slate-200 hover:bg-slate-200/80 dark:hover:bg-white/10'
@@ -349,13 +421,13 @@ export default function Navbar({ onLoginClick, onLogoutClick, isLoggedIn, printH
                   className="w-full py-3 px-4 rounded-xl text-left text-sm font-medium flex items-center gap-2 bg-slate-100/80 dark:bg-white/5 text-slate-700 dark:text-slate-200 hover:bg-slate-200/80 dark:hover:bg-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
                 >
                   <BookOpen className="w-4 h-4 shrink-0" strokeWidth={2} aria-hidden />
-                  Zaman Kartları
+                  {t('nav.tenseCards')}
                 </button>
 
                 {/* Ses Ayarı (TTS) */}
                 <div className="flex items-center justify-between gap-2 w-full py-2.5 px-4 rounded-xl bg-slate-100/80 dark:bg-white/5">
                   <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
-                    Sesli okuma
+                    {t('nav.speechReadAloud')}
                   </span>
                   <AutoSpeakToggle variant="pill" />
                 </div>
@@ -368,7 +440,7 @@ export default function Navbar({ onLoginClick, onLogoutClick, isLoggedIn, printH
                     className="w-full py-3 px-4 rounded-xl text-left text-sm font-medium flex items-center gap-2 bg-slate-100/80 dark:bg-white/5 text-slate-700 dark:text-slate-200 hover:bg-slate-200/80 dark:hover:bg-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
                   >
                     <Languages className="w-4 h-4 shrink-0" strokeWidth={2} />
-                    Dil Ayarları ({currentLang.toUpperCase()})
+                    {t('nav.languageSettings')} ({currentLang.toUpperCase()})
                   </button>
                   {langOpen && (
                     <div className="mt-1 py-2 px-2 rounded-xl bg-slate-100/90 dark:bg-white/5 border border-slate-200/50 dark:border-white/10 space-y-0.5">
@@ -377,7 +449,8 @@ export default function Navbar({ onLoginClick, onLogoutClick, isLoggedIn, printH
                           key={lng}
                           type="button"
                           onClick={() => {
-                            i18n.changeLanguage(lng);
+                            persistManualUiLocale(lng);
+                            void i18n.changeLanguage(lng);
                             setLangOpen(false);
                           }}
                           className={`w-full text-left py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
@@ -405,7 +478,7 @@ export default function Navbar({ onLoginClick, onLogoutClick, isLoggedIn, printH
                     ) : (
                       <Moon className="w-4 h-4 shrink-0" strokeWidth={2} />
                     )}
-                    Tema ({isDark ? 'Açık' : 'Koyu'})
+                    {t('nav.theme')} ({isDark ? t('nav.themeLight') : t('nav.themeDark')})
                   </button>
                 )}
 
@@ -419,7 +492,7 @@ export default function Navbar({ onLoginClick, onLogoutClick, isLoggedIn, printH
                     }}
                     className="w-full py-3 px-4 rounded-xl text-left text-sm font-medium mt-2 bg-indigo-500/15 text-indigo-700 dark:text-indigo-200 hover:bg-indigo-500/20 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
                   >
-                    Giriş Yap
+                    {t('nav.signIn')}
                   </button>
                 ) : (
                   <button
@@ -429,7 +502,7 @@ export default function Navbar({ onLoginClick, onLogoutClick, isLoggedIn, printH
                       handleLogout();
                     }}
                     className="w-full mt-2 py-3 px-4 rounded-xl text-left text-sm font-medium flex items-center justify-center gap-2 bg-slate-100/80 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:bg-slate-200/80 dark:hover:bg-white/10 hover:text-slate-700 dark:hover:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
-                    aria-label="Çıkış yap"
+                    aria-label={t('nav.logout')}
                   >
                     <LogOut className="w-4 h-4 shrink-0" strokeWidth={2} />
                   </button>

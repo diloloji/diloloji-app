@@ -129,6 +129,31 @@ export function getXPProgress(totalXP: number): XPProgress {
 /** Günlük seri — localStorage anahtarları */
 const STREAK_KEY = 'conjume-streak';
 const LAST_ACTIVE_KEY = 'conjume-last-active-date';
+const BEST_STREAK_KEY = 'conjume-best-streak';
+
+export function getBestStreakEver(): number {
+  if (typeof window === 'undefined') return 0;
+  try {
+    const raw = window.localStorage.getItem(BEST_STREAK_KEY);
+    if (raw == null) return 0;
+    const n = Number(raw);
+    return Number.isFinite(n) && n >= 0 ? Math.floor(n) : 0;
+  } catch {
+    return 0;
+  }
+}
+
+function bumpBestStreakIfNeeded(streak: number): void {
+  if (typeof window === 'undefined') return;
+  const cur = getBestStreakEver();
+  if (streak > cur) {
+    try {
+      window.localStorage.setItem(BEST_STREAK_KEY, String(Math.floor(streak)));
+    } catch {
+      /* ignore */
+    }
+  }
+}
 
 export function getTodayString(): string {
   const d = new Date();
@@ -206,6 +231,7 @@ export function updateStreakInStorage(): { newStreak: number; didUpdate: boolean
   }
 
   setStreak(streak);
+  bumpBestStreakIfNeeded(streak);
   setLastActiveDate(today);
   return { newStreak: streak, didUpdate: true };
 }

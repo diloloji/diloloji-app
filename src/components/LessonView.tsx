@@ -7,7 +7,7 @@ import { X, Volume2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import { useXp } from '../contexts/XpContext';
-import { saveLessonComplete } from '../utils/learningProgress';
+import { isLessonComplete, saveLessonComplete } from '../utils/learningProgress';
 import type { UnitContent, LessonExample, QuizQuestion } from '../data/learningPathUnits';
 
 export type LessonViewLang = 'fr' | 'es' | 'en' | 'de';
@@ -26,6 +26,20 @@ function speakExample(text: string, lang: LessonViewLang) {
   u.lang = TTS_LANG[lang];
   u.rate = 0.9;
   window.speechSynthesis.speak(u);
+}
+
+function ExampleOriginalWithVerbBold({ text, verbBold }: { text: string; verbBold?: string }) {
+  if (!verbBold || !text.includes(verbBold)) {
+    return <span className="text-xl font-medium text-slate-100">{text}</span>;
+  }
+  const i = text.indexOf(verbBold);
+  return (
+    <span className="text-xl font-medium text-slate-100">
+      {text.slice(0, i)}
+      <strong className="text-indigo-400">{verbBold}</strong>
+      {text.slice(i + verbBold.length)}
+    </span>
+  );
 }
 
 type LessonViewProps = {
@@ -70,10 +84,11 @@ export default function LessonView({ unit, lessonIndex, lang, onClose, onComplet
   const perfectQuiz = totalQuiz > 0 && correctCount === totalQuiz;
 
   const finishWithXP = useCallback(
-    (xp: number) => {
-      addXP(xp);
-      saveLessonComplete(unit.id, lessonIndex, xp);
-      if (xp === 50) {
+    (xp: number, celebrate?: boolean) => {
+      const firstComplete = !isLessonComplete(unit.id, lessonIndex);
+      if (firstComplete && xp > 0) addXP(xp);
+      saveLessonComplete(unit.id, lessonIndex, firstComplete ? xp : 0);
+      if (celebrate) {
         const duration = 2200;
         const end = Date.now() + duration;
         const frame = () => {
@@ -115,10 +130,13 @@ export default function LessonView({ unit, lessonIndex, lang, onClose, onComplet
     else setQuizQuestionIndex((i) => i + 1);
   }, [quizQuestionIndex, totalQuiz]);
 
+  const earnedQuizXp = correctCount * 5;
+  const xpToAward = unit.xpRewardOnComplete != null ? unit.xpRewardOnComplete : earnedQuizXp;
+
   const handleResultConfirm = useCallback(() => {
     if (!quizPassed) return;
-    finishWithXP(perfectQuiz ? 50 : 30);
-  }, [quizPassed, perfectQuiz, finishWithXP]);
+    finishWithXP(xpToAward, perfectQuiz);
+  }, [quizPassed, perfectQuiz, finishWithXP, xpToAward]);
 
   const handleRetryQuiz = useCallback(() => {
     setPhase('quiz');
@@ -183,7 +201,7 @@ export default function LessonView({ unit, lessonIndex, lang, onClose, onComplet
                     <pre className="text-sm text-slate-200 font-sans leading-relaxed whitespace-pre-wrap mb-4">
                       {lesson.grammarBlock}
                     </pre>
-                    <p className="text-slate-300 text-sm leading-relaxed">{lesson.content}</p>
+                    <p className="text-slate-300 text-sm leading-relaxed whitespace-pre-wrap">{lesson.content}</p>
                   </div>
                   {lesson.conjugation && lesson.conjugation.length > 0 && (
                     <div className="rounded-2xl bg-white/5 border border-white/10 overflow-hidden mb-8">
@@ -247,13 +265,19 @@ export default function LessonView({ unit, lessonIndex, lang, onClose, onComplet
 
           {phase === 'result' && totalQuiz > 0 && (
             <div className="text-center py-8">
-              <h2 className="text-xl font-bold text-slate-100 mb-2">Quiz sonucu</h2>
-              <p className="text-slate-300 mb-6">
-                {correctCount} / {totalQuiz} doğru
+              <h2 className="text-xl font-bold text-slate-100 mb-2">Ünite özeti</h2>
+              <p className="text-slate-300 mb-2">
+                {correctCount} doğru · {totalQuiz - correctCount} yanlış
               </p>
+              {quizPassed && (
+                <p className="text-emerald-400 font-semibold mb-4">
+                  +{xpToAward} XP
+                  {unit.xpRewardOnComplete == null ? ' (her doğru +5)' : ' (ünite tamamlama)'}
+                </p>
+              )}
               {quizPassed ? (
-                <p className="text-emerald-400 font-medium mb-4">
-                  {perfectQuiz ? 'Mükemmel! Tüm soruları doğru yaptınız.' : 'Tebrikler, geçtiniz!'}
+                <p className="text-slate-400 text-sm mb-4">
+                  {perfectQuiz ? 'Tüm sorular doğru — harika!' : 'Geçtiniz. Öğrenme Yolu’nda sonraki ünite açıldı.'}
                 </p>
               ) : (
                 <p className="text-amber-400 font-medium mb-4">Bu sefer olmadı. Tekrar deneyin (%50 ve üzeri gerekli).</p>
@@ -302,7 +326,7 @@ export default function LessonView({ unit, lessonIndex, lang, onClose, onComplet
                   } else if (onNextLesson && lessonIndex < totalLessons - 1) {
                     onNextLesson();
                   } else {
-                    finishWithXP(50);
+                    finishWithXP(50, true);
                   }
                 }}
                 className="flex-1 py-4 px-6 rounded-2xl font-bold text-white bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-600 hover:from-indigo-400 hover:via-purple-400 hover:to-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 focus:ring-offset-[#05080f] transition-all duration-300 shadow-lg shadow-purple-500/30 hover:shadow-purple-500/40 hover:brightness-110"
@@ -340,7 +364,7 @@ export default function LessonView({ unit, lessonIndex, lang, onClose, onComplet
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.99 }}
                 >
-                  {perfectQuiz ? 'Mükemmel! +50 XP' : '+30 XP Kazan'}
+                  {`Bitir (+${xpToAward} XP)`}
                 </motion.button>
               )}
               {!quizPassed && (
@@ -431,7 +455,7 @@ function ExampleRow({
   return (
     <li className="flex flex-col gap-1 border-b border-white/5 pb-5 last:border-0 last:pb-0">
       <div className="flex items-center gap-3 flex-wrap">
-        <span className="text-xl font-medium text-slate-100">{example.original}</span>
+        <ExampleOriginalWithVerbBold text={example.original} verbBold={example.verbBold} />
         <button
           type="button"
           onClick={onSpeak}

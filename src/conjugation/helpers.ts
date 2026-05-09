@@ -6,14 +6,14 @@
 import type { TenseId, ConjugationMap } from '../data/types';
 import type { AppLanguage } from '../data/verbs';
 import { getTenses, getPronouns } from '../data/verbs';
-import { findVerbKey, getConjugationForTense, getVerbList } from './engine';
+import { findVerbKey, getConjugationForTense } from './engine';
 import {
   getConjugationsEs,
   getConjugationForTenseEs,
   findVerbKeyEs,
 } from './spanish';
 import { getVerbListSpanish, COMMON_SPANISH_VERBS } from '../data/spanish';
-import { COMMON_FRENCH_VERBS } from '../data/commonVerbs';
+import { getVerbListFrench, COMMON_FRENCH_VERBS } from '../data/french';
 
 export type ConjugationResult =
   | { ok: true; infinitive: string; conjugations: ConjugationMap }
@@ -63,7 +63,7 @@ export function findInfinitiveByConjugatedForm(
   const tenses = getTenses(lang);
   const pronouns = getPronouns(lang);
   const commonVerbs = lang === 'es' ? COMMON_SPANISH_VERBS : COMMON_FRENCH_VERBS;
-  const fullList = lang === 'es' ? getVerbListSpanish() : getVerbList();
+  const fullList = lang === 'es' ? getVerbListSpanish() : getVerbListFrench();
 
   const searchList = [...commonVerbs, ...fullList.filter((v: string) => !(commonVerbs as readonly string[]).includes(v))];
 
@@ -167,7 +167,7 @@ export function findVerbKeyForLang(verbInput: string, lang: AppLanguage): string
  * Seçili dile göre fiil listesi (otomatik tamamlama).
  */
 export function getVerbListForLang(lang: AppLanguage): string[] {
-  return lang === 'es' ? getVerbListSpanish() : getVerbList();
+  return lang === 'es' ? getVerbListSpanish() : getVerbListFrench();
 }
 
 export { findVerbKey, getConjugationForTense, conjugateVerb, isVerbInDict, getVerbList } from './engine';

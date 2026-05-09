@@ -433,7 +433,7 @@ export default function Dictionary() {
   );
 
   return (
-    <div className="min-h-screen relative bg-slate-50 dark:bg-transparent transition-colors duration-300">
+    <div className="min-h-[100dvh] min-h-screen overflow-x-hidden relative bg-slate-50 dark:bg-transparent transition-colors duration-300">
       <Helmet>
         <title>{pageTitle}</title>
         <meta name="description" content={pageDescription} />
@@ -451,7 +451,7 @@ export default function Dictionary() {
       <DictionaryBackground />
       <Navbar />
 
-      <main className="relative z-10 max-w-3xl mx-auto px-4 md:px-8 py-10 sm:py-14 pb-24">
+      <main className="relative z-10 max-w-3xl mx-auto w-full min-w-0 px-4 md:px-8 py-10 sm:py-14 pb-24">
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="max-w-2xl mx-auto">
           {/* Dil seçici — arama kutusunun hemen üstünde, pill segmented control (Fransızca, İspanyolca, İngilizce) */}
           <div className="flex justify-center mb-4" role="tablist" aria-label="Sözlük dili">
@@ -1010,11 +1010,11 @@ export default function Dictionary() {
                               ? 'bg-yellow-900/80 text-yellow-300 dark:bg-yellow-900/60 dark:text-yellow-300'
                               : 'bg-red-900/80 text-red-300 dark:bg-red-900/60 dark:text-red-300';
                         return (
-                          <div key={i} className="flex gap-3">
-                            <span className={`shrink-0 rounded px-2 py-0.5 text-xs font-bold ${levelClass}`}>
+                          <div key={i} className="flex flex-col gap-2 rounded-xl border border-slate-200/60 dark:border-white/10 bg-white/40 dark:bg-slate-800/40 p-4 sm:flex-row sm:gap-3 sm:border-0 sm:bg-transparent sm:p-0">
+                            <span className={`shrink-0 self-start rounded px-2 py-0.5 text-xs font-bold ${levelClass}`}>
                               {item.level}
                             </span>
-                            <blockquote className="flex-1 min-w-0 border-l-2 border-indigo-500/60 dark:border-indigo-400/50 pl-3 py-0.5">
+                            <blockquote className="flex-1 min-w-0 border-l-2 border-indigo-500/60 dark:border-indigo-400/50 pl-3 py-0.5 sm:border-l-2">
                               <p className="text-indigo-700 dark:text-indigo-300 italic leading-relaxed">
                                 {highlightWord(item.sentence, (direction === 'tr-fr' || direction === 'tr-es' || direction === 'tr-en') ? result.target : result.source)}
                               </p>
@@ -1045,7 +1045,7 @@ export default function Dictionary() {
                   <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500 dark:text-slate-500 mb-3">
                     Kelime Matrisi
                   </p>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2 border border-slate-200/50 dark:border-white/10 rounded-lg divide-x divide-y divide-slate-200/50 dark:divide-white/10">
+                  <div className="grid grid-cols-2 gap-2 border border-slate-200/50 dark:border-white/10 rounded-lg divide-x divide-y divide-slate-200/50 dark:divide-white/10">
                     {[
                       { key: 'noun', letter: 'N', label: 'İsim', value: groqWordMatrix?.noun ?? null },
                       { key: 'verb', letter: 'V', label: 'Fiil', value: groqWordMatrix?.verb ?? null },

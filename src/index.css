@@ -3,6 +3,22 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    overflow-x: hidden;
+  }
+  body {
+    overflow-x: hidden;
+    min-height: 100dvh;
+    min-height: 100vh;
+  }
+  /* iOS: klavye açılınca zoom tetiklememek için form kontrolleri ≥16px (mobil) */
+  @media (max-width: 767px) {
+    input,
+    textarea,
+    select {
+      font-size: 1rem;
+    }
+  }
   :root {
     --bg-elevated: rgb(255 255 255 / 0.94);
     --border-subtle: rgb(148 163 184 / 0.45);
@@ -39,7 +55,7 @@
 }
 
 #root {
-  @apply min-h-screen w-full;
+  @apply w-full min-h-[100dvh] min-h-screen;
 }
 
 /* Açılır liste (select): light ve dark modda okunaklı */
@@ -64,6 +80,60 @@ select optgroup {
 }
 .animate-time-attack-shake {
   animation: time-attack-shake 0.4s ease-in-out;
+}
+
+/* Zamana Karşı: kırmızı fazda hafif nabız (metin + progress dolgusu) */
+@keyframes time-attack-timer-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.88;
+    transform: scale(1.03);
+  }
+}
+.animate-time-attack-timer-pulse {
+  animation: time-attack-timer-pulse 1.1s ease-in-out infinite;
+}
+
+/* Seviye 20: gökkuşağı çerçeve / rozet */
+@keyframes xp-rainbow-border-shift {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+.xp-level-border-rainbow {
+  border: 2px solid transparent;
+  background:
+    linear-gradient(rgb(15 23 42 / 0.96), rgb(15 23 42 / 0.96)) padding-box,
+    linear-gradient(90deg, #f472b6, #fbbf24, #34d399, #60a5fa, #a78bfa, #f472b6) border-box;
+  background-size: 100% 100%, 300% 100%;
+  animation: xp-rainbow-border-shift 3.5s linear infinite;
+}
+@keyframes xp-rainbow-badge {
+  0% { background-position: 0% 40%; }
+  50% { background-position: 100% 60%; }
+  100% { background-position: 0% 40%; }
+}
+.xp-level-badge-rainbow {
+  background: linear-gradient(135deg, #f472b6, #fbbf24, #34d399, #60a5fa, #a78bfa);
+  background-size: 220% 220%;
+  animation: xp-rainbow-badge 5s ease-in-out infinite;
+}
+
+/* Level-up tam ekran: hafif parçacık alanı */
+.level-up-particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 9999px;
+  opacity: 0.55;
+  pointer-events: none;
+  animation: level-up-float 3.2s ease-in-out infinite;
+}
+@keyframes level-up-float {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.35; }
+  50% { transform: translate(var(--dx, 6px), var(--dy, -10px)) scale(1.2); opacity: 0.85; }
 }
 
 /* Mobil: yatay kaydırma alanında scrollbar gizle */
@@ -112,16 +182,19 @@ select optgroup {
   }
 }
 
-/* Fiil uygulaması: minimal dil seçici (sağ üst) */
+/* Fiil uygulaması: dil seçici — mobilde dokunma için daha yüksek */
 @layer components {
   .lang-switcher {
     @apply inline-flex items-stretch gap-0.5 rounded-full border border-slate-200/90 dark:border-slate-600/80 bg-slate-100/50 dark:bg-slate-800/50 p-0.5;
-    max-height: 28px;
+    max-height: none;
+  }
+  @media (min-width: 768px) {
+    .lang-switcher {
+      max-height: 28px;
+    }
   }
   .lang-btn {
-    @apply inline-flex items-center justify-center gap-0.5 rounded-full px-1.5 font-medium leading-none text-[12px] transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:ring-offset-0 dark:focus:ring-offset-slate-900;
-    max-height: 28px;
-    min-height: 0;
+    @apply inline-flex items-center justify-center gap-0.5 rounded-full px-2.5 min-h-11 min-w-[44px] font-medium leading-none text-base md:text-[12px] transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:ring-offset-0 dark:focus:ring-offset-slate-900 md:max-h-[28px] md:min-h-0 md:min-w-0 md:px-1.5;
   }
   .lang-btn.active {
     @apply bg-indigo-200/80 dark:bg-indigo-500/30 text-indigo-900 dark:text-indigo-100;

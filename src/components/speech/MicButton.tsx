@@ -21,6 +21,8 @@ type Status = 'idle' | 'listening' | 'error';
 interface MicButtonProps {
   /** Tanıma tamamlanınca alternatif listesi ve ilk transcript ile çağrılır. */
   onResult: (result: ListenResult) => void;
+  /** Konuşurken anlık metin (interimResults). Input'a bağlamak için. */
+  onInterim?: (text: string) => void;
   /** Tanıma hata verirse çağrılır. */
   onError?: (error: ListenError) => void;
   /** "Anlaşılamadı" mesajı için basit kanca; MicButton kendi mesajını göstermez. */
@@ -36,6 +38,7 @@ interface MicButtonProps {
 
 export default function MicButton({
   onResult,
+  onInterim,
   onError,
   lang = 'es-ES',
   size = 20,
@@ -62,6 +65,8 @@ export default function MicButton({
     const handle = startListening({
       lang,
       maxAlternatives: 3,
+      interim: true,
+      onInterim,
       onStart: () => setStatus('listening'),
       onEnd: () => {
         // state update olasılıkla zaten promise cevabında
@@ -83,7 +88,7 @@ export default function MicButton({
         stopRef.current = null;
         setStatus('idle');
       });
-  }, [status, lang, disabled, onResult, onError]);
+  }, [status, lang, disabled, onResult, onInterim, onError]);
 
   const notSupported = !sttSupported;
   const isListening = status === 'listening';

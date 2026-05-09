@@ -3,46 +3,32 @@
  * Her ünite: id, title, lessons[] (lessonTitle, grammarBlock, content, examples?, conjugation?).
  */
 
-export type LessonExample = {
-  original: string;
-  phonetic?: string;
-  turkish: string;
-};
+import type { UnitContent } from './learningUnitTypes';
+import { unitDataListToRecord } from './units/unitAdapter';
+import { ES_A1_UNITS as ES_A1_LIST } from './units/es-a1';
+import { ES_A2_UNITS as ES_A2_LIST } from './units/es-a2';
+import { ES_B1_UNITS as ES_B1_LIST } from './units/es-b1';
+import { ES_B2_UNITS as ES_B2_LIST } from './units/es-b2';
 
-export type LessonConjugationRow = {
-  subject: string;
-  verb: string;
-  phonetic?: string;
-  meaning: string;
-};
+export type {
+  LessonExample,
+  LessonConjugationRow,
+  QuizQuestionType,
+  QuizQuestion,
+  LessonItem,
+  UnitContent,
+} from './learningUnitTypes';
 
-export type QuizQuestionType = 'multiple_choice' | 'fill_blank' | 'true_false';
-
-export type QuizQuestion = {
-  type: QuizQuestionType;
-  question: string;
-  options?: string[];
-  correctAnswer: string;
-  explanation: string;
-};
-
-export type LessonItem = {
-  lessonTitle: string;
-  grammarBlock: string;
-  content: string;
-  examples?: LessonExample[];
-  conjugation?: LessonConjugationRow[];
-  quiz?: QuizQuestion[];
-};
-
-export type UnitContent = {
-  id: string;
-  title: string;
-  lessons: LessonItem[];
-};
+const SPANISH_UNITS_RECORD = unitDataListToRecord([
+  ...ES_A1_LIST,
+  ...ES_A2_LIST,
+  ...ES_B1_LIST,
+  ...ES_B2_LIST,
+]);
 
 /** Ünite içerikleri — dil ve seviyeye göre anahtarlanır */
 export const UNIT_CONTENT: Record<string, UnitContent> = {
+  ...SPANISH_UNITS_RECORD,
   fr_a1_1_u1: {
     id: 'fr_a1_1_u1',
     title: 'Ünite 1: Temel Tanışma ve Être Fiili',

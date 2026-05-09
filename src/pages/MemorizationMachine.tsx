@@ -4,6 +4,7 @@
  */
 
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -16,6 +17,8 @@ import DeckEditor from '../components/srs/DeckEditor';
 import StudyEngine from '../components/srs/StudyEngine';
 import { useDeckStore } from '../store/deckStore';
 import type { Deck, Card } from '../types/deck';
+import type { StudyMode } from '../types/studyMode';
+import { STUDY_MODE_EMOJI, STUDY_MODE_I18N } from '../types/studyMode';
 
 // ─── Tipler ──────────────────────────────────────────────────────────────
 
@@ -24,12 +27,14 @@ type View = 'dashboard' | 'study';
 
 // ─── Deste Kartı ─────────────────────────────────────────────────────────
 
+const STUDY_MODES_ORDER: StudyMode[] = ['cards', 'write', 'choice', 'match', 'speed'];
+
 interface DeckCardProps {
   deck: Deck;
   dueCount: number;
   newCount: number;
   masteredCount: number;
-  onStudy: () => void;
+  onStudy: (deck: Deck, mode: StudyMode) => void;
   onEdit?: () => void;
   onDuplicate: () => void;
   onDelete?: () => void;
@@ -40,7 +45,9 @@ function DeckCard({
   deck, dueCount, newCount, masteredCount,
   onStudy, onEdit, onDuplicate, onDelete, onShare,
 }: DeckCardProps) {
+  const { t } = useTranslation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [studyMode, setStudyMode] = useState<StudyMode>('cards');
   const menuRef = useRef<HTMLDivElement>(null);
   const totalCards = deck.cards.length;
   const pct = totalCards > 0 ? Math.round((masteredCount / totalCards) * 100) : 0;
@@ -80,12 +87,12 @@ function DeckCard({
               className="absolute right-0 top-8 z-20 min-w-[160px] rounded-xl border border-white/10 bg-night-900 py-1 shadow-2xl shadow-black/40"
             >
               {onEdit && !deck.isBuiltIn && (
-                <MenuBtn icon={<Edit3 size={13} />} label="Düzenle" onClick={() => { setMenuOpen(false); onEdit(); }} />
+                <MenuBtn icon={<Edit3 size={13} />} label={t('memorization.menuEdit')} onClick={() => { setMenuOpen(false); onEdit(); }} />
               )}
-              <MenuBtn icon={<Copy size={13} />} label="Kopyala" onClick={() => { setMenuOpen(false); onDuplicate(); }} />
-              <MenuBtn icon={<Share2 size={13} />} label="Paylaş (link)" onClick={() => { setMenuOpen(false); onShare(); }} />
+              <MenuBtn icon={<Copy size={13} />} label={t('memorization.menuCopy')} onClick={() => { setMenuOpen(false); onDuplicate(); }} />
+              <MenuBtn icon={<Share2 size={13} />} label={t('memorization.menuShare')} onClick={() => { setMenuOpen(false); onShare(); }} />
               {onDelete && !deck.isBuiltIn && (
-                <MenuBtn icon={<Trash2 size={13} />} label="Sil" danger onClick={() => { setMenuOpen(false); onDelete(); }} />
+                <MenuBtn icon={<Trash2 size={13} />} label={t('memorization.menuDelete')} danger onClick={() => { setMenuOpen(false); onDelete(); }} />
               )}
             </motion.div>
           )}
@@ -111,12 +118,14 @@ function DeckCard({
       {/* İlerleme çubuğu */}
       <div className="mb-3">
         <div className="mb-1 flex items-center justify-between text-[10px] text-slate-600">
-          <span>{masteredCount}/{totalCards} uzmanlaşıldı</span>
+          <span>
+            {t('memorization.dashboard.masteredLine', { mastered: masteredCount, total: totalCards })}
+          </span>
           <span>{pct}%</span>
         </div>
-        <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
+        <div className="h-2.5 overflow-hidden rounded-full bg-white/10 ring-1 ring-white/10">
           <motion.div
-            className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-purple-500"
+            className="h-full rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-400 shadow-[0_0_12px_rgba(99,102,241,0.35)]"
             initial={{ width: 0 }}
             animate={{ width: `${pct}%` }}
             transition={{ duration: 0.8, ease: 'easeOut' }}
@@ -126,30 +135,80 @@ function DeckCard({
 
       {/* Stats */}
       <div className="mb-4 grid grid-cols-3 gap-2 text-[10px]">
-        <StatPill icon={<Calendar size={9} />} label="Bugün" value={dueCount} color="text-amber-400" />
-        <StatPill icon={<Sparkles size={9} />} label="Yeni" value={newCount} color="text-blue-400" />
-        <StatPill icon={<CheckCircle2 size={9} />} label="Uzman" value={masteredCount} color="text-green-400" />
+        <StatPill
+          icon={<Calendar size={9} />}
+          label={t('memorization.today')}
+          value={dueCount}
+          color="text-amber-400"
+          accent="border-amber-500/30 bg-amber-500/5"
+        />
+        <StatPill
+          icon={<Sparkles size={9} />}
+          label={t('memorization.new')}
+          value={newCount}
+          color="text-sky-400"
+          accent="border-sky-500/30 bg-sky-500/5"
+        />
+        <StatPill
+          icon={<CheckCircle2 size={9} />}
+          label={t('memorization.expert')}
+          value={masteredCount}
+          color="text-emerald-400"
+          accent="border-emerald-500/30 bg-emerald-500/5"
+        />
       </div>
 
-      {/* Çalış butonu */}
-      <button
-        onClick={onStudy}
-        className={`mt-auto flex w-full items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-semibold transition-all active:scale-95 ${
-          dueCount > 0
-            ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/25 hover:bg-indigo-400'
-            : 'border border-white/10 text-slate-400 hover:bg-white/5 hover:text-white'
-        }`}
-      >
-        <Play size={14} />
-        {dueCount > 0 ? `Çalış (${dueCount} kart)` : 'Çalış'}
-      </button>
+      {/* Mod seç + Çalış + hızlı ikonlar */}
+      <div className="mt-auto flex flex-col gap-2">
+        <div className="flex gap-2">
+          <select
+            value={studyMode}
+            onChange={(e) => setStudyMode(e.target.value as StudyMode)}
+            title={t('memorization.dashboard.studyModeTitle')}
+            className="min-w-0 flex-1 rounded-xl border border-white/10 bg-night-950/80 py-2.5 pl-3 pr-2 text-xs font-medium text-slate-200 focus:border-indigo-500/50 focus:outline-none"
+          >
+            {STUDY_MODES_ORDER.map((m) => (
+              <option key={m} value={m}>
+                {STUDY_MODE_EMOJI[m]} {t(STUDY_MODE_I18N[m].labelKey as 'memorization.studyMode.cards')}
+              </option>
+            ))}
+          </select>
+          <button
+            type="button"
+            onClick={() => onStudy(deck, studyMode)}
+            disabled={totalCards === 0}
+            className={`flex shrink-0 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 ${
+              dueCount > 0
+                ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/25 hover:bg-indigo-400'
+                : 'border border-white/10 text-slate-300 hover:bg-white/5 hover:text-white'
+            }`}
+          >
+            <Play size={14} />
+            {t('memorization.study')}
+          </button>
+        </div>
+        <div className="grid grid-cols-5 gap-1 rounded-xl border border-white/5 bg-white/[0.03] p-2 sm:flex sm:flex-wrap sm:justify-center sm:gap-0.5 sm:p-1.5">
+          {STUDY_MODES_ORDER.map((m) => (
+            <button
+              key={m}
+              type="button"
+              title={t(STUDY_MODE_I18N[m].labelKey as 'memorization.studyMode.cards')}
+              onClick={() => onStudy(deck, m)}
+              disabled={totalCards === 0}
+              className="flex min-h-11 min-w-0 items-center justify-center rounded-lg p-2 text-xl leading-none text-slate-400 transition-colors hover:bg-white/10 hover:text-white disabled:opacity-30 touch-manipulation sm:min-h-0 sm:text-lg"
+            >
+              <span aria-hidden>{STUDY_MODE_EMOJI[m]}</span>
+            </button>
+          ))}
+        </div>
+      </div>
 
       {/* Built-in rozet */}
       {deck.isBuiltIn && (
         <div className="absolute left-3 top-3">
           <span className="flex items-center gap-1 rounded-full bg-amber-500/15 px-2 py-0.5 text-[9px] font-semibold text-amber-400 ring-1 ring-amber-500/20">
             <Sparkles size={8} />
-            Diloloji
+            {t('memorization.dashboard.builtInBadge')}
           </span>
         </div>
       )}
@@ -158,12 +217,16 @@ function DeckCard({
 }
 
 function StatPill({
-  icon, label, value, color,
+  icon, label, value, color, accent = 'border-white/8 bg-white/4',
 }: {
-  icon: React.ReactNode; label: string; value: number; color: string;
+  icon: React.ReactNode;
+  label: string;
+  value: number;
+  color: string;
+  accent?: string;
 }) {
   return (
-    <div className="flex items-center gap-1.5 rounded-lg border border-white/8 bg-white/4 px-2 py-1.5">
+    <div className={`flex items-center gap-1.5 rounded-lg border px-2 py-1.5 ${accent}`}>
       <span className={color}>{icon}</span>
       <span className="text-slate-500">{label}</span>
       <span className={`ml-auto font-bold ${color}`}>{value}</span>
@@ -192,21 +255,22 @@ function MenuBtn({
 // ─── Boş durum ────────────────────────────────────────────────────────────
 
 function EmptyState({ onCreate }: { onCreate: () => void }) {
+  const { t } = useTranslation();
   return (
     <div className="col-span-full flex flex-col items-center py-20 text-center">
       <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-500/10 ring-2 ring-indigo-500/20">
         <BookOpen className="text-indigo-400" size={28} />
       </div>
-      <h3 className="mb-2 text-lg font-bold text-white">Henüz desten yok</h3>
+      <h3 className="mb-2 text-lg font-bold text-white">{t('memorization.dashboard.emptyTitle')}</h3>
       <p className="mb-6 max-w-xs text-sm text-slate-500">
-        İlk desteni oluştur veya topluluk destelerinden birini kopyala.
+        {t('memorization.dashboard.emptySubtitle')}
       </p>
       <button
         onClick={onCreate}
         className="flex items-center gap-2 rounded-xl bg-indigo-500 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 hover:bg-indigo-400 transition-all active:scale-95"
       >
         <Plus size={15} />
-        İlk Desteni Oluştur
+        {t('memorization.dashboard.createFirstDeck')}
       </button>
     </div>
   );
@@ -215,6 +279,7 @@ function EmptyState({ onCreate }: { onCreate: () => void }) {
 // ─── Ana Sayfa ────────────────────────────────────────────────────────────
 
 export default function MemorizationMachine() {
+  const { t } = useTranslation();
   const {
     userDecks, communityDecks,
     createDeck, updateDeck, deleteDeck, duplicateDeck, updateCards,
@@ -227,6 +292,8 @@ export default function MemorizationMachine() {
   const [editorOpen, setEditorOpen] = useState(false);
   const [editingDeck, setEditingDeck] = useState<Deck | null>(null);
   const [studyingDeck, setStudyingDeck] = useState<Deck | null>(null);
+  const [studyingMode, setStudyingMode] = useState<StudyMode>('cards');
+  const [studySessionKey, setStudySessionKey] = useState(0);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
 
@@ -245,8 +312,10 @@ export default function MemorizationMachine() {
   const totalDueToday = userDecks.reduce((sum, d) => sum + getDueCount(d), 0);
 
   // Çalışma moduna geç
-  const startStudy = useCallback((deck: Deck) => {
+  const startStudy = useCallback((deck: Deck, mode: StudyMode = 'cards') => {
     setStudyingDeck(deck);
+    setStudyingMode(mode);
+    setStudySessionKey((k) => k + 1);
     setView('study');
   }, []);
 
@@ -269,18 +338,26 @@ export default function MemorizationMachine() {
   // Paylaş
   const handleShare = useCallback((deck: Deck) => {
     const url = `${window.location.origin}/ezber-makinesi?deck=${deck.id}`;
-    navigator.clipboard.writeText(url).then(() => showToast('Link kopyalandı! 🔗'));
-  }, [showToast]);
+    navigator.clipboard.writeText(url).then(() => showToast(t('memorization.dashboard.toastLinkCopied')));
+  }, [showToast, t]);
 
   // Çalışma ekranı
   if (view === 'study' && studyingDeck) {
-    return <StudyEngine deck={studyingDeck} onExit={handleStudyExit} />;
+    return (
+      <StudyEngine
+        key={`${studyingDeck.id}-${studyingMode}-${studySessionKey}`}
+        deck={studyingDeck}
+        mode={studyingMode}
+        onExit={handleStudyExit}
+        onStudyAgain={() => setStudySessionKey((k) => k + 1)}
+      />
+    );
   }
 
   return (
     <>
       <Helmet>
-        <title>Ezber Makinesi — Aralıklı Tekrar | Diloloji</title>
+        <title>{t('memorization.dashboard.helmetTitle')}</title>
       </Helmet>
 
       <div className="min-h-screen bg-night-950">
@@ -292,13 +369,13 @@ export default function MemorizationMachine() {
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <h1 className="text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
-                  Ezber Makinesi{' '}
+                  {t('memorization.dashboard.heroTitle')}{' '}
                   <span className="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
                     SRS
                   </span>
                 </h1>
                 <p className="mt-1 text-sm text-slate-400">
-                  Anki + Quizlet + Memrise — tek platformda, karanlık modda.
+                  {t('memorization.dashboard.heroTagline')}
                 </p>
               </div>
 
@@ -312,9 +389,9 @@ export default function MemorizationMachine() {
                   <Clock className="text-amber-400" size={18} />
                   <div>
                     <p className="text-sm font-bold text-amber-300">
-                      {totalDueToday} kart bugün seni bekliyor
+                      {t('memorization.dashboard.dailyWaiting', { count: totalDueToday })}
                     </p>
-                    <p className="text-xs text-amber-400/70">Serini sürdürmek için çalış!</p>
+                    <p className="text-xs text-amber-400/70">{t('memorization.dashboard.dailyHint')}</p>
                   </div>
                   <ChevronRight className="text-amber-400/50" size={14} />
                 </motion.div>
@@ -326,7 +403,7 @@ export default function MemorizationMachine() {
                 className="flex shrink-0 items-center gap-2 rounded-xl bg-indigo-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 transition-all hover:bg-indigo-400 active:scale-95"
               >
                 <Plus size={16} />
-                Yeni Deste
+                {t('memorization.newDeck')}
               </button>
             </div>
           </div>
@@ -338,8 +415,8 @@ export default function MemorizationMachine() {
             {/* Tab */}
             <div className="flex items-center gap-1 rounded-xl border border-white/10 bg-white/5 p-1">
               {([
-                { id: 'mine' as Tab, label: 'Destelerim', icon: <BookOpen size={13} /> },
-                { id: 'community' as Tab, label: 'Topluluk', icon: <Users size={13} /> },
+                { id: 'mine' as Tab, labelKey: 'memorization.tabs.mine' as const, icon: <BookOpen size={13} /> },
+                { id: 'community' as Tab, labelKey: 'memorization.tabs.community' as const, icon: <Users size={13} /> },
               ] as const).map((tab) => (
                 <button
                   key={tab.id}
@@ -351,7 +428,7 @@ export default function MemorizationMachine() {
                   }`}
                 >
                   {tab.icon}
-                  {tab.label}
+                  {t(tab.labelKey)}
                   {tab.id === 'mine' && userDecks.length > 0 && (
                     <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${
                       activeTab === 'mine' ? 'bg-white/20 text-white' : 'bg-white/10 text-slate-400'
@@ -369,7 +446,7 @@ export default function MemorizationMachine() {
               <input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Deste ara..."
+                placeholder={t('memorization.dashboard.searchPlaceholder')}
                 className="w-full rounded-xl border border-white/10 bg-white/5 pl-9 pr-4 py-2 text-sm text-white placeholder:text-slate-600 focus:border-indigo-500/50 focus:outline-none sm:w-56"
               />
             </div>
@@ -386,7 +463,7 @@ export default function MemorizationMachine() {
                   <EmptyState onCreate={() => { setEditingDeck(null); setEditorOpen(true); }} />
                 ) : (
                   <div className="col-span-full py-12 text-center text-slate-500">
-                    Arama sonucu bulunamadı
+                    {t('memorization.dashboard.noResults')}
                   </div>
                 )
               ) : (
@@ -397,7 +474,7 @@ export default function MemorizationMachine() {
                     dueCount={getDueCount(deck)}
                     newCount={getNewCount(deck)}
                     masteredCount={getMasteredCount(deck)}
-                    onStudy={() => startStudy(deck)}
+                    onStudy={(d, m) => startStudy(d, m)}
                     onEdit={
                       !deck.isBuiltIn
                         ? () => { setEditingDeck(deck); setEditorOpen(true); }
@@ -406,7 +483,7 @@ export default function MemorizationMachine() {
                     onDuplicate={() => {
                       const copy = duplicateDeck(deck);
                       setActiveTab('mine');
-                      showToast(`"${copy.title}" oluşturuldu ✓`);
+                      showToast(t('memorization.dashboard.toastDuplicated', { title: copy.title }));
                     }}
                     onDelete={
                       !deck.isBuiltIn
@@ -429,42 +506,42 @@ export default function MemorizationMachine() {
             >
               <div className="mb-4 flex items-center gap-2">
                 <BarChart2 className="text-indigo-400" size={16} />
-                <h2 className="font-bold text-white">Genel İstatistikler</h2>
+                <h2 className="font-bold text-white">{t('memorization.dashboard.statsTitle')}</h2>
               </div>
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                 {[
                   {
-                    label: 'Toplam Deste',
+                    labelKey: 'memorization.dashboard.statDecks' as const,
                     value: userDecks.length,
                     color: 'text-indigo-300',
                     icon: '📦',
                   },
                   {
-                    label: 'Toplam Kart',
+                    labelKey: 'memorization.dashboard.statCards' as const,
                     value: userDecks.reduce((s, d) => s + d.cards.length, 0),
                     color: 'text-blue-300',
                     icon: '🃏',
                   },
                   {
-                    label: 'Bugün Bekleyen',
+                    labelKey: 'memorization.dashboard.statDue' as const,
                     value: totalDueToday,
                     color: 'text-amber-300',
                     icon: '⏰',
                   },
                   {
-                    label: 'Uzmanlaşılan',
+                    labelKey: 'memorization.dashboard.statMasteredSum' as const,
                     value: userDecks.reduce((s, d) => s + getMasteredCount(d), 0),
                     color: 'text-green-300',
                     icon: '⭐',
                   },
                 ].map((s) => (
                   <div
-                    key={s.label}
+                    key={s.labelKey}
                     className="flex flex-col gap-1 rounded-xl border border-white/8 bg-white/5 p-4"
                   >
                     <span className="text-lg">{s.icon}</span>
                     <span className={`text-2xl font-extrabold ${s.color}`}>{s.value}</span>
-                    <span className="text-xs text-slate-500">{s.label}</span>
+                    <span className="text-xs text-slate-500">{t(s.labelKey)}</span>
                   </div>
                 ))}
               </div>
@@ -492,28 +569,28 @@ export default function MemorizationMachine() {
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-red-500/10 text-2xl">
                   🗑️
                 </div>
-                <h3 className="mb-2 font-bold text-white">Desteyi Sil</h3>
+                <h3 className="mb-2 font-bold text-white">{t('memorization.dashboard.deleteDeckTitle')}</h3>
                 <p className="mb-6 text-sm text-slate-400">
-                  Bu işlem geri alınamaz. Tüm kart ilerlemeleri silinecek.
+                  {t('memorization.dashboard.deleteDeckBody')}
                 </p>
                 <div className="flex gap-3">
                   <button
                     onClick={() => setDeleteConfirm(null)}
                     className="flex-1 rounded-xl border border-white/10 py-2.5 text-sm font-semibold text-slate-400 hover:bg-white/5 hover:text-white transition-all"
                   >
-                    Vazgeç
+                    {t('common.cancel')}
                   </button>
                   <button
                     onClick={() => {
                       if (deleteConfirm) {
                         deleteDeck(deleteConfirm);
                         setDeleteConfirm(null);
-                        showToast('Deste silindi');
+                        showToast(t('memorization.dashboard.toastDeckDeleted'));
                       }
                     }}
                     className="flex-1 rounded-xl bg-red-500 py-2.5 text-sm font-semibold text-white hover:bg-red-400 transition-all active:scale-95"
                   >
-                    Sil
+                    {t('memorization.menuDelete')}
                   </button>
                 </div>
               </motion.div>
@@ -550,11 +627,11 @@ export default function MemorizationMachine() {
                   ...data,
                   pairs: data.pairs,
                 });
-                showToast('Deste güncellendi ✓');
+                showToast(t('memorization.dashboard.toastDeckUpdated'));
               } else {
                 createDeck(data.title, data.language, data.icon, data.description, data.pairs);
                 setActiveTab('mine');
-                showToast('Deste oluşturuldu! 🎉');
+                showToast(t('memorization.dashboard.toastDeckCreated'));
               }
               setEditorOpen(false);
               setEditingDeck(null);

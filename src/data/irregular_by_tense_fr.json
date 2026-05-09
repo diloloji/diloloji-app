@@ -1,0 +1,6954 @@
+{
+  "abandonner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "aborder": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "abréger": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "absenter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "absorber": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "accélérer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "accentuer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "accepter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "accompagner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "accoutumer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "accrocher": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "accuser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "acheminer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "acheter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "activer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "adapter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "additionner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "admirer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "adopter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "adorer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "adorner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "affaler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "afficher": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "affirmer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "agir": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "agiter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "agrandir": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "agréger": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "aider": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "aigrir": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "aimer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "ajourner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "ajuster": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "aliéner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "alimenter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "aller": {
+    "present": true,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "allier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "allonger": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "allumer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "altérer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "amarrer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "améliorer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "amplifier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "analyser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "anhéler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "animer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "annoncer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "annoter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "annuler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "anticiper": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "aposter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "apparaître": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "appeler": {
+    "present": true,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "applaudir": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "appliquer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "apporter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "apprécier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "apprendre": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "approuver": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "appuyer": {
+    "present": true,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "archiver": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "argumenter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "armer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "arranger": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "arriver": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": true,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "arrondir": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "articuler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "aspirer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "assembler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "assister": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "associer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "assumer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "assurer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "attacher": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "attaquer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "atteindre": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "atterrir": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "attirer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "attraper": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "augmenter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "autoriser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "avancer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "aventurer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "avertir": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "aviser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "aviver": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "avoir": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "avouer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "baiser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "balancer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "balbutier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "bannir": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "baptiser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "bâtir": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "bénéficier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "bénir": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "bifurquer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "blâmer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "blanchir": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "blesser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "blinder": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "boire": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "bombarder": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "bouillir": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": true
+  },
+  "bourdonner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "brasser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "briller": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "briser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "bronzer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "brosser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "brouter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "brûler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "buriner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "cacher": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "cadrer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "cailler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "calculer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "calibrer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "calmer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "camoufler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "canaliser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "capéer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "capitaliser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "capter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "capturer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "caractériser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "carboniser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "caser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "cataloguer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "causer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "cautériser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "caver": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "céder": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "ceindre": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "célébrer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "centraliser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "centrer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "cerner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "changer": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "chanter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "charger": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "chasser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "chauffer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "chausser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "chercher": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "chiffrer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "choisir": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "chômer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "chronométrer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "cicatriser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "cimenter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "circuler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "citer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "clamer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "claquer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "clarifier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "classer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "clignoter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "climatiser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "cloner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "coaguler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "coder": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "coexister": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "cohabiter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "collaborer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "collectionner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "coller": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "coloniser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "colorer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "combattre": {
+    "present": true,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": true,
+    "subjonctif-present": false
+  },
+  "combiner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "commander": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "commémorer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "commencer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "commenter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "commercer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "commercialiser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "commettre": {
+    "present": true,
+    "imparfait": false,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": false
+  },
+  "commissionner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "communiquer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "comparer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "compenser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "compiler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "complaire": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": false,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "compléter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "compliquer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "comporter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "composer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "comprendre": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "comprimer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "compromettre": {
+    "present": true,
+    "imparfait": false,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": false
+  },
+  "computer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "concéder": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "concentrer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "concerner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "concevoir": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "concilier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "condamner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "condenser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "conditionner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "conduire": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "confectionner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "confier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "confirmer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "confondre": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": true,
+    "subjonctif-present": false
+  },
+  "congédier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "congeler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "congratuler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "conjurer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "connaître": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "connecter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "conquérir": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "conseiller": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "consentir": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": true
+  },
+  "conserver": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "considérer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "consigner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "consoler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "consommer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "conspirer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "constituer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "construire": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "consulter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "contacter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "contaminer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "contempler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "contenir": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "conter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "contester": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "continuer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "contraster": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "contredire": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "contribuer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "contrôler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "convaincre": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": false,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "converger": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "converser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "convertir": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "convoquer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "coopérer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "coordonner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "copier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "corréler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "corriger": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "corroborer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "coucher": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "coudre": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "couronner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "court-circuiter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "couvrir": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": false,
+    "passe-compose": true,
+    "futur-simple": false,
+    "subjonctif-present": true
+  },
+  "cracher": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "craquer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "créer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "crier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "cristalliser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "critiquer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "croire": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "croiser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "croître": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": false,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "cuisiner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "culminer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "cultiver": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "cumuler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "curer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "danser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "déambuler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "débarquer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "débattre": {
+    "present": true,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": true,
+    "subjonctif-present": false
+  },
+  "débiliter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "déborder": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "décaler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "décevoir": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "déchiffrer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "décider": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "déclamer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "déclarer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "déclencher": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "décolorer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "décorer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "découvrir": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": false,
+    "passe-compose": true,
+    "futur-simple": false,
+    "subjonctif-present": true
+  },
+  "décréter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "dédaigner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "dédier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "défaire": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "défendre": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": true,
+    "subjonctif-present": false
+  },
+  "déféquer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "défier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "défiler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "définir": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "dégénérer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "déguiser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "déguster": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "déjeuner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "délier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "délirer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "demander": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "démarrer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "démêler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "démonter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "démontrer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "dénoncer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "départir": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": true
+  },
+  "dépendre": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": true,
+    "subjonctif-present": false
+  },
+  "dépenser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "déplacer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "déporter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "déposer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "dépouiller": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "désarticuler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "descendre": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": true,
+    "subjonctif-present": false
+  },
+  "désespérer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "déshonorer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "déshydrater": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "désigner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "désintégrer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "désirer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "désobéir": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "desserrer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "desservir": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": true
+  },
+  "dessiner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "destiner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "destituer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "détailler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "détecter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "détériorer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "déterminer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "détester": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "détoner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "détruire": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "dévaluer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "développer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "devenir": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "deviner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "devoir": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "dévoyer": {
+    "present": true,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "diagnostiquer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "dialoguer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "différer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "diffuser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "digitaliser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "dilater": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "dimensionner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "dîner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "dire": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "diriger": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "discerner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "discipliner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "discriminer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "disculper": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "discuter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "disparaître": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": false,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "dispenser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "disputer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "disséquer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "dissoudre": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": false,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "distinguer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "distraire": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": false,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "distribuer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "divaguer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "diversifier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "divertir": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "documenter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "doler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "dompter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "donner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "dormir": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": true
+  },
+  "doser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "doubler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "doucher": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "douter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "dramatiser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "dresser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "éblouir": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "échanger": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "échapper": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "échouer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "éclabousser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "éclaircir": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "éclairer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "éclipser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "économiser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "écouter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "écrire": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "effacer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "effectuer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "effondrer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "effrayer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "égoutter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "élargir": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "électrifier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "électrolyser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "élever": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "éliminer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "élire": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "éloigner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "émaner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "emballer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "embaucher": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "emboîter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "emboucher": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "embrasser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "émerger": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "émettre": {
+    "present": true,
+    "imparfait": false,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": false
+  },
+  "émouvoir": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "empêcher": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "empirer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "emprisonner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "encadrer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "encaisser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "encourager": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "enfermer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "enflammer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "engager": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "engloutir": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "enquêter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "enregistrer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "enrichir": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "enseigner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "ensorceler": {
+    "present": true,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "entraîner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "entraver": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "entrer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": true,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "énumérer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "envelopper": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "envier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "épaissir": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "épandre": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": true,
+    "subjonctif-present": false
+  },
+  "épeler": {
+    "present": true,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "équilibrer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "équiper": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "éradiquer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "éreinter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "espérer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "esquisser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "esquiver": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "essayer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "estimer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "éteindre": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "éternuer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "étirer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "étonner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "étourdir": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "être": {
+    "present": true,
+    "imparfait": false,
+    "passe-simple": true,
+    "passe-compose": false,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "étudier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "évaluer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "éviter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "exagérer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "examiner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "excaver": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "exclure": {
+    "present": true,
+    "imparfait": false,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": false
+  },
+  "exécuter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "exemplifier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "exercer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "exhaler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "exiger": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "exister": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "expérimenter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "expirer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "expliquer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "exploiter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "explorer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "exporter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "expulser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "extraire": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": false,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "fabriquer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "faciliter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "faire": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "falsifier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "fantasmer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "fasciner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "fatiguer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "feindre": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "féliciter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "fermenter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "fermer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "filmer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "finaliser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "financer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "finir": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "flamber": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "flanquer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "flatter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "flotter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "flouer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "fonctionner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "fondre": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": true,
+    "subjonctif-present": false
+  },
+  "forcer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "former": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "formuler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "fouler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "fracturer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "frapper": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "frauder": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "frire": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "frissonner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "frotter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "fuir": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": true
+  },
+  "fumiger": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "galoper": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "galvaniser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "garder": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "gargariser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "gaspiller": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "gaufrer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "geindre": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": false,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "générer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "gésir": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "gesticuler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "gifler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "gonfler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "gouverner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "graduer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "grésiller": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "grogner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "guider": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "habiller": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "haleter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "hâter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "hausser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "héberger": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "hériter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "hiberner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "honorer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "humilier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "hurler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "hypnotiser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "idéaliser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "identifier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "ignorer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "imaginer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "imiter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "immuniser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "implanter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "importer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "impressionner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "imprimer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "inaugurer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "inciter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "incliner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "incorporer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "incruster": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "indicer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "infester": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "influencer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "informer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "inhaler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "insérer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "insister": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "inspirer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "installer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "intégrer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "intensifier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "intercepter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "interdire": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "interjeter": {
+    "present": true,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "interpréter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "interroger": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "interrompre": {
+    "present": true,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": true,
+    "subjonctif-present": false
+  },
+  "introduire": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "inventer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "inviter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "irriguer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "jeter": {
+    "present": true,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "joindre": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "jouer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "kidnapper": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "lâcher": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "laisser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "lamer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "lancer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "laver": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "lever": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "libérer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "licencier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "limiter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "liquider": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "lire": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": false,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "livrer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "localiser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "loger": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "louer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "lubrifier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "maintenir": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "maltraiter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "mander": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "manger": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "manipuler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "manquer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "maquiller": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "marcher": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "marquer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "masquer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "mastiquer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "matérialiser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "méditer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "mémoriser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "menacer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "mentionner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "mentir": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": true
+  },
+  "mépriser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "mériter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "mesurer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "métaboliser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "mettre": {
+    "present": true,
+    "imparfait": false,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": false
+  },
+  "mirer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "moderniser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "modifier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "monopoliser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "monter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "mordre": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": true,
+    "subjonctif-present": false
+  },
+  "motiver": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "mouiller": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "mourir": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "multiplier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "muter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "nager": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "naître": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "naviguer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "nécessiter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "négocier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "nettoyer": {
+    "present": true,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "noter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "noyer": {
+    "present": true,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "obéir": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "obliger": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "observer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "obtenir": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "offrir": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": true
+  },
+  "opérer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "opiner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "optimiser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "ordonnancer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "organiser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "ourler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "outrager": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "ouvrir": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": false,
+    "passe-compose": true,
+    "futur-simple": false,
+    "subjonctif-present": true
+  },
+  "pager": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "pâlir": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "panner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "panser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "pardonner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "parer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "parler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "parquer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "parsemer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "partager": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "partir": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": false,
+    "passe-compose": true,
+    "futur-simple": false,
+    "subjonctif-present": true
+  },
+  "passer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "patiner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "pécher": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "pêcher": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "peiner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "peler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "penser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "perdre": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": true,
+    "subjonctif-present": false
+  },
+  "perfectionner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "peser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "photographier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "pincer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "pinter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "piquer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "placer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "plaindre": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "plancher": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "planifier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "pleurer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "plisser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "plonger": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "pondre": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": true,
+    "subjonctif-present": false
+  },
+  "porter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "poursuivre": {
+    "present": true,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": false
+  },
+  "pousser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "pouvoir": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "pratiquer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "préciser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "prendre": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "préparer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "présenter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "presser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "prêter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "prévoir": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": false,
+    "subjonctif-present": true
+  },
+  "procurer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "produire": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "profiter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "programmer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "projeter": {
+    "present": true,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "proposer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "protéger": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "provoquer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "publier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "punir": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "purifier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "qualifier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "radicaliser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "radoucir": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "raller": {
+    "present": true,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "ramasser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "ramer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "raréfier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "raser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "rassurer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "ratifier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "rationaliser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "réagir": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "réaliser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "recevoir": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "réciter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "reclamer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "récolter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "recommander": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "reconnaître": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "recorder": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "recréer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "rectifier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "récupérer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "redresser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "réduire": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "réfléchir": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "reformer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "refroidir": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "réfugier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "refuser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "réfuter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "régaler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "réglementer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "regretter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "regrouper": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "réguler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "relever": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "relier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "rembobiner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "remercier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "remplacer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "rendre": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": true,
+    "subjonctif-present": false
+  },
+  "renforcer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "renverser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "réparer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "répéter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "répondre": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": true,
+    "subjonctif-present": false
+  },
+  "reprendre": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "représenter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "reprocher": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "résoudre": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "respecter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "restaurer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "rester": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": true,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "retarder": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "retenir": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "retourner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "rétrécir": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "réveiller": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "revenir": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "rêver": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "reviser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "rire": {
+    "present": true,
+    "imparfait": false,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": false
+  },
+  "rivaliser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "rober": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "rôtir": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "sabler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "saigner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "salir": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "saluer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "sauter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "savoir": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "scinder": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "sculpter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "sembler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "sentir": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": true
+  },
+  "séparer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "serrer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "servir": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": true
+  },
+  "signer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "socialiser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "solidifier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "sortir": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": true
+  },
+  "souffrir": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": false,
+    "passe-compose": true,
+    "futur-simple": false,
+    "subjonctif-present": true
+  },
+  "soulager": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "souligner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "soupçonner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "soupirer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "sourire": {
+    "present": true,
+    "imparfait": false,
+    "passe-simple": true,
+    "passe-compose": false,
+    "futur-simple": true,
+    "subjonctif-present": false
+  },
+  "souscrire": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "soutenir": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "souvenir": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "spécialiser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "spécifier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "stabiliser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "stationner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "statuer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "stresser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "sucer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "suggérer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "suivre": {
+    "present": true,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": false
+  },
+  "superviser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "supprimer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "surabonder": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "surprendre": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "surveiller": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "susurrer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "synchroniser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "systématiser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "tanner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "taper": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "taquiner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "tasser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "tâter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "tatouer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "télécharger": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "téléphoner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "témoigner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "tenir": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "terminer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "ternir": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "théoriser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "tiercer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "tirer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "titulariser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "tolérer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "tomber": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": true,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "tomer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "totaliser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "toucher": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "tourner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "tracer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "traduire": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "trahir": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "traiter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "transformer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "transmettre": {
+    "present": true,
+    "imparfait": false,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": false
+  },
+  "transporter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "travailler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "traverser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "trébucher": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "trembler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "tremper": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "trier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "triompher": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "tromper": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "trouver": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "unifier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "unir": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "universaliser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "urbaniser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "user": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "usiner": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "usurper": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "utiliser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "vaciller": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "valider": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "varier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "vêler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "vendre": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "venger": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "venir": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "vérifier": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "verrouiller": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "verser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "vibrer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "violer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "visiter": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "visualiser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "vivre": {
+    "present": true,
+    "imparfait": false,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": false
+  },
+  "vocaliser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "voir": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "voler": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "vouloir": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": true,
+    "futur-simple": true,
+    "subjonctif-present": true
+  },
+  "voyager": {
+    "present": true,
+    "imparfait": true,
+    "passe-simple": true,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "vulgariser": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  },
+  "zoomer": {
+    "present": false,
+    "imparfait": false,
+    "passe-simple": false,
+    "passe-compose": false,
+    "futur-simple": false,
+    "subjonctif-present": false
+  }
+}
