@@ -7,12 +7,48 @@ import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import type { LucideIcon } from 'lucide-react';
-import { Menu, X, User, LogOut, Sun, Moon, Languages, Flame, BookOpen } from 'lucide-react';
+import { Menu, X, User, LogOut, Sun, Moon, Languages, BookOpen } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useThemeContext } from '../contexts/ThemeContext';
+import { useXp } from '../contexts/XpContext';
 import LoginModal from './LoginModal';
+import XpProfileModal from './XpProfileModal';
 import { getDailyGoalSummary, updateDocumentTitle, DAILY_GOAL } from '../utils/dailyGoal';
 import AutoSpeakToggle from './speech/AutoSpeakToggle';
+
+function NavbarXpChip() {
+  const { level, title, xpProgress } = useXp();
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="hidden sm:flex flex-col gap-0.5 min-w-[8.5rem] max-w-[11rem] rounded-lg px-2 py-1 border border-indigo-200/60 dark:border-indigo-500/25 bg-indigo-50/90 dark:bg-indigo-950/40 text-left transition-colors hover:bg-indigo-100/90 dark:hover:bg-indigo-900/35 focus:outline-none focus:ring-2 focus:ring-indigo-400/50"
+        title={`Seviye ${level} · ${title}`}
+        aria-label={`Seviye ${level}, ${title}. İlerlemeyi aç`}
+      >
+        <span className="flex items-center gap-1 text-[11px] font-bold text-indigo-800 dark:text-indigo-200 leading-tight">
+          <span aria-hidden>🔥</span>
+          <span className="tabular-nums">Lv.{level}</span>
+          <span className="font-semibold truncate">{title}</span>
+        </span>
+        <div className="h-1.5 rounded-full bg-slate-200/90 dark:bg-white/10 overflow-hidden" aria-hidden>
+          <div
+            className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-amber-400 transition-[width] duration-500 ease-out"
+            style={{ width: `${Math.round(xpProgress.percent)}%` }}
+          />
+        </div>
+        <span className="text-[9px] text-indigo-600/80 dark:text-indigo-300/70 tabular-nums">
+          {xpProgress.xpForNextLevel != null
+            ? `${xpProgress.xpInCurrentLevel} / ${xpProgress.xpNeededForNext} XP`
+            : 'Maks. seviye'}
+        </span>
+      </button>
+      <XpProfileModal open={open} onClose={() => setOpen(false)} />
+    </>
+  );
+}
 
 const MAIN_LINKS = [
   { to: '/sozluk', labelKey: 'sozluk' },
@@ -168,11 +204,12 @@ export default function Navbar({ onLoginClick, onLogoutClick, isLoggedIn, printH
             })}
           </nav>
 
-          {/* Sağ — Streak, Giriş Yap, Pro'ya Geç, Hamburger (shrink-0) */}
+          {/* Sağ — XP / günlük hedef, Giriş Yap, Pro'ya Geç, Hamburger (shrink-0) */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            <NavbarXpChip />
             <Link
               to="/"
-              className={`hidden sm:inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold border transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400/50 ${
+              className={`hidden md:inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-[10px] font-semibold border transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400/50 ${
                 dailyGoal.metToday
                   ? 'border-amber-400/40 bg-amber-500/10 text-amber-700 dark:text-amber-300 hover:bg-amber-500/15'
                   : dailyGoal.streak > 0
@@ -182,11 +219,9 @@ export default function Navbar({ onLoginClick, onLogoutClick, isLoggedIn, printH
               title={`Günlük seri: ${dailyGoal.streak} gün · Bugün ${dailyGoal.todayCount}/${DAILY_GOAL}`}
               aria-label={`Günlük seri ${dailyGoal.streak} gün, bugün ${dailyGoal.todayCount} / ${DAILY_GOAL} çekim`}
             >
-              <Flame className={`w-3.5 h-3.5 ${dailyGoal.metToday ? '' : dailyGoal.streak > 0 ? '' : 'opacity-60'}`} strokeWidth={2.2} />
+              <span aria-hidden>🔥</span>
               <span className="tabular-nums">{dailyGoal.streak}</span>
-              <span className="text-[10px] opacity-60 hidden md:inline">
-                {dailyGoal.todayCount}/{DAILY_GOAL}
-              </span>
+              <span className="opacity-60 tabular-nums">{dailyGoal.todayCount}/{DAILY_GOAL}</span>
             </Link>
             {!resolvedLoggedIn && (
               <button

@@ -3,12 +3,11 @@ import fs from 'fs';
 
 const TENSES = [
   'Presente',
-  'Pretérito Indefinido',
   'Pretérito Imperfecto',
+  'Pretérito Indefinido',
   'Pretérito Perfecto',
+  'Pluscuamperfecto',
   'Futuro Simple',
-  'Condicional',
-  'Subjuntivo Presente',
 ];
 
 const JSON_PATH = './example_sentences.json';

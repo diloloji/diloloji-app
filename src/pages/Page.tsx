@@ -30,6 +30,8 @@ import ErrorAnalysisCard from '../components/ErrorAnalysisCard';
 import { getStarredVerbs, toggleStarredVerb, isStarredVerb } from '../utils/starredVerbs';
 import { getActivityHistory, getLastNDays, addActivityToday } from '../utils/activityHistory';
 import { updateDocumentTitle } from '../utils/dailyGoal';
+import { getTotalXP, getLevel, getXPProgress } from '../utils/xpLevel';
+import { claimFirstDailyQuizBonus, claimDifferentVerbBonus } from '../utils/xpDailyBonuses';
 import { getFlashcardDecks, addCardToDeck, type FlashcardDeck } from '../utils/flashcardDecks';
 import { useXp } from '../contexts/XpContext';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -91,6 +93,25 @@ const SPANISH_TENSE_SHORT: Record<string, string> = {
 };
 
 type MistakeReplaySessionState = { queue: MistakeMemoryEntry[]; index: number; resolvedInSession: number };
+
+type QuizXpSessionBreakdown = {
+  correctAnswers: number;
+  firstTryBonus: number;
+  hintPenalty: number;
+  dailyFirst: number;
+  dailyVerb: number;
+  flawless: number;
+};
+
+type QuizCompletionSummary = {
+  totalEarnedSession: number;
+  breakdown: QuizXpSessionBreakdown;
+  startLevel: number;
+  endLevel: number;
+  leveledUp: boolean;
+  barFromPercent: number;
+  barToPercent: number;
+};
 
 type AppMode = 'conjugation' | 'ezber';
 
@@ -709,7 +730,7 @@ export function Page() {
   /** Uygulama modu: URL'den türetilir */
   const appMode: AppMode = location.pathname === '/ezber-makinesi' ? 'ezber' : 'conjugation';
 
-  const { addXP, level } = useXp();
+  const { addXP, showFloatingXp, level } = useXp();
   const { t } = useTranslation();
 
   const [verbInput, setVerbInput] = useState('');
@@ -768,6 +789,8 @@ export function Page() {
   const [showHints, setShowHints] = useState(false);
   const [error, setError] = useState('');
   const [showCongrats, setShowCongrats] = useState(false);
+  const [quizCompletionSummary, setQuizCompletionSummary] = useState<QuizCompletionSummary | null>(null);
+  const [congratsXpBar, setCongratsXpBar] = useState(0);
   const [randomVerbMode] = useState(false);
   const [combo, setCombo] = useState(0);
   const [totalScore, setTotalScore] = useState(0);
@@ -913,21 +936,7 @@ export function Page() {
   const [timeAttackPointsFlash, setTimeAttackPointsFlash] = useState<number | null>(null);
   const [timeAttackShake, setTimeAttackShake] = useState(false);
   const timeAttackTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const timeAttackXpAwardedRef = useRef(false);
   const timeAttackSaveDoneRef = useRef(false);
-
-  /** Zamana Karşı bittiğinde bir kez XP ver (skor/10); tekrar oynayınca sıfırla */
-  useEffect(() => {
-    if (timeAttackGameOver) {
-      if (!timeAttackXpAwardedRef.current) {
-        const xp = Math.floor(timeAttackScore / 10);
-        if (xp > 0) addXP(xp);
-        timeAttackXpAwardedRef.current = true;
-      }
-    } else {
-      timeAttackXpAwardedRef.current = false;
-    }
-  }, [timeAttackGameOver, timeAttackScore, addXP]);
 
   /** Zamana Karşı bittiğinde bir kez skoru localStorage'a yaz; kişisel rekor ve son 5'i state'e al (zorluk bazlı) */
   useEffect(() => {
@@ -1151,7 +1160,47 @@ export function Page() {
   /** Quiz inputları arasında focus yönetimi: refs[i] ile i. kutucuğa odaklanırız */
   const quizInputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
+  const quizSessionHadWrongRef = useRef(false);
+  const quizDailyBonusesAppliedRef = useRef(false);
+  const quizFlawlessAwardedRef = useRef(false);
+  const quizCompletionHandledRef = useRef(false);
+  const quizPersonUsedHintRef = useRef<Set<string>>(new Set());
+  const quizBarStartPercentRef = useRef(0);
+  const quizStartLevelRef = useRef(1);
+  const quizXpSessionBreakdownRef = useRef<QuizXpSessionBreakdown>({
+    correctAnswers: 0,
+    firstTryBonus: 0,
+    hintPenalty: 0,
+    dailyFirst: 0,
+    dailyVerb: 0,
+    flawless: 0,
+  });
+  const awardQuizCorrectXpRef = useRef<
+    (pronoun: string, opts?: { isReveal?: boolean; clientX?: number; clientY?: number }) => void
+  >(() => {});
+
+  const resetQuizXpSession = useCallback(() => {
+    quizSessionHadWrongRef.current = false;
+    quizDailyBonusesAppliedRef.current = false;
+    quizFlawlessAwardedRef.current = false;
+    quizCompletionHandledRef.current = false;
+    quizPersonUsedHintRef.current.clear();
+    quizXpSessionBreakdownRef.current = {
+      correctAnswers: 0,
+      firstTryBonus: 0,
+      hintPenalty: 0,
+      dailyFirst: 0,
+      dailyVerb: 0,
+      flawless: 0,
+    };
+    const tp = getTotalXP();
+    quizBarStartPercentRef.current = getXPProgress(tp).percent;
+    quizStartLevelRef.current = getLevel(tp);
+    setQuizCompletionSummary(null);
+  }, []);
+
   const resetQuizExerciseState = useCallback(() => {
+    resetQuizXpSession();
     if (comboDisplayTimeoutRef.current) {
       clearTimeout(comboDisplayTimeoutRef.current);
       comboDisplayTimeoutRef.current = null;
@@ -1169,7 +1218,7 @@ export function Page() {
     setQuizEmptyShake(null);
     setQuizListHighlightPronoun(null);
     setCurrentFocusIndex(0);
-  }, [selectedLanguage, pronounsForLang, resetSmartHintsAll]);
+  }, [selectedLanguage, pronounsForLang, resetSmartHintsAll, resetQuizXpSession]);
 
   /** Sanal klavye: harf hangi inputa eklenecek (en son focus alan) */
   const activeQuizInputIndexRef = useRef(0);
@@ -2016,7 +2065,20 @@ export function Page() {
     const isCorrect = checkOne(timeAttackInput.trim(), correct);
     if (isCorrect) {
       setTimeAttackFeedback('correct');
+      const left = timeAttackTimeLeft;
       const nextCombo = timeAttackCombo + 1;
+      const tb = Math.max(1, Math.min(10, Math.round(1 + (left / cfg.secondsPerQuestion) * 9)));
+      let xpMult = 1;
+      if (nextCombo >= 5) xpMult = 2;
+      else if (nextCombo >= 3) xpMult = 1.5;
+      const xpGain = Math.round((15 + tb) * xpMult);
+      addXP(xpGain);
+      const xpMultLabel = xpMult >= 2 ? '×2' : xpMult >= 1.5 ? '×1.5' : '';
+      showFloatingXp(
+        xpMultLabel ? `+${xpGain} XP ⚡${xpMultLabel}` : `+${xpGain} XP`,
+        window.innerWidth / 2,
+        window.innerHeight * 0.35
+      );
       const points = 10 * timeAttackCombo * cfg.multiplier;
       setTimeAttackScore((s) => s + points);
       setTimeAttackCombo((c) => c + 1);
@@ -2035,7 +2097,19 @@ export function Page() {
     } else {
       handleTimeAttackWrong(correct);
     }
-  }, [timeAttackQuestion, timeAttackGameOver, timeAttackLocked, timeAttackInput, timeAttackCombo, selectedLanguage, timeAttackDifficulty, handleTimeAttackWrong]);
+  }, [
+    timeAttackQuestion,
+    timeAttackGameOver,
+    timeAttackLocked,
+    timeAttackInput,
+    timeAttackCombo,
+    timeAttackTimeLeft,
+    selectedLanguage,
+    timeAttackDifficulty,
+    handleTimeAttackWrong,
+    addXP,
+    showFloatingXp,
+  ]);
 
   /** Per-question timer sıfıra düştüğünde: doğru cevabı göster, can düşür, sıradaki soruya geç */
   useEffect(() => {
@@ -2135,6 +2209,92 @@ export function Page() {
     lastAccentInsertRef.current = { index, caretPosition: start + char.length };
   }, [userAnswers]);
 
+  const openQuizCompletion = useCallback(() => {
+    if (mistakeReplaySession) return;
+    if (quizCompletionHandledRef.current) return;
+    quizCompletionHandledRef.current = true;
+
+    if (!quizSessionHadWrongRef.current && !quizFlawlessAwardedRef.current) {
+      quizFlawlessAwardedRef.current = true;
+      addXP(20);
+      quizXpSessionBreakdownRef.current.flawless += 20;
+    }
+
+    const b = { ...quizXpSessionBreakdownRef.current };
+    const endTotal = getTotalXP();
+    const endLevel = getLevel(endTotal);
+    const barTo = getXPProgress(endTotal).percent;
+    const totalEarnedSession =
+      b.correctAnswers + b.firstTryBonus + b.dailyFirst + b.dailyVerb + b.flawless - b.hintPenalty;
+
+    setQuizCompletionSummary({
+      totalEarnedSession,
+      breakdown: b,
+      startLevel: quizStartLevelRef.current,
+      endLevel,
+      leveledUp: endLevel > quizStartLevelRef.current,
+      barFromPercent: quizBarStartPercentRef.current,
+      barToPercent: barTo,
+    });
+    setCongratsXpBar(quizBarStartPercentRef.current);
+    requestAnimationFrame(() => setCongratsXpBar(barTo));
+
+    if (quizLayout === 'list') setShowCongrats(true);
+  }, [addXP, mistakeReplaySession, quizLayout]);
+
+  const awardQuizCorrectXp = useCallback(
+    (pronoun: string, opts?: { isReveal?: boolean; clientX?: number; clientY?: number }) => {
+      if (!verbKey || mode !== 'quiz') return;
+
+      const hintPen = showHints || opts?.isReveal || quizPersonUsedHintRef.current.has(pronoun) ? 3 : 0;
+      const firstTry =
+        !showHints &&
+        !opts?.isReveal &&
+        (quizAttempts[pronoun] ?? 0) === 0 &&
+        quizHintMode[pronoun] == null;
+
+      const b = quizXpSessionBreakdownRef.current;
+      b.correctAnswers += 10;
+
+      let firstTryBonus = 0;
+      if (firstTry) {
+        firstTryBonus = 5;
+        b.firstTryBonus += 5;
+      }
+      if (hintPen) b.hintPenalty += hintPen;
+
+      let dailyExtra = 0;
+      if (!quizDailyBonusesAppliedRef.current) {
+        const d1 = claimFirstDailyQuizBonus();
+        const d2 = claimDifferentVerbBonus(verbKey);
+        if (d1 || d2) {
+          quizDailyBonusesAppliedRef.current = true;
+          dailyExtra = d1 + d2;
+          if (d1) b.dailyFirst += d1;
+          if (d2) b.dailyVerb += d2;
+        }
+      }
+
+      const net = 10 + firstTryBonus - hintPen + dailyExtra;
+      const cx = opts?.clientX ?? window.innerWidth / 2;
+      const cy = opts?.clientY ?? window.innerHeight * 0.38;
+      if (net !== 0) {
+        addXP(net);
+        showFloatingXp(`+${net} XP`, cx, cy);
+      }
+    },
+    [verbKey, mode, showHints, quizAttempts, quizHintMode, addXP, showFloatingXp]
+  );
+
+  awardQuizCorrectXpRef.current = awardQuizCorrectXp;
+
+  useEffect(() => {
+    if (mode !== 'quiz' || !verbKey || mistakeReplaySession) return;
+    const allOk = pronounIds.every((p) => quizFeedback[p] === 'correct');
+    if (!allOk) return;
+    openQuizCompletion();
+  }, [mode, verbKey, mistakeReplaySession, quizFeedback, pronounIds, openQuizCompletion]);
+
   const checkQuiz = useCallback(() => {
     if (!conjugations) return;
     const firstEmpty = pronounIds.find((p) => (userAnswers[p] ?? '').trim() === '');
@@ -2157,6 +2317,12 @@ export function Page() {
       }
     });
     const hasWrong = pronounIds.some((p) => next[p] === 'wrong');
+    if (hasWrong) quizSessionHadWrongRef.current = true;
+    pronounIds.forEach((pronoun) => {
+      if (next[pronoun] === 'correct' && quizFeedback[pronoun] !== 'correct') {
+        awardQuizCorrectXp(pronoun);
+      }
+    });
     const newCorrectCount = pronounIds.filter(
       (p) => next[p] === 'correct' && quizFeedback[p] !== 'correct'
     ).length;
@@ -2186,7 +2352,19 @@ export function Page() {
       addActivityToday(newCorrectCount);
       updateDocumentTitle();
     }
-  }, [conjugations, userAnswers, quizFeedback, showHints, selectedTense, verbKey, addToMistakeBank, onSpanishQuizWrong, onSpanishQuizCorrect]);
+  }, [
+    conjugations,
+    userAnswers,
+    quizFeedback,
+    showHints,
+    selectedTense,
+    verbKey,
+    addToMistakeBank,
+    onSpanishQuizWrong,
+    onSpanishQuizCorrect,
+    awardQuizCorrectXp,
+    pronounIds,
+  ]);
 
   /** Show Hint açıldığında mevcut fiil+zaman için tüm şahısları Hata Bankasına ekle. */
   const toggleShowHints = useCallback(() => {
@@ -2200,6 +2378,7 @@ export function Page() {
   }, [verbKey, mode, selectedTense, addToMistakeBank]);
 
   const resetQuiz = useCallback(() => {
+    resetQuizXpSession();
     setUserAnswers(getInitialUserAnswers(selectedLanguage));
     setQuizFeedback({ je: null, tu: null, il: null, nous: null, vous: null, ils: null } as Record<string, 'correct' | 'wrong' | 'typo' | null>);
     setQuizPasséHint({ je: null, tu: null, il: null, nous: null, vous: null, ils: null });
@@ -2208,7 +2387,7 @@ export function Page() {
     setShowCongrats(false);
     setCurrentFocusIndex(0);
     requestAnimationFrame(() => quizInputRefs.current[0]?.focus());
-  }, [selectedLanguage, resetSmartHintsAll]);
+  }, [selectedLanguage, resetSmartHintsAll, resetQuizXpSession]);
 
   /** Zorlandıklarım (Review) modunu aç: tekrar zamanı gelmiş (due) sorulardan rastgele birini seç. */
   const openReviewMode = useCallback(() => {
@@ -2351,6 +2530,7 @@ export function Page() {
       opts: { onRevealAdvance?: () => void } = {}
     ) => {
       const nextAttempts = (quizAttempts[pronoun] ?? 0) + 1;
+      if (nextAttempts >= 1) quizPersonUsedHintRef.current.add(pronoun);
       setQuizAttempts((prev) => ({ ...prev, [pronoun]: nextAttempts }));
       if (nextAttempts >= 3) {
         setQuizHintMode((prev) => ({ ...prev, [pronoun]: 'reveal' }));
@@ -2362,6 +2542,7 @@ export function Page() {
         revealTimersRef.current[pronoun] = setTimeout(() => {
           revealTimersRef.current[pronoun] = null;
           setQuizFeedback((prev) => ({ ...prev, [pronoun]: 'correct' }));
+          awardQuizCorrectXpRef.current(pronoun, { isReveal: true });
           speakAuto(correct, { lang: selectedLanguage === 'es' ? 'es-ES' : 'fr-FR' });
           opts.onRevealAdvance?.();
           setQuizAttempts((prev) => ({ ...prev, [pronoun]: 0 }));
@@ -2384,6 +2565,7 @@ export function Page() {
   const requestHint = useCallback((pronoun: string) => {
     if (!verbKey) return;
     if (quizHintMode[pronoun] === 'reveal') return;
+    quizPersonUsedHintRef.current.add(pronoun);
     if ((quizAttempts[pronoun] ?? 0) === 0) {
       setQuizAttempts((prev) => ({ ...prev, [pronoun]: 1 }));
     }
@@ -2412,6 +2594,7 @@ export function Page() {
         return;
       }
       if (result === 'wrong') {
+        quizSessionHadWrongRef.current = true;
         setCombo(0);
         if (verbKey) {
           onSpanishQuizWrong(pronoun, user, correct);
@@ -2442,8 +2625,11 @@ export function Page() {
         return;
       }
       setQuizPasséHint((prev) => ({ ...prev, [pronoun]: null }));
-      clearSmartHint(pronoun);
       onSpanishQuizCorrect(pronoun);
+      const el = e.currentTarget;
+      const rect = el.getBoundingClientRect();
+      awardQuizCorrectXp(pronoun, { clientX: rect.left + rect.width / 2, clientY: rect.top });
+      clearSmartHint(pronoun);
       if (!showHints) {
         setCombo((c) => {
           const nextCombo = c + 1;
@@ -2473,11 +2659,10 @@ export function Page() {
       const allCorrect =
         allFilled &&
         pronounIds.every((p) => checkAnswer(userAnswers[p], conjugationsForDisplay[p]) === 'correct');
-      if (allCorrect) setShowCongrats(true);
-      else if (currentIndex < pronounIds.length - 1)
+      if (!allCorrect && currentIndex < pronounIds.length - 1)
         requestAnimationFrame(() => quizInputRefs.current[currentIndex + 1]?.focus());
     },
-    [conjugationsForDisplay, userAnswers, showHints, selectedTense, verbKey, addToMistakeBank, selectedLanguage, applySmartHintAfterWrong, clearSmartHint, pronounIds, onSpanishQuizWrong, onSpanishQuizCorrect, mistakeReplaySession]
+    [conjugationsForDisplay, userAnswers, showHints, selectedTense, verbKey, addToMistakeBank, selectedLanguage, applySmartHintAfterWrong, clearSmartHint, pronounIds, onSpanishQuizWrong, onSpanishQuizCorrect, mistakeReplaySession, awardQuizCorrectXp]
   );
 
   /** Odak modu: tek şahıs kontrolü. Doğruysa sonraki şahısa geç, yanlışsa aynı yerde kal. */
@@ -2501,6 +2686,7 @@ export function Page() {
       return;
     }
     if (result === 'wrong') {
+      quizSessionHadWrongRef.current = true;
       setCombo(0);
       if (verbKey) {
         onSpanishQuizWrong(pronoun, user, correct);
@@ -2527,11 +2713,12 @@ export function Page() {
       return;
     }
     setQuizPasséHint((prev) => ({ ...prev, [pronoun]: null }));
-    clearSmartHint(pronoun);
     onSpanishQuizCorrect(pronoun);
     if (mistakeReplaySession && selectedLanguage === 'es' && verbKey) {
       const cur = mistakeReplaySession.queue[mistakeReplaySession.index];
       if (cur && verbKey === cur.verb && selectedTense === cur.tense && pronoun === cur.person) {
+        awardQuizCorrectXp(pronoun);
+        clearSmartHint(pronoun);
         if (!showHints) {
           setCombo((c) => {
             const nextCombo = c + 1;
@@ -2572,6 +2759,8 @@ export function Page() {
         return;
       }
     }
+    awardQuizCorrectXp(pronoun);
+    clearSmartHint(pronoun);
     if (!showHints) {
       setCombo((c) => {
         const nextCombo = c + 1;
@@ -2592,7 +2781,7 @@ export function Page() {
     speakAuto(correct, { lang: selectedLanguage === 'es' ? 'es-ES' : 'fr-FR' });
     setCurrentFocusIndex((i) => i + 1);
     requestAnimationFrame(() => quizInputRefs.current[0]?.focus());
-  }, [conjugationsForDisplay, userAnswers, currentFocusIndex, showHints, selectedTense, verbKey, addToMistakeBank, selectedLanguage, applySmartHintAfterWrong, clearSmartHint, pronounIds, onSpanishQuizWrong, onSpanishQuizCorrect, mistakeReplaySession, loadVerb]);
+  }, [conjugationsForDisplay, userAnswers, currentFocusIndex, showHints, selectedTense, verbKey, addToMistakeBank, selectedLanguage, applySmartHintAfterWrong, clearSmartHint, pronounIds, onSpanishQuizWrong, onSpanishQuizCorrect, mistakeReplaySession, loadVerb, awardQuizCorrectXp]);
 
   const SITE_URL = 'https://diloloji.com';
   const isEzber = location.pathname === '/ezber-makinesi';
@@ -3521,7 +3710,7 @@ export function Page() {
           </section>
         )}
 
-        {/* Tebrik mesajı */}
+        {/* Tebrik mesajı + XP özeti (liste alıştırma) */}
         {showCongrats && verbKey && mode === 'quiz' && (
           <div
             className="mb-4 rounded-2xl border border-emerald-200/80 dark:border-emerald-400/30 bg-emerald-50/80 dark:bg-emerald-500/15 p-6 text-center shadow-sm transition-colors duration-300"
@@ -3529,6 +3718,51 @@ export function Page() {
           >
             <p className="text-emerald-800 dark:text-emerald-200 font-semibold text-lg">Tebrikler!</p>
             <p className="text-emerald-700 dark:text-emerald-300/90 mt-1 text-sm">Tüm çekimler doğru.</p>
+            {quizCompletionSummary && (
+              <div className="mt-4 text-left max-w-md mx-auto space-y-3">
+                {quizCompletionSummary.leveledUp && (
+                  <p className="text-center font-bold text-amber-600 dark:text-amber-300 text-sm">🎊 LEVEL ATLADI!</p>
+                )}
+                <p className="text-center text-lg font-bold text-emerald-800 dark:text-emerald-200 tabular-nums">
+                  +{quizCompletionSummary.totalEarnedSession} XP
+                </p>
+                <p className="text-xs text-emerald-900/85 dark:text-emerald-200/85 leading-relaxed">
+                  {[
+                    quizCompletionSummary.breakdown.correctAnswers > 0
+                      ? `Doğru cevaplar: +${quizCompletionSummary.breakdown.correctAnswers} XP`
+                      : '',
+                    quizCompletionSummary.breakdown.firstTryBonus > 0
+                      ? `İlk denemede doğru: +${quizCompletionSummary.breakdown.firstTryBonus} XP`
+                      : '',
+                    quizCompletionSummary.breakdown.hintPenalty > 0
+                      ? `İpucu: −${quizCompletionSummary.breakdown.hintPenalty} XP`
+                      : '',
+                    quizCompletionSummary.breakdown.dailyFirst > 0
+                      ? `İlk günlük alıştırma: +${quizCompletionSummary.breakdown.dailyFirst} XP`
+                      : '',
+                    quizCompletionSummary.breakdown.dailyVerb > 0
+                      ? `Bugün yeni fiil: +${quizCompletionSummary.breakdown.dailyVerb} XP`
+                      : '',
+                    quizCompletionSummary.breakdown.flawless > 0
+                      ? `Hatasız bonus: +${quizCompletionSummary.breakdown.flawless} XP`
+                      : '',
+                  ]
+                    .filter(Boolean)
+                    .join(' · ')}
+                </p>
+                <div>
+                  <div className="h-2 rounded-full bg-emerald-200/80 dark:bg-emerald-900/50 overflow-hidden">
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-amber-400 transition-[width] duration-1000 ease-out"
+                      style={{ width: `${Math.round(congratsXpBar)}%` }}
+                    />
+                  </div>
+                  <p className="text-[10px] text-emerald-800/70 dark:text-emerald-300/70 mt-1 text-center">
+                    Seviye çubuğu (bu oturum sonrası)
+                  </p>
+                </div>
+              </div>
+            )}
             <div className="mt-4 flex flex-wrap justify-center gap-2">
               {randomVerbMode && (
                 <button
@@ -3541,7 +3775,10 @@ export function Page() {
               )}
               <button
                 type="button"
-                onClick={() => setShowCongrats(false)}
+                onClick={() => {
+                  setShowCongrats(false);
+                  setQuizCompletionSummary(null);
+                }}
                 className="rounded-xl bg-emerald-600 dark:bg-emerald-500 text-white text-sm font-medium px-5 py-2.5 hover:bg-emerald-700 dark:hover:bg-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:ring-offset-2 dark:focus:ring-offset-slate-900 transition-colors duration-300"
               >
                 Kapat
@@ -5629,6 +5866,46 @@ export function Page() {
             {quizLayout === 'focus' && currentFocusIndex >= pronounIds.length && (
               <div className="p-6 sm:p-8 text-center rounded-xl mx-4 mb-4 bg-gradient-to-br from-emerald-50 to-teal-50/80 dark:from-emerald-500/15 dark:to-teal-500/10 border border-emerald-200/80 dark:border-emerald-400/30" role="alert">
                 <p className="text-emerald-800 dark:text-emerald-200 font-bold text-xl">🎉 Tebrikler! Tüm çekimleri tamamladın</p>
+                {quizCompletionSummary && (
+                  <div className="mt-4 max-w-md mx-auto space-y-3 text-left">
+                    {quizCompletionSummary.leveledUp && (
+                      <p className="text-center font-bold text-amber-600 dark:text-amber-300 text-sm">🎊 LEVEL ATLADI!</p>
+                    )}
+                    <p className="text-center text-lg font-bold text-emerald-800 dark:text-emerald-200 tabular-nums">
+                      +{quizCompletionSummary.totalEarnedSession} XP
+                    </p>
+                    <p className="text-xs text-emerald-900/85 dark:text-emerald-200/85 leading-relaxed text-center">
+                      {[
+                        quizCompletionSummary.breakdown.correctAnswers > 0
+                          ? `Doğru: +${quizCompletionSummary.breakdown.correctAnswers} XP`
+                          : '',
+                        quizCompletionSummary.breakdown.firstTryBonus > 0
+                          ? `İlk deneme: +${quizCompletionSummary.breakdown.firstTryBonus} XP`
+                          : '',
+                        quizCompletionSummary.breakdown.hintPenalty > 0
+                          ? `İpucu: −${quizCompletionSummary.breakdown.hintPenalty} XP`
+                          : '',
+                        quizCompletionSummary.breakdown.dailyFirst > 0
+                          ? `Günlük ilk: +${quizCompletionSummary.breakdown.dailyFirst} XP`
+                          : '',
+                        quizCompletionSummary.breakdown.dailyVerb > 0
+                          ? `Yeni fiil: +${quizCompletionSummary.breakdown.dailyVerb} XP`
+                          : '',
+                        quizCompletionSummary.breakdown.flawless > 0
+                          ? `Hatasız: +${quizCompletionSummary.breakdown.flawless} XP`
+                          : '',
+                      ]
+                        .filter(Boolean)
+                        .join(' · ')}
+                    </p>
+                    <div className="h-2 rounded-full bg-emerald-200/80 dark:bg-emerald-900/50 overflow-hidden">
+                      <div
+                        className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-amber-400 transition-[width] duration-1000 ease-out"
+                        style={{ width: `${Math.round(congratsXpBar)}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
                 <div className="flex flex-wrap justify-center gap-3 mt-6">
                   <button
                     type="button"
