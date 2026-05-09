@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
+import { useState, useCallback, useEffect, useRef, useMemo, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { useLocation, useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
@@ -15,7 +15,8 @@ import {
 import { formatConjugation } from '../conjugation/stemSuffix';
 import { checkPasséComposéLogic } from '../conjugation/passeCompose';
 import { getRandomVerbForLang } from '../data/commonVerbs';
-import { getRandomVerbSpanish } from '../data/spanish';
+import { getRandomVerbSpanish, formatSpanishIrregularSectionTitlePrefix, type TenseIdEs } from '../data/spanish';
+import irregularByTenseJson from '../data/irregular_by_tense.json';
 import { isIrregularVerb } from '../data/irregularVerbs';
 import { getTranslationOrPlaceholder } from '../data/dictionary';
 import { SPANISH_VERBS } from '../data/spanish-data';
@@ -23,7 +24,6 @@ import { getVerbExample } from '../data/verbExamples';
 import { getTenseExplanation } from '../data/tenseExplanations';
 import { getVerbMetadata } from '../data/verbMetadata';
 import { VERB_LEVELS, CEFR_LEVELS, CEFR_COLORS, type CEFRLevel } from '../data/verbLevels';
-import { fetchVerbTranslationFromGroq, fetchAIVerbExamples, type AIVerbExample } from '../services/dictionaryApi';
 import { getMistakes, getDueMistakes, addMistake, updateMistakeReview, type MistakeEntry } from '../utils/mistakeBank';
 import { getConjugationRule } from '../utils/conjugationRules';
 import ErrorAnalysisCard from '../components/ErrorAnalysisCard';
@@ -61,8 +61,37 @@ import {
   fetchSynonyms,
   type VerbSynonymPayload,
 } from '../services/synonyms';
+import {
+  recordMistake as recordSpanishMistake,
+  markResolved as markSpanishMistakeResolved,
+  getMistake as getSpanishMistake,
+  getUnresolvedMistakes,
+  getMistakesForReviewSorted,
+  getMistakeMemoryStats,
+  type MistakeMemoryEntry,
+} from '../lib/mistake_memory.js';
 
 type Mode = 'learning' | 'quiz' | 'review' | 'starred' | 'time-attack' | 'compare';
+
+/** Hata hafızası banner oturumda kapatma anahtarı */
+function spanishMistakeBannerKey(verb: string, tense: string, person: string) {
+  return `${verb}\u0000${tense}\u0000${person}`;
+}
+
+const SPANISH_TENSE_SHORT: Record<string, string> = {
+  presente: 'Pres.',
+  imperfecto: 'Imp.',
+  preterito: 'Indef.',
+  'preterito-perfecto': 'Perf.',
+  pluscuamperfecto: 'Plusc.',
+  futuro: 'Fut.',
+  'futuro-compuesto': 'Fut.c.',
+  condicional: 'Cond.',
+  'subjuntivo-presente': 'Subj.',
+};
+
+type MistakeReplaySessionState = { queue: MistakeMemoryEntry[]; index: number; resolvedInSession: number };
+
 type AppMode = 'conjugation' | 'ezber';
 
 /** Zamana Karşı zorluk seviyesi */
@@ -133,6 +162,7 @@ const TIME_ATTACK_STORAGE_KEY_PREFIX = 'diloloji-time-attack-scores';
 const TIME_ATTACK_MAX_ENTRIES = 50;
 const EXERCISE_MODE_PREFERENCE_KEY = 'exercise_mode_preference';
 const VERB_HISTORY_STORAGE_KEY = 'verb_history_v1';
+const HISTORY_PANEL_OPEN_KEY = 'history_panel_open';
 const SYNONYM_REGISTER_STYLES: Record<'formal' | 'informal' | 'neutral', string> = {
   formal: 'bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/35',
   informal: 'bg-orange-500/15 text-orange-700 dark:text-orange-300 border-orange-500/35',
@@ -144,6 +174,76 @@ type StaticExample = {
   tr?: string;
   person?: string;
 } | null;
+
+/** example_sentences.js içindeki person metni ↔ uygulama pronoun id */
+const QUIZ_EXAMPLE_PRONOUN_TOKENS: Record<string, string[]> = {
+  yo: ['yo'],
+  tu: ['tu', 'tú'],
+  el: ['el', 'él', 'ella', 'usted'],
+  nosotros: ['nosotros', 'nosotras'],
+  vosotros: ['vosotros', 'vosotras'],
+  ellos: ['ellos', 'ellas', 'ustedes'],
+};
+
+function normalizeQuizExamplePersonPart(s: string): string {
+  return s
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+}
+
+function examplePersonMatchesPronoun(examplePerson: string | undefined, pronounId: string): boolean {
+  if (!examplePerson?.trim()) return true;
+  const segments = examplePerson
+    .split(/\s*\/\s*|\s*,\s*|\s+y\s+/i)
+    .map(normalizeQuizExamplePersonPart)
+    .filter(Boolean);
+  const allowed = (QUIZ_EXAMPLE_PRONOUN_TOKENS[pronounId] ?? []).map(normalizeQuizExamplePersonPart);
+  if (allowed.length === 0) return false;
+  return segments.some((seg) => allowed.some((a) => seg === a));
+}
+
+function renderSpanishQuizExampleLine(es: string, highlightForm: string | null): ReactNode {
+  if (!highlightForm?.trim() || !es) return es;
+  const fl = highlightForm.length;
+  const parts: ReactNode[] = [];
+  let i = 0;
+  let searchStart = 0;
+  const isLetter = (c: string) => (c ? /\p{L}/u.test(c) : false);
+  const target = highlightForm.toLowerCase();
+  let foundAny = false;
+  while (searchStart <= es.length - fl) {
+    const slice = es.slice(searchStart, searchStart + fl);
+    if (slice.toLowerCase() !== target) {
+      searchStart += 1;
+      continue;
+    }
+    const idx = searchStart;
+    const before = idx > 0 ? es[idx - 1] : '';
+    const after = idx + fl < es.length ? es[idx + fl] : '';
+    if (isLetter(before) || isLetter(after)) {
+      searchStart = idx + 1;
+      continue;
+    }
+    if (idx > i) parts.push(es.slice(i, idx));
+    parts.push(
+      <strong
+        key={`quiz-ex-hl-${idx}`}
+        className="font-bold not-italic"
+        style={{ color: 'var(--accent-purple)' }}
+      >
+        {es.slice(idx, idx + fl)}
+      </strong>
+    );
+    i = idx + fl;
+    searchStart = i;
+    foundAny = true;
+  }
+  if (!foundAny) return es;
+  if (i < es.length) parts.push(es.slice(i));
+  return <>{parts}</>;
+}
 
 function markerColorClass(color: string): string {
   const map: Record<string, string> = {
@@ -546,6 +646,43 @@ function StarIcon({ filled, className }: { filled?: boolean; className?: string 
   );
 }
 
+function SpanishMistakeRecallBanner({
+  mm,
+  pronounLabel,
+  tenseLabel,
+  onDismiss,
+}: {
+  mm: MistakeMemoryEntry;
+  pronounLabel: string;
+  tenseLabel: string;
+  onDismiss: () => void;
+}) {
+  return (
+    <div className="mb-2 rounded-lg border border-amber-400/80 dark:border-amber-500/45 bg-amber-50/95 dark:bg-amber-950/40 px-3 py-2.5 text-left text-sm text-amber-950 dark:text-amber-100 shadow-sm">
+      <div className="flex justify-between gap-2 items-start">
+        <div className="min-w-0 space-y-1">
+          <p className="font-semibold">⚠️ Daha önce burada hata yaptın</p>
+          <p className="text-xs text-amber-900/90 dark:text-amber-200/90">
+            {pronounLabel} + {tenseLabel} → geçen sefer &quot;{mm.lastAnswer}&quot; yazdın
+          </p>
+          <p className="text-xs">
+            Doğrusu: <strong className="text-amber-900 dark:text-amber-50">{mm.correctAnswer}</strong>
+            <span className="text-amber-800/85 dark:text-amber-200/85"> (vurgu harfi dikkat!)</span>
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={onDismiss}
+          className="shrink-0 rounded-md px-1.5 py-0.5 text-base leading-none text-amber-800 dark:text-amber-200 hover:bg-amber-200/60 dark:hover:bg-amber-500/25 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+          aria-label="Uyarıyı kapat"
+        >
+          ×
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export function Page() {
   const { selectedLanguage, setSelectedLanguage } = useLanguage();
 
@@ -588,9 +725,6 @@ export function Page() {
   const [collocationLevelFilter, setCollocationLevelFilter] = useState<'A1' | 'A2' | 'B1'>('A1');
   const [activeCollocationTip, setActiveCollocationTip] = useState<string | null>(null);
   const [showAllIrregulars, setShowAllIrregulars] = useState(false);
-  /** AI ile üretilen örnek cümleler (fiil + zaman değişiminde yeniden istek) */
-  const [aiExamples, setAIExamples] = useState<AIVerbExample[]>([]);
-  const [aiExamplesLoading, setAIExamplesLoading] = useState(false);
   const [synonymData, setSynonymData] = useState<VerbSynonymPayload | null>(null);
   const [synonymLoading, setSynonymLoading] = useState(false);
   const [showSynonymSection, setShowSynonymSection] = useState(false);
@@ -602,12 +736,13 @@ export function Page() {
     tenseLabel: string;
     pronounLabel: string;
   } | null>(null);
-  /** Türkçe anlam: dictionaryApi (dinamik) + statik fallback */
+  /** Türkçe anlam: statik / yerel kaynaklar */
   const [translation, setTranslation] = useState<string | null>(null);
   const [dynamicMeaning, setDynamicMeaning] = useState<string | null>(null);
-  const [isMeaningLoading, setIsMeaningLoading] = useState(false);
   const [selectedTense, setSelectedTense] = useState<string>(() => getTenses('es')[0].id);
   const [mode, setMode] = useState<Mode>('learning');
+  const modeRef = useRef(mode);
+  modeRef.current = mode;
   const [userAnswers, setUserAnswers] = useState<Record<string, string>>(() => getInitialUserAnswers('es'));
   const [quizFeedback, setQuizFeedback] = useState<Record<string, 'correct' | 'wrong' | 'typo' | null>>(() =>
     Object.fromEntries(getPronouns('es').map((p) => [p.id, null as 'correct' | 'wrong' | null]))
@@ -668,17 +803,83 @@ export function Page() {
   });
   /** Odak modunda hangi şahısta olunduğu (0..5). 6 = tümü tamamlandı. */
   const [currentFocusIndex, setCurrentFocusIndex] = useState(0);
+  /** Liste alıştırmasında statik örnek vurgusu için odaklanan şahıs */
+  const [quizListHighlightPronoun, setQuizListHighlightPronoun] = useState<string | null>(null);
   /** Boş cevap gönderildiğinde sarsılacak input (pronoun id); 500ms sonra temizlenir */
   const [quizEmptyShake, setQuizEmptyShake] = useState<string | null>(null);
 
   /** Hata Bankası (Zorlandıklarım) — localStorage ile senkron */
   const [mistakeBank, setMistakeBank] = useState<MistakeEntry[]>([]);
+  /** İspanyolca hata hafızası (mistake_memory) — UI yenileme için sayaç */
+  const [mistakeMemoryTick, setMistakeMemoryTick] = useState(0);
+  const [mistakeBannerRev, setMistakeBannerRev] = useState(0);
+  const mistakeBannerDismissedRef = useRef<Set<string>>(new Set());
+  const pendingMistakeSidebarPersonRef = useRef<string | null>(null);
+  const [mistakeReplaySession, setMistakeReplaySession] = useState<MistakeReplaySessionState | null>(null);
+  const [mistakeReplayComplete, setMistakeReplayComplete] = useState<{
+    resolvedInSession: number;
+    remaining: number;
+  } | null>(null);
+  const [mistakeReplayShowTick, setMistakeReplayShowTick] = useState(false);
+  const mistakeReplayAdvanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const spanishUnresolvedMistakes = useMemo(() => {
+    void mistakeMemoryTick;
+    if (selectedLanguage !== 'es') return [];
+    return getUnresolvedMistakes().sort((a, b) => b.errorCount - a.errorCount);
+  }, [selectedLanguage, mistakeMemoryTick]);
+
+  const zorlandiklarimStatsTitle = useMemo(() => {
+    void mistakeMemoryTick;
+    const s = getMistakeMemoryStats();
+    const tensesEs = getTenses('es');
+    const pronounsEs = getPronouns('es');
+    const top = s.topMistake;
+    const topLine = top
+      ? `${top.verb} · ${tensesEs.find((t) => t.id === top.tense)?.label ?? top.tense} · ${pronounsEs.find((p) => p.id === top.person)?.label ?? top.person} (×${top.errorCount})`
+      : '—';
+    const worstTenseLbl = s.worstTenseId
+      ? tensesEs.find((t) => t.id === s.worstTenseId)?.label ?? s.worstTenseId
+      : '—';
+    const worstPerLbl = s.worstPersonId
+      ? pronounsEs.find((p) => p.id === s.worstPersonId)?.label ?? s.worstPersonId
+      : '—';
+    return `Toplam hata: ${s.totalErrors}\nÇözülen: ${s.resolvedCount}\nEn çok hata: ${topLine}\nEn sorunlu zaman: ${worstTenseLbl}\nEn sorunlu kişi: ${worstPerLbl}`;
+  }, [mistakeMemoryTick]);
+
+  useEffect(() => {
+    mistakeBannerDismissedRef.current = new Set();
+  }, [verbKey, selectedTense]);
+
+  useEffect(() => {
+    const pid = pendingMistakeSidebarPersonRef.current;
+    if (!pid || selectedLanguage !== 'es' || !verbKey) return;
+    const idx = pronounIds.indexOf(pid);
+    if (idx < 0) return;
+    pendingMistakeSidebarPersonRef.current = null;
+    setCurrentFocusIndex(idx);
+  }, [verbKey, selectedTense, selectedLanguage, pronounIds]);
+
+  useEffect(() => {
+    return () => {
+      if (mistakeReplayAdvanceTimerRef.current) clearTimeout(mistakeReplayAdvanceTimerRef.current);
+    };
+  }, []);
+
   /** Toast: "Listeden silindi! 🎉" vb. */
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   /** Yıldızlı fiiller — localStorage ile senkron */
   const [starredVerbs, setStarredVerbs] = useState<string[]>([]);
   const [verbHistory, setVerbHistory] = useState<string[]>([]);
+  const [historyPanelOpen, setHistoryPanelOpen] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    try {
+      return window.localStorage.getItem(HISTORY_PANEL_OPEN_KEY) === 'true';
+    } catch {
+      return false;
+    }
+  });
 
   /** Aktivite haritası (heatmap) modalı açık mı */
   const [showActivityModal, setShowActivityModal] = useState(false);
@@ -853,23 +1054,15 @@ export function Page() {
     revealTimersRef.current = {};
   }, [pronounsForLang]);
 
-  /** Alıştırma başlığından zaman değişimi: inputları temizle, feedback'i sıfırla */
+  /** Alıştırma başlığından zaman değişimi — tam sıfırlama fiil/zaman effect'inde (quiz + sol panel) */
   const changeQuizTense = useCallback((tenseId: string) => {
     if (tenseId === selectedTense) {
       setQuizTenseMenuOpen(false);
       return;
     }
     setSelectedTense(tenseId);
-    setUserAnswers(getInitialUserAnswers(selectedLanguage));
-    setQuizFeedback(Object.fromEntries(pronounsForLang.map((p) => [p.id, null as 'correct' | 'wrong' | 'typo' | null])));
-    setQuizPasséHint(Object.fromEntries(pronounsForLang.map((p) => [p.id, null])) as Record<string, string | null>);
-    resetSmartHintsAll();
-    setShowHints(false);
-    setShowCongrats(false);
-    setCurrentFocusIndex(0);
     setQuizTenseMenuOpen(false);
-    requestAnimationFrame(() => quizInputRefs.current[0]?.focus());
-  }, [selectedTense, selectedLanguage, pronounsForLang, resetSmartHintsAll]);
+  }, [selectedTense]);
 
   /** Kıyaslama sekmesi: üç zaman seçici (3'üncüsü opsiyonel) */
   const [compareTense1, setCompareTense1] = useState<string>(() => getTenses('fr')[0].id);
@@ -915,7 +1108,6 @@ export function Page() {
     setReverseLookupInfo(null);
     setTranslation(null);
     setDynamicMeaning(null);
-    setIsMeaningLoading(false);
     setUserAnswers(getInitialUserAnswers(selectedLanguage));
     setQuizFeedback(Object.fromEntries(pronounsForLang.map((p) => [p.id, null as 'correct' | 'wrong' | 'typo' | null])));
     setQuizPasséHint(Object.fromEntries(pronounsForLang.map((p) => [p.id, null as string | null])));
@@ -958,6 +1150,27 @@ export function Page() {
   const comboDisplayTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   /** Quiz inputları arasında focus yönetimi: refs[i] ile i. kutucuğa odaklanırız */
   const quizInputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  const resetQuizExerciseState = useCallback(() => {
+    if (comboDisplayTimeoutRef.current) {
+      clearTimeout(comboDisplayTimeoutRef.current);
+      comboDisplayTimeoutRef.current = null;
+    }
+    setUserAnswers(getInitialUserAnswers(selectedLanguage));
+    setQuizFeedback(
+      Object.fromEntries(pronounsForLang.map((p) => [p.id, null as 'correct' | 'wrong' | 'typo' | null]))
+    );
+    setQuizPasséHint(Object.fromEntries(pronounsForLang.map((p) => [p.id, null as string | null])));
+    resetSmartHintsAll();
+    setShowHints(false);
+    setShowCongrats(false);
+    setCombo(0);
+    setComboDisplay({ show: false, value: 0 });
+    setQuizEmptyShake(null);
+    setQuizListHighlightPronoun(null);
+    setCurrentFocusIndex(0);
+  }, [selectedLanguage, pronounsForLang, resetSmartHintsAll]);
+
   /** Sanal klavye: harf hangi inputa eklenecek (en son focus alan) */
   const activeQuizInputIndexRef = useRef(0);
   /** Aksan ekledikten sonra imleci doğru yere koymak için (useEffect'te kullanılır) */
@@ -1013,12 +1226,57 @@ export function Page() {
     }
     return getTranslationOrPlaceholder(verb, selectedLanguage);
   }, [selectedLanguage, spanishMeaningMap]);
+
+  const toggleHistoryPanel = useCallback(() => {
+    setHistoryPanelOpen((v) => {
+      const next = !v;
+      try {
+        localStorage.setItem(HISTORY_PANEL_OPEN_KEY, next ? 'true' : 'false');
+      } catch {
+        // ignore
+      }
+      return next;
+    });
+  }, []);
+
   const staticExample = useMemo((): StaticExample => {
     if (selectedLanguage !== 'es' || !verbKey) return null;
     const byVerb = (exampleSentences as Record<string, Record<string, StaticExample>>)[verbKey];
     if (!byVerb) return null;
     return byVerb[tenseLabel] ?? null;
   }, [selectedLanguage, verbKey, tenseLabel]);
+
+  const quizExampleHighlightPronoun = useMemo(() => {
+    if (selectedLanguage !== 'es' || mode !== 'quiz') return null;
+    if (quizLayout === 'focus') {
+      if (pronounIds.length === 0) return null;
+      return pronounIds[Math.min(currentFocusIndex, pronounIds.length - 1)];
+    }
+    return quizListHighlightPronoun;
+  }, [selectedLanguage, mode, quizLayout, pronounIds, currentFocusIndex, quizListHighlightPronoun]);
+
+  const quizExampleHighlightForm = useMemo(() => {
+    if (selectedLanguage !== 'es' || mode !== 'quiz' || !staticExample || !conjugations) return null;
+    if (!quizExampleHighlightPronoun) return null;
+    if (!examplePersonMatchesPronoun(staticExample.person, quizExampleHighlightPronoun)) return null;
+    const f = conjugations[quizExampleHighlightPronoun]?.trim();
+    return f || null;
+  }, [selectedLanguage, mode, staticExample, conjugations, quizExampleHighlightPronoun]);
+
+  useEffect(() => {
+    if (mode !== 'quiz' || selectedLanguage !== 'es') {
+      setQuizListHighlightPronoun(null);
+      return;
+    }
+    if (quizLayout === 'list' && pronounIds.length > 0) {
+      setQuizListHighlightPronoun((prev) =>
+        prev && pronounIds.includes(prev) ? prev : pronounIds[0]
+      );
+    } else if (quizLayout === 'focus') {
+      setQuizListHighlightPronoun(null);
+    }
+  }, [mode, quizLayout, selectedLanguage, verbKey, selectedTense, pronounIds]);
+
   const regimeInfo = useMemo(() => {
     if (selectedLanguage !== 'es' || !verbKey) return null;
     return (
@@ -1055,13 +1313,14 @@ export function Page() {
   const verbList = useMemo(() => getVerbListForLang(selectedLanguage), [selectedLanguage]);
   const irregularVerbsForSelectedTense = useMemo(() => {
     if (selectedLanguage !== 'es') return [];
+    const byTense = irregularByTenseJson as Record<string, Partial<Record<string, boolean>>>;
     const out: string[] = [];
     for (const verb of verbList) {
-      if (!isIrregularVerb(verb, 'es')) continue;
+      if (byTense[verb]?.[selectedTense] !== true) continue;
       const m = getSafeConjugationMap(verb, selectedTense, 'es');
       if (m && Object.keys(m).length > 0) out.push(verb);
     }
-    return out;
+    return out.sort((a, b) => a.localeCompare(b, 'es'));
   }, [selectedLanguage, verbList, selectedTense, getSafeConjugationMap]);
   const visibleIrregularVerbs = useMemo(
     () => (showAllIrregulars ? irregularVerbsForSelectedTense : irregularVerbsForSelectedTense.slice(0, 12)),
@@ -1111,8 +1370,9 @@ export function Page() {
   const autocompleteAnchorRef = useRef<HTMLDivElement>(null);
   const [autocompletePosition, setAutocompletePosition] = useState<{ top: number; left: number; width: number } | null>(null);
 
-  const loadVerb = useCallback((overrideVerb?: string, langOverride?: 'fr' | 'es') => {
+  const loadVerb = useCallback((overrideVerb?: string, langOverride?: 'fr' | 'es', tenseOverride?: string) => {
     const effectiveLang = langOverride ?? selectedLanguage;
+    const tenseEff = tenseOverride ?? selectedTense;
     setError('');
     setReverseLookupInfo(null);
     const rawInput = (overrideVerb ?? verbInput).trim();
@@ -1146,12 +1406,13 @@ export function Page() {
       }
     }
     try {
-      const result = getConjugationsForLang(toLoad, selectedTense, effectiveLang);
+      const result = getConjugationsForLang(toLoad, tenseEff, effectiveLang);
       if (result && result.ok) {
         const conj = result.conjugations;
         if (conj && typeof conj === 'object' && Object.keys(conj).length > 0) {
-          const verified = verifyConjugationMap(conj, selectedTense, effectiveLang);
+          const verified = verifyConjugationMap(conj, tenseEff, effectiveLang);
           if (overrideVerb) setVerbInput(sanitizeForDisplay(overrideVerb));
+          if (tenseOverride) setSelectedTense(tenseOverride);
           setVerbKey(result.infinitive);
           setConjugations(verified);
           setLeftPanelOpen(false);
@@ -1398,14 +1659,8 @@ export function Page() {
     }
   }, [verbKey, selectedTense, selectedLanguage]);
 
-  /**
-   * Fiil/zaman/dil değiştiğinde önceki AI sonuçlarını (örnek cümleler + çeviri)
-   * temizle. OTOMATİK API çağrısı YOK — kullanıcı "AI Analizi Başlat" butonuna
-   * basmalı.
-   */
+  /** Fiil/zaman/dil değişince gösterilen mastar anlamını güncelle (İspanyolca: statik sözlük) */
   useEffect(() => {
-    setAIExamples([]);
-    setAIExamplesLoading(false);
     if (selectedLanguage === 'es') {
       const text = (staticSpanishMeaning ?? 'Anlam bulunamadı');
       setDynamicMeaning(text);
@@ -1414,7 +1669,6 @@ export function Page() {
       setDynamicMeaning(null);
       setTranslation(null);
     }
-    setIsMeaningLoading(false);
   }, [verbKey, selectedTense, selectedLanguage, staticSpanishMeaning]);
 
   /** Güncel fiil ref'i (stale response'ı önlemek için) */
@@ -1422,68 +1676,44 @@ export function Page() {
     verbKeyRef.current = verbKey;
   }, [verbKey]);
 
-  /**
-   * Butona basıldığında AI analizi başlatılır — manuel tetikleme.
-   * Hem Türkçe anlam (mastar) hem örnek cümleler eş zamanlı getirilir.
-   */
-  const generateAISentences = useCallback(async () => {
-    if (!verbKey || aiExamplesLoading) return;
-    const langLabel = selectedLanguage === 'fr' ? 'Fransızca' : 'İspanyolca';
-    const tenseLbl = tensesForLang.find((t) => t.id === selectedTense)?.label ?? selectedTense;
-    setAIExamplesLoading(true);
-    setIsMeaningLoading(selectedLanguage !== 'es');
-    setAIExamples([]);
-    if (selectedLanguage !== 'es') {
-      setDynamicMeaning(null);
-      setTranslation(null);
-    }
-    const currentVerb = verbKey;
-    try {
-      const translationPromise =
-        selectedLanguage === 'es'
-          ? Promise.resolve({ translation: staticSpanishMeaning ?? 'Anlam bulunamadı' })
-          : fetchVerbTranslationFromGroq(verbKey, langLabel);
-      const [examplesRes, translationRes] = await Promise.allSettled([
-        fetchAIVerbExamples(verbKey, tenseLbl, langLabel),
-        translationPromise,
-      ]);
-      // Sonuçlar dönerken kullanıcı başka fiile geçmişse eski veriyi UI'a yazma.
-      if (verbKeyRef.current !== currentVerb) return;
-      if (examplesRes.status === 'fulfilled') {
-        setAIExamples(examplesRes.value.examples ?? []);
-      } else {
-        setAIExamples([]);
-      }
-      if (translationRes.status === 'fulfilled') {
-        const raw = translationRes.value?.translation?.trim();
-        if (raw) {
-          const text = raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase();
-          setDynamicMeaning(text);
-          setTranslation(text);
-        }
-      }
-    } catch {
-      setAIExamples([]);
-    } finally {
-      if (verbKeyRef.current === currentVerb) {
-        setAIExamplesLoading(false);
-        setIsMeaningLoading(false);
-      }
-    }
-  }, [verbKey, selectedTense, selectedLanguage, tensesForLang, aiExamplesLoading, staticSpanishMeaning]);
-
-  // Yeni fiil yüklendiğinde quiz cevaplarını ve ipucunu sıfırla (doğru cevaplar kütüphaneden gelen conjugations ile güncellenir)
+  // Yeni fiil veya zaman: quiz cevapları, ilerleme, combo ve ipuçları sıfırlanır (sol panel + alıştırma başlığı)
   useEffect(() => {
+    resetQuizExerciseState();
+    setQuizLayout(readExerciseModePreference());
+    const t = setTimeout(() => {
+      if (modeRef.current === 'quiz' && verbKey) {
+        quizInputRefs.current[0]?.focus();
+      }
+    }, 50);
+    return () => clearTimeout(t);
+  }, [verbKey, selectedTense, selectedLanguage, pronounsForLang, resetQuizExerciseState, readExerciseModePreference]);
+
+  /** Hata tekrar seansı: fiil+zaman yüklendiğinde doğru şahısa odaklan ve kutuları temizle */
+  useEffect(() => {
+    if (!mistakeReplaySession || selectedLanguage !== 'es') return;
+    const cur = mistakeReplaySession.queue[mistakeReplaySession.index];
+    if (!cur || !verbKey || verbKey !== cur.verb || selectedTense !== cur.tense) return;
+    const pIdx = pronounIds.indexOf(cur.person);
+    if (pIdx < 0) return;
+    setCurrentFocusIndex(pIdx);
     setUserAnswers(getInitialUserAnswers(selectedLanguage));
-    setQuizFeedback(Object.fromEntries(pronounsForLang.map((p) => [p.id, null as 'correct' | 'wrong' | 'typo' | null])));
+    setQuizFeedback(
+      Object.fromEntries(pronounsForLang.map((p) => [p.id, null as 'correct' | 'wrong' | 'typo' | null]))
+    );
     setQuizPasséHint(Object.fromEntries(pronounsForLang.map((p) => [p.id, null as string | null])));
     resetSmartHintsAll();
     setShowHints(false);
     setShowCongrats(false);
-    setCombo(0);
-    setCurrentFocusIndex(0);
-    setQuizLayout(readExerciseModePreference());
-  }, [verbKey, selectedLanguage, pronounsForLang, resetSmartHintsAll, readExerciseModePreference]);
+    requestAnimationFrame(() => quizInputRefs.current[0]?.focus());
+  }, [
+    mistakeReplaySession,
+    mistakeReplaySession?.index,
+    verbKey,
+    selectedTense,
+    selectedLanguage,
+    pronounsForLang,
+    resetSmartHintsAll,
+  ]);
 
   useEffect(() => {
     setRegimeOpen(false);
@@ -1832,6 +2062,61 @@ export function Page() {
     });
   }, []);
 
+  const bumpSpanishMistakeMemory = useCallback(() => {
+    setMistakeMemoryTick((t) => t + 1);
+  }, []);
+
+  const onSpanishQuizWrong = useCallback(
+    (pronoun: string, userAns: string, correctAns: string) => {
+      if (selectedLanguage !== 'es' || !verbKey) return;
+      recordSpanishMistake(verbKey, selectedTense, pronoun, userAns, correctAns);
+      bumpSpanishMistakeMemory();
+    },
+    [selectedLanguage, verbKey, selectedTense, bumpSpanishMistakeMemory]
+  );
+
+  const onSpanishQuizCorrect = useCallback(
+    (pronoun: string) => {
+      if (selectedLanguage !== 'es' || !verbKey) return;
+      const mm = getSpanishMistake(verbKey, selectedTense, pronoun);
+      if (mm && !mm.resolved) {
+        markSpanishMistakeResolved(verbKey, selectedTense, pronoun);
+        bumpSpanishMistakeMemory();
+      }
+    },
+    [selectedLanguage, verbKey, selectedTense, bumpSpanishMistakeMemory]
+  );
+
+  const startSpanishMistakeReplay = useCallback(() => {
+    const queue = getMistakesForReviewSorted();
+    if (queue.length === 0) return;
+    if (mistakeReplayAdvanceTimerRef.current) {
+      clearTimeout(mistakeReplayAdvanceTimerRef.current);
+      mistakeReplayAdvanceTimerRef.current = null;
+    }
+    setMistakeReplayComplete(null);
+    setMistakeReplayShowTick(false);
+    setExerciseMode('focus');
+    setMode('quiz');
+    setSelectedLanguage('es');
+    const first = queue[0];
+    setMistakeReplaySession({ queue, index: 0, resolvedInSession: 0 });
+    loadVerb(first.verb, 'es', first.tense);
+  }, [loadVerb, setExerciseMode, setSelectedLanguage]);
+
+  const openSpanishMistakeRow = useCallback(
+    (entry: MistakeMemoryEntry) => {
+      pendingMistakeSidebarPersonRef.current = entry.person;
+      setMistakeReplaySession(null);
+      setMistakeReplayComplete(null);
+      setExerciseMode('focus');
+      setMode('quiz');
+      setSelectedLanguage('es');
+      loadVerb(entry.verb, 'es', entry.tense);
+    },
+    [loadVerb, setExerciseMode, setSelectedLanguage]
+  );
+
   /** Yıldızlı fiil aç/kapat; state ve localStorage güncellenir. */
   const toggleStar = useCallback((verb: string) => {
     setStarredVerbs(toggleStarredVerb(verb));
@@ -1865,6 +2150,8 @@ export function Page() {
       const correct = conjugations[pronoun];
       const result = user.trim() === '' ? null : checkAnswer(user, correct);
       next[pronoun] = result;
+      if (result === 'wrong' && verbKey) onSpanishQuizWrong(pronoun, user.trim(), correct);
+      if (result === 'correct' && verbKey) onSpanishQuizCorrect(pronoun);
       if (next[pronoun] === 'wrong' && selectedLanguage === 'fr' && selectedTense === 'passe-compose' && verbKey) {
         nextHints[pronoun] = checkPasséComposéLogic(user, correct, pronoun as import('../data/verbs').Pronoun, verbKey);
       }
@@ -1899,7 +2186,7 @@ export function Page() {
       addActivityToday(newCorrectCount);
       updateDocumentTitle();
     }
-  }, [conjugations, userAnswers, quizFeedback, showHints, selectedTense, verbKey, addToMistakeBank]);
+  }, [conjugations, userAnswers, quizFeedback, showHints, selectedTense, verbKey, addToMistakeBank, onSpanishQuizWrong, onSpanishQuizCorrect]);
 
   /** Show Hint açıldığında mevcut fiil+zaman için tüm şahısları Hata Bankasına ekle. */
   const toggleShowHints = useCallback(() => {
@@ -2126,7 +2413,14 @@ export function Page() {
       }
       if (result === 'wrong') {
         setCombo(0);
-        if (verbKey) addToMistakeBank(verbKey, selectedTense, pronoun);
+        if (verbKey) {
+          onSpanishQuizWrong(pronoun, user, correct);
+          addToMistakeBank(verbKey, selectedTense, pronoun);
+        }
+        if (mistakeReplaySession && selectedLanguage === 'es') {
+          setQuizPasséHint((prev) => ({ ...prev, [pronoun]: null }));
+          return;
+        }
         if (selectedLanguage === 'fr' && selectedTense === 'passe-compose' && verbKey) {
           const hint = checkPasséComposéLogic(userRaw, correct, pronoun as import('../data/verbs').Pronoun, verbKey);
           setQuizPasséHint((prev) => ({ ...prev, [pronoun]: hint }));
@@ -2149,6 +2443,7 @@ export function Page() {
       }
       setQuizPasséHint((prev) => ({ ...prev, [pronoun]: null }));
       clearSmartHint(pronoun);
+      onSpanishQuizCorrect(pronoun);
       if (!showHints) {
         setCombo((c) => {
           const nextCombo = c + 1;
@@ -2182,7 +2477,7 @@ export function Page() {
       else if (currentIndex < pronounIds.length - 1)
         requestAnimationFrame(() => quizInputRefs.current[currentIndex + 1]?.focus());
     },
-    [conjugationsForDisplay, userAnswers, showHints, selectedTense, verbKey, addToMistakeBank, selectedLanguage, applySmartHintAfterWrong, clearSmartHint, pronounIds]
+    [conjugationsForDisplay, userAnswers, showHints, selectedTense, verbKey, addToMistakeBank, selectedLanguage, applySmartHintAfterWrong, clearSmartHint, pronounIds, onSpanishQuizWrong, onSpanishQuizCorrect, mistakeReplaySession]
   );
 
   /** Odak modu: tek şahıs kontrolü. Doğruysa sonraki şahısa geç, yanlışsa aynı yerde kal. */
@@ -2207,7 +2502,14 @@ export function Page() {
     }
     if (result === 'wrong') {
       setCombo(0);
-      if (verbKey) addToMistakeBank(verbKey, selectedTense, pronoun);
+      if (verbKey) {
+        onSpanishQuizWrong(pronoun, user, correct);
+        addToMistakeBank(verbKey, selectedTense, pronoun);
+      }
+      if (mistakeReplaySession && selectedLanguage === 'es') {
+        setQuizPasséHint((prev) => ({ ...prev, [pronoun]: null }));
+        return;
+      }
       if (selectedLanguage === 'fr' && selectedTense === 'passe-compose' && verbKey) {
         const hint = checkPasséComposéLogic(user, correct, pronoun as import('../data/verbs').Pronoun, verbKey);
         setQuizPasséHint((prev) => ({ ...prev, [pronoun]: hint }));
@@ -2226,6 +2528,50 @@ export function Page() {
     }
     setQuizPasséHint((prev) => ({ ...prev, [pronoun]: null }));
     clearSmartHint(pronoun);
+    onSpanishQuizCorrect(pronoun);
+    if (mistakeReplaySession && selectedLanguage === 'es' && verbKey) {
+      const cur = mistakeReplaySession.queue[mistakeReplaySession.index];
+      if (cur && verbKey === cur.verb && selectedTense === cur.tense && pronoun === cur.person) {
+        if (!showHints) {
+          setCombo((c) => {
+            const nextCombo = c + 1;
+            if (nextCombo >= 2) {
+              if (comboDisplayTimeoutRef.current) clearTimeout(comboDisplayTimeoutRef.current);
+              setComboDisplay({ show: true, value: nextCombo });
+              comboDisplayTimeoutRef.current = setTimeout(() => {
+                setComboDisplay((d) => ({ ...d, show: false }));
+                comboDisplayTimeoutRef.current = null;
+              }, 1800);
+            }
+            return nextCombo;
+          });
+          setTotalScore((s) => s + 10);
+          addActivityToday(1);
+          updateDocumentTitle();
+        }
+        speakAuto(correct, { lang: 'es-ES' });
+        setMistakeReplayShowTick(true);
+        if (mistakeReplayAdvanceTimerRef.current) clearTimeout(mistakeReplayAdvanceTimerRef.current);
+        mistakeReplayAdvanceTimerRef.current = setTimeout(() => {
+          mistakeReplayAdvanceTimerRef.current = null;
+          setMistakeReplayShowTick(false);
+          setMistakeReplaySession((prev) => {
+            if (!prev) return null;
+            const nextIdx = prev.index + 1;
+            const newResolved = prev.resolvedInSession + 1;
+            if (nextIdx >= prev.queue.length) {
+              const remaining = getUnresolvedMistakes().length;
+              setMistakeReplayComplete({ resolvedInSession: newResolved, remaining });
+              return null;
+            }
+            const nextEnt = prev.queue[nextIdx];
+            loadVerb(nextEnt.verb, 'es', nextEnt.tense);
+            return { ...prev, index: nextIdx, resolvedInSession: newResolved };
+          });
+        }, 900);
+        return;
+      }
+    }
     if (!showHints) {
       setCombo((c) => {
         const nextCombo = c + 1;
@@ -2246,7 +2592,7 @@ export function Page() {
     speakAuto(correct, { lang: selectedLanguage === 'es' ? 'es-ES' : 'fr-FR' });
     setCurrentFocusIndex((i) => i + 1);
     requestAnimationFrame(() => quizInputRefs.current[0]?.focus());
-  }, [conjugationsForDisplay, userAnswers, currentFocusIndex, showHints, selectedTense, verbKey, addToMistakeBank, selectedLanguage, applySmartHintAfterWrong, clearSmartHint, pronounIds]);
+  }, [conjugationsForDisplay, userAnswers, currentFocusIndex, showHints, selectedTense, verbKey, addToMistakeBank, selectedLanguage, applySmartHintAfterWrong, clearSmartHint, pronounIds, onSpanishQuizWrong, onSpanishQuizCorrect, mistakeReplaySession, loadVerb]);
 
   const SITE_URL = 'https://diloloji.com';
   const isEzber = location.pathname === '/ezber-makinesi';
@@ -2732,14 +3078,15 @@ export function Page() {
 
             {selectedLanguage === 'es' && (
               <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 flex-wrap">
                   <p className="text-xs font-medium text-slate-500 dark:text-slate-500 select-none">
-                    ZAMANA GÖRE DÜZENSİZ FİİLLER
+                    {formatSpanishIrregularSectionTitlePrefix(selectedTense as TenseIdEs)} DÜZENSİZ (
+                    {irregularVerbsForSelectedTense.length})
                   </p>
                   <span
                     className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-slate-300/80 dark:border-slate-600 text-[10px] font-bold text-slate-500 dark:text-slate-400 cursor-help"
-                    title="Bu zamanda kök değişimi veya istisnai çekim içeren fiiller"
-                    aria-label="Bu zamanda kök değişimi veya istisnai çekim içeren fiiller"
+                    title="Bu zamanda düzenli fiil paradigmasından en az bir çekimi farklı olan fiiller (spanish-verbs + yerel düzeltmelerle hesaplanır)"
+                    aria-label="Bu zamanda düzenli paradigmadan sapma gösteren fiiller"
                   >
                     ℹ
                   </span>
@@ -2747,7 +3094,7 @@ export function Page() {
 
                 {irregularVerbsForSelectedTense.length === 0 ? (
                   <p className="rounded-lg border border-dashed border-slate-200/60 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/40 px-3 py-3 text-xs text-slate-500 dark:text-slate-500 italic text-center">
-                    Bu zamanda kayıtlı düzensiz fiil bulunamadı
+                    Bu zamanda düzensiz fiil yok
                   </p>
                 ) : (
                   <>
@@ -2783,65 +3130,129 @@ export function Page() {
             )}
 
             {verbHistory.length > 0 && (
-              <div className="flex flex-col gap-2">
-                <p className="text-xs font-medium text-slate-500 dark:text-slate-500 select-none">
-                  Gecmis
-                </p>
-                <div className="flex flex-col gap-1.5">
-                  {verbHistory.map((verb) => (
-                    <button
-                      key={`history-${verb}`}
-                      type="button"
-                      onClick={() => {
-                        setVerbInput(verb);
-                        setError('');
-                        setAutocompleteClosed(true);
-                        loadVerb(verb);
-                      }}
-                      className="group flex items-center justify-between gap-2 rounded-lg border border-slate-200/50 dark:border-slate-700/40 bg-white/5 dark:bg-slate-800/30 px-2.5 py-1.5 text-left hover:bg-slate-100/60 dark:hover:bg-slate-700/40 transition-all duration-150 focus:outline-none focus:ring-1 focus:ring-indigo-500/50"
-                    >
-                      <span className="truncate text-xs text-slate-700 dark:text-slate-200">
-                        <span className="font-medium">{verb}</span>
-                        <span className="text-slate-500 dark:text-slate-400"> · {getHistoryMeaning(verb)}</span>
-                      </span>
-                      <span
-                        role="button"
-                        tabIndex={0}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setVerbHistory((prev) => {
-                            const next = prev.filter((v) => v !== verb);
-                            try {
-                              localStorage.setItem(VERB_HISTORY_STORAGE_KEY, JSON.stringify(next));
-                            } catch {
-                              // ignore
-                            }
-                            return next;
-                          });
+              <div className="flex flex-col">
+                <button
+                  type="button"
+                  onClick={toggleHistoryPanel}
+                  aria-expanded={historyPanelOpen}
+                  className="flex w-full items-center justify-between gap-2 border-b border-slate-200/70 dark:border-slate-700/50 pb-2 text-left rounded-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40"
+                >
+                  <span className="text-xs font-medium text-slate-500 dark:text-slate-500 select-none tracking-wide">
+                    GEÇMİŞ
+                  </span>
+                  <span className="shrink-0 text-[10px] leading-none text-slate-400 dark:text-slate-500 tabular-nums" aria-hidden>
+                    {historyPanelOpen ? '▴' : '▾'}
+                  </span>
+                </button>
+                <div
+                  className={`overflow-hidden transition-[max-height] duration-200 ease ${
+                    historyPanelOpen ? 'max-h-[240px]' : 'max-h-0'
+                  }`}
+                >
+                  <div className="max-h-[240px] overflow-y-auto overflow-x-hidden flex flex-col gap-1.5 pt-2 pr-0.5">
+                    {verbHistory.map((verb) => (
+                      <button
+                        key={`history-${verb}`}
+                        type="button"
+                        onClick={() => {
+                          setVerbInput(verb);
+                          setError('');
+                          setAutocompleteClosed(true);
+                          loadVerb(verb);
                         }}
-                        onKeyDown={(e) => {
-                          if (e.key !== 'Enter' && e.key !== ' ') return;
-                          e.preventDefault();
-                          e.stopPropagation();
-                          setVerbHistory((prev) => {
-                            const next = prev.filter((v) => v !== verb);
-                            try {
-                              localStorage.setItem(VERB_HISTORY_STORAGE_KEY, JSON.stringify(next));
-                            } catch {
-                              // ignore
-                            }
-                            return next;
-                          });
-                        }}
-                        className="shrink-0 rounded px-1 text-xs text-slate-400 dark:text-slate-500 hover:bg-slate-200/70 dark:hover:bg-slate-600 hover:text-slate-700 dark:hover:text-slate-200"
-                        aria-label={`${verb} gecmisinden sil`}
-                        title="Gecmisten sil"
+                        className="group flex items-center justify-between gap-2 rounded-lg border border-slate-200/50 dark:border-slate-700/40 bg-white/5 dark:bg-slate-800/30 px-2.5 py-1.5 text-left hover:bg-slate-100/60 dark:hover:bg-slate-700/40 transition-all duration-150 focus:outline-none focus:ring-1 focus:ring-indigo-500/50"
                       >
-                        ×
-                      </span>
-                    </button>
-                  ))}
+                        <span className="truncate text-xs text-slate-700 dark:text-slate-200">
+                          <span className="font-medium">{verb}</span>
+                          <span className="text-slate-500 dark:text-slate-400"> · {getHistoryMeaning(verb)}</span>
+                        </span>
+                        <span
+                          role="button"
+                          tabIndex={0}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setVerbHistory((prev) => {
+                              const next = prev.filter((v) => v !== verb);
+                              try {
+                                localStorage.setItem(VERB_HISTORY_STORAGE_KEY, JSON.stringify(next));
+                              } catch {
+                                // ignore
+                              }
+                              return next;
+                            });
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key !== 'Enter' && e.key !== ' ') return;
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setVerbHistory((prev) => {
+                              const next = prev.filter((v) => v !== verb);
+                              try {
+                                localStorage.setItem(VERB_HISTORY_STORAGE_KEY, JSON.stringify(next));
+                              } catch {
+                                // ignore
+                              }
+                              return next;
+                            });
+                          }}
+                          className="shrink-0 rounded px-1 text-xs text-slate-400 dark:text-slate-500 hover:bg-slate-200/70 dark:hover:bg-slate-600 hover:text-slate-700 dark:hover:text-slate-200"
+                          aria-label={`${verb} gecmisinden sil`}
+                          title="Gecmisten sil"
+                        >
+                          ×
+                        </span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
+              </div>
+            )}
+
+            {selectedLanguage === 'es' && (
+              <div className="flex flex-col gap-2 border-t border-slate-200/50 dark:border-slate-700/40 pt-3 mt-2">
+                <p
+                  className="text-[11px] font-bold tracking-wide text-slate-600 dark:text-slate-400 select-none cursor-help leading-snug"
+                  title={zorlandiklarimStatsTitle}
+                >
+                  ZORLANDIKLARIM{' '}
+                  <span className="tabular-nums text-rose-600 dark:text-rose-400">[{spanishUnresolvedMistakes.length}]</span>
+                </p>
+                {spanishUnresolvedMistakes.length === 0 ? (
+                  <p className="text-xs text-slate-500 dark:text-slate-500 italic">
+                    Henüz kayıt yok — alıştırmada yanlış yaptıkça buraya düşer.
+                  </p>
+                ) : (
+                  <>
+                    <div className="flex flex-col gap-1 max-h-40 overflow-y-auto pr-0.5">
+                      {spanishUnresolvedMistakes.slice(0, 12).map((row) => (
+                        <button
+                          key={`${row.verb}-${row.tense}-${row.person}`}
+                          type="button"
+                          onClick={() => openSpanishMistakeRow(row)}
+                          className="flex items-center justify-between gap-2 rounded-lg border border-rose-500/25 dark:border-rose-500/35 bg-rose-500/5 dark:bg-rose-500/10 px-2 py-1.5 text-left hover:bg-rose-500/15 dark:hover:bg-rose-500/20 transition-colors focus:outline-none focus:ring-1 focus:ring-rose-500/40"
+                        >
+                          <span className="truncate text-xs text-slate-700 dark:text-slate-200">
+                            <span className="font-medium">{row.verb}</span>
+                            <span className="text-slate-500 dark:text-slate-400">
+                              {' · '}
+                              {SPANISH_TENSE_SHORT[row.tense] ?? row.tense} · {row.person}
+                            </span>
+                          </span>
+                          <span className="shrink-0 text-[11px] font-bold text-rose-600 dark:text-rose-400 tabular-nums">
+                            ×{row.errorCount}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={startSpanishMistakeReplay}
+                      className="w-full rounded-lg bg-rose-600 dark:bg-rose-500 text-white text-xs font-semibold py-2 hover:bg-rose-700 dark:hover:bg-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-500/50 transition-colors"
+                    >
+                      Tümünü Tekrar Çöz
+                    </button>
+                  </>
+                )}
               </div>
             )}
           </div>
@@ -4092,11 +4503,7 @@ export function Page() {
                   </button>
                 </div>
                 <span className="text-slate-500 dark:text-slate-400 italic text-lg flex-1 min-w-0 order-2 flex justify-center items-center gap-2">
-                  {isMeaningLoading ? (
-                    <div className="h-5 w-24 bg-slate-700/50 dark:bg-slate-600/50 rounded animate-pulse" aria-hidden />
-                  ) : (
-                    <span className="italic text-slate-600 dark:text-slate-300">{displayMeaning}</span>
-                  )}
+                  <span className="italic text-slate-600 dark:text-slate-300">{displayMeaning}</span>
                 </span>
                 {/*
                   Sağ cluster — Detaylı-moda-özel ikon grubu (Ezber Modu, Sete
@@ -4749,97 +5156,6 @@ export function Page() {
               </motion.div>
             )}
 
-            {/* AI Örnek Cümleler — manuel buton ile Groq'tan 2 cümle */}
-            {verbKey && conjugations && !showAllTenses && (
-              <motion.div
-                key={`ai-examples-${verbKey}-${selectedTense}-${selectedLanguage}`}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, ease: 'easeOut' }}
-                className="mx-4 sm:mx-0 mt-4 rounded-xl border border-indigo-500/20 dark:border-indigo-400/20 bg-white/5 dark:bg-white/[0.04] backdrop-blur-sm p-4 transition-all duration-300 ease-in-out"
-              >
-                <div className="flex items-center gap-2 mb-3 pb-2 border-b border-indigo-500/10 dark:border-indigo-400/10">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-indigo-500/20 text-sm" aria-hidden>💡</span>
-                  <h4 className="text-xs font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400">
-                    AI Örnek Cümleler
-                  </h4>
-                  <span className="text-[10px] font-medium text-slate-500 dark:text-slate-500 ml-auto">
-                    {tensesForLang.find((x) => x.id === selectedTense)?.label ?? selectedTense}
-                  </span>
-                  {aiExamples.length > 0 && !aiExamplesLoading && (
-                    <button
-                      type="button"
-                      onClick={generateAISentences}
-                      className="ml-1 flex h-6 w-6 items-center justify-center rounded-md text-indigo-500 dark:text-indigo-400 hover:bg-indigo-500/10 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
-                      title="Yeni cümleler üret"
-                      aria-label="Yenile"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
-                        <path d="M21 12a9 9 0 1 1-3-6.7" />
-                        <path d="M21 4v5h-5" />
-                      </svg>
-                    </button>
-                  )}
-                </div>
-                {aiExamples.length === 0 && !aiExamplesLoading && (
-                  <button
-                    type="button"
-                    onClick={generateAISentences}
-                    className="group w-full flex items-center justify-center gap-2 rounded-lg border border-indigo-500/30 dark:border-indigo-400/30 bg-indigo-500/[0.03] dark:bg-indigo-500/[0.06] px-4 py-3 text-sm font-medium text-indigo-600 dark:text-indigo-300 hover:bg-indigo-500/10 dark:hover:bg-indigo-500/15 hover:border-indigo-500/50 dark:hover:border-indigo-400/50 hover:shadow-[0_0_20px_-5px_rgba(99,102,241,0.4)] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
-                  >
-                    <span className="text-base transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12" aria-hidden>✨</span>
-                    <span>AI Analizi Başlat</span>
-                  </button>
-                )}
-                {aiExamplesLoading && (
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-center gap-2 py-2 text-sm font-medium text-indigo-600 dark:text-indigo-300">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 animate-spin">
-                        <path d="M21 12a9 9 0 1 1-6.2-8.6" />
-                      </svg>
-                      <span>Cümleler yazılıyor…</span>
-                    </div>
-                    {[1, 2].map((i) => (
-                      <div key={i} className="flex flex-col gap-2 animate-pulse">
-                        <div className="h-4 bg-slate-200/30 dark:bg-slate-700/40 rounded w-3/4" />
-                        <div className="h-3 bg-slate-200/20 dark:bg-slate-700/25 rounded w-2/3" />
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {aiExamples.length > 0 && !aiExamplesLoading && (
-                  <ul className="space-y-3">
-                    {aiExamples.map((ex, i) => (
-                      <motion.li
-                        key={`${ex.sentence}-${i}`}
-                        initial={{ opacity: 0, x: -8 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.25, delay: i * 0.1 }}
-                        className="group flex items-start gap-3"
-                      >
-                        <span className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-indigo-500/15 text-[10px] font-bold text-indigo-600 dark:text-indigo-400">
-                          {i + 1}
-                        </span>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-sm sm:text-base italic text-slate-800 dark:text-indigo-100 flex items-center gap-2 flex-wrap">
-                            {ex.sentence}
-                            <PronunciationButton
-                              word={ex.sentence}
-                              lang={selectedLanguage === 'fr' ? 'fr-FR' : 'es-ES'}
-                              size="sm"
-                            />
-                          </p>
-                          <p className="mt-0.5 text-xs sm:text-sm text-slate-500 dark:text-indigo-300/80">
-                            {ex.translation}
-                          </p>
-                        </div>
-                      </motion.li>
-                    ))}
-                  </ul>
-                )}
-              </motion.div>
-            )}
-
             {/*
               Detaylı-moda-özel alt bölümler (Örnek cümle, Fiil Aileleri).
               AnimatePresence + height animasyonu ile mod geçişinde ani
@@ -5054,8 +5370,28 @@ export function Page() {
 
             {/* Quiz modu (Alıştırma) — viewMode'dan bağımsız, mod seçimine göre render */}
             {verbKey && mode === 'quiz' && conjugationsForDisplay && (
-            <>
-            <div className="border-b border-slate-100/80 dark:border-white/5 px-5 sm:px-6 py-4">
+            <div className="relative">
+            {mistakeReplaySession && selectedLanguage === 'es' && (() => {
+              const cur = mistakeReplaySession.queue[mistakeReplaySession.index];
+              if (!cur) return null;
+              return (
+                <div className="absolute left-0 right-0 top-0 z-20 px-4 sm:px-6 pt-3 pointer-events-none">
+                  <div className="pointer-events-auto rounded-lg border border-red-400/75 dark:border-red-500/50 bg-red-50/95 dark:bg-red-950/50 px-3 py-2.5 shadow-md">
+                    <p className="text-sm font-semibold text-red-900 dark:text-red-100">
+                      ⚠️ Daha önce {cur.errorCount} kez hata yaptın
+                    </p>
+                    <p className="text-xs text-red-800/90 dark:text-red-200/90 mt-1">
+                      Geçen: <span className="lowercase">{cur.lastAnswer}</span>
+                    </p>
+                  </div>
+                </div>
+              );
+            })()}
+            <div
+              className={`border-b border-slate-100/80 dark:border-white/5 px-5 sm:px-6 py-4 ${
+                mistakeReplaySession && selectedLanguage === 'es' ? 'pt-14 sm:pt-16' : ''
+              }`}
+            >
               <div className="flex flex-row flex-wrap items-center justify-between gap-x-4 gap-y-2 text-center sm:text-left">
                 <div className="flex items-center gap-2 min-w-0 order-1">
                   <h2 className="font-bold text-slate-800 dark:text-slate-100 capitalize text-xl tracking-tight">{verbKey}</h2>
@@ -5084,11 +5420,7 @@ export function Page() {
                   </button>
                 </div>
                 <span className="text-slate-500 dark:text-slate-400 italic text-lg flex-1 min-w-0 order-2 flex justify-center items-center gap-2">
-                  {isMeaningLoading ? (
-                    <div className="h-5 w-24 bg-slate-700/50 dark:bg-slate-600/50 rounded animate-pulse" aria-hidden />
-                  ) : (
-                    <span className="italic text-slate-600 dark:text-slate-300">{displayMeaning}</span>
-                  )}
+                  <span className="italic text-slate-600 dark:text-slate-300">{displayMeaning}</span>
                 </span>
                 <div className="flex items-center gap-1 order-3 shrink-0">
                   {/*
@@ -5331,10 +5663,37 @@ export function Page() {
               const correctValue = conjugationsForDisplay[pronoun];
               const hintMode = quizHintMode[pronoun];
               const isRevealing = hintMode === 'reveal';
-              const showAsCorrect = feedback === 'correct' || isRevealing;
+              void mistakeMemoryTick;
+              void mistakeBannerRev;
+              const memRec =
+                selectedLanguage === 'es' && verbKey ? getSpanishMistake(verbKey, selectedTense, pronoun) : null;
+              const memErrCount = memRec?.errorCount ?? 0;
+              const wrongBorderRepeat = feedback === 'wrong' && !isRevealing && memErrCount >= 2;
+              const showAsCorrect = feedback === 'correct' || isRevealing || mistakeReplayShowTick;
+              const recallBannerKey =
+                verbKey && selectedLanguage === 'es' ? spanishMistakeBannerKey(verbKey, selectedTense, pronoun) : '';
+              const showRecallBanner =
+                selectedLanguage === 'es' &&
+                verbKey &&
+                memRec &&
+                !memRec.resolved &&
+                !mistakeBannerDismissedRef.current.has(recallBannerKey);
               return (
                 <div className="p-5 sm:p-6 mb-6">
                   <p className="text-center text-slate-600 dark:text-slate-300 font-bold text-2xl uppercase tracking-wide mb-4">{label}</p>
+                  {showRecallBanner && memRec && (
+                    <div className="max-w-md mx-auto mb-3">
+                      <SpanishMistakeRecallBanner
+                        mm={memRec}
+                        pronounLabel={label}
+                        tenseLabel={tensesForLang.find((t) => t.id === selectedTense)?.label ?? selectedTense}
+                        onDismiss={() => {
+                          mistakeBannerDismissedRef.current.add(recallBannerKey);
+                          setMistakeBannerRev((n) => n + 1);
+                        }}
+                      />
+                    </div>
+                  )}
                   <div className={`max-w-md mx-auto relative rounded-2xl ${feedback === 'wrong' && !isRevealing ? 'animate-shake' : ''} ${quizEmptyShake === pronoun ? 'animate-shake ring-2 ring-red-500 dark:ring-red-400 ring-inset' : ''}`}>
                     <input
                       ref={(el) => { quizInputRefs.current[0] = el; }}
@@ -5349,7 +5708,9 @@ export function Page() {
                         showAsCorrect
                           ? 'border-emerald-400 dark:border-emerald-500/60 bg-emerald-50/80 dark:bg-emerald-500/20 text-slate-800 dark:text-slate-100 focus:ring-emerald-500/30 dark:focus:ring-emerald-400/30'
                           : feedback === 'wrong'
-                            ? 'border-red-500 dark:border-red-400/60 bg-red-50/80 dark:bg-red-500/15 text-slate-800 dark:text-slate-100 focus:ring-red-500/20 dark:focus:ring-red-400/30'
+                            ? wrongBorderRepeat
+                              ? 'border-amber-500 dark:border-amber-400/70 bg-amber-50/90 dark:bg-amber-500/20 text-slate-800 dark:text-slate-100 focus:ring-amber-500/30 dark:focus:ring-amber-400/35'
+                              : 'border-red-500 dark:border-red-400/60 bg-red-50/80 dark:bg-red-500/15 text-slate-800 dark:text-slate-100 focus:ring-red-500/20 dark:focus:ring-red-400/30'
                             : feedback === 'typo'
                               ? 'border-amber-400 dark:border-amber-500/60 bg-amber-50/80 dark:bg-amber-500/15 text-slate-800 dark:text-slate-100 focus:ring-amber-500/30 dark:focus:ring-amber-400/30'
                               : 'bg-slate-100/90 dark:bg-slate-900/50 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:border-indigo-500'
@@ -5404,7 +5765,10 @@ export function Page() {
                       </div>
                     )}
                     {feedback === 'wrong' && !isRevealing && (
-                      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-red-500 dark:text-red-400 pointer-events-none" aria-hidden>
+                      <span
+                        className={`absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none ${wrongBorderRepeat ? 'text-amber-600 dark:text-amber-400' : 'text-red-500 dark:text-red-400'}`}
+                        aria-hidden
+                      >
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -5454,10 +5818,25 @@ export function Page() {
                   const isRevealing = hintMode === 'reveal';
                   const showAsCorrect = feedback === 'correct' || isRevealing;
                   const showHintActions = !showAsCorrect && feedback !== 'wrong' && !!verbKey;
+                  void mistakeMemoryTick;
+                  void mistakeBannerRev;
+                  const memRow =
+                    selectedLanguage === 'es' && verbKey ? getSpanishMistake(verbKey, selectedTense, id) : null;
+                  const memRowErr = memRow?.errorCount ?? 0;
+                  const wrongBorderRepeatRow = feedback === 'wrong' && !isRevealing && memRowErr >= 2;
+                  const recallBkRow =
+                    verbKey && selectedLanguage === 'es' ? spanishMistakeBannerKey(verbKey, selectedTense, id) : '';
+                  const showRecallBannerRow =
+                    selectedLanguage === 'es' &&
+                    verbKey &&
+                    memRow &&
+                    !memRow.resolved &&
+                    !mistakeBannerDismissedRef.current.has(recallBkRow);
                   const needHintUnderInput =
                     (!showHints && feedback === 'typo') ||
                     showHints ||
-                    (!!hintMode && !!verbKey && !showHints);
+                    (!!hintMode && !!verbKey && !showHints) ||
+                    showRecallBannerRow;
                   return (
                     <div key={id} className="quiz-align-row">
                       <span className="quiz-p-label">{label}</span>
@@ -5470,6 +5849,17 @@ export function Page() {
                             : ''
                         }`}
                       >
+                        {showRecallBannerRow && memRow && (
+                          <SpanishMistakeRecallBanner
+                            mm={memRow}
+                            pronounLabel={label}
+                            tenseLabel={tensesForLang.find((t) => t.id === selectedTense)?.label ?? selectedTense}
+                            onDismiss={() => {
+                              mistakeBannerDismissedRef.current.add(recallBkRow);
+                              setMistakeBannerRev((n) => n + 1);
+                            }}
+                          />
+                        )}
                         <input
                           ref={(el) => {
                             quizInputRefs.current[index] = el;
@@ -5479,6 +5869,7 @@ export function Page() {
                           onChange={(e) => setAnswer(id, e.target.value)}
                           onFocus={() => {
                             activeQuizInputIndexRef.current = index;
+                            if (selectedLanguage === 'es') setQuizListHighlightPronoun(id);
                           }}
                           onKeyDown={(e) => {
                             if (e.key === 'Enter') handleQuizInputKeyDown(e, index);
@@ -5492,7 +5883,9 @@ export function Page() {
                             showAsCorrect
                               ? 'border-emerald-400 dark:border-emerald-500/60 bg-emerald-50/70 dark:bg-emerald-500/15 text-slate-800 dark:text-slate-100 focus:border-emerald-500'
                               : feedback === 'wrong'
-                                ? 'border-red-500 dark:border-red-400/60 bg-red-50/70 dark:bg-red-500/10 text-slate-800 dark:text-slate-100 focus:border-red-500'
+                                ? wrongBorderRepeatRow
+                                  ? 'border-amber-500 dark:border-amber-400/65 bg-amber-50/80 dark:bg-amber-500/15 text-slate-800 dark:text-slate-100 focus:border-amber-500'
+                                  : 'border-red-500 dark:border-red-400/60 bg-red-50/70 dark:bg-red-500/10 text-slate-800 dark:text-slate-100 focus:border-red-500'
                                 : feedback === 'typo'
                                   ? 'border-amber-400 dark:border-amber-500/60 bg-amber-50/70 dark:bg-amber-500/10 text-slate-800 dark:text-slate-100 focus:border-amber-500'
                                   : 'bg-white/60 dark:bg-slate-900/40 border-slate-200/70 dark:border-white/10 text-slate-800 dark:text-white focus:border-indigo-500 dark:focus:border-indigo-400 hover:border-slate-300 dark:hover:border-white/20'
@@ -5501,7 +5894,7 @@ export function Page() {
                         />
                         {!showAsCorrect && feedback === 'wrong' && (
                           <span
-                            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-red-500 dark:text-red-400 pointer-events-none"
+                            className={`absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none ${wrongBorderRepeatRow ? 'text-amber-600 dark:text-amber-400' : 'text-red-500 dark:text-red-400'}`}
                             aria-hidden
                           >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
@@ -5611,6 +6004,57 @@ export function Page() {
             </div>
             )}
 
+            {selectedLanguage === 'es' &&
+              mode === 'quiz' &&
+              staticExample &&
+              staticExample.es?.trim() &&
+              staticExample.tr?.trim() && (
+              <motion.div
+                key={`quiz-ex-${verbKey}-${selectedTense}-${quizExampleHighlightPronoun ?? ''}`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.15, ease: 'easeOut' }}
+                className="mx-5 sm:mx-6 mt-2 mb-1 px-3 py-2.5 flex flex-col gap-1"
+                style={{
+                  background: 'var(--bg-elevated)',
+                  borderColor: 'var(--border-subtle)',
+                  borderWidth: 1,
+                  borderStyle: 'solid',
+                  borderRadius: 'var(--radius-md)',
+                }}
+              >
+                <div className="flex flex-wrap items-start gap-2 min-w-0">
+                  <span className="shrink-0 text-base leading-snug select-none" aria-hidden>
+                    📖
+                  </span>
+                  <div className="min-w-0 flex-1 flex flex-col gap-0.5 text-left">
+                    <p
+                      className="italic break-words leading-snug"
+                      style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-primary)' }}
+                    >
+                      {renderSpanishQuizExampleLine(staticExample.es, quizExampleHighlightForm)}
+                    </p>
+                    <p
+                      className="break-words leading-snug"
+                      style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-secondary)' }}
+                    >
+                      {staticExample.tr}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex justify-end pt-0.5">
+                  <button
+                    type="button"
+                    onClick={() => setMode('learning')}
+                    className="text-[10px] font-medium tracking-wide hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-violet-500/40 rounded px-0.5"
+                    style={{ color: 'var(--text-secondary)' }}
+                  >
+                    Daha fazla örnek →
+                  </button>
+                </div>
+              </motion.div>
+            )}
+
             {/*
               Alıştırma alt çubuğu — aksan klavyesi + aksiyon butonları
               aynı blok içinde gruplandı. Aksan tuşları (gap-1.5) aksiyon
@@ -5655,7 +6099,48 @@ export function Page() {
                 </button>
               </div>
             </div>
-          </>
+
+            {mistakeReplayComplete && (
+              <div
+                className="absolute inset-0 z-40 flex items-center justify-center p-4 bg-slate-900/50 dark:bg-black/55 backdrop-blur-sm rounded-2xl"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="mistake-replay-done-title"
+              >
+                <div className="max-w-md w-full rounded-2xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 p-6 shadow-xl text-center">
+                  <h2 id="mistake-replay-done-title" className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-2">
+                    Tebrikler! {mistakeReplayComplete.resolvedInSession} hata çözüldü
+                  </h2>
+                  {mistakeReplayComplete.remaining > 0 && (
+                    <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+                      Kalan {mistakeReplayComplete.remaining} hata
+                    </p>
+                  )}
+                  <div className="flex flex-wrap justify-center gap-2 mt-4">
+                    {mistakeReplayComplete.remaining > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setMistakeReplayComplete(null);
+                          startSpanishMistakeReplay();
+                        }}
+                        className="rounded-xl bg-red-600 dark:bg-red-500 text-white text-sm font-semibold px-4 py-2.5 hover:bg-red-700 dark:hover:bg-red-400 focus:outline-none focus:ring-2 focus:ring-red-500"
+                      >
+                        Kalan {mistakeReplayComplete.remaining} hatayı tekrar çöz
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => setMistakeReplayComplete(null)}
+                      className="rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-sm font-semibold px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    >
+                      Kapat
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
             )}
 
           </section>

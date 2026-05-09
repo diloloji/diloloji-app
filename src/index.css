@@ -3,6 +3,23 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --bg-elevated: rgb(255 255 255 / 0.94);
+    --border-subtle: rgb(148 163 184 / 0.45);
+    --radius-md: 0.5rem;
+    --font-size-sm: 0.875rem;
+    --font-size-xs: 0.75rem;
+    --text-primary: rgb(15 23 42);
+    --text-secondary: rgb(100 116 139);
+    --accent-purple: rgb(139 92 246);
+  }
+  .dark {
+    --bg-elevated: rgb(30 41 59 / 0.82);
+    --border-subtle: rgb(148 163 184 / 0.22);
+    --text-primary: rgb(241 245 249);
+    --text-secondary: rgb(148 163 184);
+    --accent-purple: rgb(167 139 250);
+  }
   body {
     @apply antialiased text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-night-950 transition-colors duration-300 font-sans;
   }

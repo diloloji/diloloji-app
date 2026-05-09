@@ -52,6 +52,38 @@ export const TENSE_GROUPS_ES: { mood: string; label: string; tenseIds: TenseIdEs
   },
 ];
 
+/** Sol panel "Zamana göre düzensiz" — kısa zaman adı + Türkçe -de/-da (son ünlüye göre). */
+export const SPANISH_TENSE_IRREGULAR_HEADLINE_WORD: Record<TenseIdEs, string> = {
+  presente: 'PRESENTE',
+  imperfecto: 'IMPERFECTO',
+  preterito: 'INDEFINIDO',
+  'preterito-perfecto': 'PRETÉRITO PERFECTO',
+  pluscuamperfecto: 'PLUSCUAMPERFECTO',
+  futuro: 'FUTURO',
+  'futuro-compuesto': 'FUTURO COMPUESTO',
+  condicional: 'CONDICIONAL',
+  'subjuntivo-presente': 'SUBJUNTIVO PRESENTE',
+};
+
+function appendTurkishLocativeDeDa(upperPhrase: string): "'DE" | "'DA" {
+  const s = upperPhrase
+    .normalize('NFD')
+    .replace(/\p{M}/gu, '')
+    .toLowerCase();
+  const front = new Set(['e', 'i', 'ö', 'ü']);
+  for (let i = s.length - 1; i >= 0; i--) {
+    const ch = s[i];
+    if (front.has(ch)) return "'DE";
+    if ('aıou'.includes(ch)) return "'DA";
+  }
+  return "'DE";
+}
+
+export function formatSpanishIrregularSectionTitlePrefix(tenseId: TenseIdEs): string {
+  const w = SPANISH_TENSE_IRREGULAR_HEADLINE_WORD[tenseId] ?? tenseId.toUpperCase();
+  return w + appendTurkishLocativeDeDa(w);
+}
+
 /** En sık kullanılan İspanyolca fiiller (ser, estar, tener, hacer vb.) */
 export const COMMON_SPANISH_VERBS = [
   'ser',
