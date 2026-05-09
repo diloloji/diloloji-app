@@ -6107,7 +6107,7 @@ export function Page() {
 
             {/* Quiz modu (Alıştırma) — viewMode'dan bağımsız, mod seçimine göre render */}
             {verbKey && mode === 'quiz' && conjugationsForDisplay && (
-            <div className="relative max-md:min-h-[100dvh] max-md:flex max-md:flex-col">
+            <div className="relative">
             {(selectedLanguage === 'es' || selectedLanguage === 'fr') && showSpacedRepDueBanner && (
               <div className="mx-3 sm:mx-4 mb-2 rounded-lg border border-amber-400/55 bg-amber-500/15 dark:bg-amber-500/10 px-3 py-2 flex flex-wrap items-center justify-between gap-2">
                 <p className="text-sm font-medium text-amber-950 dark:text-amber-100">
@@ -6138,13 +6138,13 @@ export function Page() {
               );
             })()}
             <div
-              className={`border-b border-slate-200/60 dark:border-white/5 px-4 sm:px-5 py-2.5 ${
+              className={`border-b border-slate-100/80 dark:border-white/5 px-5 sm:px-6 py-4 ${
                 mistakeReplaySession && (selectedLanguage === 'es' || selectedLanguage === 'fr') ? 'pt-12 sm:pt-14' : ''
               }`}
             >
-              <div className="flex flex-row flex-wrap items-center gap-x-3 gap-y-1.5 sm:flex-nowrap sm:justify-between text-left">
-                <div className="flex items-center gap-1.5 min-w-0 order-1 shrink">
-                  <h2 className="font-bold text-slate-800 dark:text-slate-100 capitalize text-lg sm:text-xl tracking-tight truncate">{verbKey}</h2>
+              <div className="flex flex-row flex-wrap items-center justify-between gap-x-4 gap-y-2 text-center sm:text-left">
+                <div className="flex items-center gap-2 min-w-0 order-1">
+                  <h2 className="font-bold text-slate-800 dark:text-slate-100 capitalize text-xl tracking-tight">{verbKey}</h2>
                   {randomVerbMode && (
                     <span className="inline-flex items-center gap-1 rounded-full bg-indigo-100 dark:bg-indigo-500/25 text-indigo-700 dark:text-indigo-300 text-xs font-medium px-2.5 py-0.5 shrink-0" title="Rastgele mod açık">
                       🎲 Rastgele Mod Aktif
@@ -6169,10 +6169,10 @@ export function Page() {
                     <SpeakerIcon className="w-5 h-5" />
                   </button>
                 </div>
-                <span className="text-slate-500 dark:text-slate-400 italic text-sm sm:text-base flex-1 min-w-[6rem] order-2 flex justify-center sm:justify-center items-center gap-1.5 truncate">
-                  <span className="italic text-slate-600 dark:text-slate-300 truncate">{displayMeaning}</span>
+                <span className="text-slate-500 dark:text-slate-400 italic text-lg flex-1 min-w-0 order-2 flex justify-center items-center gap-2">
+                  <span className="italic text-slate-600 dark:text-slate-300">{displayMeaning}</span>
                 </span>
-                <div className="flex items-center gap-0.5 order-3 shrink-0 ml-auto sm:ml-0">
+                <div className="flex items-center gap-1 order-3 shrink-0">
                   {/*
                     Görünüm modu ikonları — büyük pill butonların yerine
                     minimalist 'ghost' ikon butonlar. Aktif seçim ince
@@ -6218,7 +6218,7 @@ export function Page() {
                       <BookOpen className="w-4 h-4" strokeWidth={2} aria-hidden />
                     </button>
                   )}
-                  <div ref={quizTenseMenuRef} className="relative shrink-0 ml-1 flex items-center gap-1">
+                  <div ref={quizTenseMenuRef} className="relative shrink-0 ml-1">
                   <button
                     type="button"
                     onClick={() => setQuizTenseMenuOpen((v) => !v)}
@@ -6303,13 +6303,13 @@ export function Page() {
                     : pronounIds.filter((p) => quizFeedback[p] !== null).length;
                 const progressPct = total ? (progressCount / total) * 100 : 0;
                 return (
-                  <div className="mt-2 pt-2 border-t border-slate-200/50 dark:border-white/5">
-                    <div className="flex items-center justify-between gap-2 mb-1">
-                      <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 tabular-nums">
+                  <div className="mt-4 pt-3 border-t border-slate-100/80 dark:border-white/5">
+                    <div className="flex items-center justify-between gap-2 mb-1.5">
+                      <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
                         {progressCount} / {total} çekim
                       </span>
                     </div>
-                    <div className="h-0.5 w-full rounded-full bg-slate-200/80 dark:bg-white/10 overflow-hidden" role="progressbar" aria-valuenow={progressCount} aria-valuemin={0} aria-valuemax={total}>
+                    <div className="h-1 w-full rounded-full bg-slate-200/70 dark:bg-white/5 overflow-hidden" role="progressbar" aria-valuenow={progressCount} aria-valuemin={0} aria-valuemax={total}>
                       <div className="h-full bg-indigo-500 dark:bg-indigo-400 rounded-full transition-all duration-300" style={{ width: `${progressPct}%` }} />
                     </div>
                   </div>
@@ -6493,7 +6493,7 @@ export function Page() {
               </div>
             )}
 
-            {/* Odak modu: zamir + input tek satır */}
+            {/* Odak modu: tek büyük input — klasik düzen (zamir üstte, aksanlar altta) */}
             {quizLayout === 'focus' && currentFocusIndex < pronounIds.length && (() => {
               const pronoun = pronounIds[currentFocusIndex];
               const label = pronounsForLang.find((p) => p.id === pronoun)?.label ?? pronoun;
@@ -6510,145 +6510,124 @@ export function Page() {
               const memErrCount = memRec?.errorCount ?? 0;
               const wrongBorderRepeat = feedback === 'wrong' && !isRevealing && memErrCount >= 2;
               const showAsCorrect = feedback === 'correct' || isRevealing || mistakeReplayShowTick;
-              const shellBorder = showAsCorrect
-                ? 'border-emerald-400/90 dark:border-emerald-500/55'
-                : feedback === 'wrong'
-                  ? wrongBorderRepeat
-                    ? 'border-amber-500/85 dark:border-amber-400/65'
-                    : 'border-red-500/85 dark:border-red-400/60'
-                  : feedback === 'typo'
-                    ? 'border-amber-400/55 dark:border-amber-500/45'
-                    : 'border-slate-300/90 dark:border-slate-600';
-              const shellBg = showAsCorrect
-                ? 'bg-emerald-50/85 dark:bg-emerald-500/18'
-                : feedback === 'wrong'
-                  ? wrongBorderRepeat
-                    ? 'bg-amber-50/80 dark:bg-amber-500/16'
-                    : 'bg-red-50/75 dark:bg-red-500/12'
-                  : feedback === 'typo'
-                    ? 'bg-amber-50/45 dark:bg-amber-500/10'
-                    : 'bg-slate-100/85 dark:bg-slate-900/45';
               return (
-                <div className="px-3 sm:px-4 py-3 mb-2 flex flex-col justify-center min-h-[min(48vh,380px)]">
+                <div className="p-5 sm:p-6 mb-6">
+                  <p className="text-center text-slate-600 dark:text-slate-300 font-bold text-2xl uppercase tracking-wide mb-4">{label}</p>
                   <div
-                    className={`max-w-xl mx-auto w-full space-y-1.5 ${quizEmptyShake === pronoun ? 'animate-shake ring-2 ring-red-500/70 dark:ring-red-400/70 ring-offset-1 ring-offset-transparent rounded-xl' : ''} ${feedback === 'wrong' && !isRevealing ? 'animate-shake' : ''}`}
+                    className={`max-w-md mx-auto relative rounded-2xl ${feedback === 'wrong' && !isRevealing ? 'animate-shake' : ''} ${quizEmptyShake === pronoun ? 'animate-shake ring-2 ring-red-500 dark:ring-red-400 ring-inset' : ''}`}
                   >
-                    <div
-                      className={`flex rounded-xl border shadow-inner overflow-hidden transition-colors ${shellBorder} ${shellBg}`}
-                    >
-                      <span className="shrink-0 px-2.5 sm:px-3 py-2 text-xs sm:text-sm font-bold uppercase tracking-wide bg-slate-200/75 dark:bg-slate-800/95 text-slate-700 dark:text-slate-200 border-r border-slate-300/70 dark:border-slate-600 flex items-center justify-center min-w-[2.75rem] sm:min-w-[3.25rem]">
-                        {label}
-                      </span>
-                      <input
-                        ref={(el) => {
-                          quizInputRefs.current[0] = el;
-                        }}
-                        type="text"
-                        value={userAnswers[pronoun]}
-                        onChange={(e) => setAnswer(pronoun, e.target.value)}
-                        onFocus={() => {
-                          activeQuizInputIndexRef.current = currentFocusIndex;
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') handleFocusModeSubmit();
-                        }}
-                        readOnly={isRevealing}
-                        placeholder="Cevabınız..."
-                        className="flex-1 min-w-0 border-0 bg-transparent px-3 py-2 text-base sm:text-lg text-left placeholder-slate-500 dark:placeholder-slate-500 focus:outline-none focus:ring-0 text-slate-800 dark:text-slate-100"
-                        aria-label={`${label} çekimi`}
-                      />
-                      <div className="shrink-0 flex items-center gap-0.5 pl-1 pr-1.5 border-l border-slate-300/45 dark:border-slate-600/70 bg-white/25 dark:bg-black/15">
-                        {showAsCorrect && (
-                          <span className="text-emerald-600 dark:text-emerald-400 px-1" aria-hidden>
-                            <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                            </svg>
-                          </span>
-                        )}
-                        {!showAsCorrect && feedback !== 'wrong' && (
-                          <>
-                            {verbKey && (hintMode === null || hintMode === 'rule') && (
-                              <button
-                                type="button"
-                                onClick={() => requestHint(pronoun)}
-                                tabIndex={-1}
-                                className="w-8 h-8 inline-flex items-center justify-center rounded-lg text-slate-500 dark:text-slate-400 hover:text-amber-700 dark:hover:text-amber-300 hover:bg-amber-500/15 focus:outline-none focus:ring-2 focus:ring-amber-500/35 transition-colors"
-                                title="İpucu al (-2 puan)"
-                                aria-label="İpucu iste"
-                              >
-                                <span className="text-sm font-bold leading-none">?</span>
-                              </button>
-                            )}
-                            {(selectedLanguage === 'es' || selectedLanguage === 'fr') && (
-                              <button
-                                type="button"
-                                onClick={() => setTenseCardOverlay({ kind: 'detail', tenseId: selectedTense })}
-                                tabIndex={-1}
-                                className="w-8 h-8 inline-flex items-center justify-center rounded-lg text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-300 hover:bg-indigo-500/12 focus:outline-none focus:ring-2 focus:ring-indigo-500/35 transition-colors"
-                                title="Zaman kartını aç"
-                                aria-label="Zaman kartını aç"
-                              >
-                                <BookOpen className="w-4 h-4" strokeWidth={2} aria-hidden />
-                              </button>
-                            )}
-                            <MicButton
-                              size={28}
-                              lang={selectedLanguage === 'es' ? 'es-ES' : 'fr-FR'}
-                              onInterim={(text) => setAnswer(pronoun, text)}
-                              onResult={(res) => {
-                                const match = correctValue
-                                  ? res.alternatives.find((a) => checkAnswer(a, correctValue) !== 'wrong')
-                                  : null;
-                                const picked = match ?? res.transcript;
-                                setAnswer(pronoun, picked);
-                                handleFocusModeSubmit(picked);
-                              }}
-                            />
-                          </>
-                        )}
-                        {feedback === 'wrong' && !isRevealing && (
-                          <span
-                            className={`px-0.5 ${wrongBorderRepeat ? 'text-amber-600 dark:text-amber-400' : 'text-red-500 dark:text-red-400'}`}
-                            aria-hidden
-                          >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <AccentKeyboard
-                      singleRow
-                      lang={selectedLanguage}
-                      onInsert={(char) => {
-                        insertAccentChar(char);
-                        requestAnimationFrame(() => {
-                          quizInputRefs.current[0]?.focus();
-                        });
+                    <input
+                      ref={(el) => {
+                        quizInputRefs.current[0] = el;
                       }}
+                      type="text"
+                      value={userAnswers[pronoun]}
+                      onChange={(e) => setAnswer(pronoun, e.target.value)}
+                      onFocus={() => {
+                        activeQuizInputIndexRef.current = currentFocusIndex;
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleFocusModeSubmit();
+                      }}
+                      readOnly={isRevealing}
+                      placeholder="Cevabınız..."
+                      className={`w-full h-12 rounded-2xl border px-5 py-4 text-base sm:text-2xl text-center placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all duration-300 shadow-inner ${
+                        showAsCorrect
+                          ? 'border-emerald-400 dark:border-emerald-500/60 bg-emerald-50/80 dark:bg-emerald-500/20 text-slate-800 dark:text-slate-100 focus:ring-emerald-500/30 dark:focus:ring-emerald-400/30'
+                          : feedback === 'wrong'
+                            ? wrongBorderRepeat
+                              ? 'border-amber-500 dark:border-amber-400/60 bg-amber-50/80 dark:bg-amber-500/15 text-slate-800 dark:text-slate-100 focus:ring-amber-500/30'
+                              : 'border-red-500 dark:border-red-400/60 bg-red-50/80 dark:bg-red-500/15 text-slate-800 dark:text-slate-100 focus:ring-red-500/20 dark:focus:ring-red-400/30'
+                            : feedback === 'typo'
+                              ? 'border-amber-400 dark:border-amber-500/60 bg-amber-50/80 dark:bg-amber-500/15 text-slate-800 dark:text-slate-100 focus:ring-amber-500/30 dark:focus:ring-amber-400/30'
+                              : 'bg-slate-100/90 dark:bg-slate-900/50 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:border-indigo-500'
+                      }`}
+                      aria-label={`${label} çekimi`}
                     />
-                    {showHints && (
-                      <p className="text-center text-xs text-slate-500 dark:text-slate-400 pt-0.5">
-                        Doğru: <span className="font-medium text-slate-700 dark:text-slate-200">{correctValue}</span>
-                      </p>
+                    {showAsCorrect && (
+                      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-emerald-600 dark:text-emerald-400 pointer-events-none" aria-hidden>
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </span>
                     )}
-                    {!showHints && hintMode && verbKey && (
-                      <div className="pt-1">
-                        <SmartHintBubble
-                          mode={hintMode}
-                          rule={
-                            hintMode === 'rule'
-                              ? quizPasséHint[pronoun] ??
-                                getRuleHint(verbKey, selectedTense, pronoun, selectedLanguage, correctValue)
-                              : undefined
-                          }
-                          letters={hintMode === 'letters' ? getLetterMask(correctValue, 2) : undefined}
-                          correct={hintMode === 'reveal' ? correctValue : undefined}
+                    {!showAsCorrect && feedback !== 'wrong' && (
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                        {verbKey && (hintMode === null || hintMode === 'rule') && (
+                          <button
+                            type="button"
+                            onClick={() => requestHint(pronoun)}
+                            tabIndex={-1}
+                            className="w-7 h-7 inline-flex items-center justify-center rounded-full text-slate-500 dark:text-slate-300 hover:text-amber-700 dark:hover:text-amber-300 hover:bg-amber-100/70 dark:hover:bg-amber-500/15 focus:outline-none focus:ring-2 focus:ring-amber-500/40 transition-colors"
+                            title="İpucu al (-2 puan)"
+                            aria-label="İpucu iste"
+                          >
+                            <span className="text-base font-bold leading-none">?</span>
+                          </button>
+                        )}
+                        {(selectedLanguage === 'es' || selectedLanguage === 'fr') && (
+                          <button
+                            type="button"
+                            onClick={() => setTenseCardOverlay({ kind: 'detail', tenseId: selectedTense })}
+                            tabIndex={-1}
+                            className="w-7 h-7 inline-flex items-center justify-center rounded-full text-slate-500 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-300 hover:bg-indigo-100/70 dark:hover:bg-indigo-500/15 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 transition-colors"
+                            title="Zaman kartını aç"
+                            aria-label="Zaman kartını aç"
+                          >
+                            <BookOpen className="w-4 h-4" strokeWidth={2} aria-hidden />
+                          </button>
+                        )}
+                        <MicButton
+                          size={30}
+                          lang={selectedLanguage === 'es' ? 'es-ES' : 'fr-FR'}
+                          onInterim={(text) => setAnswer(pronoun, text)}
+                          onResult={(res) => {
+                            const match = correctValue
+                              ? res.alternatives.find((a) => checkAnswer(a, correctValue) !== 'wrong')
+                              : null;
+                            const picked = match ?? res.transcript;
+                            setAnswer(pronoun, picked);
+                            handleFocusModeSubmit(picked);
+                          }}
                         />
                       </div>
                     )}
+                    {feedback === 'wrong' && !isRevealing && (
+                      <span
+                        className={`absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none ${wrongBorderRepeat ? 'text-amber-600 dark:text-amber-400' : 'text-red-500 dark:text-red-400'}`}
+                        aria-hidden
+                      >
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </span>
+                    )}
+                    {feedback === 'typo' && (
+                      <p className="absolute left-0 right-0 -bottom-6 text-center text-sm text-amber-700 dark:text-amber-300 font-medium">
+                        Neredeyse! Doğrusu: <strong>{correctValue}</strong>
+                      </p>
+                    )}
                   </div>
+                  {showHints && (
+                    <p className="mt-3 text-center text-sm text-slate-500 dark:text-slate-400">
+                      Doğru: <span className="font-medium text-slate-700 dark:text-slate-200">{correctValue}</span>
+                    </p>
+                  )}
+                  {!showHints && hintMode && verbKey && (
+                    <div className="mt-4 max-w-md mx-auto">
+                      <SmartHintBubble
+                        mode={hintMode}
+                        rule={
+                          hintMode === 'rule'
+                            ? quizPasséHint[pronoun] ??
+                              getRuleHint(verbKey, selectedTense, pronoun, selectedLanguage, correctValue)
+                            : undefined
+                        }
+                        letters={hintMode === 'letters' ? getLetterMask(correctValue, 2) : undefined}
+                        correct={hintMode === 'reveal' ? correctValue : undefined}
+                      />
+                    </div>
+                  )}
                 </div>
               );
             })()}
@@ -6658,7 +6637,7 @@ export function Page() {
               İpuçları input sarmalayıcıda absolute (layout kayması yok).
             */}
             {quizLayout === 'list' && (
-            <div className="px-4 sm:px-5 py-3">
+            <div className="px-5 sm:px-6 py-5">
               <div className="flex flex-col gap-1.5">
                 {pronounsForLang.map(({ id, label }, index) => {
                   const feedback = quizFeedback[id];
@@ -6914,12 +6893,11 @@ export function Page() {
               </motion.div>
             )}
 
-            {/* Liste modu: aksanlar burada; odak modunda input altında */}
-            <div className="px-4 sm:px-5 py-2.5 border-t border-slate-200/60 dark:border-white/5 space-y-2">
-              {quizLayout === 'list' && (
+            {/* Alıştırma alt çubuğu — aksan klavyesi + aksiyonlar (her iki görünümde) */}
+            <div className="px-5 sm:px-6 py-5 border-t border-slate-100/80 dark:border-white/5 space-y-4">
+              <div className="flex justify-center w-full">
                 <AccentKeyboard
-                  singleRow
-                  className="max-w-full"
+                  compact
                   lang={selectedLanguage}
                   onInsert={(char) => {
                     insertAccentChar(char);
@@ -6929,30 +6907,28 @@ export function Page() {
                     });
                   }}
                 />
-              )}
-              <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center w-full">
-                <div className="flex flex-row items-center gap-2 w-full sm:w-auto sm:flex-1">
-                  <button
-                    type="button"
-                    onClick={resetQuiz}
-                    className="min-h-[44px] shrink-0 text-sm font-medium text-slate-500 dark:text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-400/40 transition-colors touch-manipulation"
-                  >
-                    Sıfırla
-                  </button>
-                  <button
-                    type="button"
-                    onClick={toggleShowHints}
-                    className="min-h-[44px] shrink-0 rounded-lg border border-slate-300/90 dark:border-slate-600 bg-slate-50/80 dark:bg-slate-800/40 text-slate-600 dark:text-slate-300 text-sm font-medium px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-700/60 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 transition-colors touch-manipulation"
-                  >
-                    {showHints ? 'İpucu Gizle' : 'İpucu Göster'}
-                  </button>
-                </div>
+              </div>
+              <div className="flex flex-wrap justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => (quizLayout === 'focus' ? handleFocusModeSubmit() : checkQuiz())}
-                  className="w-full sm:w-auto sm:ml-auto sm:min-w-[8.5rem] min-h-[48px] rounded-lg bg-gradient-to-r from-indigo-600 to-blue-600 dark:from-indigo-500 dark:to-blue-500 text-white text-base font-semibold px-5 py-3 shadow-sm hover:opacity-95 dark:shadow-indigo-500/15 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 dark:focus:ring-offset-slate-900 transition-all touch-manipulation"
+                  className="rounded-xl bg-gradient-to-r from-indigo-600 to-blue-500 dark:from-indigo-500 dark:to-blue-500 text-white text-sm font-semibold px-4 py-2.5 shadow-sm hover:shadow-md dark:shadow-indigo-500/20 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-all duration-300"
                 >
                   Kontrol Et
+                </button>
+                <button
+                  type="button"
+                  onClick={toggleShowHints}
+                  className="rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 text-sm font-medium px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 transition-colors duration-300"
+                >
+                  {showHints ? 'İpucu Gizle' : 'İpucu Göster'}
+                </button>
+                <button
+                  type="button"
+                  onClick={resetQuiz}
+                  className="rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 text-sm font-medium px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 transition-colors duration-300"
+                >
+                  Sıfırla
                 </button>
               </div>
             </div>
