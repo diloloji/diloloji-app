@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import {
   getTotalXP,
   setTotalXP as persistTotalXP,
@@ -14,7 +14,9 @@ import {
   type XpActivityHistory,
 } from '../utils/xpLevel';
 import { claimSevenDayStreakMilestone } from '../utils/xpDailyBonuses';
+import { runBadgeChecksAfterXp } from '../utils/xpBadges';
 import LevelUpCelebration from '../components/LevelUpCelebration';
+import BadgeToastHost from '../components/BadgeToastHost';
 
 export type FloatingXpItem = { id: number; text: string; x: number; y: number };
 
@@ -42,6 +44,10 @@ const XpContext = createContext<XpContextValue | null>(null);
 let floatingIdSeq = 0;
 
 export function XpProvider({ children }: { children: React.ReactNode }) {
+  useEffect(() => {
+    runBadgeChecksAfterXp();
+  }, []);
+
   const [totalXP, setTotalXP] = useState(getTotalXP);
   const [streak, setStreak] = useState(getStreak);
   const [lastActiveDate, setLastActiveDate] = useState<string | null>(getLastActiveDate);
@@ -90,6 +96,8 @@ export function XpProvider({ children }: { children: React.ReactNode }) {
       });
     }
 
+    runBadgeChecksAfterXp();
+
     return next;
   }, []);
 
@@ -133,6 +141,7 @@ export function XpProvider({ children }: { children: React.ReactNode }) {
         toTitle={celebration?.toTitle ?? ''}
         onClose={() => setCelebration(null)}
       />
+      <BadgeToastHost />
       <style>{`
         @keyframes xp-float-up {
           0% { opacity: 1; transform: translate(-50%, -50%) translateY(0); }

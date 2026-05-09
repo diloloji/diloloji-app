@@ -2,6 +2,7 @@ export interface MistakeMemoryEntry {
   verb: string;
   tense: string;
   person: string;
+  lang: 'es' | 'fr';
   errorCount: number;
   lastSeen: string;
   lastAnswer: string;
@@ -14,12 +15,18 @@ export function recordMistake(
   tense: string,
   person: string,
   wrongAnswer: string,
-  correctAnswer: string
+  correctAnswer: string,
+  lang?: 'es' | 'fr'
 ): void;
 
-export function markResolved(verb: string, tense: string, person: string): void;
+export function markResolved(verb: string, tense: string, person: string, lang?: 'es' | 'fr'): void;
 
-export function getMistake(verb: string, tense: string, person: string): MistakeMemoryEntry | null;
+export function getMistake(
+  verb: string,
+  tense: string,
+  person: string,
+  lang?: 'es' | 'fr'
+): MistakeMemoryEntry | null;
 
 export function getAllMistakes(): MistakeMemoryEntry[];
 
@@ -27,7 +34,7 @@ export function getUnresolvedMistakes(): MistakeMemoryEntry[];
 
 export function priorityScore(entry: Pick<MistakeMemoryEntry, 'errorCount' | 'lastSeen'>): number;
 
-export function getMistakesForReviewSorted(): MistakeMemoryEntry[];
+export function getMistakesForReviewSorted(lang: 'es' | 'fr'): MistakeMemoryEntry[];
 
 export interface MistakeMemoryStats {
   totalErrors: number;
@@ -38,4 +45,4 @@ export interface MistakeMemoryStats {
   worstPersonId: string | null;
 }
 
-export function getMistakeMemoryStats(): MistakeMemoryStats;
+export function getMistakeMemoryStats(scope?: 'es' | 'fr' | 'all'): MistakeMemoryStats;

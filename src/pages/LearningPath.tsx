@@ -6,11 +6,21 @@ import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { BookOpen, PenLine, MessageCircle, X, Lock, Check, ChevronRight } from 'lucide-react';
+import confetti from 'canvas-confetti';
 import Navbar from '../components/Navbar';
 import LessonView from '../components/LessonView';
 import { getUnitContent } from '../data/learningPathUnits';
-import { getCompletedCountForUnit } from '../utils/learningProgress';
 import type { UnitContent, LessonItem } from '../data/learningPathUnits';
+import { ES_A1_UNITS } from '../data/units/es-a1';
+import { ES_A2_UNITS } from '../data/units/es-a2';
+import { ES_B1_UNITS } from '../data/units/es-b1';
+import { ES_B2_UNITS } from '../data/units/es-b2';
+import { useXp } from '../contexts/XpContext';
+import {
+  getCompletedCountForUnit,
+  hasLevelCompletionBonus,
+  markLevelCompletionBonus,
+} from '../utils/learningProgress';
 
 export type LessonStatus = 'locked' | 'available' | 'in_progress' | 'completed';
 
@@ -24,6 +34,20 @@ type ModuleItem = {
   /** Varsa tıklanınca bu ünite detayı açılır */
   unitId?: string;
 };
+
+function ExampleOriginalText({ original, verbBold }: { original: string; verbBold?: string }) {
+  if (!verbBold || !original.includes(verbBold)) {
+    return <span className="font-medium text-slate-100">{original}</span>;
+  }
+  const i = original.indexOf(verbBold);
+  return (
+    <span className="font-medium text-slate-100">
+      {original.slice(0, i)}
+      <strong className="text-indigo-400">{verbBold}</strong>
+      {original.slice(i + verbBold.length)}
+    </span>
+  );
+}
 
 const ICONS = {
   book: BookOpen,
@@ -40,18 +64,34 @@ function getLessonStatus(
   const unit = getUnitContent(mod.unitId);
   const total = unit?.lessons.length ?? 0;
   const completedCount = getCompletedCountForUnit(mod.unitId);
-  const prevUnitIndex = modules.slice(0, index).findIndex((m) => m.unitId);
-  if (prevUnitIndex >= 0) {
-    const prev = modules[prevUnitIndex];
-    if (prev?.unitId) {
-      const prevTotal = getUnitContent(prev.unitId)?.lessons.length ?? 0;
-      const prevCompleted = getCompletedCountForUnit(prev.unitId);
-      if (prevCompleted < prevTotal) return 'locked';
+
+  let prevWithUnit: ModuleItem | undefined;
+  for (let i = index - 1; i >= 0; i--) {
+    if (modules[i]?.unitId) {
+      prevWithUnit = modules[i];
+      break;
     }
   }
+  if (prevWithUnit?.unitId) {
+    const prevTotal = getUnitContent(prevWithUnit.unitId)?.lessons.length ?? 0;
+    const prevCompleted = getCompletedCountForUnit(prevWithUnit.unitId);
+    if (prevTotal > 0 && prevCompleted < prevTotal) return 'locked';
+  }
+
   if (total > 0 && completedCount >= total) return 'completed';
   if (completedCount > 0) return 'in_progress';
   return 'available';
+}
+
+const SPANISH_ICONS: ModuleItem['icon'][] = ['book', 'pen', 'message'];
+
+function spanishModules(units: { id: string; title: string; description: string }[]): ModuleItem[] {
+  return units.map((u, i) => ({
+    icon: SPANISH_ICONS[i % 3],
+    title: u.title,
+    description: u.description,
+    unitId: u.id,
+  }));
 }
 
 const CURRICULUM: Record<Lang, Record<Level, ModuleItem[]>> = {
@@ -112,41 +152,10 @@ const CURRICULUM: Record<Lang, Record<Level, ModuleItem[]>> = {
     ],
   },
   es: {
-    A1: [
-      { icon: 'book', title: 'Alfabe ve Telaffuz', description: 'Harfler, ñ ve vurgu kuralları. İspanyolca sesleri kulağa yerleştirin.' },
-      { icon: 'message', title: 'Selamlaşmalar', description: 'Hola, buenos días ve vedalar. İlk teması doğal kılın.' },
-      { icon: 'pen', title: 'Ser & Estar Farkı (Derinlemesine)', description: 'Kalıcı ve geçici durumlar — İspanyolcanın en temel ayrımı. “Olmak”ın iki yüzünü netleştirin.' },
-      { icon: 'book', title: 'Tanımlıklar ve Cinsiyet (Género y Número)', description: 'El, la, los, las ve isimlerin cinsiyet kuralları. Doğru tanımlık seçiminin matematiği.' },
-      { icon: 'pen', title: 'Hay vs. Estar', description: "Bir şeyin varlığını belirtme (hay) ile konumunu gösterme (estar). “Var” mı, “orada” mı — farkı yakalayın." },
-      { icon: 'message', title: 'Soru Sorma ve Olumsuzluk', description: 'Temel soru yapıları ve cümleleri olumsuz yapma. Soru kelimeleri ve no / nunca ile güven kazanın.' },
-      { icon: 'book', title: 'Düzenli Fiiller (Presente)', description: '-ar, -er, -ir çekimleri. Fiil matrisinin ilk adımı.' },
-      { icon: 'pen', title: 'Sayılar ve Günlük İfadeler', description: 'Temel sayılar, saat ve günlük kalıplar.' },
-    ],
-    A2: [
-      { icon: 'message', title: 'Dönüşlü Fiiller (Verbos Reflexivos)', description: 'Levantarse, ducharse — günlük rutinleri anlatın. –se’nin cümle içindeki yerini keşfedin.' },
-      { icon: 'pen', title: 'Nesne Zamirleri (Directo & Indirecto)', description: "Lo, la, le zamirlerinin cümle içindeki matematiği. Tekrarları kaldırın, cümleleri sadeleştirin." },
-      { icon: 'pen', title: 'Pretérito Perfecto vs. Indefinido', description: 'Tamamlanmış geçmiş zamanlar arasındaki kullanım farkları. Hangi geçmişi ne zaman kullanacağınızı netleştirin.' },
-      { icon: 'book', title: 'Yer Edatları ve Yönler', description: 'İspanyol şehirlerinde yol bulma ve konum belirtme. A la derecha, al lado de — sokak diline girin.' },
-      { icon: 'book', title: 'Imperfecto', description: 'Süreç ve alışkanlık geçmişi. Hikaye anlatımının temeli.' },
-      { icon: 'pen', title: 'Emir Kipi (Imperativo)', description: 'Olumlu ve olumsuz emirler. Rica ve talep ifadeleri.' },
-      { icon: 'message', title: 'Seyahat ve Sağlık', description: 'Yolculuk ve sağlık sözcükleri. Seyahatte ihtiyaç duyacağınız kalıplar.' },
-    ],
-    B1: [
-      { icon: 'book', title: "Subjuntivo'ya Giriş", description: 'Dilek, istek ve olasılık dünyasına ilk adım. Ojalá, quizás — ruhu yakalayın.' },
-      { icon: 'pen', title: 'Por vs. Para', description: "En çok takıldığınız iki edatın net kuralları. “İçin”ün iki yüzünü matematikselleştirin." },
-      { icon: 'message', title: 'Gelecek Zaman (Futuro Simple)', description: 'Planlar ve tahminler yapma. İrá, estarán — geleceği ifade etmenin doğal yolları.' },
-      { icon: 'book', title: 'Kültür ve Gelenekler', description: 'İspanyol dünyasındaki bayramlar, yemekler ve sosyal alışkanlıklar. Dili kültürle taşıyın.' },
-      { icon: 'pen', title: 'Condicional', description: 'Koşul ve nazik istek. “Olsaydı” ve kibarca rica.' },
-      { icon: 'message', title: 'Dolaylı Anlatım (Estilo Indirecto)', description: 'Başkasının sözünü aktarma ve zaman kayması.' },
-    ],
-    B2: [
-      { icon: 'book', title: 'İleri Subjuntivo', description: 'Şartlı yapılar ve concesivas (aunque + subjuntivo). Karmaşık cümleleri rahatça kurun.' },
-      { icon: 'pen', title: 'Deyimsel Fiiller (Perífrasis Verbales)', description: "Ir a, estar + gerundio ötesindeki yapılar. Acabar de, echar a — doğal ifade repertuarınızı genişletin." },
-      { icon: 'message', title: 'Kastilya vs. Latin Amerika', description: 'İspanya İspanyolcası ile Amerika kıtasındaki dilsel farklar ve nüanslar. Hangi varyantı nerede duyacağınızı bilin.' },
-      { icon: 'pen', title: 'Tartışma ve Argüman', description: 'Bir fikri savunma ve karşı tez sunma kalıpları. En mi opinión, por un lado — ikna edici konuşun.' },
-      { icon: 'pen', title: 'Por & Para Nüansları', description: 'İki “için” edatının B2 derinliğinde kullanımı.' },
-      { icon: 'message', title: 'Bağlaçlar ve Münazara', description: 'Conectores ve argumentación. Akışkan metin ve konuşma.' },
-    ],
+    A1: spanishModules(ES_A1_UNITS),
+    A2: spanishModules(ES_A2_UNITS),
+    B1: spanishModules(ES_B1_UNITS),
+    B2: spanishModules(ES_B2_UNITS),
     C1: [
       { icon: 'book', title: 'Deyimler ve Atasözleri (Modismos)', description: 'Günlük dildeki kültürel derinliği yansıtan kalıplar. Sözcük anlamının ötesine geçin.' },
       { icon: 'pen', title: 'Edebiyat Analizi', description: 'Modern ve klasik İspanyol edebiyatı metinlerini inceleme. Üslup, tema ve bağlam.' },
@@ -192,7 +201,12 @@ function UnitDetailPanel({
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-slate-900/98 dark:bg-slate-950/98 backdrop-blur-md">
       <div className="sticky top-0 z-10 flex items-center justify-between gap-4 border-b border-slate-700/60 bg-slate-900/95 dark:bg-slate-950/95 px-4 py-3">
-        <h2 className="text-lg font-bold text-slate-100 truncate">{unit.title}</h2>
+        <div className="min-w-0">
+          <h2 className="text-lg font-bold text-slate-100 truncate">{unit.title}</h2>
+          {unit.estimatedMinutes != null && (
+            <p className="text-xs text-slate-500 mt-0.5">~{unit.estimatedMinutes} dk</p>
+          )}
+        </div>
         <button
           type="button"
           onClick={onClose}
@@ -244,7 +258,7 @@ function LessonBlock({ lesson, onStartLesson }: { lesson: LessonItem; onStartLes
           {lesson.grammarBlock}
         </p>
       </div>
-      <p className="text-slate-300 dark:text-slate-300 text-sm leading-relaxed mb-4">
+      <p className="text-slate-300 dark:text-slate-300 text-sm leading-relaxed mb-4 whitespace-pre-wrap">
         {lesson.content}
       </p>
       {lesson.conjugation && lesson.conjugation.length > 0 && (
@@ -285,7 +299,7 @@ function LessonBlock({ lesson, onStartLesson }: { lesson: LessonItem; onStartLes
                 key={i}
                 className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-3 rounded-lg bg-slate-800/60 dark:bg-slate-800/60 border border-slate-600/40 p-3"
               >
-                <span className="font-medium text-slate-100">{ex.original}</span>
+                <ExampleOriginalText original={ex.original} verbBold={ex.verbBold} />
                 {ex.phonetic && (
                   <span className="text-xs italic text-slate-500">{ex.phonetic}</span>
                 )}
@@ -304,7 +318,7 @@ const LEVELS: Level[] = ['A1', 'A2', 'B1', 'B2', 'C1'];
 
 function parseOgrenmePath(pathname: string): { lang: Lang; level: Level; unitId: string | null; lessonIndex: number | null } {
   const segments = pathname.replace(/^\/ogrenme\/?/, '').split('/').filter(Boolean);
-  const lang = LANGS.includes(segments[0] as Lang) ? (segments[0] as Lang) : 'fr';
+  const lang = LANGS.includes(segments[0] as Lang) ? (segments[0] as Lang) : 'es';
   const level = LEVELS.includes(segments[1] as Level) ? (segments[1] as Level) : 'A1';
   let unitId: string | null = null;
   let lessonIndex: number | null = null;
@@ -321,16 +335,17 @@ function parseOgrenmePath(pathname: string): { lang: Lang; level: Level; unitId:
 export default function LearningPath() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { addXP } = useXp();
   const pathname = location.pathname;
 
-  const [lang, setLangState] = useState<Lang>('fr');
+  const [lang, setLangState] = useState<Lang>('es');
   const [level, setLevelState] = useState<Level>('A1');
   const [selectedUnitId, setSelectedUnitId] = useState<string | null>(null);
   const [selectedLesson, setSelectedLesson] = useState<{ unitId: string; lessonIndex: number } | null>(null);
 
   useEffect(() => {
     if (pathname === '/ogrenme' || pathname === '/ogrenme/') {
-      navigate('/ogrenme/fr/A1', { replace: true });
+      navigate('/ogrenme/es/A1', { replace: true });
       return;
     }
     const { lang: l, level: lv, unitId: uid, lessonIndex: lix } = parseOgrenmePath(pathname);
@@ -366,8 +381,42 @@ export default function LearningPath() {
   const selectedUnit = selectedUnitId ? getUnitContent(selectedUnitId) : null;
   const lessonViewUnit = selectedLesson ? getUnitContent(selectedLesson.unitId) : null;
 
+  const tryAwardLevelBonus = () => {
+    const mods = CURRICULUM[lang][level];
+    const withIds = mods.filter((m) => m.unitId);
+    if (!withIds.length) return;
+    const allDone = withIds.every((m) => {
+      const u = getUnitContent(m.unitId!);
+      const t = u?.lessons.length ?? 0;
+      return t > 0 && getCompletedCountForUnit(m.unitId!) >= t;
+    });
+    if (!allDone || hasLevelCompletionBonus(lang, level)) return;
+    markLevelCompletionBonus(lang, level);
+    addXP(100);
+    const duration = 2800;
+    const end = Date.now() + duration;
+    const frame = () => {
+      confetti({
+        particleCount: 8,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0 },
+        colors: ['#34d399', '#fbbf24', '#818cf8', '#f472b6'],
+      });
+      confetti({
+        particleCount: 8,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1 },
+        colors: ['#34d399', '#fbbf24', '#818cf8', '#f472b6'],
+      });
+      if (Date.now() < end) requestAnimationFrame(frame);
+    };
+    frame();
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-indigo-50/20 to-slate-200/80 dark:from-[#0a0f1a] dark:via-[#0f1623] dark:to-[#151d2e] transition-colors duration-500">
+    <div className="min-h-[100dvh] min-h-screen overflow-x-hidden bg-gradient-to-br from-slate-100 via-indigo-50/20 to-slate-200/80 dark:from-[#0a0f1a] dark:via-[#0f1623] dark:to-[#151d2e] transition-colors duration-500">
       <Helmet>
         <title>Öğrenme Yolu | Diloloji</title>
         <meta name="description" content="Fransızca ve İspanyolca A1–C1 müfredat yol haritası." />
@@ -466,6 +515,7 @@ export default function LearningPath() {
             const completedCount = mod.unitId ? getCompletedCountForUnit(mod.unitId) : 0;
             const progressPercent = totalLessons > 0 ? (completedCount / totalLessons) * 100 : 0;
             const isLocked = status === 'locked';
+            const estMin = unit?.estimatedMinutes;
             return (
               <button
                 key={`${mod.title}-${i}`}
@@ -502,6 +552,9 @@ export default function LearningPath() {
                   </span>
                   <h3 className="font-semibold text-slate-800 dark:text-slate-100 text-base pr-20">{mod.title}</h3>
                   <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">{mod.description}</p>
+                  {estMin != null && !isLocked && (
+                    <p className="text-xs text-slate-500 dark:text-slate-500">~{estMin} dk</p>
+                  )}
                   {mod.unitId && totalLessons > 0 && (
                     <div className="mt-1 h-1.5 rounded-full bg-slate-700 overflow-hidden">
                       <div
@@ -537,7 +590,10 @@ export default function LearningPath() {
           lessonIndex={selectedLesson.lessonIndex}
           lang={lang}
           onClose={closeLesson}
-          onComplete={closeLesson}
+          onComplete={() => {
+            tryAwardLevelBonus();
+            closeLesson();
+          }}
           onPrevLesson={
             selectedLesson.lessonIndex > 0
               ? () => navigate(`/ogrenme/${lang}/${level}/unite/${selectedLesson.unitId}/ders/${selectedLesson.lessonIndex - 1}`)

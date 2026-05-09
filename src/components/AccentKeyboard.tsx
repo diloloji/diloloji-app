@@ -14,10 +14,47 @@ interface AccentKeyboardProps {
   className?: string;
   /** Kompakt tek satırlık inline mod — alıştırma grid'i için */
   compact?: boolean;
+  /** Tek satır, kaydırılabilir — input hemen altı */
+  singleRow?: boolean;
 }
 
-export default function AccentKeyboard({ lang, onInsert, className = '', compact = false }: AccentKeyboardProps) {
+export default function AccentKeyboard({
+  lang,
+  onInsert,
+  className = '',
+  compact = false,
+  singleRow = false,
+}: AccentKeyboardProps) {
   const chars = lang === 'fr' ? CHARS_FR : CHARS_ES;
+  if (singleRow) {
+    const mid = Math.ceil(chars.length / 2);
+    const row1 = chars.slice(0, mid);
+    const row2 = chars.slice(mid);
+    const btnClass =
+      'shrink-0 text-base font-semibold min-h-[40px] min-w-[40px] sm:min-w-0 sm:w-7 sm:h-7 sm:min-h-0 sm:text-xs flex items-center justify-center rounded-md bg-slate-100/90 dark:bg-slate-800/70 border border-slate-200/60 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-indigo-500/12 hover:border-indigo-400/35 hover:text-indigo-600 dark:hover:text-indigo-300 active:scale-95 transition-all duration-150 focus:outline-none focus:ring-1 focus:ring-indigo-500/40 touch-manipulation';
+    return (
+      <div
+        className={`flex flex-col gap-1.5 w-full ${className}`}
+        role="group"
+        aria-label={lang === 'es' ? 'İspanyolca özel karakterler' : 'Fransızca aksanlı harfler'}
+      >
+        <div className="flex flex-wrap justify-center gap-1.5">
+          {row1.map((char) => (
+            <button key={char} type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => onInsert(char)} tabIndex={-1} className={btnClass} aria-label={`${char} ekle`}>
+              {char}
+            </button>
+          ))}
+        </div>
+        <div className="flex flex-wrap justify-center gap-1.5">
+          {row2.map((char) => (
+            <button key={char} type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => onInsert(char)} tabIndex={-1} className={btnClass} aria-label={`${char} ekle`}>
+              {char}
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
   if (compact) {
     return (
       <div

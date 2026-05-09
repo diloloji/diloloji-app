@@ -227,7 +227,7 @@ export default function HomePage() {
 
   return (
     <div
-      className="min-h-screen relative bg-slate-100 dark:bg-transparent transition-colors duration-300"
+      className="min-h-[100dvh] min-h-screen overflow-x-hidden relative bg-slate-100 dark:bg-transparent transition-colors duration-300"
       onMouseMove={handleMouseMove}
     >
       <Helmet>

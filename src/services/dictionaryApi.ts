@@ -71,6 +71,10 @@ const GROQ_SYSTEM_MESSAGE =
 const GROQ_SYSTEM_MESSAGE_EN =
   'Sen profesyonel bir dilbilimci ve sözlük editörüsün. Hedef dil İngilizce veya Türkçe; kullanıcının girdiği kelimenin dilini otomatik algıla ve hedeflenen dile çevir. KRİTİK KURAL — Kelime matrisi (wordMatrix: noun, verb, adjective, adverb) KESİNLİKLE hedef dilde (İngilizce veya Türkçe) olmalıdır; asla diğer dilde kelime kullanma. Örnek: Türkçe "Eğitim" İngilizce aranıyorsa: noun: education, verb: educate, adjective: educational, adverb: educationally. ÖNEMLİ — İngilizce: (1) IPA telaffuzu (phonetic) zorunlu. (2) Fiil ise commonPhrases içinde 2-3 phrasal verb. (3) etymology: aratılan kelimenin Latince veya PIE kökünü bul; Fransızca, İspanyolca, İngilizce akraba kelimeleri (cognates) connections listesinde dön: { "root": "köken", "connections": [ { "lang": "Fr|Es|En", "word": "kelime", "relation": "kısa açıklama" } ] }. (4) semanticShift: anlam kaymasını 1-2 cümle (Türkçe). (5) synonyms ve antonyms: eş ve zıt anlamlılar (hedef dilde, virgülle ayrılmış). (6) level: CEFR seviyesi (A1, A2, B1, B2, C1 veya C2). Cevabı şu JSON ile ver: { "word", "phonetic", "translation", "examples", "commonPhrases", "wordMatrix", "etymology", "semanticShift", "synonyms", "antonyms", "level" }. Sadece geçerli JSON döndür.';
 
+/** Fransızca: İspanyolca ile aynı zenginlik; IPA zorunlu, kelime matrisi hedef dilde. */
+const GROQ_SYSTEM_MESSAGE_FR =
+  'Sen profesyonel bir dilbilimci ve sözlük editörüsün. Kullanıcının girdiği kelimenin dilini otomatik algıla ve hedeflenen dile (Fransızca) çevir. KRİTİK KURAL — Kelime matrisi (wordMatrix: noun, verb, adjective, adverb) KESİNLİKLE Fransızca olmalıdır; asla Türkçe kelime kullanma. ÖNEMLİ — Fransızca: (1) IPA telaffuzu (phonetic) zorunlu (uluslararası IPA). (2) wordMatrix, commonPhrases, examples ver. (3) etymology: Latince veya PIE kökü; Fransızca, İspanyolca, İngilizce cognates connections içinde. (4) semanticShift: anlam kayması 1-2 cümle Türkçe. (5) synonyms ve antonyms: Fransızca, virgülle ayrılmış. (6) level: CEFR (A1–C2). Cevabı şu JSON ile ver: { "word", "phonetic", "translation", "examples", "commonPhrases", "wordMatrix", "etymology", "semanticShift", "synonyms", "antonyms", "level" }. Sadece geçerli JSON döndür.';
+
 /**
  * Groq API ile tek istekte kelime analizi (dil algılama + çeviri + IPA + örnekler).
  * API Key: .env.local içindeki VITE_GROQ_API_KEY kullanılır.
@@ -83,10 +87,17 @@ export const fetchFromGroq = async (word: string, targetLanguage: string): Promi
   }
   console.log('[Sözlük] Aranan kelime:', word, '| Hedef dil:', targetLanguage);
   const isEnglish = targetLanguage === 'İngilizce';
-  const systemContent = isEnglish ? GROQ_SYSTEM_MESSAGE_EN : GROQ_SYSTEM_MESSAGE;
+  const isFrench = targetLanguage === 'Fransızca';
+  const systemContent = isEnglish
+    ? GROQ_SYSTEM_MESSAGE_EN
+    : isFrench
+      ? GROQ_SYSTEM_MESSAGE_FR
+      : GROQ_SYSTEM_MESSAGE;
   const userMessage = isEnglish
     ? `Kullanıcı şu kelimeyi girdi: "${word}". Dilini algıla; IPA (phonetic), translation, examples, commonPhrases, wordMatrix ver. Ayrıca etymology (Latince/PIE root + Fr/Es/En cognates) ve semanticShift (1-2 cümle anlam kayması) ekle.`
-    : `Kullanıcı şu kelimeyi girdi: "${word}". Dilini algıla ve hedeflenen dile (${targetLanguage}) çevir. wordMatrix, commonPhrases, examples ver. Ayrıca etymology: bu kelimenin Latince veya Proto-Hint-Avrupa kökünü bul; Fransızca, İspanyolca, İngilizce akraba kelimeleri (cognates) connections listesinde dön. semanticShift: yüzyıllar içindeki anlam kaymasını 1-2 cümle Türkçe yaz.`;
+    : isFrench
+      ? `Kullanıcı şu kelimeyi girdi: "${word}". Dilini algıla; Fransızca için IPA (phonetic zorunlu), translation, examples, commonPhrases, wordMatrix, etymology, semanticShift, synonyms, antonyms, level ver.`
+      : `Kullanıcı şu kelimeyi girdi: "${word}". Dilini algıla ve hedeflenen dile (${targetLanguage}) çevir. wordMatrix, commonPhrases, examples ver. Ayrıca etymology: bu kelimenin Latince veya Proto-Hint-Avrupa kökünü bul; Fransızca, İspanyolca, İngilizce akraba kelimeleri (cognates) connections listesinde dön. semanticShift: yüzyıllar içindeki anlam kaymasını 1-2 cümle Türkçe yaz.`;
   try {
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',

@@ -5,8 +5,9 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Trash2, GripVertical, BookOpen, Globe, AlignLeft } from 'lucide-react';
+import { X, Plus, Trash2, GripVertical, BookOpen, Globe, AlignLeft, Sparkles, Loader2 } from 'lucide-react';
 import type { Deck } from '../../types/deck';
+import { suggestFlashcardsFromTitle, type SuggestedPair } from '../../services/flashcardAiSuggest';
 
 interface CardRow {
   id: string;
@@ -41,6 +42,26 @@ function newRow(): CardRow {
   return { id: Math.random().toString(36).slice(2), front: '', back: '', hint: '' };
 }
 
+/** "kelime - anlam" veya tab ile ayrılmış satırlar */
+function parseBulkPasteLines(raw: string): { front: string; back: string; hint?: string }[] {
+  const out: { front: string; back: string; hint?: string }[] = [];
+  for (const line of raw.split(/\r?\n/)) {
+    const t = line.trim();
+    if (!t) continue;
+    const tabParts = t.split('\t').map((s) => s.trim());
+    if (tabParts.length >= 2 && tabParts[0] && tabParts[1]) {
+      out.push({ front: tabParts[0], back: tabParts[1] });
+      continue;
+    }
+    const m = t.match(/^(.+?)\s*[-–—]\s*(.+)$/);
+    if (m) {
+      out.push({ front: m[1].trim(), back: m[2].trim() });
+      continue;
+    }
+  }
+  return out;
+}
+
 export default function DeckEditor({ initialDeck, onSave, onClose }: DeckEditorProps) {
   const [title, setTitle] = useState(initialDeck?.title ?? '');
   const [language, setLanguage] = useState(initialDeck?.language ?? 'İspanyolca');
@@ -58,7 +79,15 @@ export default function DeckEditor({ initialDeck, onSave, onClose }: DeckEditorP
   });
   const [showHints, setShowHints] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
+  const [bulkPaste, setBulkPaste] = useState('');
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiPreview, setAiPreview] = useState<SuggestedPair[] | null>(null);
+  const [aiError, setAiError] = useState<string | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  const hasAnthropicKey = Boolean(
+    typeof import.meta.env.VITE_ANTHROPIC_API_KEY === 'string' &&
+      import.meta.env.VITE_ANTHROPIC_API_KEY.trim().length > 0
+  );
 
   const selectedLang = LANG_OPTIONS.find((l) => l.label === language) ?? LANG_OPTIONS[0];
 
@@ -140,6 +169,86 @@ export default function DeckEditor({ initialDeck, onSave, onClose }: DeckEditorP
   }, [onClose]);
 
   const validCount = rows.filter((r) => r.front.trim() && r.back.trim()).length;
+
+  const applyBulkPaste = useCallback(() => {
+    const parsed = parseBulkPasteLines(bulkPaste);
+    if (parsed.length === 0) {
+      setErrors(['Geçerli satır bulunamadı. Format: kelime - anlam']);
+      return;
+    }
+    setErrors([]);
+    setRows((prev) => {
+      const next = [...prev];
+      let pi = 0;
+      for (let i = 0; i < next.length && pi < parsed.length; i++) {
+        if (!next[i].front.trim() && !next[i].back.trim()) {
+          next[i] = {
+            ...next[i],
+            front: parsed[pi].front,
+            back: parsed[pi].back,
+            hint: parsed[pi].hint ?? '',
+          };
+          pi++;
+        }
+      }
+      while (pi < parsed.length) {
+        next.push({
+          id: Math.random().toString(36).slice(2),
+          front: parsed[pi].front,
+          back: parsed[pi].back,
+          hint: parsed[pi].hint ?? '',
+        });
+        pi++;
+      }
+      return next;
+    });
+    setBulkPaste('');
+  }, [bulkPaste]);
+
+  const runAiSuggest = useCallback(async () => {
+    if (!title.trim()) {
+      setErrors(['AI için deste adı gerekli']);
+      return;
+    }
+    setAiError(null);
+    setErrors([]);
+    setAiLoading(true);
+    try {
+      const pairs = await suggestFlashcardsFromTitle(title.trim(), language);
+      setAiPreview(pairs);
+    } catch (e) {
+      setAiError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setAiLoading(false);
+    }
+  }, [title, language]);
+
+  const confirmAiPreview = useCallback(() => {
+    if (!aiPreview?.length) return;
+    setRows((prev) => {
+      const next = [...prev];
+      let pi = 0;
+      for (let i = 0; i < next.length && pi < aiPreview.length; i++) {
+        if (!next[i].front.trim() && !next[i].back.trim()) {
+          const p = aiPreview[pi];
+          next[i] = { ...next[i], front: p.front, back: p.back, hint: p.hint ?? '' };
+          pi++;
+        }
+      }
+      while (pi < aiPreview.length) {
+        const p = aiPreview[pi];
+        next.push({
+          id: Math.random().toString(36).slice(2),
+          front: p.front,
+          back: p.back,
+          hint: p.hint ?? '',
+        });
+        pi++;
+      }
+      return next;
+    });
+    setAiPreview(null);
+  }, [aiPreview]);
 
   return (
     <AnimatePresence>
@@ -231,6 +340,45 @@ export default function DeckEditor({ initialDeck, onSave, onClose }: DeckEditorP
                 placeholder="Bu deste ne içeriyor?"
                 className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:border-indigo-500/60 focus:outline-none focus:ring-1 focus:ring-indigo-500/30"
               />
+            </div>
+            <div className="sm:col-span-3 flex flex-col gap-2 sm:flex-row sm:items-center">
+              <button
+                type="button"
+                onClick={runAiSuggest}
+                disabled={aiLoading || !hasAnthropicKey || !title.trim()}
+                title={
+                  !hasAnthropicKey
+                    ? '.env.local içinde VITE_ANTHROPIC_API_KEY gerekli'
+                    : 'Claude ile 10 kart öner'
+                }
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-violet-500/40 bg-violet-500/15 px-4 py-2.5 text-sm font-semibold text-violet-200 transition-all hover:bg-violet-500/25 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                {aiLoading ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
+                AI ile Otomatik Doldur
+              </button>
+              {!hasAnthropicKey && (
+                <span className="text-xs text-slate-500">API anahtarı yoksa bu düğme devre dışıdır.</span>
+              )}
+              {aiError && <span className="text-xs text-red-400">{aiError}</span>}
+            </div>
+            <div className="sm:col-span-3">
+              <label className="mb-1 block text-xs font-medium text-slate-400">
+                Toplu içe aktar (satır başına: kelime - anlam veya tab ile)
+              </label>
+              <textarea
+                value={bulkPaste}
+                onChange={(e) => setBulkPaste(e.target.value)}
+                placeholder={'hola - merhaba\ngracias - teşekkürler'}
+                rows={3}
+                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 font-mono text-sm text-white placeholder:text-slate-600 focus:border-indigo-500/60 focus:outline-none"
+              />
+              <button
+                type="button"
+                onClick={applyBulkPaste}
+                className="mt-2 rounded-lg border border-white/10 px-3 py-1.5 text-xs font-medium text-slate-300 hover:bg-white/5"
+              >
+                Satırları kartlara dönüştür
+              </button>
             </div>
           </div>
 
@@ -347,6 +495,60 @@ export default function DeckEditor({ initialDeck, onSave, onClose }: DeckEditorP
             </div>
           </div>
         </motion.div>
+
+        <AnimatePresence>
+          {aiPreview && aiPreview.length > 0 && (
+            <motion.div
+              className="fixed inset-0 z-[60] flex items-center justify-center p-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <motion.button
+                type="button"
+                className="absolute inset-0 bg-black/75 backdrop-blur-sm"
+                aria-label="Kapat"
+                onClick={() => setAiPreview(null)}
+              />
+              <motion.div
+                className="relative z-10 max-h-[85vh] w-full max-w-lg overflow-hidden rounded-2xl border border-white/10 bg-night-900 shadow-2xl"
+                initial={{ scale: 0.95, y: 12 }}
+                animate={{ scale: 1, y: 0 }}
+                exit={{ scale: 0.95, y: 12 }}
+              >
+                <div className="border-b border-white/10 px-5 py-4">
+                  <h3 className="font-bold text-white">AI önerileri ({aiPreview.length} kart)</h3>
+                  <p className="text-xs text-slate-500">Onaylarsan listeye eklenir; boş satırlar önce doldurulur.</p>
+                </div>
+                <ul className="max-h-[50vh] overflow-y-auto px-5 py-3 text-sm">
+                  {aiPreview.map((p, i) => (
+                    <li key={i} className="border-b border-white/5 py-2 text-slate-300 last:border-0">
+                      <span className="font-medium text-white">{p.front}</span>
+                      <span className="text-slate-600"> → </span>
+                      {p.back}
+                    </li>
+                  ))}
+                </ul>
+                <div className="flex gap-2 border-t border-white/10 px-5 py-4">
+                  <button
+                    type="button"
+                    onClick={() => setAiPreview(null)}
+                    className="flex-1 rounded-xl border border-white/10 py-2.5 text-sm text-slate-400 hover:bg-white/5"
+                  >
+                    İptal
+                  </button>
+                  <button
+                    type="button"
+                    onClick={confirmAiPreview}
+                    className="flex-1 rounded-xl bg-indigo-500 py-2.5 text-sm font-semibold text-white hover:bg-indigo-400"
+                  >
+                    Kartlara ekle
+                  </button>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.div>
     </AnimatePresence>
   );

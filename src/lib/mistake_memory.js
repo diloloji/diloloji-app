@@ -1,26 +1,48 @@
 /**
- * İspanyolca alıştırma hata hafızası — saf JS, localStorage.
- * Anahtar: mistake_memory
+ * Alıştırma hata hafızası — localStorage.
+ * Yapı: { es: { verb: { tense: { person: entry } } }, fr: { ... } }
+ * Eski düz { verb: ... } kayıtları otomatik es altına taşınır.
  */
 
 const STORAGE_KEY = 'mistake_memory';
 
+function migrateFlatToNested(flat) {
+  if (flat.es && flat.fr) return flat;
+  if (flat.es || flat.fr) return flat;
+  return { es: flat, fr: {} };
+}
+
 function getMemory() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return {};
+    if (!raw) return { es: {}, fr: {} };
     const parsed = JSON.parse(raw);
-    return parsed && typeof parsed === 'object' ? parsed : {};
+    if (!parsed || typeof parsed !== 'object') return { es: {}, fr: {} };
+    const nested = migrateFlatToNested(parsed);
+    if (nested !== parsed) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(nested));
+      } catch {
+        /* ignore */
+      }
+    }
+    if (!nested.es) nested.es = {};
+    if (!nested.fr) nested.fr = {};
+    return nested;
   } catch {
-    return {};
+    return { es: {}, fr: {} };
   }
+}
+
+function langBranch(lang) {
+  return lang === 'fr' ? 'fr' : 'es';
 }
 
 function saveMemory(data) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   } catch {
-    /* ignore quota / private mode */
+    /* ignore */
   }
 }
 
@@ -30,14 +52,16 @@ function saveMemory(data) {
  * @param {string} person
  * @param {string} wrongAnswer
  * @param {string} correctAnswer
+ * @param {'es'|'fr'} [lang='es']
  */
-export function recordMistake(verb, tense, person, wrongAnswer, correctAnswer) {
+export function recordMistake(verb, tense, person, wrongAnswer, correctAnswer, lang = 'es') {
   const memory = getMemory();
-  if (!memory[verb]) memory[verb] = {};
-  if (!memory[verb][tense]) memory[verb][tense] = {};
+  const b = langBranch(lang);
+  if (!memory[b][verb]) memory[b][verb] = {};
+  if (!memory[b][verb][tense]) memory[b][verb][tense] = {};
 
-  const existing = memory[verb][tense][person];
-  memory[verb][tense][person] = {
+  const existing = memory[b][verb][tense][person];
+  memory[b][verb][tense][person] = {
     errorCount: existing ? existing.errorCount + 1 : 1,
     lastSeen: new Date().toISOString(),
     lastAnswer: wrongAnswer,
@@ -47,33 +71,41 @@ export function recordMistake(verb, tense, person, wrongAnswer, correctAnswer) {
   saveMemory(memory);
 }
 
-/** @param {string} verb @param {string} tense @param {string} person */
-export function markResolved(verb, tense, person) {
+/** @param {string} verb @param {string} tense @param {string} person @param {'es'|'fr'} [lang='es'] */
+export function markResolved(verb, tense, person, lang = 'es') {
   const memory = getMemory();
-  if (memory[verb]?.[tense]?.[person]) {
-    memory[verb][tense][person].resolved = true;
+  const b = langBranch(lang);
+  if (memory[b][verb]?.[tense]?.[person]) {
+    memory[b][verb][tense][person].resolved = true;
     saveMemory(memory);
   }
 }
 
-/** @param {string} verb @param {string} tense @param {string} person */
-export function getMistake(verb, tense, person) {
+/** @param {string} verb @param {string} tense @param {string} person @param {'es'|'fr'} [lang='es'] */
+export function getMistake(verb, tense, person, lang = 'es') {
   const memory = getMemory();
-  return memory[verb]?.[tense]?.[person] ?? null;
+  const b = langBranch(lang);
+  return memory[b][verb]?.[tense]?.[person] ?? null;
+}
+
+function collectBranch(branch, langCode) {
+  const list = [];
+  for (const verb in branch) {
+    for (const tense in branch[verb]) {
+      for (const person in branch[verb][tense]) {
+        const entry = branch[verb][tense][person];
+        list.push({ verb, tense, person, lang: langCode, ...entry });
+      }
+    }
+  }
+  return list;
 }
 
 export function getAllMistakes() {
   const memory = getMemory();
-  const list = [];
-  for (const verb in memory) {
-    for (const tense in memory[verb]) {
-      for (const person in memory[verb][tense]) {
-        const entry = memory[verb][tense][person];
-        list.push({ verb, tense, person, ...entry });
-      }
-    }
-  }
-  return list.sort((a, b) => b.errorCount - a.errorCount);
+  return [...collectBranch(memory.es, 'es'), ...collectBranch(memory.fr, 'fr')].sort(
+    (a, b) => b.errorCount - a.errorCount
+  );
 }
 
 export function getUnresolvedMistakes() {
@@ -89,16 +121,28 @@ export function priorityScore(entry) {
   return entry.errorCount * 3 + recencyScore;
 }
 
-/** Çözülmemiş kayıtlar, tekrar seansı sırası (öncelik yüksek → düşük) */
-export function getMistakesForReviewSorted() {
-  return getUnresolvedMistakes().sort((a, b) => priorityScore(b) - priorityScore(a));
+/**
+ * @param {'es'|'fr'} lang
+ */
+export function getMistakesForReviewSorted(lang) {
+  const memory = getMemory();
+  const b = langBranch(lang);
+  return collectBranch(memory[b], lang)
+    .filter((e) => !e.resolved)
+    .sort((a, b) => priorityScore(b) - priorityScore(a));
 }
 
 /**
  * Tooltip / özet istatistikleri (ham id'ler; etiketler UI katmanında)
+ * @param {'es'|'fr'|'all'} scope
  */
-export function getMistakeMemoryStats() {
-  const all = getAllMistakes();
+export function getMistakeMemoryStats(scope = 'all') {
+  const all =
+    scope === 'es'
+      ? collectBranch(getMemory().es, 'es')
+      : scope === 'fr'
+        ? collectBranch(getMemory().fr, 'fr')
+        : getAllMistakes();
   const totalErrors = all.reduce((sum, e) => sum + e.errorCount, 0);
   const resolvedCount = all.filter((e) => e.resolved).length;
 

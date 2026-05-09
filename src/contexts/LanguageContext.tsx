@@ -1,5 +1,7 @@
-import { createContext, useCallback, useContext, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import type { AppLanguage } from '../data/verbs';
+import i18n from '../i18n/index';
+import type { UILocale } from '../i18n/index';
 
 const STORAGE_KEY = 'diloloji-lang';
 
@@ -32,6 +34,19 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
       /* ignore */
     }
   }, []);
+
+  /** Öğrenilen dil (es/fr) ile arayüz dilini eşleştir — kullanıcı Navbar'dan manuel seçmediyse */
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      if (localStorage.getItem('diloloji_ui_manual') === '1') return;
+      const ui: UILocale = selectedLanguage === 'es' ? 'es' : 'fr';
+      const cur = (i18n.language || 'tr').slice(0, 2);
+      if (cur !== ui) void i18n.changeLanguage(ui);
+    } catch {
+      /* ignore */
+    }
+  }, [selectedLanguage]);
 
   return (
     <LanguageContext.Provider value={{ selectedLanguage, setSelectedLanguage }}>

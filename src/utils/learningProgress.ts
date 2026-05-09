@@ -14,6 +14,7 @@ export interface LearningProgress {
 }
 
 const STORAGE_KEY = 'diloloji_learning_progress';
+const LEVEL_BONUS_KEY = 'diloloji_learning_level_bonus';
 
 function parseUnitId(unitId: string): { lang: string; level: string } | null {
   const parts = unitId.split('_');
@@ -60,6 +61,14 @@ export function getCompletedLessons(lang: string, level: string): string[] {
   return byLevel.completedLessons;
 }
 
+/** Ders daha önce tamamlandı mı (XP tekrarını önlemek için) */
+export function isLessonComplete(unitId: string, lessonIndex: number): boolean {
+  const parsed = parseUnitId(unitId);
+  if (!parsed) return false;
+  const lessonKey = `${unitId}-ders-${lessonIndex}`;
+  return getCompletedLessons(parsed.lang, parsed.level).includes(lessonKey);
+}
+
 /** Bir ünite için tamamlanan ders sayısı */
 export function getCompletedCountForUnit(unitId: string): number {
   const parsed = parseUnitId(unitId);
@@ -84,10 +93,11 @@ export function saveLessonComplete(
     data[lang][level] = { completedLessons: [], xpEarned: 0, lastStudied: new Date().toISOString() };
   }
   const lessonKey = `${unitId}-ders-${lessonIndex}`;
-  if (!data[lang][level].completedLessons.includes(lessonKey)) {
+  const isNew = !data[lang][level].completedLessons.includes(lessonKey);
+  if (isNew) {
     data[lang][level].completedLessons.push(lessonKey);
+    data[lang][level].xpEarned = (data[lang][level].xpEarned ?? 0) + xpEarned;
   }
-  data[lang][level].xpEarned = (data[lang][level].xpEarned ?? 0) + xpEarned;
   data[lang][level].lastStudied = new Date().toISOString();
   setStored(data);
 }
@@ -95,4 +105,38 @@ export function saveLessonComplete(
 /** unitId'den dil ve seviye (kart durumu için) */
 export function getLangLevelFromUnitId(unitId: string): { lang: string; level: string } | null {
   return parseUnitId(unitId);
+}
+
+function getLevelBonusStore(): Record<string, boolean> {
+  if (typeof window === 'undefined') return {};
+  try {
+    const raw = localStorage.getItem(LEVEL_BONUS_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw) as Record<string, boolean>;
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function setLevelBonusStore(data: Record<string, boolean>) {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(LEVEL_BONUS_KEY, JSON.stringify(data));
+  } catch {
+    /* ignore */
+  }
+}
+
+/** Seviye tamamlama +100 XP ödülü daha önce verildi mi (örn. es + A1) */
+export function hasLevelCompletionBonus(lang: string, level: string): boolean {
+  const key = `${lang}_${level}`;
+  return !!getLevelBonusStore()[key];
+}
+
+/** Seviye tamamlama bonusunu işaretle */
+export function markLevelCompletionBonus(lang: string, level: string): void {
+  const key = `${lang}_${level}`;
+  const data = { ...getLevelBonusStore(), [key]: true };
+  setLevelBonusStore(data);
 }

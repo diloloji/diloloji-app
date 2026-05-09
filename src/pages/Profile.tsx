@@ -67,14 +67,14 @@ export default function Profile() {
   }, [activityHistory]);
 
   return (
-    <div className="min-h-screen bg-[#0a0e17] flex flex-col">
+    <div className="min-h-[100dvh] min-h-screen overflow-x-hidden bg-[#0a0e17] flex flex-col">
       <Helmet>
         <title>Profil | Diloloji</title>
         <meta name="description" content="İstatistikleriniz ve aktivite ısı haritası." />
       </Helmet>
       <Navbar />
 
-      <main className="flex-1 max-w-4xl mx-auto w-full px-4 py-8 pb-16">
+      <main className="flex-1 max-w-4xl mx-auto w-full min-w-0 px-4 py-8 pb-24 md:pb-16">
         <header className="flex items-center gap-3 mb-8">
           <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-500/20 text-indigo-400">
             <User className="w-6 h-6" strokeWidth={2} />
@@ -86,22 +86,22 @@ export default function Profile() {
         </header>
 
         {/* İstatistik kartları */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
-          <div className="rounded-2xl bg-white/5 border border-white/10 p-5">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mb-10">
+          <div className="rounded-2xl bg-white/5 border border-white/10 p-4 sm:p-5">
             <div className="flex items-center gap-2 text-slate-400 mb-1">
               <Brain className="w-4 h-4 text-amber-400/90" strokeWidth={2} />
               <span className="text-xs font-medium uppercase tracking-wider">Toplam XP</span>
             </div>
             <p className="text-2xl font-bold text-slate-100 tabular-nums">{totalXP}</p>
           </div>
-          <div className="rounded-2xl bg-white/5 border border-white/10 p-5">
+          <div className="rounded-2xl bg-white/5 border border-white/10 p-4 sm:p-5">
             <div className="flex items-center gap-2 text-slate-400 mb-1">
               <Star className="w-4 h-4 text-amber-400/90" strokeWidth={2} />
               <span className="text-xs font-medium uppercase tracking-wider">Seviye</span>
             </div>
             <p className="text-2xl font-bold text-slate-100 tabular-nums">Lvl {level}</p>
           </div>
-          <div className="rounded-2xl bg-white/5 border border-white/10 p-5">
+          <div className="rounded-2xl bg-white/5 border border-white/10 p-4 sm:p-5 col-span-2 md:col-span-1">
             <div className="flex items-center gap-2 text-slate-400 mb-1">
               <Flame className="w-4 h-4 text-amber-400/90" strokeWidth={2} />
               <span className="text-xs font-medium uppercase tracking-wider">Günlük seri</span>
@@ -123,8 +123,8 @@ export default function Profile() {
               ))}
             </div>
             {/* Grid */}
-            <div className="relative flex-1 overflow-x-auto">
-              <div className="inline-flex flex-col gap-0.5" style={{ minWidth: WEEKS * 14 }}>
+            <div className="relative flex-1 overflow-x-auto overflow-y-hidden -mx-1 px-1 pb-1 snap-x touch-pan-x">
+              <div className="inline-flex flex-col gap-0.5 snap-start" style={{ minWidth: WEEKS * 14 }}>
                 {Array.from({ length: 7 }, (_, row) => (
                   <div key={row} className="flex gap-0.5">
                     {Array.from({ length: WEEKS }, (_, col) => {

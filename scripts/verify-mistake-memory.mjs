@@ -78,7 +78,7 @@ assert.equal(stats2.resolvedCount, 1);
 
 store.clear();
 recordMistake('x', 't', 'yo', 'a', 'b');
-const q = getMistakesForReviewSorted();
+const q = getMistakesForReviewSorted('es');
 assert.equal(q.length, 1);
 assert.equal(q[0].verb, 'x');
 
