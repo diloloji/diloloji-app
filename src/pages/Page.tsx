@@ -60,7 +60,6 @@ import {
 } from '../utils/hintEngine';
 import SmartHintBubble from '../components/SmartHintBubble';
 import TenseCardOverlay from '../components/tenseCard/TenseCardOverlay';
-import { TenseYoutubeTurkishLink } from '../components/TenseYoutubeTurkishLink';
 import { exampleSentences } from '../data/example_sentences';
 import { exampleSentencesFr } from '../data/example_sentences_fr.js';
 import { verbRegimes } from '../data/verb_regimes';
@@ -871,8 +870,6 @@ export function Page() {
   const [showAllIrregulars, setShowAllIrregulars] = useState(false);
   /** Sol panel: düzensiz fiiller bölümü varsayılan kapalı */
   const [irregularLeftPanelOpen, setIrregularLeftPanelOpen] = useState(false);
-  /** Fiil arama: aksan tuşları sadece odaktayken */
-  const [verbSearchFocused, setVerbSearchFocused] = useState(false);
   const [synonymData, setSynonymData] = useState<VerbSynonymPayload | null>(null);
   const [synonymLoading, setSynonymLoading] = useState(false);
   const [showSynonymSection, setShowSynonymSection] = useState(false);
@@ -3292,30 +3289,27 @@ export function Page() {
           >
             <button
               type="button"
-              className="md:hidden cursor-pointer rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-100/80 dark:bg-slate-800/80 px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 flex items-center justify-between w-full touch-manipulation"
+              className="md:hidden list-none cursor-pointer rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-100/80 dark:bg-slate-800/80 px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 flex items-center justify-between w-full"
               onClick={() => setLeftPanelOpen((o) => !o)}
               aria-expanded={leftPanelOpen}
             >
-              <span className="flex items-center gap-2">
-                <span aria-hidden>⚙️</span> Fiil Seç
-              </span>
+              ⚙ Fiil Seç
               <span className={`inline-block transition-transform duration-200 ${leftPanelOpen ? 'rotate-180' : ''}`} aria-hidden>
                 ▼
               </span>
             </button>
             <div
               className={
-                leftPanelOpen ? 'flex flex-col gap-3' : 'hidden md:flex md:flex-col md:gap-3'
+                leftPanelOpen ? 'flex flex-col gap-4' : 'hidden md:flex md:flex-col md:gap-4'
               }
             >
-            <div className="flex flex-col gap-3">
             {/* Fiil arama + Zaman seçici */}
-            <section className="relative z-10 p-3 rounded-xl bg-white dark:bg-slate-800/80 shadow-sm dark:shadow-none border border-slate-200 dark:border-slate-700/50 backdrop-blur-md transition-colors duration-300 shrink-0 overflow-visible" ref={autocompleteWrapRef}>
-              <div className="flex flex-col gap-3">
+            <section className="relative z-10 p-5 sm:p-6 rounded-2xl bg-white dark:bg-slate-800/80 shadow-md dark:shadow-none border border-slate-200 dark:border-slate-700/50 backdrop-blur-md transition-colors duration-300 shrink-0 overflow-visible" ref={autocompleteWrapRef}>
+              <div className="flex flex-col gap-4">
             {/* Fiil girişi — relative + anchor ref (Portal pozisyonu için) */}
             <div className="flex-1 min-w-0 flex flex-col relative">
-              <label className="block text-[11px] font-medium text-slate-500 dark:text-slate-400 mb-1">{t('fiil_girin')}</label>
-              <div className="relative h-10" ref={autocompleteAnchorRef}>
+              <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">{t('fiil_girin')}</label>
+              <div className="relative h-12" ref={autocompleteAnchorRef}>
                 <input
                   ref={verbInputRef}
                   type="text"
@@ -3326,11 +3320,7 @@ export function Page() {
                     setAutocompleteSelectedIndex(0);
                     setAutocompleteClosed(false);
                   }}
-                  onFocus={() => {
-                    setVerbSearchFocused(true);
-                    setAutocompleteClosed(false);
-                  }}
-                  onBlur={() => setVerbSearchFocused(false)}
+                  onFocus={() => setAutocompleteClosed(false)}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       e.preventDefault();
@@ -3361,7 +3351,7 @@ export function Page() {
                     }
                   }}
                   placeholder={selectedLanguage === 'es' ? 'Örn: comer, gitmek, yazmak...' : 'Örn: être, aller...'}
-                  className="absolute inset-0 w-full h-full rounded-lg border border-slate-200 dark:border-slate-700/50 bg-slate-50 dark:bg-slate-800/80 pl-3 pr-10 py-2 text-base md:text-[13px] text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 dark:focus:ring-indigo-400 dark:focus:border-indigo-400 transition-colors duration-300"
+                  className="absolute inset-0 w-full h-full rounded-xl border border-slate-200 dark:border-slate-700/50 bg-slate-50 dark:bg-slate-800/80 pl-4 pr-12 py-3 text-base text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 dark:focus:ring-indigo-400 dark:focus:border-indigo-400 transition-colors duration-300"
                   aria-label={t('fiil_girin')}
                   aria-autocomplete="list"
                   aria-expanded={autocompleteSuggestions.length > 0 && !autocompleteClosed}
@@ -3372,35 +3362,30 @@ export function Page() {
                 <button
                   type="button"
                   onClick={pickRandomVerb}
-                  className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 rounded-md text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/20 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-colors duration-300"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/20 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-colors duration-300"
                   title="Rastgele fiil seç"
                   aria-label="Rastgele fiil seç"
                 >
-                  <span className="text-base leading-none" aria-hidden>🎲</span>
+                  <span className="text-lg leading-none" aria-hidden>🎲</span>
                 </button>
               </div>
-              {/* Özel karakterler — sadece input odaktayken */}
-              <div
-                className={`overflow-hidden transition-[max-height,opacity] duration-200 ease-out ${verbSearchFocused ? 'max-h-14 opacity-100 mt-1' : 'max-h-0 opacity-0'}`}
-                aria-hidden={!verbSearchFocused}
-              >
-                <div className="flex flex-wrap items-center gap-0.5">
-                  {(selectedLanguage === 'fr'
-                    ? ['é', 'è', 'ê', 'ë', 'à', 'â', 'ç', 'î', 'ï', 'ô', 'ù', 'û', 'œ']
-                    : ['á', 'é', 'í', 'ó', 'ú', 'ü', 'ñ', '¿', '¡']
-                  ).map((char) => (
-                    <button
-                      key={char}
-                      type="button"
-                      onMouseDown={(e) => e.preventDefault()}
-                      onClick={() => setVerbInput((prev) => prev + char)}
-                      className="text-[12px] bg-slate-200/90 dark:bg-slate-700/70 hover:bg-slate-300/90 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded px-1.5 py-0.5 transition-colors focus:outline-none focus:ring-1 focus:ring-indigo-500/50"
-                      aria-label={`${char} ekle`}
-                    >
-                      {char}
-                    </button>
-                  ))}
-                </div>
+              {/* Sanal aksan klavyesi — diline göre özel karakterler */}
+              <div className="flex flex-wrap items-center gap-0.5 mt-1.5">
+                {(selectedLanguage === 'fr'
+                  ? ['é', 'è', 'ê', 'ë', 'à', 'â', 'ç', 'î', 'ï', 'ô', 'ù', 'û', 'œ']
+                  : ['á', 'é', 'í', 'ó', 'ú', 'ü', 'ñ', '¿', '¡']
+                ).map((char) => (
+                  <button
+                    key={char}
+                    type="button"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => setVerbInput((prev) => prev + char)}
+                    className="text-sm bg-slate-800/50 dark:bg-slate-700/50 hover:bg-slate-700 dark:hover:bg-slate-600 text-slate-300 dark:text-slate-300 rounded px-2 py-1 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                    aria-label={`${char} ekle`}
+                  >
+                    {char}
+                  </button>
+                ))}
               </div>
               {/* Autocomplete listesi: Portal ile body'de, böylece katman sorunu kalmaz */}
               {autocompleteSuggestions.length > 0 && !autocompleteClosed && autocompletePosition && typeof document !== 'undefined' && createPortal(
@@ -3420,7 +3405,7 @@ export function Page() {
                       key={verb}
                       role="option"
                       aria-selected={i === autocompleteSelectedIndex}
-                      className={`cursor-pointer px-3 py-2 text-[13px] transition-colors duration-300 ${
+                      className={`cursor-pointer px-4 py-3 transition-colors duration-300 ${
                         i === autocompleteSelectedIndex ? 'bg-indigo-50 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300' : 'hover:bg-indigo-50 dark:hover:bg-indigo-900/30'
                       }`}
                       onMouseEnter={() => setAutocompleteSelectedIndex(i)}
@@ -3441,42 +3426,32 @@ export function Page() {
 
             {/* Zaman seçimi — custom dropdown */}
             <div className="w-full flex-shrink-0 flex flex-col relative overflow-visible" ref={tenseDropdownRef}>
-              <div className="flex items-stretch gap-1">
-                <button
-                  type="button"
-                  onClick={() => setTenseDropdownOpen((o) => !o)}
-                  className="min-w-0 flex-1 min-h-[2.5rem] rounded-lg border border-slate-200 dark:border-slate-700/50 bg-slate-50 dark:bg-slate-800/80 px-3 py-2 text-left focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 dark:focus:ring-indigo-400 dark:focus:border-indigo-400 transition-colors duration-300 flex items-center justify-between gap-2"
-                  aria-label={`Zaman seç, şu an: ${tenseLabel}`}
-                  aria-expanded={tenseDropdownOpen}
-                  aria-haspopup="listbox"
-                  id="tense-trigger"
-                >
-                  <span className="min-w-0 flex flex-col gap-0 leading-tight">
-                    <span className="text-[10px] uppercase tracking-wide text-slate-400 dark:text-slate-500">Zaman seç…</span>
-                    <span className="truncate text-[13px] font-medium text-slate-800 dark:text-slate-100">{tenseLabel}</span>
-                  </span>
-                  <svg className="w-4 h-4 shrink-0 text-slate-400 dark:text-slate-500 transition-transform duration-200" style={{ transform: tenseDropdownOpen ? 'rotate(180deg)' : 'none' }} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-                {(selectedLanguage === 'es' || selectedLanguage === 'fr') && (
-                  <TenseYoutubeTurkishLink lang={selectedLanguage} tenseId={selectedTense} className="self-center" />
-                )}
-              </div>
+              <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">{t('zaman_secin')}</label>
+              <button
+                type="button"
+                onClick={() => setTenseDropdownOpen((o) => !o)}
+                className="w-full h-12 rounded-xl border border-slate-200 dark:border-slate-700/50 bg-slate-50 dark:bg-slate-800/80 px-4 py-3 text-left text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 dark:focus:ring-indigo-400 dark:focus:border-indigo-400 transition-colors duration-300 flex items-center justify-between gap-2"
+                aria-label={t('zaman_secin')}
+                aria-expanded={tenseDropdownOpen}
+                aria-haspopup="listbox"
+                id="tense-trigger"
+              >
+                <span className="truncate">{tenseLabel}</span>
+                <svg className="w-5 h-5 shrink-0 text-slate-400 dark:text-slate-500 transition-transform duration-200" style={{ transform: tenseDropdownOpen ? 'rotate(180deg)' : 'none' }} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
               <div
                 role="listbox"
                 aria-labelledby="tense-trigger"
-                className={`absolute left-0 right-0 top-full mt-1 z-[100] rounded-xl border border-slate-200/80 dark:border-white/10 bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl shadow-2xl overflow-hidden transition-all duration-200 ease-out ${
+                className={`absolute left-0 right-0 top-full mt-1 z-[100] rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl shadow-2xl overflow-hidden transition-all duration-200 ease-out ${
                   tenseDropdownOpen ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-[0.98] pointer-events-none'
                 }`}
               >
-                <div className="max-h-[min(18rem,60vh)] overflow-y-auto py-1.5">
-                  <p className="px-3 py-1 text-[11px] text-slate-400 dark:text-slate-500 select-none pointer-events-none border-b border-slate-100/80 dark:border-slate-700/50 mb-1">
-                    Zaman seç…
-                  </p>
+                <div className="max-h-[min(18rem,60vh)] overflow-y-auto py-2">
                   {tenseGroupsForLang.map((group) => (
-                    <div key={group.mood} className="px-2 pb-0.5 pt-1 first:pt-0">
-                      <p className="text-[11px] font-medium tracking-wide text-slate-500 dark:text-slate-400 px-2 py-0.5 select-none">
+                    <div key={group.mood} className="px-3 pb-1 pt-2 first:pt-0">
+                      <p className="text-xs font-medium tracking-wide text-slate-500 dark:text-slate-400 px-3 py-1 select-none">
                         {group.label}
                       </p>
                       <div className="space-y-0.5 mt-0.5">
@@ -3494,19 +3469,14 @@ export function Page() {
                                 setSelectedTense(t.id);
                                 setTenseDropdownOpen(false);
                               }}
-                              className="w-full flex items-center justify-between gap-2 rounded-md px-2.5 py-2 text-left text-[13px] text-slate-800 dark:text-slate-100 hover:bg-indigo-500/20 transition-colors duration-200"
+                              className="w-full flex items-center justify-between gap-2 rounded-lg px-3 py-2.5 text-left text-sm text-slate-800 dark:text-slate-100 hover:bg-indigo-500/20 transition-colors duration-200"
                             >
-                              <span className="min-w-0 truncate">{t.label}</span>
-                              <span className="flex items-center gap-1 shrink-0">
-                                {(selectedLanguage === 'es' || selectedLanguage === 'fr') && (
-                                  <TenseYoutubeTurkishLink lang={selectedLanguage} tenseId={t.id} compact />
-                                )}
-                                {isSelected && (
-                                  <svg className="w-5 h-5 shrink-0 text-indigo-500 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                  </svg>
-                                )}
-                              </span>
+                              <span>{t.label}</span>
+                              {isSelected && (
+                                <svg className="w-5 h-5 shrink-0 text-indigo-500 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                </svg>
+                              )}
                             </button>
                           );
                         })}
@@ -3518,27 +3488,28 @@ export function Page() {
             </div>
 
             {/* ── Favorilerim ── */}
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-2">
               <button
                 type="button"
                 onClick={() => {
                   setShowFavorites((v) => !v);
                   setSelectedCEFRLevel(null);
                 }}
-                className={`w-full flex items-center justify-between gap-2 rounded-md border py-1.5 px-2.5 text-[11px] font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${
+                className={`w-full flex items-center justify-between gap-2 rounded-lg border py-2 px-3 text-xs font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${
                   showFavorites
-                    ? 'border-amber-400/55 border-l-2 border-l-amber-400 bg-slate-50/80 dark:bg-slate-800/40 text-slate-800 dark:text-slate-100'
-                    : 'border-slate-200/60 dark:border-slate-700/50 bg-white/40 dark:bg-slate-800/20 text-slate-600 dark:text-slate-400 hover:border-amber-300/50 dark:hover:border-amber-500/30'
+                    ? 'border-transparent bg-gradient-to-r from-amber-500 to-yellow-500 text-white shadow-md shadow-amber-500/25'
+                    : 'border-slate-200/50 dark:border-slate-700/40 bg-white/5 dark:bg-slate-800/30 text-slate-600 dark:text-slate-300 hover:text-amber-600 dark:hover:text-amber-400 hover:border-amber-400/40 dark:hover:border-amber-500/40 hover:bg-amber-50/50 dark:hover:bg-amber-500/5'
                 }`}
                 aria-expanded={showFavorites}
               >
-                <span className="flex items-center gap-1.5 min-w-0">
+                <span className="flex items-center gap-1.5">
                   <span aria-hidden>⭐</span>
-                  <span className="truncate">Favorilerim</span>
-                  <span className="text-slate-400 dark:text-slate-500 font-medium tabular-nums shrink-0">({starredVerbs.length})</span>
+                  Favorilerim
                 </span>
-                <span className="text-[10px] text-slate-400 shrink-0" aria-hidden>
-                  {showFavorites ? '▴' : '▾'}
+                <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold tabular-nums ${
+                  showFavorites ? 'bg-white/25 text-white' : 'bg-amber-500/15 text-amber-600 dark:text-amber-400'
+                }`}>
+                  {starredVerbs.length}
                 </span>
               </button>
 
@@ -3553,11 +3524,11 @@ export function Page() {
                     className="overflow-hidden"
                   >
                     {starredVerbs.length === 0 ? (
-                      <p className="rounded-md border border-dashed border-slate-200/60 dark:border-slate-700/50 px-2 py-2 text-[11px] text-slate-500 dark:text-slate-500 italic text-center leading-snug">
-                        Henüz favori yok — fiil kartında ⭐
+                      <p className="rounded-lg border border-dashed border-slate-200/60 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/40 px-3 py-3 text-xs text-slate-500 dark:text-slate-500 italic text-center">
+                        Henüz favori fiilin yok. Fiil kartındaki ⭐ ikonuna tıkla.
                       </p>
                     ) : (
-                      <div className="flex flex-nowrap gap-1 overflow-x-auto scrollbar-hide pb-0.5 -mx-0.5 px-0.5">
+                      <div className="flex flex-wrap gap-1.5">
                         {starredVerbs.map((verb) => (
                           <button
                             key={verb}
@@ -3568,9 +3539,12 @@ export function Page() {
                               setAutocompleteClosed(true);
                               loadVerb(verb);
                             }}
-                            className="shrink-0 rounded-md border border-slate-200/80 dark:border-slate-600/80 bg-white/70 dark:bg-slate-800/50 px-2 py-0.5 text-[12px] font-medium text-slate-700 dark:text-slate-200 hover:border-amber-400/50 hover:bg-amber-500/5 transition-all duration-150 focus:outline-none focus:ring-1 focus:ring-amber-500/40 active:scale-95"
+                            className="group flex items-center gap-1 rounded-lg border border-amber-500/25 bg-amber-500/10 px-2.5 py-1 text-xs font-medium text-amber-700 dark:text-amber-300 hover:bg-amber-500/20 hover:border-amber-500/50 transition-all duration-150 focus:outline-none focus:ring-1 focus:ring-amber-500/50 active:scale-95"
                             title={`${verb} çekimini göster`}
                           >
+                            <span className="text-[10px] opacity-70 group-hover:opacity-100 transition-opacity" aria-hidden>
+                              ⭐
+                            </span>
                             {verb}
                           </button>
                         ))}
@@ -3581,9 +3555,10 @@ export function Page() {
               </AnimatePresence>
             </div>
 
-            {/* ── CEFR seviye (başlıksız) ── */}
-            <div className="flex flex-col gap-1.5">
-              <div className="flex flex-nowrap gap-1 overflow-x-auto scrollbar-hide pb-0.5">
+            {/* ── Seviyelere Göre Keşfet ── */}
+            <div className="flex flex-col gap-2">
+              <p className="text-xs font-medium text-slate-500 dark:text-slate-500 select-none">Seviyelere Göre Keşfet</p>
+              <div className="flex gap-1.5">
                 {CEFR_LEVELS.map((lvl) => {
                   const isActive = selectedCEFRLevel === lvl;
                   return (
@@ -3591,10 +3566,10 @@ export function Page() {
                       key={lvl}
                       type="button"
                       onClick={() => setSelectedCEFRLevel(isActive ? null : lvl)}
-                      className={`shrink-0 rounded-md border px-2 py-1 text-[10px] font-bold tracking-wide transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${
+                      className={`flex-1 rounded-lg border py-1.5 text-xs font-bold tracking-wide transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${
                         isActive
-                          ? `${CEFR_COLORS[lvl].btn} shadow-sm border-transparent`
-                          : 'border-slate-200/60 dark:border-slate-700/50 bg-white/40 dark:bg-slate-800/25 text-slate-500 dark:text-slate-400 hover:bg-slate-100/60 dark:hover:bg-slate-700/40'
+                          ? `${CEFR_COLORS[lvl].btn} shadow-md border-transparent`
+                          : 'border-slate-200/50 dark:border-slate-700/40 bg-white/5 dark:bg-slate-800/30 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100/60 dark:hover:bg-slate-700/40'
                       }`}
                     >
                       {lvl}
@@ -3610,7 +3585,7 @@ export function Page() {
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
                   transition={{ duration: 0.18, ease: 'easeOut' }}
-                  className="flex flex-wrap gap-1 overflow-hidden max-h-[9.5rem] overflow-y-auto pr-0.5"
+                  className="flex flex-wrap gap-1.5 overflow-hidden max-h-[9.5rem] overflow-y-auto pr-0.5"
                 >
                   {(VERB_LEVELS[selectedLanguage as 'es' | 'fr']?.[selectedCEFRLevel] ?? []).map((verb) => (
                     <button
@@ -3622,7 +3597,7 @@ export function Page() {
                         setAutocompleteClosed(true);
                         loadVerb(verb);
                       }}
-                      className={`rounded-md border px-2 py-0.5 text-[12px] font-medium transition-all duration-150 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 active:scale-95 ${CEFR_COLORS[selectedCEFRLevel].chip}`}
+                      className={`rounded-lg border px-2.5 py-1 text-xs font-medium transition-all duration-150 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 active:scale-95 ${CEFR_COLORS[selectedCEFRLevel].chip}`}
                     >
                       {verb}
                     </button>
@@ -3896,7 +3871,6 @@ export function Page() {
                 </div>
               </div>
             )}
-            </div>
             </div>
           </aside>
 
@@ -4212,12 +4186,12 @@ export function Page() {
         {mode !== 'review' && mode !== 'starred' && (
           <section className={`rounded-2xl bg-white dark:bg-slate-800/80 shadow-md dark:shadow-none border border-slate-200 dark:border-slate-700/50 overflow-visible backdrop-blur-md transition-all duration-300 min-h-[400px] print:shadow-none print:border print:border-slate-200 ${viewMode === 'simple' ? 'mb-4 mt-0 pt-2' : 'mb-4 mt-6 md:mt-0'}`}>
             {/* Kart başlığı sekmeleri — her zaman görünür (Basit ve Detaylı) */}
-            <div className="flex justify-start md:justify-center overflow-x-auto overflow-y-hidden scrollbar-hide print:hidden pt-3 pb-2 sm:pt-4 sm:pb-3 px-1 -mx-1">
-              <div className="flex items-center gap-1 p-1 bg-slate-800/60 backdrop-blur-sm border border-slate-700 rounded-full w-max min-w-0 flex-nowrap shadow-inner" role="tablist" aria-label="Mod">
+            <div className="flex justify-start md:justify-center overflow-x-auto overflow-y-hidden scrollbar-hide print:hidden pt-3 pb-2 sm:pt-4 sm:pb-3 px-1 -mx-1 scroll-pl-2 scroll-pr-2">
+              <div className="flex items-center gap-1 p-1 bg-slate-800/60 backdrop-blur-sm border border-slate-700 rounded-full w-max min-w-0 flex-nowrap shadow-inner max-w-[100vw] px-1" role="tablist" aria-label="Mod">
               <button
                 type="button"
                 onClick={() => setMode('learning')}
-                className={`px-3 py-1.5 md:px-5 md:py-2 rounded-full text-xs md:text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer shrink-0 touch-manipulation ${
+                className={`min-h-[44px] px-4 py-2 md:px-5 md:py-2 rounded-full text-base md:text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer shrink-0 touch-manipulation ${
                   mode === 'learning'
                     ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
                     : 'bg-transparent text-slate-400 hover:text-slate-200'
@@ -4229,7 +4203,7 @@ export function Page() {
               <button
                 type="button"
                 onClick={() => setMode('quiz')}
-                className={`px-3 py-1.5 md:px-5 md:py-2 rounded-full text-xs md:text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer shrink-0 touch-manipulation ${
+                className={`min-h-[44px] px-4 py-2 md:px-5 md:py-2 rounded-full text-base md:text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer shrink-0 touch-manipulation ${
                   mode === 'quiz'
                     ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
                     : 'bg-transparent text-slate-400 hover:text-slate-200'
@@ -4241,7 +4215,7 @@ export function Page() {
               <button
                 type="button"
                 onClick={() => setMode('time-attack')}
-                className={`px-3 py-1.5 md:px-5 md:py-2 rounded-full text-xs md:text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer shrink-0 touch-manipulation ${
+                className={`min-h-[44px] px-4 py-2 md:px-5 md:py-2 rounded-full text-base md:text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer shrink-0 touch-manipulation ${
                   mode === 'time-attack'
                     ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
                     : 'bg-transparent text-slate-400 hover:text-slate-200'
@@ -4253,7 +4227,7 @@ export function Page() {
               <button
                 type="button"
                 onClick={() => setMode('compare')}
-                className={`px-3 py-1.5 md:px-5 md:py-2 rounded-full text-xs md:text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer shrink-0 touch-manipulation ${
+                className={`min-h-[44px] px-4 py-2 md:px-5 md:py-2 rounded-full text-base md:text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer shrink-0 touch-manipulation ${
                   mode === 'compare'
                     ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
                     : 'bg-transparent text-slate-400 hover:text-slate-200'
@@ -5263,9 +5237,6 @@ export function Page() {
                           ▾
                         </span>
                       </button>
-                      {(selectedLanguage === 'es' || selectedLanguage === 'fr') && (
-                        <TenseYoutubeTurkishLink lang={selectedLanguage} tenseId={selectedTense} />
-                      )}
                     </div>
                     <button
                       type="button"
@@ -5729,11 +5700,8 @@ export function Page() {
                               transition={{ duration: 0.25, ease: 'easeOut', delay: index * 0.03 }}
                               className="rounded-xl bg-slate-800/40 dark:bg-slate-800/60 border border-slate-700/50 dark:border-slate-600/50 overflow-hidden backdrop-blur-sm transition-all duration-200 hover:border-slate-600 dark:hover:border-indigo-500/30"
                             >
-                              <div className="px-4 py-2.5 border-b border-slate-700/50 dark:border-slate-600/50 bg-slate-700/30 dark:bg-slate-700/40 flex items-center justify-between gap-2">
+                              <div className="px-4 py-2.5 border-b border-slate-700/50 dark:border-slate-600/50 bg-slate-700/30 dark:bg-slate-700/40 flex items-center gap-2">
                                 <h4 className="text-sm font-bold text-slate-200 dark:text-slate-100 min-w-0 truncate">{tenseDef.label}</h4>
-                                {(selectedLanguage === 'es' || selectedLanguage === 'fr') && (
-                                  <TenseYoutubeTurkishLink lang={selectedLanguage} tenseId={tenseDef.id} onDark />
-                                )}
                               </div>
                               <ul className="divide-y divide-slate-700/50 dark:divide-slate-600/50">
                                 {pronounsForLang.map(({ id, label }) => {
@@ -5799,11 +5767,6 @@ export function Page() {
               </motion.div>
             ) : (
             <>
-            {(selectedLanguage === 'es' || selectedLanguage === 'fr') && verbKey && conjugations && viewMode === 'simple' && (
-              <div className="mx-4 sm:mx-0 mb-2 flex flex-wrap items-center justify-end gap-2 print:hidden">
-                <TenseYoutubeTurkishLink lang={selectedLanguage} tenseId={selectedTense} />
-              </div>
-            )}
             {/* İki sütun: tekil (Je, Tu, Il) | çoğul (Nous, Vous, Ils) — dikey alan yarıya iner */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
               {[pronounsForLang.slice(0, 3), pronounsForLang.slice(3, 6)].map((group, colIndex) => (
@@ -6275,9 +6238,6 @@ export function Page() {
                       <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.06l3.71-3.83a.75.75 0 011.08 1.04l-4.24 4.38a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clipRule="evenodd" />
                     </svg>
                   </button>
-                  {(selectedLanguage === 'es' || selectedLanguage === 'fr') && (
-                    <TenseYoutubeTurkishLink lang={selectedLanguage} tenseId={selectedTense} compact />
-                  )}
                   <AnimatePresence>
                     {quizTenseMenuOpen && (
                       <motion.div
@@ -6300,34 +6260,25 @@ export function Page() {
                               if (!tItem) return null;
                               const isActive = tItem.id === selectedTense;
                               return (
-                                <div key={tItem.id} className="flex items-stretch gap-0.5">
-                                  <button
-                                    type="button"
-                                    role="option"
-                                    aria-selected={isActive}
-                                    onClick={() => changeQuizTense(tItem.id)}
-                                    className={`min-w-0 flex-1 flex items-center justify-between gap-2 px-2.5 py-2 text-left rounded-lg text-sm transition-colors ${
-                                      isActive
-                                        ? 'bg-indigo-50 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-200 font-semibold'
-                                        : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/10'
-                                    }`}
-                                  >
-                                    <span className="truncate">{tItem.label}</span>
-                                    {isActive && (
-                                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-indigo-600 dark:text-indigo-300 shrink-0" aria-hidden>
-                                        <path fillRule="evenodd" d="M16.704 5.29a1 1 0 010 1.42l-7.5 7.5a1 1 0 01-1.42 0l-3.5-3.5a1 1 0 011.42-1.42L8.5 12.08l6.79-6.79a1 1 0 011.414 0z" clipRule="evenodd" />
-                                      </svg>
-                                    )}
-                                  </button>
-                                  {(selectedLanguage === 'es' || selectedLanguage === 'fr') && (
-                                    <TenseYoutubeTurkishLink
-                                      lang={selectedLanguage}
-                                      tenseId={tItem.id}
-                                      compact
-                                      className="self-center px-1"
-                                    />
+                                <button
+                                  key={tItem.id}
+                                  type="button"
+                                  role="option"
+                                  aria-selected={isActive}
+                                  onClick={() => changeQuizTense(tItem.id)}
+                                  className={`w-full flex items-center justify-between gap-2 px-2.5 py-2 text-left rounded-lg text-sm transition-colors ${
+                                    isActive
+                                      ? 'bg-indigo-50 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-200 font-semibold'
+                                      : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/10'
+                                  }`}
+                                >
+                                  <span className="truncate">{tItem.label}</span>
+                                  {isActive && (
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-indigo-600 dark:text-indigo-300 shrink-0" aria-hidden>
+                                      <path fillRule="evenodd" d="M16.704 5.29a1 1 0 010 1.42l-7.5 7.5a1 1 0 01-1.42 0l-3.5-3.5a1 1 0 011.42-1.42L8.5 12.08l6.79-6.79a1 1 0 011.414 0z" clipRule="evenodd" />
+                                    </svg>
                                   )}
-                                </div>
+                                </button>
                               );
                             })}
                           </div>
