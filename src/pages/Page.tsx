@@ -1135,8 +1135,8 @@ export function Page() {
   /** Zaman/Kip custom dropdown: açık/kapalı + tıklama dışı kapatma */
   const [tenseDropdownOpen, setTenseDropdownOpen] = useState(false);
   /** Mobilde sol panel (fiil seçimi) varsayılan kapalı; Fiil Seç ile açılır, fiil seçilince kapanır */
-  /** Mobil: fiil/zaman filtresi alt sayfa (bottom sheet) */
-  const [filterSheetOpen, setFilterSheetOpen] = useState(false);
+  /** Mobilde sol panel — Fiil Seç ile aç/kapa (bottom sheet kaldırıldı) */
+  const [leftPanelOpen, setLeftPanelOpen] = useState(false);
   const tenseDropdownRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!tenseDropdownOpen) return;
@@ -1719,7 +1719,7 @@ export function Page() {
           if (tenseOverride) setSelectedTense(tenseOverride);
           setVerbKey(result.infinitive);
           setConjugations(verified);
-          setFilterSheetOpen(false);
+          setLeftPanelOpen(false);
           if (langOverride) setSelectedLanguage(langOverride);
           setError('');
           return;
@@ -1738,7 +1738,7 @@ export function Page() {
             setVerbKey(reverse.infinitive);
             setSelectedTense(reverse.tenseId);
             setConjugations(verified);
-            setFilterSheetOpen(false);
+            setLeftPanelOpen(false);
             if (langOverride) setSelectedLanguage(langOverride);
             setReverseLookupInfo({
               searched: toLoad,
@@ -1896,7 +1896,7 @@ export function Page() {
         setVerbInput(safeInfinitive);
         setVerbKey(safeInfinitive);
         setConjugations(verified);
-        setFilterSheetOpen(false);
+        setLeftPanelOpen(false);
         setError('');
         setUserAnswers(getInitialUserAnswers(selectedLanguage));
         setQuizFeedback({ je: null, tu: null, il: null, nous: null, vous: null, ils: null } as Record<string, 'correct' | 'wrong' | 'typo' | null>);
@@ -1945,7 +1945,7 @@ export function Page() {
       setVerbInput(safeInfinitive);
       setVerbKey(safeInfinitive);
       setConjugations(verified);
-      setFilterSheetOpen(false);
+      setLeftPanelOpen(false);
       setError('');
       setExerciseMode('focus');
       setMode('quiz');
@@ -1965,7 +1965,7 @@ export function Page() {
   useEffect(() => {
     const mq = window.matchMedia('(min-width: 768px)');
     const handler = () => {
-      if (mq.matches) setFilterSheetOpen(false);
+      if (mq.matches) setLeftPanelOpen(false);
     };
     handler();
     mq.addEventListener('change', handler);
@@ -3285,40 +3285,29 @@ export function Page() {
           </div>
         </div>
         <div className={`flex flex-col md:grid md:grid-cols-12 md:items-start transition-all duration-300 ${viewMode === 'simple' ? 'gap-4 md:gap-6' : 'gap-6 md:gap-8'}`}>
-          {/* Sol sütun: mobilde bottom sheet, masaüstünde yan panel */}
-          {filterSheetOpen && (
-            <button
-              type="button"
-              className="md:hidden fixed inset-0 z-[55] bg-slate-900/50 dark:bg-slate-950/60 backdrop-blur-[2px]"
-              aria-label="Filtreleri kapat"
-              onClick={() => setFilterSheetOpen(false)}
-            />
-          )}
-          <div className="order-1 flex flex-col gap-2 md:contents print:hidden" data-print-hide>
-            <button
-              type="button"
-              className="md:hidden min-h-[48px] w-full shrink-0 cursor-pointer rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-100/80 dark:bg-slate-800/80 px-4 py-3 text-base font-semibold text-slate-700 dark:text-slate-200 flex items-center justify-center gap-2 touch-manipulation"
-              onClick={() => setFilterSheetOpen(true)}
-              aria-expanded={filterSheetOpen}
-            >
-              <span aria-hidden>⚙️</span> Filtreler
-            </button>
+          {/* Sol sütun: Kontrol paneli — mobilde Fiil Seç ile aç/kapa, masaüstünde her zaman görünür */}
           <aside
             data-print-hide
-            className={`flex flex-col gap-3 md:col-span-4 print:hidden md:sticky md:top-4 md:self-start md:max-h-[min(100vh,100dvh)] md:overflow-y-auto md:overscroll-contain md:pr-1 transition-transform duration-300 ease-out z-[60] max-md:fixed max-md:left-0 max-md:right-0 max-md:bottom-0 max-md:max-h-[min(88dvh,100dvh)] max-md:overflow-y-auto max-md:overscroll-contain max-md:rounded-t-2xl max-md:border-t max-md:border-slate-200/80 max-md:dark:border-slate-600/50 max-md:bg-white max-md:dark:bg-slate-900 max-md:shadow-2xl max-md:px-3 max-md:pt-2 max-md:pb-[max(1rem,env(safe-area-inset-bottom))] ${
-              filterSheetOpen ? 'max-md:translate-y-0' : 'max-md:translate-y-[110%] max-md:pointer-events-none'
-            }`}
+            className="flex flex-col gap-4 md:col-span-4 order-1 print:hidden md:sticky md:top-6 md:self-start transition-opacity duration-300"
           >
-            <div className="flex md:hidden items-center justify-between gap-2 border-b border-slate-200/60 dark:border-slate-600/50 pb-2 mb-1">
-              <span className="text-sm font-bold text-slate-800 dark:text-slate-100">Filtreler</span>
-              <button
-                type="button"
-                onClick={() => setFilterSheetOpen(false)}
-                className="min-h-[44px] min-w-[44px] rounded-lg text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:bg-slate-100 dark:hover:bg-white/10"
-              >
-                Kapat
-              </button>
-            </div>
+            <button
+              type="button"
+              className="md:hidden cursor-pointer rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-100/80 dark:bg-slate-800/80 px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 flex items-center justify-between w-full touch-manipulation"
+              onClick={() => setLeftPanelOpen((o) => !o)}
+              aria-expanded={leftPanelOpen}
+            >
+              <span className="flex items-center gap-2">
+                <span aria-hidden>⚙️</span> Fiil Seç
+              </span>
+              <span className={`inline-block transition-transform duration-200 ${leftPanelOpen ? 'rotate-180' : ''}`} aria-hidden>
+                ▼
+              </span>
+            </button>
+            <div
+              className={
+                leftPanelOpen ? 'flex flex-col gap-3' : 'hidden md:flex md:flex-col md:gap-3'
+              }
+            >
             <div className="flex flex-col gap-3">
             {/* Fiil arama + Zaman seçici */}
             <section className="relative z-10 p-3 rounded-xl bg-white dark:bg-slate-800/80 shadow-sm dark:shadow-none border border-slate-200 dark:border-slate-700/50 backdrop-blur-md transition-colors duration-300 shrink-0 overflow-visible" ref={autocompleteWrapRef}>
@@ -3908,8 +3897,8 @@ export function Page() {
               </div>
             )}
             </div>
+            </div>
           </aside>
-          </div>
 
           {/* Sağ sütun: Sekmeler + ana çalışma alanı — 8 kolon (Detaylı'da 8, Basit'te 12) */}
           <motion.div
@@ -4223,12 +4212,12 @@ export function Page() {
         {mode !== 'review' && mode !== 'starred' && (
           <section className={`rounded-2xl bg-white dark:bg-slate-800/80 shadow-md dark:shadow-none border border-slate-200 dark:border-slate-700/50 overflow-visible backdrop-blur-md transition-all duration-300 min-h-[400px] print:shadow-none print:border print:border-slate-200 ${viewMode === 'simple' ? 'mb-4 mt-0 pt-2' : 'mb-4 mt-6 md:mt-0'}`}>
             {/* Kart başlığı sekmeleri — her zaman görünür (Basit ve Detaylı) */}
-            <div className="flex justify-start md:justify-center overflow-x-auto overflow-y-hidden scrollbar-hide print:hidden pt-3 pb-2 sm:pt-4 sm:pb-3 px-1 -mx-1 scroll-pl-2 scroll-pr-2">
-              <div className="flex items-center gap-1 p-1 bg-slate-800/60 backdrop-blur-sm border border-slate-700 rounded-full w-max min-w-0 flex-nowrap shadow-inner max-w-[100vw] px-1" role="tablist" aria-label="Mod">
+            <div className="flex justify-start md:justify-center overflow-x-auto overflow-y-hidden scrollbar-hide print:hidden pt-3 pb-2 sm:pt-4 sm:pb-3 px-1 -mx-1">
+              <div className="flex items-center gap-1 p-1 bg-slate-800/60 backdrop-blur-sm border border-slate-700 rounded-full w-max min-w-0 flex-nowrap shadow-inner" role="tablist" aria-label="Mod">
               <button
                 type="button"
                 onClick={() => setMode('learning')}
-                className={`min-h-[44px] px-4 py-2 md:px-5 md:py-2 rounded-full text-base md:text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer shrink-0 touch-manipulation ${
+                className={`px-3 py-1.5 md:px-5 md:py-2 rounded-full text-xs md:text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer shrink-0 touch-manipulation ${
                   mode === 'learning'
                     ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
                     : 'bg-transparent text-slate-400 hover:text-slate-200'
@@ -4240,7 +4229,7 @@ export function Page() {
               <button
                 type="button"
                 onClick={() => setMode('quiz')}
-                className={`min-h-[44px] px-4 py-2 md:px-5 md:py-2 rounded-full text-base md:text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer shrink-0 touch-manipulation ${
+                className={`px-3 py-1.5 md:px-5 md:py-2 rounded-full text-xs md:text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer shrink-0 touch-manipulation ${
                   mode === 'quiz'
                     ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
                     : 'bg-transparent text-slate-400 hover:text-slate-200'
@@ -4252,7 +4241,7 @@ export function Page() {
               <button
                 type="button"
                 onClick={() => setMode('time-attack')}
-                className={`min-h-[44px] px-4 py-2 md:px-5 md:py-2 rounded-full text-base md:text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer shrink-0 touch-manipulation ${
+                className={`px-3 py-1.5 md:px-5 md:py-2 rounded-full text-xs md:text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer shrink-0 touch-manipulation ${
                   mode === 'time-attack'
                     ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
                     : 'bg-transparent text-slate-400 hover:text-slate-200'
@@ -4264,7 +4253,7 @@ export function Page() {
               <button
                 type="button"
                 onClick={() => setMode('compare')}
-                className={`min-h-[44px] px-4 py-2 md:px-5 md:py-2 rounded-full text-base md:text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer shrink-0 touch-manipulation ${
+                className={`px-3 py-1.5 md:px-5 md:py-2 rounded-full text-xs md:text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer shrink-0 touch-manipulation ${
                   mode === 'compare'
                     ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
                     : 'bg-transparent text-slate-400 hover:text-slate-200'
@@ -5257,7 +5246,7 @@ export function Page() {
                       <button
                         type="button"
                         onClick={() => {
-                          setFilterSheetOpen(true);
+                          setLeftPanelOpen(true);
                           setTenseDropdownOpen(true);
                           requestAnimationFrame(() => {
                             const el = document.getElementById('tense-trigger');
