@@ -32,6 +32,7 @@ import { getActivityHistory, getLastNDays, addActivityToday } from '../utils/act
 import { updateDocumentTitle } from '../utils/dailyGoal';
 import { getTotalXP, getLevel, getXPProgress } from '../utils/xpLevel';
 import { claimFirstDailyQuizBonus, claimDifferentVerbBonus } from '../utils/xpDailyBonuses';
+import { recordWorkedVerb } from '../utils/workedVerbs';
 import { getFlashcardDecks, addCardToDeck, type FlashcardDeck } from '../utils/flashcardDecks';
 import { useXp } from '../contexts/XpContext';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -1871,6 +1872,7 @@ export function Page() {
   // Fiil yüklendikçe geçmişe ekle (en yeni üstte, max 10)
   useEffect(() => {
     if (!verbKey) return;
+    recordWorkedVerb(verbKey);
     setVerbHistory((prev) => {
       const next = [verbKey, ...prev.filter((v) => v !== verbKey)].slice(0, 10);
       try {

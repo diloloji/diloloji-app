@@ -19,11 +19,13 @@ import AutoSpeakToggle from './speech/AutoSpeakToggle';
 function NavbarXpChip() {
   const { level, title, xpProgress } = useXp();
   const [open, setOpen] = useState(false);
+  const anchorRef = useRef<HTMLButtonElement>(null);
   return (
     <>
       <button
+        ref={anchorRef}
         type="button"
-        onClick={() => setOpen(true)}
+        onClick={() => setOpen((v) => !v)}
         className="hidden sm:flex flex-col gap-0.5 min-w-[8.5rem] max-w-[11rem] rounded-lg px-2 py-1 border border-indigo-200/60 dark:border-indigo-500/25 bg-indigo-50/90 dark:bg-indigo-950/40 text-left transition-colors hover:bg-indigo-100/90 dark:hover:bg-indigo-900/35 focus:outline-none focus:ring-2 focus:ring-indigo-400/50"
         title={`Seviye ${level} · ${title}`}
         aria-label={`Seviye ${level}, ${title}. İlerlemeyi aç`}
@@ -45,7 +47,7 @@ function NavbarXpChip() {
             : 'Maks. seviye'}
         </span>
       </button>
-      <XpProfileModal open={open} onClose={() => setOpen(false)} />
+      <XpProfileModal open={open} onClose={() => setOpen(false)} anchorRef={anchorRef} />
     </>
   );
 }
