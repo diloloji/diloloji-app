@@ -12,6 +12,12 @@ dist
 dist-ssr
 *.local
 .env
+
+# Fiil audit (API çıktıları — isteğe bağlı commit)
+audit_results.json
+audit_errors.json
+audit_report.txt
+src/data/spanish_conjugation_overrides.json.bak.*
 .env.local
 .env.*.local
 

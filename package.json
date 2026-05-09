@@ -7,11 +7,16 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
+    "verify:mistake-memory": "node scripts/verify-mistake-memory.mjs",
+    "generate:irregular-by-tense": "node scripts/generate_irregular_by_tense.mjs",
+    "audit:verbs": "node audit_verbs.js",
+    "fix:verbs": "node fix_verbs.js",
     "preview": "vite preview"
   },
   "dependencies": {
     "canvas-confetti": "^1.9.4",
     "dompurify": "^3.3.3",
+    "dotenv": "^17.4.2",
     "framer-motion": "^12.36.0",
     "french-verbs": "^5.4.0",
     "french-verbs-lefff": "^3.4.0",
