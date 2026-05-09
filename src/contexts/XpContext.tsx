@@ -1,9 +1,9 @@
-import { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { createContext, useCallback, useContext, useState } from 'react';
 import {
   getTotalXP,
-  addXP as addXpStorage,
+  setTotalXP as persistTotalXP,
   getLevel,
-  getTitle,
+  getTitleForLevel,
   getXPProgress,
   getStreak,
   getLastActiveDate,
@@ -13,107 +13,135 @@ import {
   type XPProgress,
   type XpActivityHistory,
 } from '../utils/xpLevel';
+import { claimSevenDayStreakMilestone } from '../utils/xpDailyBonuses';
+import LevelUpCelebration from '../components/LevelUpCelebration';
 
-type XpContextValue = {
+export type FloatingXpItem = { id: number; text: string; x: number; y: number };
+
+export type XpContextValue = {
+  /** Toplam XP (totalXP ile aynı) */
+  xp: number;
   totalXP: number;
   level: number;
   title: string;
+  levelTitle: string;
   xpProgress: XPProgress;
+  /** Sonraki seviye eşiği (toplam XP), son seviyede null */
+  xpForNextLevel: number | null;
   streak: number;
   lastActiveDate: string | null;
   activityHistory: XpActivityHistory;
-  addXP: (amount: number) => void;
+  /** Pozitif XP ekler; seri milestone burada eklenir. Dönüş: yeni toplam XP */
+  addXP: (amount: number) => number;
+  /** Alıştırma doğrusu için yüzen metin (viewport koordinatları) */
+  showFloatingXp: (text: string, x: number, y: number) => void;
 };
 
 const XpContext = createContext<XpContextValue | null>(null);
+
+let floatingIdSeq = 0;
 
 export function XpProvider({ children }: { children: React.ReactNode }) {
   const [totalXP, setTotalXP] = useState(getTotalXP);
   const [streak, setStreak] = useState(getStreak);
   const [lastActiveDate, setLastActiveDate] = useState<string | null>(getLastActiveDate);
   const [activityHistory, setActivityHistory] = useState<XpActivityHistory>(getXpActivityHistory);
-  const [lastEarned, setLastEarned] = useState<number | null>(null);
-  /** Seviye atlama: yeni seviye numarası, null ise atlama yok */
-  const [levelUpTo, setLevelUpTo] = useState<number | null>(null);
-  /** Günlük seri toast: gösterilecek seri değeri (null = gösterme) */
-  const [streakToast, setStreakToast] = useState<number | null>(null);
+  const [floating, setFloating] = useState<FloatingXpItem[]>([]);
+  const [celebration, setCelebration] = useState<{
+    fromLevel: number;
+    toLevel: number;
+    fromTitle: string;
+    toTitle: string;
+  } | null>(null);
+
+  const showFloatingXp = useCallback((text: string, x: number, y: number) => {
+    const id = ++floatingIdSeq;
+    setFloating((f) => [...f, { id, text, x, y }]);
+    window.setTimeout(() => {
+      setFloating((f) => f.filter((i) => i.id !== id));
+    }, 1100);
+  }, []);
 
   const addXP = useCallback((amount: number) => {
     const current = getTotalXP();
-    const next = addXpStorage(amount);
     const oldLevel = getLevel(current);
-    const newLevel = getLevel(next);
-    setTotalXP(next);
-    setLastEarned(amount);
-    if (newLevel > oldLevel) setLevelUpTo(newLevel);
-
-    addXpToActivityToday(amount);
-    setActivityHistory(getXpActivityHistory());
-
     const { newStreak, didUpdate } = updateStreakInStorage();
     setStreak(newStreak);
     setLastActiveDate(getLastActiveDate());
-    if (didUpdate) setStreakToast(newStreak);
+
+    const streakBonus = claimSevenDayStreakMilestone(newStreak, didUpdate);
+    const totalDelta = Math.floor(amount) + streakBonus;
+    const next = Math.max(0, current + totalDelta);
+    persistTotalXP(next);
+    setTotalXP(next);
+
+    if (totalDelta > 0) {
+      addXpToActivityToday(totalDelta);
+      setActivityHistory(getXpActivityHistory());
+    }
+
+    const newLevel = getLevel(next);
+    if (newLevel > oldLevel) {
+      setCelebration({
+        fromLevel: oldLevel,
+        toLevel: newLevel,
+        fromTitle: getTitleForLevel(oldLevel),
+        toTitle: getTitleForLevel(newLevel),
+      });
+    }
+
+    return next;
   }, []);
 
-  useEffect(() => {
-    if (lastEarned === null) return;
-    const t = setTimeout(() => setLastEarned(null), 3200);
-    return () => clearTimeout(t);
-  }, [lastEarned]);
-
-  useEffect(() => {
-    if (levelUpTo === null) return;
-    const t = setTimeout(() => setLevelUpTo(null), 4000);
-    return () => clearTimeout(t);
-  }, [levelUpTo]);
-
   const level = getLevel(totalXP);
-  const title = getTitle(level);
+  const title = getTitleForLevel(level);
   const xpProgress = getXPProgress(totalXP);
 
-  useEffect(() => {
-    if (streakToast === null) return;
-    const t = setTimeout(() => setStreakToast(null), 3500);
-    return () => clearTimeout(t);
-  }, [streakToast]);
+  const value: XpContextValue = {
+    xp: totalXP,
+    totalXP,
+    level,
+    title,
+    levelTitle: title,
+    xpProgress,
+    xpForNextLevel: xpProgress.xpForNextLevel,
+    streak,
+    lastActiveDate,
+    activityHistory,
+    addXP,
+    showFloatingXp,
+  };
 
   return (
-    <XpContext.Provider value={{ totalXP, level, title, xpProgress, streak, lastActiveDate, activityHistory, addXP }}>
+    <XpContext.Provider value={value}>
       {children}
-      {/* Başarı toast: Tebrikler! +X XP Kazandın. */}
-      {lastEarned !== null && (
+      {floating.map((f) => (
         <div
-          className="fixed top-6 right-6 z-[100] rounded-xl bg-amber-500/95 dark:bg-amber-500 text-white px-4 py-2.5 shadow-lg shadow-amber-500/30 font-semibold text-sm flex items-center gap-2 animate-menu-in"
+          key={f.id}
+          className="pointer-events-none fixed z-[150] text-sm font-bold text-amber-600 dark:text-amber-300 drop-shadow-md animate-xp-float"
+          style={{ left: f.x, top: f.y, transform: 'translate(-50%, -50%)' }}
           role="status"
-          aria-live="polite"
         >
-          <span aria-hidden>🌟</span>
-          Tebrikler! +{lastEarned} XP Kazandın.
+          {f.text}
         </div>
-      )}
-      {/* Seviye atlama toast — daha coşkulu */}
-      {levelUpTo !== null && (
-        <div
-          className="fixed top-36 right-6 z-[100] rounded-xl bg-gradient-to-r from-indigo-500 to-amber-500 text-white px-5 py-3 shadow-xl shadow-indigo-500/30 font-bold text-sm flex items-center gap-2 animate-menu-in"
-          role="status"
-          aria-live="polite"
-        >
-          <span aria-hidden>🎉</span>
-          Seviye Atladın! Yeni Seviye: {levelUpTo}
-        </div>
-      )}
-      {/* Günlük seri toast */}
-      {streakToast !== null && (
-        <div
-          className="fixed top-20 right-6 z-[100] rounded-xl bg-amber-500/95 dark:bg-amber-500 text-white px-4 py-2.5 shadow-lg shadow-amber-500/30 font-semibold text-sm flex items-center gap-2 animate-menu-in"
-          role="status"
-          aria-live="polite"
-        >
-          <span aria-hidden>🔥</span>
-          Günlük hedefini tamamladın! Serin {streakToast} güne çıktı.
-        </div>
-      )}
+      ))}
+      <LevelUpCelebration
+        open={celebration !== null}
+        fromLevel={celebration?.fromLevel ?? 1}
+        toLevel={celebration?.toLevel ?? 1}
+        fromTitle={celebration?.fromTitle ?? ''}
+        toTitle={celebration?.toTitle ?? ''}
+        onClose={() => setCelebration(null)}
+      />
+      <style>{`
+        @keyframes xp-float-up {
+          0% { opacity: 1; transform: translate(-50%, -50%) translateY(0); }
+          100% { opacity: 0; transform: translate(-50%, -50%) translateY(-48px); }
+        }
+        .animate-xp-float {
+          animation: xp-float-up 1s ease-out forwards;
+        }
+      `}</style>
     </XpContext.Provider>
   );
 }
@@ -122,4 +150,9 @@ export function useXp(): XpContextValue {
   const ctx = useContext(XpContext);
   if (!ctx) throw new Error('useXp must be used within XpProvider');
   return ctx;
+}
+
+/** İstenen API ile uyumlu alias */
+export function useXP(): XpContextValue {
+  return useXp();
 }
