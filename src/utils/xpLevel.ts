@@ -1,63 +1,10 @@
 /**
- * Global XP ve seviye — localStorage. 20 seviye tablosu (eşik = o seviyeye giriş için minimum toplam XP).
+ * Global XP ve Seviye (Level) sistemi — localStorage ile kalıcı.
  */
 
 const STORAGE_KEY = 'conjume-total-xp';
 
-/** Level L için minimum toplam XP (L = 1..20). Level 1 → 0, Level 2 → 100, … */
-export const LEVEL_THRESHOLD_XP: readonly number[] = [
-  0, 100, 250, 500, 1000, 1750, 2750, 4000, 5500, 7500, 10000, 13000, 16500, 20500, 25000, 30000, 36000,
-  43000, 51000, 60000,
-] as const;
-
-export const LEVEL_TITLES: readonly string[] = [
-  'Acemi',
-  'Meraklı',
-  'İstekli',
-  'Öğrenci',
-  'Çalışkan',
-  'Azimli',
-  'Becerikli',
-  'Yetenekli',
-  'Ustalaşan',
-  'Usta',
-  'Uzman',
-  'İleri Uzman',
-  'Dil Avcısı',
-  'Sözcük Ustası',
-  'Gramer Üstadı',
-  'Dil Şampiyonu',
-  'Efsanevi',
-  'Dilbilimci',
-  'Grandmaster',
-  'El Maestro',
-] as const;
-
-/** Seviye yolculuğu modalında satır başına emoji (LEVEL_TITLES ile aynı uzunluk). */
-export const LEVEL_ROADMAP_ICONS: readonly string[] = [
-  '🌱',
-  '⚡',
-  '🔥',
-  '📚',
-  '⚙️',
-  '🎯',
-  '🗡️',
-  '💎',
-  '🌙',
-  '👑',
-  '🔮',
-  '🔮',
-  '🔮',
-  '🔮',
-  '🔮',
-  '🌟',
-  '🌟',
-  '🌟',
-  '🌟',
-  '🏆',
-] as const;
-
-export const MAX_LEVEL = LEVEL_TITLES.length;
+const XP_PER_LEVEL = 100;
 
 export function getTotalXP(): number {
   if (typeof window === 'undefined') return 0;
@@ -81,73 +28,40 @@ export function setTotalXP(value: number): void {
   }
 }
 
-export function addXPToStorage(amount: number): number {
+export function addXP(amount: number): number {
   const next = getTotalXP() + Math.max(0, Math.floor(amount));
   setTotalXP(next);
   return next;
 }
 
-/** 1..MAX_LEVEL */
+/** Seviye: her 100 XP bir seviye. Seviye 1 = 0–99 XP, 2 = 100–199, vb. */
 export function getLevel(totalXP: number): number {
-  let level = 1;
-  for (let i = LEVEL_THRESHOLD_XP.length - 1; i >= 0; i--) {
-    if (totalXP >= LEVEL_THRESHOLD_XP[i]) {
-      level = i + 1;
-      break;
-    }
-  }
-  return Math.min(MAX_LEVEL, Math.max(1, level));
+  return Math.floor(totalXP / XP_PER_LEVEL) + 1;
 }
 
-export function getTitleForLevel(level: number): string {
-  const idx = Math.min(MAX_LEVEL, Math.max(1, level)) - 1;
-  return LEVEL_TITLES[idx] ?? LEVEL_TITLES[0];
-}
-
-/** @deprecated alias — use getTitleForLevel */
+/** Seviyeye göre unvan */
 export function getTitle(level: number): string {
-  return getTitleForLevel(level);
+  if (level <= 3) return 'Turist';
+  if (level <= 7) return 'Çırak';
+  if (level <= 12) return 'Dilbilimci';
+  if (level <= 14) return 'Uzman';
+  return 'Poliglot';
 }
 
 export type XPProgress = {
   level: number;
-  levelTitle: string;
   xpInCurrentLevel: number;
   xpNeededForNext: number;
   percent: number;
-  /** Bir sonraki seviye eşiği (toplam XP); son seviyede null */
-  xpForNextLevel: number | null;
-  totalXP: number;
 };
 
+/** Bir sonraki seviyeye ilerleme: 0–100 yüzde ve mevcut XP (seviye içi). */
 export function getXPProgress(totalXP: number): XPProgress {
   const level = getLevel(totalXP);
-  const title = getTitleForLevel(level);
-  const start = LEVEL_THRESHOLD_XP[level - 1] ?? 0;
-  if (level >= MAX_LEVEL) {
-    return {
-      level,
-      levelTitle: title,
-      xpInCurrentLevel: totalXP - start,
-      xpNeededForNext: 0,
-      percent: 100,
-      xpForNextLevel: null,
-      totalXP,
-    };
-  }
-  const nextStart = LEVEL_THRESHOLD_XP[level];
-  const span = nextStart - start;
-  const xpIn = totalXP - start;
-  const percent = span > 0 ? Math.min(100, Math.max(0, (xpIn / span) * 100)) : 100;
-  return {
-    level,
-    levelTitle: title,
-    xpInCurrentLevel: xpIn,
-    xpNeededForNext: span,
-    percent,
-    xpForNextLevel: nextStart,
-    totalXP,
-  };
+  const xpInCurrentLevel = totalXP % XP_PER_LEVEL;
+  const xpNeededForNext = XP_PER_LEVEL;
+  const percent = xpNeededForNext > 0 ? Math.min(100, (xpInCurrentLevel / xpNeededForNext) * 100) : 100;
+  return { level, xpInCurrentLevel, xpNeededForNext, percent };
 }
 
 /** Günlük seri — localStorage anahtarları */
@@ -306,12 +220,4 @@ export function addXpToActivityToday(amount: number): void {
   } catch {
     // ignore
   }
-}
-
-/**
- * Toplam XP ekler (storage). Geriye kalan toplam XP.
- * @deprecated — doğrudan addXPToStorage kullanın; XpContext addXP sarmalar.
- */
-export function addXP(amount: number): number {
-  return addXPToStorage(amount);
 }

@@ -7891,6 +7891,51 @@ export function Page() {
                           </select>
                         </div>
                       </div>
+                    ) : focusUsesChoice ? (
+                    <div className="w-full flex flex-col gap-3">
+                      <div className="flex items-center justify-center gap-2 sm:gap-4 w-full">
+                        <span className="h-px flex-1 min-w-[0.75rem] bg-violet-300 dark:bg-violet-500/40" aria-hidden />
+                        <h3 className="m-0 text-[1.2rem] font-bold text-violet-600 dark:text-violet-300 shrink-0 px-1 text-center leading-tight">
+                          {label}
+                        </h3>
+                        <span className="h-px flex-1 min-w-[0.75rem] bg-violet-300 dark:bg-violet-500/40" aria-hidden />
+                      </div>
+                      <div className="w-full border-b border-violet-200/90 dark:border-violet-500/30" />
+                      <div
+                        className={`grid grid-cols-2 gap-3 w-full ${focusMcLocked && feedback === 'wrong' && !isRevealing ? 'animate-shake' : ''}`}
+                      >
+                        {focusMcOptions.map((opt, idx) => {
+                          const isCorrectOpt = checkAnswer(opt, correctValue) === 'correct';
+                          const picked = focusMcPickedIndex === idx;
+                          const showGreen = focusMcLocked && isCorrectOpt;
+                          const showRed = focusMcLocked && picked && !isCorrectOpt;
+                          return (
+                            <button
+                              key={`${opt}-${idx}`}
+                              type="button"
+                              disabled={focusMcLocked || quizSessionLivesDepleted}
+                              onClick={() => handleFocusMcPick(idx)}
+                              className={`rounded-xl border h-16 min-h-[64px] px-2 text-base font-semibold text-center flex flex-col items-center justify-center gap-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-violet-500/50 disabled:cursor-default ${
+                                focusMcKeyFlashIndex === idx
+                                  ? 'ring-2 ring-violet-500 ring-offset-2 ring-offset-slate-50 dark:ring-offset-slate-900 scale-[1.02] shadow-lg shadow-violet-500/25'
+                                  : ''
+                              } ${
+                                showGreen
+                                  ? 'border-emerald-500 bg-emerald-500/15 text-emerald-900 dark:text-emerald-100'
+                                  : showRed
+                                    ? 'border-red-500 bg-red-500/15 text-red-900 dark:text-red-100'
+                                    : 'border-slate-200 dark:border-slate-600 bg-white/80 dark:bg-slate-800/60 text-slate-800 dark:text-slate-100 hover:border-violet-400/60'
+                              }`}
+                            >
+                              <span className="block truncate max-w-full" title={opt}>
+                                {opt}
+                              </span>
+                              <span className="text-[10px] font-normal opacity-60 tabular-nums">{idx + 1}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
                     ) : (
                     <div className="flex items-stretch gap-2 min-h-[48px]">
                       <motion.span
@@ -7900,42 +7945,6 @@ export function Page() {
                         {label}
                       </motion.span>
                       <div className="flex-1 min-w-0 flex flex-col gap-2">
-                        {focusUsesChoice ? (
-                          <div
-                            className={`grid grid-cols-2 gap-2.5 ${focusMcLocked && feedback === 'wrong' && !isRevealing ? 'animate-shake' : ''}`}
-                          >
-                            {focusMcOptions.map((opt, idx) => {
-                              const isCorrectOpt = checkAnswer(opt, correctValue) === 'correct';
-                              const picked = focusMcPickedIndex === idx;
-                              const showGreen = focusMcLocked && isCorrectOpt;
-                              const showRed = focusMcLocked && picked && !isCorrectOpt;
-                              return (
-                                <button
-                                  key={`${opt}-${idx}`}
-                                  type="button"
-                                  disabled={focusMcLocked || quizSessionLivesDepleted}
-                                  onClick={() => handleFocusMcPick(idx)}
-                                  className={`rounded-xl border py-4 px-2 text-base font-semibold text-center transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-violet-500/50 disabled:cursor-default ${
-                                    focusMcKeyFlashIndex === idx
-                                      ? 'ring-2 ring-violet-500 ring-offset-2 ring-offset-slate-50 dark:ring-offset-slate-900 scale-[1.02] shadow-lg shadow-violet-500/25'
-                                      : ''
-                                  } ${
-                                    showGreen
-                                      ? 'border-emerald-500 bg-emerald-500/15 text-emerald-900 dark:text-emerald-100'
-                                      : showRed
-                                        ? 'border-red-500 bg-red-500/15 text-red-900 dark:text-red-100'
-                                        : 'border-slate-200 dark:border-slate-600 bg-white/80 dark:bg-slate-800/60 text-slate-800 dark:text-slate-100 hover:border-violet-400/60'
-                                  }`}
-                                >
-                                  <span className="block truncate" title={opt}>
-                                    {opt}
-                                  </span>
-                                  <span className="text-[10px] font-normal opacity-60 tabular-nums">{idx + 1}</span>
-                                </button>
-                              );
-                            })}
-                          </div>
-                        ) : (
                           <motion.div
                             className={`relative flex-1 min-w-0 rounded-2xl animate-slide-in-right-soft ${feedback === 'wrong' && !isRevealing ? 'animate-shake' : ''} ${quizEmptyShake === pronoun ? 'animate-shake ring-2 ring-red-500 dark:ring-red-400 ring-inset rounded-2xl' : ''} ${focusCorrectGlow ? 'animate-glow-green' : ''}`}
                           >
@@ -8032,7 +8041,6 @@ export function Page() {
                               </span>
                             )}
                           </motion.div>
-                        )}
                       </div>
                     </div>
                     )}
