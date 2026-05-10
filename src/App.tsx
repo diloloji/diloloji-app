@@ -18,8 +18,10 @@ import ClozeSprint from './pages/ClozeSprint';
 import TodaysSession from './pages/TodaysSession';
 import { useEffect } from 'react';
 import { XpProvider } from './contexts/XpContext';
+import { AuthProvider } from './contexts/AuthContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { OnboardingProvider, useOnboarding } from './contexts/OnboardingContext';
+import GuestBanner from './components/GuestBanner';
 import ErrorBoundary from './components/ErrorBoundary';
 import OnboardingWizard from './components/OnboardingWizard';
 import BottomNav from './components/BottomNav';
@@ -28,6 +30,8 @@ import { updateDocumentTitle } from './utils/dailyGoal';
 function getPageElement(pathname: string) {
   switch (pathname) {
     case '/':
+      return <Page />;
+    case '/home':
       return <TodaysSession />;
     case '/serbest':
     case '/anasayfa':
@@ -104,6 +108,7 @@ function AppContent() {
   }, []);
   return (
     <>
+      <GuestBanner />
       <div className="pb-mobile-nav md:pb-0 min-h-0 w-full max-w-[100vw] min-w-0">
         <Routes>
           <Route path="*" element={<AnimatedRoutes />} />
@@ -119,13 +124,15 @@ function App() {
   return (
     <ErrorBoundary>
       <BrowserRouter>
-        <LanguageProvider>
-          <OnboardingProvider>
-            <XpProvider>
-              <AppContent />
-            </XpProvider>
-          </OnboardingProvider>
-        </LanguageProvider>
+        <AuthProvider>
+          <LanguageProvider>
+            <OnboardingProvider>
+              <XpProvider>
+                <AppContent />
+              </XpProvider>
+            </OnboardingProvider>
+          </LanguageProvider>
+        </AuthProvider>
       </BrowserRouter>
     </ErrorBoundary>
   );

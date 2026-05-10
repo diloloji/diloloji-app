@@ -237,7 +237,6 @@ select optgroup {
 .quiz-p-input-wrap {
   grid-area: p-input;
   min-width: 0;
-  position: relative;
 }
 .quiz-p-hint {
   grid-area: p-hint;

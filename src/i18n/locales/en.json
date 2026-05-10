@@ -65,7 +65,30 @@
       "learning": "Learn",
       "practice": "Practice",
       "timeAttack": "Time attack",
-      "compare": "Compare"
+      "compare": "Compare",
+      "mastery": "Mastery"
+    },
+    "mastery": {
+      "todayReviews": "Today's reviews",
+      "todayAllDone": "All reviews done for today!",
+      "solveAll": "Solve all",
+      "reviewBadge": "Review time!",
+      "verbScore": "Mastery score: {{pct}}%",
+      "dueForVerb": "Due for review today ({{n}})",
+      "onlyEsFr": "Mastery tracking is available for Spanish and French only.",
+      "xpFloat": "Mastery XP",
+      "fullVerbToast": "🏆 You've fully mastered {{verb}}!",
+      "drillComplete": "Today's mastery reviews are complete.",
+      "nextDrill": "Next review ({{n}} left)",
+      "finishDrill": "Finish daily reviews",
+      "levelLabels": {
+        "0": "New",
+        "1": "Beginner",
+        "2": "Developing",
+        "3": "Good",
+        "4": "Strong",
+        "5": "Mastery"
+      }
     },
     "check": "Check",
     "showHint": "Show hint",
@@ -90,9 +113,11 @@
     "wrongSerEstar": "Wrong: ESTAR is for temporary states; use SER for professions.",
     "correctSerEstar": "Correct: SER for identity/profession → Soy médico.",
     "quizXp": {
-      "correct": "Correct answers: +{{xp}} XP",
-      "firstTry": "First-try correct: +{{xp}} XP",
-      "hint": "Hint: −{{xp}} XP",
+      "correct": "Correct answers: +{{xp}} XP (by tense difficulty)",
+      "irregular": "Irregular verb bonus: +{{xp}} XP",
+      "firstTry": "First-try bonus: +{{xp}} XP",
+      "hint": "Hint penalty: −{{xp}} XP",
+      "special": "Extra: +{{xp}} XP",
       "dailyFirst": "First daily practice: +{{xp}} XP",
       "dailyVerb": "New verb today: +{{xp}} XP",
       "flawless": "Flawless bonus: +{{xp}} XP"

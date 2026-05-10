@@ -11,75 +11,68 @@ import { Menu, X, User, LogOut, Sun, Moon, Languages, BookOpen } from 'lucide-re
 import { AnimatePresence, motion } from 'framer-motion';
 import { useThemeContext } from '../contexts/ThemeContext';
 import { useXp } from '../contexts/XpContext';
+import { useAuth } from '../contexts/AuthContext';
 import LoginModal from './LoginModal';
-import XpProfileModal from './XpProfileModal';
+import LevelRoadmapModal from './LevelRoadmapModal';
 import { getDailyGoalSummary, updateDocumentTitle, DAILY_GOAL } from '../utils/dailyGoal';
 import AutoSpeakToggle from './speech/AutoSpeakToggle';
 import { getLevelVisual } from '../utils/xpLevelVisual';
 import { persistManualUiLocale } from '../i18n/index';
 
+type XpNavButtonProps = {
+  onOpenRoadmap: () => void;
+};
+
 /** Mobilde: sadece seviye ikonu + sayı (kompakt) */
-function NavbarXpCompact() {
+function NavbarXpCompact({ onOpenRoadmap }: XpNavButtonProps) {
   const { t } = useTranslation();
   const { level, title } = useXp();
   const lvVisual = getLevelVisual(level);
-  const [open, setOpen] = useState(false);
-  const anchorRef = useRef<HTMLButtonElement>(null);
   return (
-    <>
-      <button
-        ref={anchorRef}
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="md:hidden flex h-11 min-w-[44px] items-center justify-center gap-1 rounded-lg border border-indigo-200/60 dark:border-indigo-500/25 bg-indigo-50/90 dark:bg-indigo-950/40 px-2.5 text-left transition-colors hover:bg-indigo-100/90 dark:hover:bg-indigo-900/35 focus:outline-none focus:ring-2 focus:ring-indigo-400/50"
-        title={t('nav.levelTitle', { level, title })}
-        aria-label={`${t('nav.levelTitle', { level, title })}. ${t('nav.openProgress')}`}
-      >
-        <span className="text-lg leading-none" aria-hidden>
-          {lvVisual.emoji}
-        </span>
-        <span className="text-sm font-bold tabular-nums text-indigo-800 dark:text-indigo-200">Lv.{level}</span>
-      </button>
-      <XpProfileModal open={open} onClose={() => setOpen(false)} anchorRef={anchorRef} />
-    </>
+    <button
+      type="button"
+      onClick={onOpenRoadmap}
+      className="md:hidden flex h-11 min-w-[44px] items-center justify-center gap-1 rounded-lg border border-indigo-200/60 dark:border-indigo-500/25 bg-indigo-50/90 dark:bg-indigo-950/40 px-2.5 text-left transition-colors hover:bg-indigo-100/90 dark:hover:bg-indigo-900/35 focus:outline-none focus:ring-2 focus:ring-indigo-400/50"
+      title={t('nav.levelTitle', { level, title })}
+      aria-label={`${t('nav.levelTitle', { level, title })}. Seviye yolculuğunu aç`}
+    >
+      <span className="text-lg leading-none" aria-hidden>
+        {lvVisual.emoji}
+      </span>
+      <span className="text-sm font-bold tabular-nums text-indigo-800 dark:text-indigo-200">Lv.{level}</span>
+    </button>
   );
 }
 
-function NavbarXpChip() {
+function NavbarXpChip({ onOpenRoadmap }: XpNavButtonProps) {
   const { t } = useTranslation();
   const { level, title, xpProgress } = useXp();
   const lvVisual = getLevelVisual(level);
-  const [open, setOpen] = useState(false);
-  const anchorRef = useRef<HTMLButtonElement>(null);
   return (
-    <>
-      <button
-        ref={anchorRef}
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="hidden md:flex flex-col gap-0.5 min-w-[8.5rem] max-w-[11rem] rounded-lg px-2 py-1 border border-indigo-200/60 dark:border-indigo-500/25 bg-indigo-50/90 dark:bg-indigo-950/40 text-left transition-colors hover:bg-indigo-100/90 dark:hover:bg-indigo-900/35 focus:outline-none focus:ring-2 focus:ring-indigo-400/50"
-        title={t('nav.levelTitle', { level, title })}
-        aria-label={`${t('nav.levelTitle', { level, title })}. ${t('nav.openProgress')}`}
-      >
-        <span className="flex items-center gap-1 text-[11px] font-bold text-indigo-800 dark:text-indigo-200 leading-tight">
-          <span aria-hidden>{lvVisual.emoji}</span>
-          <span className="tabular-nums">Lv.{level}</span>
-          <span className="font-semibold truncate">{title}</span>
-        </span>
-        <div className="h-1.5 rounded-full bg-slate-200/90 dark:bg-white/10 overflow-hidden" aria-hidden>
-          <div
-            className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-amber-400 transition-[width] duration-500 ease-out"
-            style={{ width: `${Math.round(xpProgress.percent)}%` }}
-          />
-        </div>
-        <span className="text-[9px] text-indigo-600/80 dark:text-indigo-300/70 tabular-nums">
-          {xpProgress.xpForNextLevel != null
-            ? `${xpProgress.xpInCurrentLevel} / ${xpProgress.xpNeededForNext} XP`
-            : t('nav.maxLevel')}
-        </span>
-      </button>
-      <XpProfileModal open={open} onClose={() => setOpen(false)} anchorRef={anchorRef} />
-    </>
+    <button
+      type="button"
+      onClick={onOpenRoadmap}
+      className="hidden md:flex flex-col gap-0.5 min-w-[8.5rem] max-w-[11rem] rounded-lg px-2 py-1 border border-indigo-200/60 dark:border-indigo-500/25 bg-indigo-50/90 dark:bg-indigo-950/40 text-left transition-colors hover:bg-indigo-100/90 dark:hover:bg-indigo-900/35 focus:outline-none focus:ring-2 focus:ring-indigo-400/50"
+      title={t('nav.levelTitle', { level, title })}
+      aria-label={`${t('nav.levelTitle', { level, title })}. Seviye yolculuğunu aç`}
+    >
+      <span className="flex items-center gap-1 text-[11px] font-bold text-indigo-800 dark:text-indigo-200 leading-tight">
+        <span aria-hidden>{lvVisual.emoji}</span>
+        <span className="tabular-nums">Lv.{level}</span>
+        <span className="font-semibold truncate">{title}</span>
+      </span>
+      <div className="h-1.5 rounded-full bg-slate-200/90 dark:bg-white/10 overflow-hidden" aria-hidden>
+        <div
+          className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-amber-400 transition-[width] duration-500 ease-out"
+          style={{ width: `${Math.round(xpProgress.percent)}%` }}
+        />
+      </div>
+      <span className="text-[9px] text-indigo-600/80 dark:text-indigo-300/70 tabular-nums">
+        {xpProgress.xpForNextLevel != null
+          ? `${xpProgress.xpInCurrentLevel} / ${xpProgress.xpNeededForNext} XP`
+          : t('nav.maxLevel')}
+      </span>
+    </button>
   );
 }
 
@@ -129,9 +122,11 @@ export default function Navbar({ onLoginClick, onLogoutClick, isLoggedIn, printH
   const { t, i18n } = useTranslation();
   const location = useLocation();
   const { isDark, toggleTheme, mounted } = useThemeContext();
-  const [internalLoggedIn, setInternalLoggedIn] = useState(false);
-  const resolvedLoggedIn = isLoggedIn !== undefined ? isLoggedIn : internalLoggedIn;
+  const { user, signOut } = useAuth();
+  const authLoggedIn = !!user;
+  const resolvedLoggedIn = isLoggedIn !== undefined ? isLoggedIn : authLoggedIn;
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [levelRoadmapOpen, setLevelRoadmapOpen] = useState(false);
   const [hamburgerOpen, setHamburgerOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
   const langRef = useRef<HTMLDivElement>(null);
@@ -163,15 +158,16 @@ export default function Navbar({ onLoginClick, onLogoutClick, isLoggedIn, printH
     else setIsLoginModalOpen(true);
   };
 
-  const handleLoginSuccess = () => {
-    setInternalLoggedIn(true);
-    setIsLoginModalOpen(false);
+  const handleLogout = () => {
+    if (onLogoutClick) void onLogoutClick();
+    else void signOut();
   };
 
-  const handleLogout = () => {
-    if (onLogoutClick) onLogoutClick();
-    else setInternalLoggedIn(false);
-  };
+  useEffect(() => {
+    const open = () => setIsLoginModalOpen(true);
+    window.addEventListener('conjume-open-auth-modal', open);
+    return () => window.removeEventListener('conjume-open-auth-modal', open);
+  }, []);
 
   useEffect(() => {
     if (!langOpen) return;
@@ -203,18 +199,18 @@ export default function Navbar({ onLoginClick, onLogoutClick, isLoggedIn, printH
         data-print-hide={printHide ? true : undefined}
         className="sticky top-0 z-50 w-full max-w-[100vw] bg-white/80 dark:bg-[#05080f]/80 backdrop-blur-md border-b border-slate-200/50 dark:border-white/5 transition-all duration-300 print:hidden pt-[env(safe-area-inset-top,0px)]"
       >
-        <div className="flex items-center justify-between w-full max-w-7xl mx-auto pl-1 pr-2 sm:pr-4 min-h-16 h-16 gap-2 sm:gap-4">
-          {/* Sol — Logo (sadece ikon), sola yaslı */}
+        <div className="flex items-center justify-between w-full max-w-7xl mx-auto pl-1 pr-2 sm:pr-4 min-h-[4.5rem] sm:min-h-[5rem] py-1.5 gap-2 sm:gap-4">
+          {/* Sol — Logo (sadece ikon), sola yaslı; önceki h-12/sm:h-14 → ~%30 büyük */}
           <div className="flex items-center shrink-0 min-w-0">
             <Link
               to="/"
-              className="flex items-center transition-opacity hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 dark:focus:ring-offset-[#0a0e17] rounded-lg"
+              className="flex items-center cursor-pointer transition-opacity hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 dark:focus:ring-offset-[#0a0e17] rounded-lg"
               aria-label={t('nav.home')}
             >
               <img
                 src={mounted && isDark ? '/logo-dark.svg' : '/logo-light.svg'}
                 alt="Diloloji"
-                className="h-12 sm:h-14 w-auto shrink-0"
+                className="h-[62px] sm:h-[73px] w-auto shrink-0"
               />
             </Link>
           </div>
@@ -246,8 +242,8 @@ export default function Navbar({ onLoginClick, onLogoutClick, isLoggedIn, printH
 
           {/* Sağ — XP / günlük hedef, Giriş Yap, Pro'ya Geç, Hamburger (shrink-0) */}
           <div className="flex items-center gap-1.5 sm:gap-3 shrink-0 min-w-0">
-            <NavbarXpCompact />
-            <NavbarXpChip />
+            <NavbarXpCompact onOpenRoadmap={() => setLevelRoadmapOpen(true)} />
+            <NavbarXpChip onOpenRoadmap={() => setLevelRoadmapOpen(true)} />
             <div className="hidden lg:flex items-center gap-0.5 shrink-0" role="group" aria-label={t('common.uiLanguage')}>
               {UI_LOCALE_FLAGS.map(({ lng, flag }) => (
                 <button
@@ -293,6 +289,27 @@ export default function Navbar({ onLoginClick, onLogoutClick, isLoggedIn, printH
               >
                 {t('nav.signIn')}
               </button>
+            )}
+            {resolvedLoggedIn && user && (
+              <div className="hidden md:flex items-center gap-2 shrink-0 max-w-[14rem]">
+                <span
+                  className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-500/25 text-xs font-bold text-indigo-200 border border-indigo-400/30"
+                  aria-hidden
+                >
+                  {(user.email ?? '?').slice(0, 1).toUpperCase()}
+                </span>
+                <span className="text-xs font-medium text-slate-600 dark:text-slate-300 truncate" title={user.email ?? ''}>
+                  {user.email}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => void handleLogout()}
+                  className="rounded-lg p-2 text-slate-500 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                  aria-label={t('nav.logout')}
+                >
+                  <LogOut className="w-4 h-4" strokeWidth={2} />
+                </button>
+              </div>
             )}
             <Link
               to="/pricing"
@@ -515,12 +532,10 @@ export default function Navbar({ onLoginClick, onLogoutClick, isLoggedIn, printH
 
       {/* Giriş modalı — parent onLoginClick vermiyorsa kullanılır */}
       {!onLoginClick && (
-        <LoginModal
-          isOpen={isLoginModalOpen}
-          onClose={() => setIsLoginModalOpen(false)}
-          onLoginSuccess={handleLoginSuccess}
-        />
+        <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
       )}
+
+      <LevelRoadmapModal open={levelRoadmapOpen} onClose={() => setLevelRoadmapOpen(false)} />
     </>
   );
 }

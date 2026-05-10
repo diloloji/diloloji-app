@@ -24,7 +24,8 @@ export default function BottomNav() {
       aria-label={t('bottomNav.aria')}
     >
       {ITEMS.map(({ to, labelKey, icon: Icon }) => {
-        const isActive = location.pathname === to;
+        const isActive =
+          location.pathname === to || (to === '/fiil-laboratuvari' && location.pathname === '/');
         return (
           <Link
             key={to}

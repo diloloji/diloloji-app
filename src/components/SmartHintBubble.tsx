@@ -21,19 +21,15 @@ type Props = {
   withLeftPadding?: boolean;
   /** Kompakt görünüm (yan yana hizalama için). */
   compact?: boolean;
-  /** Input altında position:absolute; margin/pl yok (layout kayması önlenir). */
-  absoluteUnderInput?: boolean;
 };
 
-export default function SmartHintBubble({ mode, rule, letters, correct, withLeftPadding, compact, absoluteUnderInput }: Props) {
-  const wrap = absoluteUnderInput
-    ? ''
-    : `${withLeftPadding ? 'pl-[5.5rem]' : ''} ${compact ? 'mt-1' : 'mt-2'}`;
+export default function SmartHintBubble({ mode, rule, letters, correct, withLeftPadding, compact }: Props) {
+  const wrap = `${withLeftPadding ? 'pl-[5.5rem]' : ''} ${compact ? 'mt-0' : 'mt-2'} w-full min-w-0`;
 
   if (mode === 'rule') {
     return (
       <div className={wrap}>
-        <div className="rounded-lg border border-amber-300 dark:border-amber-500/40 bg-amber-50/90 dark:bg-amber-500/10 px-3 py-2 text-xs sm:text-sm text-amber-900 dark:text-amber-200 leading-snug">
+        <div className="w-full rounded-lg border border-amber-300 dark:border-amber-500/40 bg-amber-50/90 dark:bg-amber-500/10 px-3 py-2 text-xs sm:text-sm text-amber-900 dark:text-amber-200 leading-snug">
           <span className="font-semibold mr-1">İpucu:</span>{rule}
         </div>
       </div>
@@ -43,7 +39,7 @@ export default function SmartHintBubble({ mode, rule, letters, correct, withLeft
   if (mode === 'letters') {
     return (
       <div className={wrap}>
-        <div className="rounded-lg border border-amber-300 dark:border-amber-500/40 bg-amber-50/90 dark:bg-amber-500/10 px-3 py-2 text-amber-900 dark:text-amber-200">
+        <div className="w-full rounded-lg border border-amber-300 dark:border-amber-500/40 bg-amber-50/90 dark:bg-amber-500/10 px-3 py-2 text-amber-900 dark:text-amber-200">
           <p className="text-[11px] sm:text-xs font-medium mb-1 opacity-80">Harf ipucu — sıradaki yanlışta cevap gösterilecek.</p>
           <p className="font-mono text-base sm:text-lg tracking-[0.18em] leading-none">
             {(letters ?? []).map((tok, i) => {
@@ -69,7 +65,7 @@ export default function SmartHintBubble({ mode, rule, letters, correct, withLeft
 
   return (
     <div className={wrap}>
-      <div className="rounded-lg border border-emerald-300 dark:border-emerald-500/40 bg-emerald-50/90 dark:bg-emerald-500/10 px-3 py-2 text-xs sm:text-sm text-emerald-900 dark:text-emerald-200 leading-snug">
+      <div className="w-full rounded-lg border border-emerald-300 dark:border-emerald-500/40 bg-emerald-50/90 dark:bg-emerald-500/10 px-3 py-2 text-xs sm:text-sm text-emerald-900 dark:text-emerald-200 leading-snug">
         <span className="font-semibold mr-1">Doğru cevap:</span>
         <span className="font-mono">{correct}</span>
         <span className="ml-2 text-[10px] sm:text-[11px] opacity-70">3 denemede gösterildi — öncelikli tekrara alındı.</span>

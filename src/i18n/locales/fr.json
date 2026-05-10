@@ -65,7 +65,30 @@
       "learning": "Apprentissage",
       "practice": "Pratique",
       "timeAttack": "Contre la montre",
-      "compare": "Comparer"
+      "compare": "Comparer",
+      "mastery": "Maîtrise"
+    },
+    "mastery": {
+      "todayReviews": "Révisions du jour",
+      "todayAllDone": "Toutes les révisions du jour sont faites !",
+      "solveAll": "Tout résoudre",
+      "reviewBadge": "C'est l'heure de réviser !",
+      "verbScore": "Score de maîtrise : {{pct}} %",
+      "dueForVerb": "À réviser aujourd'hui ({{n}})",
+      "onlyEsFr": "La maîtrise n'est disponible que pour l'espagnol et le français.",
+      "xpFloat": "XP maîtrise",
+      "fullVerbToast": "🏆 Tu maîtrises entièrement {{verb}} !",
+      "drillComplete": "Révisions de maîtrise du jour terminées.",
+      "nextDrill": "Révision suivante ({{n}} restantes)",
+      "finishDrill": "Terminer les révisions du jour",
+      "levelLabels": {
+        "0": "Nouveau",
+        "1": "Débutant",
+        "2": "En progrès",
+        "3": "Bien",
+        "4": "Solide",
+        "5": "Maîtrise"
+      }
     },
     "check": "Vérifier",
     "showHint": "Afficher l'indice",
@@ -90,9 +113,11 @@
     "wrongSerEstar": "Incorrect : ESTAR pour les états temporaires ; SER pour la profession.",
     "correctSerEstar": "Correct : SER pour identité/profession → Soy médico.",
     "quizXp": {
-      "correct": "Bonnes réponses : +{{xp}} XP",
-      "firstTry": "Bon du premier coup : +{{xp}} XP",
-      "hint": "Indice : −{{xp}} XP",
+      "correct": "Bonnes réponses : +{{xp}} XP (selon la difficulté du temps)",
+      "irregular": "Bonus verbe irrégulier : +{{xp}} XP",
+      "firstTry": "Bonus premier essai : +{{xp}} XP",
+      "hint": "Pénalité indice : −{{xp}} XP",
+      "special": "Extra : +{{xp}} XP",
       "dailyFirst": "Première pratique du jour : +{{xp}} XP",
       "dailyVerb": "Nouveau verbe aujourd'hui : +{{xp}} XP",
       "flawless": "Bonus sans faute : +{{xp}} XP"

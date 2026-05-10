@@ -65,7 +65,30 @@
       "learning": "Aprendizaje",
       "practice": "Práctica",
       "timeAttack": "Contra reloj",
-      "compare": "Comparar"
+      "compare": "Comparar",
+      "mastery": "Dominio"
+    },
+    "mastery": {
+      "todayReviews": "Repasos de hoy",
+      "todayAllDone": "¡Todos los repasos de hoy listos!",
+      "solveAll": "Resolver todos",
+      "reviewBadge": "¡Hora de repasar!",
+      "verbScore": "Puntuación de dominio: {{pct}}%",
+      "dueForVerb": "Pendientes hoy ({{n}})",
+      "onlyEsFr": "El dominio solo está disponible para español y francés.",
+      "xpFloat": "XP de dominio",
+      "fullVerbToast": "🏆 ¡Has dominado por completo {{verb}}!",
+      "drillComplete": "Repasos de dominio de hoy completados.",
+      "nextDrill": "Siguiente repaso (quedan {{n}})",
+      "finishDrill": "Terminar repasos diarios",
+      "levelLabels": {
+        "0": "Nuevo",
+        "1": "Inicio",
+        "2": "En progreso",
+        "3": "Bien",
+        "4": "Fuerte",
+        "5": "Dominio"
+      }
     },
     "check": "Comprobar",
     "showHint": "Mostrar pista",
@@ -90,9 +113,11 @@
     "wrongSerEstar": "Incorrecto: ESTAR es para estados temporales; en profesiones se usa SER.",
     "correctSerEstar": "Correcto: SER para identidad/profesión → Soy médico.",
     "quizXp": {
-      "correct": "Respuestas correctas: +{{xp}} XP",
-      "firstTry": "Acierto al primer intento: +{{xp}} XP",
-      "hint": "Pista: −{{xp}} XP",
+      "correct": "Respuestas correctas: +{{xp}} XP (según dificultad del tiempo)",
+      "irregular": "Bonus verbo irregular: +{{xp}} XP",
+      "firstTry": "Bonus primer intento: +{{xp}} XP",
+      "hint": "Penalización por pista: −{{xp}} XP",
+      "special": "Extra: +{{xp}} XP",
       "dailyFirst": "Primera práctica del día: +{{xp}} XP",
       "dailyVerb": "Verbo nuevo hoy: +{{xp}} XP",
       "flawless": "Bonus sin fallos: +{{xp}} XP"

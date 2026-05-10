@@ -33,6 +33,30 @@ export const LEVEL_TITLES: readonly string[] = [
   'El Maestro',
 ] as const;
 
+/** Seviye yolculuğu modalında satır başına emoji (LEVEL_TITLES ile aynı uzunluk). */
+export const LEVEL_ROADMAP_ICONS: readonly string[] = [
+  '🌱',
+  '⚡',
+  '🔥',
+  '📚',
+  '⚙️',
+  '🎯',
+  '🗡️',
+  '💎',
+  '🌙',
+  '👑',
+  '🔮',
+  '🔮',
+  '🔮',
+  '🔮',
+  '🔮',
+  '🌟',
+  '🌟',
+  '🌟',
+  '🌟',
+  '🏆',
+] as const;
+
 export const MAX_LEVEL = LEVEL_TITLES.length;
 
 export function getTotalXP(): number {
@@ -213,27 +237,42 @@ export function setLastActiveDate(dateStr: string): void {
   }
 }
 
-export function updateStreakInStorage(): { newStreak: number; didUpdate: boolean } {
+/** Seri güncellemesi — saf; bulut senkronu için storage yazmadan hesaplar. */
+export function computeStreakForActivity(args: {
+  lastActiveDate: string | null;
+  streak: number;
+}): { newStreak: number; didUpdate: boolean; newLastActive: string } {
   const today = getTodayString();
   const yesterday = getYesterdayString();
-  const last = getLastActiveDate();
-  let streak = getStreak();
+  const last = args.lastActiveDate;
+  let streak = args.streak;
 
   if (!last || last < yesterday) {
     streak = 1;
   } else if (last === yesterday) {
     streak += 1;
   } else if (last === today) {
-    setLastActiveDate(today);
-    return { newStreak: streak, didUpdate: false };
+    return { newStreak: streak, didUpdate: false, newLastActive: today };
   } else {
     streak = 1;
   }
 
-  setStreak(streak);
-  bumpBestStreakIfNeeded(streak);
-  setLastActiveDate(today);
-  return { newStreak: streak, didUpdate: true };
+  return { newStreak: streak, didUpdate: true, newLastActive: today };
+}
+
+export function updateStreakInStorage(): { newStreak: number; didUpdate: boolean } {
+  const { newStreak, didUpdate, newLastActive } = computeStreakForActivity({
+    lastActiveDate: getLastActiveDate(),
+    streak: getStreak(),
+  });
+  if (!didUpdate) {
+    setLastActiveDate(newLastActive);
+    return { newStreak, didUpdate: false };
+  }
+  setStreak(newStreak);
+  bumpBestStreakIfNeeded(newStreak);
+  setLastActiveDate(newLastActive);
+  return { newStreak, didUpdate: true };
 }
 
 const XP_ACTIVITY_KEY = 'conjume-xp-activity';
