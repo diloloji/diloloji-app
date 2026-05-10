@@ -731,7 +731,7 @@ export default function EzberMakinesi() {
                 role="progressbar"
                 aria-valuenow={xpProgress.xpInCurrentLevel}
                 aria-valuemin={0}
-                aria-valuemax={xpProgress.xpNeededForNext}
+                aria-valuemax={Math.max(1, xpProgress.xpNeededForNext)}
                 aria-label={`Seviye ilerlemesi: %${Math.round(xpProgress.percent)}`}
               />
             </div>

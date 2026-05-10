@@ -1,5 +1,4 @@
-/** Görsel katman: çok yüksek seviyelerde rozet/emoji tavanı (XP eğrisi sınırsız). */
-const LEVEL_VISUAL_CAP = 20;
+import { LEVEL_JOURNEY_EMOJIS, MAX_LEVEL } from './xpLevel';
 
 export type LevelVisual = {
   emoji: string;
@@ -13,13 +12,14 @@ export type LevelVisual = {
   isRainbow?: boolean;
 };
 
-/** Nav / popup için seviye görseli (emoji rozetleri 1–20+ aralığında tekrar kullanılır). */
+/** Nav / profil için seviye görseli (emoji yolculuk tablosundan; çerçeve seviye dilimine göre). */
 export function getLevelVisual(level: number): LevelVisual {
-  const L = Math.min(LEVEL_VISUAL_CAP, Math.max(1, Math.floor(level)));
+  const L = Math.min(MAX_LEVEL, Math.max(1, Math.floor(level)));
+  const journeyEmoji = LEVEL_JOURNEY_EMOJIS[L - 1] ?? LEVEL_JOURNEY_EMOJIS[0];
 
   if (L === 20) {
     return {
-      emoji: '🏆',
+      emoji: journeyEmoji,
       borderClass: 'xp-level-border-rainbow',
       badgeBgClass: 'xp-level-badge-rainbow',
       titleClass: 'bg-gradient-to-r from-rose-400 via-amber-300 to-cyan-400 bg-clip-text text-transparent',
@@ -28,7 +28,7 @@ export function getLevelVisual(level: number): LevelVisual {
   }
   if (L >= 16) {
     return {
-      emoji: '🌟',
+      emoji: journeyEmoji,
       borderClass: 'border-2 border-amber-400/80 shadow-[0_0_20px_rgba(251,191,36,0.35)]',
       badgeBgClass: 'bg-gradient-to-br from-amber-500/90 via-yellow-500/85 to-orange-600/90',
       titleClass: 'text-amber-200',
@@ -36,7 +36,7 @@ export function getLevelVisual(level: number): LevelVisual {
   }
   if (L >= 11) {
     return {
-      emoji: '🔮',
+      emoji: journeyEmoji,
       borderClass: 'border-2 border-violet-500/70 shadow-[0_0_18px_rgba(139,92,246,0.35)]',
       badgeBgClass: 'bg-gradient-to-br from-violet-600 via-fuchsia-600 to-indigo-700',
       titleClass: 'text-violet-100',
@@ -106,5 +106,6 @@ export function getLevelVisual(level: number): LevelVisual {
     },
   };
 
-  return table[L] ?? table[1];
+  const base = table[L] ?? table[1];
+  return { ...base, emoji: journeyEmoji };
 }

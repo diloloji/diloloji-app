@@ -13,48 +13,41 @@ import { useThemeContext } from '../contexts/ThemeContext';
 import { useXp } from '../contexts/XpContext';
 import { useAuth } from '../contexts/AuthContext';
 import LoginModal from './LoginModal';
-import LevelRoadmapModal from './LevelRoadmapModal';
 import { getDailyGoalSummary, updateDocumentTitle, DAILY_GOAL } from '../utils/dailyGoal';
 import AutoSpeakToggle from './speech/AutoSpeakToggle';
 import { getLevelVisual } from '../utils/xpLevelVisual';
 import { persistManualUiLocale } from '../i18n/index';
 
-type XpNavButtonProps = {
-  onOpenRoadmap: () => void;
-};
-
-/** Mobilde: sadece seviye ikonu + sayı (kompakt) */
-function NavbarXpCompact({ onOpenRoadmap }: XpNavButtonProps) {
+/** Mobilde: sadece seviye ikonu + sayı (kompakt) — tıklanınca /profil */
+function NavbarXpCompact() {
   const { t } = useTranslation();
   const { level, title } = useXp();
   const lvVisual = getLevelVisual(level);
   return (
-    <button
-      type="button"
-      onClick={onOpenRoadmap}
+    <Link
+      to="/profil"
       className="md:hidden flex h-11 min-w-[44px] items-center justify-center gap-1 rounded-lg border border-indigo-200/60 dark:border-indigo-500/25 bg-indigo-50/90 dark:bg-indigo-950/40 px-2.5 text-left transition-colors hover:bg-indigo-100/90 dark:hover:bg-indigo-900/35 focus:outline-none focus:ring-2 focus:ring-indigo-400/50"
       title={t('nav.levelTitle', { level, title })}
-      aria-label={`${t('nav.levelTitle', { level, title })}. Seviye yolculuğunu aç`}
+      aria-label={`${t('nav.levelTitle', { level, title })}. Profilde XP ve seviye yolculuğu`}
     >
       <span className="text-lg leading-none" aria-hidden>
         {lvVisual.emoji}
       </span>
       <span className="text-sm font-bold tabular-nums text-indigo-800 dark:text-indigo-200">Lv.{level}</span>
-    </button>
+    </Link>
   );
 }
 
-function NavbarXpChip({ onOpenRoadmap }: XpNavButtonProps) {
+function NavbarXpChip() {
   const { t } = useTranslation();
   const { level, title, xpProgress } = useXp();
   const lvVisual = getLevelVisual(level);
   return (
-    <button
-      type="button"
-      onClick={onOpenRoadmap}
+    <Link
+      to="/profil"
       className="hidden md:flex flex-col gap-0.5 min-w-[8.5rem] max-w-[11rem] rounded-lg px-2 py-1 border border-indigo-200/60 dark:border-indigo-500/25 bg-indigo-50/90 dark:bg-indigo-950/40 text-left transition-colors hover:bg-indigo-100/90 dark:hover:bg-indigo-900/35 focus:outline-none focus:ring-2 focus:ring-indigo-400/50"
       title={t('nav.levelTitle', { level, title })}
-      aria-label={`${t('nav.levelTitle', { level, title })}. Seviye yolculuğunu aç`}
+      aria-label={`${t('nav.levelTitle', { level, title })}. Profilde XP ve seviye yolculuğu`}
     >
       <span className="flex items-center gap-1 text-[11px] font-bold text-indigo-800 dark:text-indigo-200 leading-tight">
         <span aria-hidden>{lvVisual.emoji}</span>
@@ -68,9 +61,11 @@ function NavbarXpChip({ onOpenRoadmap }: XpNavButtonProps) {
         />
       </div>
       <span className="text-[9px] text-indigo-600/80 dark:text-indigo-300/70 tabular-nums">
-        {xpProgress.xpInCurrentLevel} / {xpProgress.xpNeededForNext} XP
+        {xpProgress.xpNeededForNext > 0
+          ? `${xpProgress.xpInCurrentLevel} / ${xpProgress.xpNeededForNext} XP`
+          : `${xpProgress.xpInCurrentLevel.toLocaleString('tr-TR')} XP`}
       </span>
-    </button>
+    </Link>
   );
 }
 
@@ -124,7 +119,6 @@ export default function Navbar({ onLoginClick, onLogoutClick, isLoggedIn, printH
   const authLoggedIn = !!user;
   const resolvedLoggedIn = isLoggedIn !== undefined ? isLoggedIn : authLoggedIn;
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [levelRoadmapOpen, setLevelRoadmapOpen] = useState(false);
   const [hamburgerOpen, setHamburgerOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
   const langRef = useRef<HTMLDivElement>(null);
@@ -240,8 +234,8 @@ export default function Navbar({ onLoginClick, onLogoutClick, isLoggedIn, printH
 
           {/* Sağ — XP / günlük hedef, Giriş Yap, Pro'ya Geç, Hamburger (shrink-0) */}
           <div className="flex items-center gap-1.5 sm:gap-3 shrink-0 min-w-0">
-            <NavbarXpCompact onOpenRoadmap={() => setLevelRoadmapOpen(true)} />
-            <NavbarXpChip onOpenRoadmap={() => setLevelRoadmapOpen(true)} />
+            <NavbarXpCompact />
+            <NavbarXpChip />
             <div className="hidden lg:flex items-center gap-0.5 shrink-0" role="group" aria-label={t('common.uiLanguage')}>
               {UI_LOCALE_FLAGS.map(({ lng, flag }) => (
                 <button
@@ -533,7 +527,6 @@ export default function Navbar({ onLoginClick, onLogoutClick, isLoggedIn, printH
         <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
       )}
 
-      <LevelRoadmapModal open={levelRoadmapOpen} onClose={() => setLevelRoadmapOpen(false)} />
     </>
   );
 }
