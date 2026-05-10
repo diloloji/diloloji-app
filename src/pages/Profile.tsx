@@ -2,16 +2,23 @@
  * Profil / İstatistik — XP, Seviye, Seri özeti + GitHub tarzı aktivite ısı haritası.
  */
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Brain, Star, Flame, User } from 'lucide-react';
 import { Navigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
-import LevelRoadmapModal from '../components/LevelRoadmapModal';
 import { useXp } from '../contexts/XpContext';
 import { useAuth } from '../contexts/AuthContext';
 import { isSupabaseConfigured } from '../lib/supabase';
 import { fetchActivityLog } from '../lib/userProgressDb';
+import {
+  LEVEL_ENTRY_XP,
+  LEVEL_JOURNEY_EMOJIS,
+  LEVEL_JOURNEY_TITLES,
+  MAX_LEVEL,
+  getLevel,
+  getXPProgress,
+} from '../utils/xpLevel';
 
 const WEEKS = 26;
 const DAY_NAMES = ['Paz', 'Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt'];
@@ -54,12 +61,139 @@ function getCellColor(xp: number, isFuture: boolean): string {
   return 'bg-blue-400';
 }
 
+function LevelJourneySection({ totalXP }: { totalXP: number }) {
+  const userLevel = getLevel(totalXP);
+  const xpProgress = getXPProgress(totalXP);
+  const pctRounded = Math.round(xpProgress.percent);
+  const activeRowRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const t = window.setTimeout(() => {
+      activeRowRef.current?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }, 150);
+    return () => window.clearTimeout(t);
+  }, [userLevel, totalXP]);
+
+  return (
+    <section aria-labelledby="level-journey-heading" className="mt-12">
+      <h2 id="level-journey-heading" className="text-sm font-semibold text-slate-400 mb-4 flex items-center gap-2">
+        <span aria-hidden>⚡</span> Seviye yolculuğu
+      </h2>
+      <div className="space-y-2">
+        {Array.from({ length: MAX_LEVEL }, (_, i) => {
+          const n = i + 1;
+          const threshold = LEVEL_ENTRY_XP[n - 1] ?? 0;
+          const rowTitle = LEVEL_JOURNEY_TITLES[n - 1] ?? '';
+          const emoji = LEVEL_JOURNEY_EMOJIS[n - 1] ?? '⭐';
+          const isDone = userLevel > n;
+          const isLocked = userLevel < n;
+
+          const nextEntry = n < MAX_LEVEL ? (LEVEL_ENTRY_XP[n] ?? 0) : null;
+          const xpToNext = nextEntry != null ? Math.max(0, nextEntry - totalXP) : 0;
+
+          if (isDone) {
+            return (
+              <div
+                key={n}
+                className="flex items-center gap-3 rounded-xl border border-emerald-500/25 bg-emerald-500/[0.07] px-3 py-2.5 sm:px-4"
+              >
+                <span className="text-lg shrink-0" aria-hidden>
+                  ✅
+                </span>
+                <span className="text-base shrink-0" aria-hidden>
+                  {emoji}
+                </span>
+                <p className="flex-1 min-w-0 text-sm font-semibold text-emerald-100/95">
+                  Level {n} · {rowTitle}
+                </p>
+                <span className="text-xs text-slate-400 tabular-nums shrink-0">
+                  {threshold.toLocaleString('tr-TR')} XP
+                </span>
+                <span className="text-emerald-400 text-sm shrink-0" aria-hidden title="Tamamlandı">
+                  ✓
+                </span>
+              </div>
+            );
+          }
+
+          if (isLocked) {
+            return (
+              <div
+                key={n}
+                className="flex items-center gap-3 rounded-xl border border-white/5 bg-white/[0.02] px-3 py-2.5 sm:px-4 opacity-65"
+              >
+                <span className="text-lg text-slate-500 shrink-0" aria-hidden>
+                  🔒
+                </span>
+                <span className="text-base grayscale shrink-0 opacity-80" aria-hidden>
+                  {emoji}
+                </span>
+                <p className="flex-1 min-w-0 text-sm font-semibold text-slate-500">
+                  Level {n} · {rowTitle}
+                </p>
+                <span className="text-xs text-slate-500 tabular-nums shrink-0">
+                  {threshold.toLocaleString('tr-TR')} XP
+                </span>
+                <span className="text-slate-500 text-sm shrink-0" aria-hidden>
+                  🔒
+                </span>
+              </div>
+            );
+          }
+
+          /* Aktif */
+          return (
+            <div
+              key={n}
+              ref={activeRowRef}
+              className="rounded-xl border-2 border-violet-500/45 border-l-[4px] border-l-violet-400 bg-gradient-to-br from-violet-600/20 via-indigo-600/12 to-slate-900/35 px-3 py-3 sm:px-4 sm:py-4 ring-1 ring-violet-500/20 shadow-lg shadow-violet-950/20"
+            >
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-xl shrink-0" aria-hidden>
+                  {emoji}
+                </span>
+                <p className="text-sm sm:text-base font-bold text-violet-100 flex-1 min-w-0">
+                  Level {n} · {rowTitle}
+                </p>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-violet-200 bg-violet-500/25 border border-violet-400/35 rounded-md px-2 py-0.5 shrink-0">
+                  Mevcut
+                </span>
+              </div>
+              <div className="mt-3 space-y-2">
+                <div className="h-2 rounded-full bg-slate-800/90 overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-violet-500 to-indigo-400 transition-all duration-500"
+                    style={{ width: `${pctRounded}%` }}
+                  />
+                </div>
+                <p className="text-[11px] sm:text-xs text-slate-300 tabular-nums">
+                  {xpProgress.xpNeededForNext > 0 ? (
+                    <>
+                      {xpProgress.xpInCurrentLevel} / {xpProgress.xpNeededForNext} XP · %{pctRounded}
+                    </>
+                  ) : (
+                    <>El Maestro · {xpProgress.xpInCurrentLevel.toLocaleString('tr-TR')} XP (zirve)</>
+                  )}
+                </p>
+                {n < MAX_LEVEL && (
+                  <p className="text-[11px] text-violet-200/90">
+                    Sonraki level için {xpToNext.toLocaleString('tr-TR')} XP daha
+                  </p>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
 export default function Profile() {
   const { user, loading: authLoading } = useAuth();
-  const { totalXP, level, streak, activityHistory: ctxActivity } = useXp();
+  const { totalXP, level, title, streak, activityHistory: ctxActivity } = useXp();
   const [logXpByDay, setLogXpByDay] = useState<Record<string, number>>({});
   const [hoverCell, setHoverCell] = useState<{ dateStr: string; xp: number; x: number; y: number } | null>(null);
-  const [levelRoadmapOpen, setLevelRoadmapOpen] = useState(false);
 
   useEffect(() => {
     if (!user?.id) {
@@ -131,18 +265,14 @@ export default function Profile() {
             </div>
             <p className="text-2xl font-bold text-slate-100 tabular-nums">{totalXP}</p>
           </div>
-          <button
-            type="button"
-            onClick={() => setLevelRoadmapOpen(true)}
-            className="rounded-2xl bg-white/5 border border-white/10 p-4 sm:p-5 text-left w-full min-h-0 transition-colors hover:bg-white/[0.08] hover:border-white/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/70"
-            aria-label="Seviye yolculuğunu aç"
-          >
+          <div className="rounded-2xl bg-white/5 border border-white/10 p-4 sm:p-5">
             <div className="flex items-center gap-2 text-slate-400 mb-1">
               <Star className="w-4 h-4 text-amber-400/90" strokeWidth={2} />
               <span className="text-xs font-medium uppercase tracking-wider">Seviye</span>
             </div>
             <p className="text-2xl font-bold text-slate-100 tabular-nums">Lvl {level}</p>
-          </button>
+            <p className="text-xs text-slate-500 mt-1 truncate">{title}</p>
+          </div>
           <div className="rounded-2xl bg-white/5 border border-white/10 p-4 sm:p-5 col-span-2 md:col-span-1">
             <div className="flex items-center gap-2 text-slate-400 mb-1">
               <Flame className="w-4 h-4 text-amber-400/90" strokeWidth={2} />
@@ -224,9 +354,9 @@ export default function Profile() {
             <span>Çok</span>
           </div>
         </section>
-      </main>
 
-      <LevelRoadmapModal open={levelRoadmapOpen} onClose={() => setLevelRoadmapOpen(false)} />
+        <LevelJourneySection totalXP={totalXP} />
+      </main>
     </div>
   );
 }

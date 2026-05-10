@@ -1,10 +1,63 @@
 /**
  * Global XP ve Seviye (Level) sistemi — localStorage ile kalıcı.
+ * 20 seviye: eşik = o seviyeye giriş için minimum toplam XP.
  */
 
 const STORAGE_KEY = 'conjume-total-xp';
 
-const XP_PER_LEVEL = 100;
+/** Level L için minimum toplam XP (L = 1..20). */
+export const LEVEL_ENTRY_XP: readonly number[] = [
+  0, 100, 250, 500, 1000, 1750, 2750, 4000, 5500, 7500, 10000, 13000, 16500, 20500, 25000, 30000, 36000,
+  43000, 51000, 60000,
+] as const;
+
+export const LEVEL_JOURNEY_TITLES: readonly string[] = [
+  'Acemi',
+  'Meraklı',
+  'İstekli',
+  'Öğrenci',
+  'Çalışkan',
+  'Azimli',
+  'Becerikli',
+  'Yetenekli',
+  'Ustalaşan',
+  'Usta',
+  'Uzman',
+  'İleri Uzman',
+  'Dil Avcısı',
+  'Sözcük Ustası',
+  'Gramer Üstadı',
+  'Dil Şampiyonu',
+  'Efsanevi',
+  'Dilbilimci',
+  'Grandmaster',
+  'El Maestro',
+] as const;
+
+export const LEVEL_JOURNEY_EMOJIS: readonly string[] = [
+  '🌱',
+  '⚡',
+  '🔥',
+  '📚',
+  '⚙️',
+  '🎯',
+  '🗡️',
+  '💎',
+  '🌙',
+  '👑',
+  '🔮',
+  '🔮',
+  '🔮',
+  '🔮',
+  '🔮',
+  '🌟',
+  '🌟',
+  '🌟',
+  '🌟',
+  '🏆',
+] as const;
+
+export const MAX_LEVEL = LEVEL_JOURNEY_TITLES.length;
 
 export function getTotalXP(): number {
   if (typeof window === 'undefined') return 0;
@@ -34,18 +87,22 @@ export function addXP(amount: number): number {
   return next;
 }
 
-/** Seviye: her 100 XP bir seviye. Seviye 1 = 0–99 XP, 2 = 100–199, vb. */
+/** 1..MAX_LEVEL — toplam XP’ye göre seviye. */
 export function getLevel(totalXP: number): number {
-  return Math.floor(totalXP / XP_PER_LEVEL) + 1;
+  let level = 1;
+  for (let i = LEVEL_ENTRY_XP.length - 1; i >= 0; i--) {
+    if (totalXP >= LEVEL_ENTRY_XP[i]) {
+      level = i + 1;
+      break;
+    }
+  }
+  return Math.min(MAX_LEVEL, Math.max(1, level));
 }
 
-/** Seviyeye göre unvan */
+/** Seviye unvanı (yolculuk tablosu). */
 export function getTitle(level: number): string {
-  if (level <= 3) return 'Turist';
-  if (level <= 7) return 'Çırak';
-  if (level <= 12) return 'Dilbilimci';
-  if (level <= 14) return 'Uzman';
-  return 'Poliglot';
+  const idx = Math.min(MAX_LEVEL, Math.max(1, Math.floor(level))) - 1;
+  return LEVEL_JOURNEY_TITLES[idx] ?? LEVEL_JOURNEY_TITLES[0];
 }
 
 export type XPProgress = {
@@ -55,13 +112,29 @@ export type XPProgress = {
   percent: number;
 };
 
-/** Bir sonraki seviyeye ilerleme: 0–100 yüzde ve mevcut XP (seviye içi). */
+/** Mevcut seviye aralığında ilerleme (son seviyede %100). */
 export function getXPProgress(totalXP: number): XPProgress {
   const level = getLevel(totalXP);
-  const xpInCurrentLevel = totalXP % XP_PER_LEVEL;
-  const xpNeededForNext = XP_PER_LEVEL;
-  const percent = xpNeededForNext > 0 ? Math.min(100, (xpInCurrentLevel / xpNeededForNext) * 100) : 100;
-  return { level, xpInCurrentLevel, xpNeededForNext, percent };
+  const start = LEVEL_ENTRY_XP[level - 1] ?? 0;
+  if (level >= MAX_LEVEL) {
+    const xpIn = Math.max(0, totalXP - start);
+    return {
+      level,
+      xpInCurrentLevel: xpIn,
+      xpNeededForNext: 0,
+      percent: 100,
+    };
+  }
+  const nextStart = LEVEL_ENTRY_XP[level];
+  const span = nextStart - start;
+  const xpIn = totalXP - start;
+  const percent = span > 0 ? Math.min(100, Math.max(0, (xpIn / span) * 100)) : 100;
+  return {
+    level,
+    xpInCurrentLevel: xpIn,
+    xpNeededForNext: span,
+    percent,
+  };
 }
 
 /** Günlük seri — localStorage anahtarları */
