@@ -43,6 +43,7 @@ import { getFlashcardDecks, addCardToDeck, type FlashcardDeck } from '../utils/f
 import { useXp } from '../contexts/XpContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTranslation } from 'react-i18next';
+import confetti from 'canvas-confetti';
 import { Info, BookOpen, Clock } from 'lucide-react';
 import EzberMakinesi from '../components/EzberMakinesi';
 import AuthModal from '../components/AuthModal';
@@ -234,6 +235,8 @@ interface TimeAttackScoreEntry {
 const TIME_ATTACK_STORAGE_KEY_PREFIX = 'diloloji-time-attack-scores';
 const TIME_ATTACK_MAX_ENTRIES = 50;
 const EXERCISE_MODE_PREFERENCE_KEY = 'exercise_mode_preference';
+const EXERCISE_INTERACTION_KEY = 'exercise_interaction_mode';
+type QuizInteractionMode = 'write' | 'choice' | 'mixed';
 const VERB_HISTORY_STORAGE_KEY = 'verb_history_v1';
 const HISTORY_PANEL_OPEN_KEY = 'history_panel_open';
 const SYNONYM_REGISTER_STYLES: Record<'formal' | 'informal' | 'neutral', string> = {
@@ -331,6 +334,49 @@ function renderQuizExampleLine(sentence: string, highlightForm: string | null): 
   if (!foundAny) return sentence;
   if (i < sentence.length) parts.push(sentence.slice(i));
   return <>{parts}</>;
+}
+
+function shuffleArray<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function normMcForm(s: string): string {
+  return s.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
+/** Alıştırma çoktan seçmeli: 1 doğru + 3 yanlış (aynı zaman, farklı şahıslar). */
+function buildFocusMultipleChoice(
+  correct: string,
+  conjugations: Record<string, string>,
+  currentPid: string,
+  ids: string[]
+): string[] {
+  const cNorm = normMcForm(correct);
+  const pool = ids
+    .filter((id) => id !== currentPid)
+    .map((id) => conjugations[id]?.trim())
+    .filter((v): v is string => !!v)
+    .filter((v) => normMcForm(v) !== cNorm);
+  const uniq: string[] = [];
+  for (const p of pool) {
+    if (!uniq.some((u) => normMcForm(u) === normMcForm(p))) uniq.push(p);
+  }
+  const wrongPick = shuffleArray(uniq).slice(0, 3);
+  const pad = [...wrongPick];
+  let k = 0;
+  while (pad.length < 3 && pool.length > 0) {
+    pad.push(pool[k % pool.length]);
+    k++;
+  }
+  while (pad.length < 3) {
+    pad.push(`(${correct})*`);
+  }
+  return shuffleArray([correct, ...pad.slice(0, 3)]);
 }
 
 function markerColorClass(color: string): string {
@@ -955,6 +1001,33 @@ export function Page() {
   /** Boş cevap gönderildiğinde sarsılacak input (pronoun id); 500ms sonra temizlenir */
   const [quizEmptyShake, setQuizEmptyShake] = useState<string | null>(null);
 
+  const [quizInteractionMode, setQuizInteractionMode] = useState<QuizInteractionMode>(() => {
+    try {
+      const s = localStorage.getItem(EXERCISE_INTERACTION_KEY);
+      if (s === 'choice' || s === 'mixed' || s === 'write') return s;
+    } catch {
+      /* ignore */
+    }
+    return 'write';
+  });
+  const setQuizInteractionModePersist = useCallback((m: QuizInteractionMode) => {
+    setQuizInteractionMode(m);
+    try {
+      localStorage.setItem(EXERCISE_INTERACTION_KEY, m);
+    } catch {
+      /* ignore */
+    }
+  }, []);
+  const [quizAccentBarVisible, setQuizAccentBarVisible] = useState(false);
+  const [quizLives, setQuizLives] = useState(3);
+  const [quizHeartBump, setQuizHeartBump] = useState(0);
+  const [focusMcPickedIndex, setFocusMcPickedIndex] = useState<number | null>(null);
+  const [focusMcLocked, setFocusMcLocked] = useState(false);
+  const [focusCanSkipAfterWrong, setFocusCanSkipAfterWrong] = useState(false);
+  const [focusCorrectGlow, setFocusCorrectGlow] = useState(false);
+  const focusFlowBusyRef = useRef(false);
+  const focusFlowTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+
   /** Hata Bankası (Zorlandıklarım) — localStorage ile senkron */
   const [mistakeBank, setMistakeBank] = useState<MistakeEntry[]>([]);
   /** İspanyolca hata hafızası (mistake_memory) — UI yenileme için sayaç */
@@ -1345,7 +1418,7 @@ export function Page() {
     flawless: 0,
   });
   const awardQuizCorrectXpRef = useRef<
-    (pronoun: string, opts?: { isReveal?: boolean; clientX?: number; clientY?: number }) => void
+    (pronoun: string, opts?: { isReveal?: boolean; clientX?: number; clientY?: number; splitXpFloat?: boolean }) => void
   >(() => {});
 
   const resetQuizXpSession = useCallback(() => {
@@ -1387,6 +1460,16 @@ export function Page() {
     setQuizEmptyShake(null);
     setQuizListHighlightPronoun(null);
     setCurrentFocusIndex(0);
+    setQuizLives(3);
+    setFocusMcPickedIndex(null);
+    setFocusMcLocked(false);
+    setFocusCanSkipAfterWrong(false);
+    setFocusCorrectGlow(false);
+    setQuizAccentBarVisible(false);
+    setCongratsXpBar(0);
+    focusFlowBusyRef.current = false;
+    focusFlowTimersRef.current.forEach(clearTimeout);
+    focusFlowTimersRef.current = [];
   }, [selectedLanguage, pronounsForLang, resetSmartHintsAll, resetQuizXpSession]);
 
   /** Sanal klavye: harf hangi inputa eklenecek (en son focus alan) */
@@ -2008,7 +2091,7 @@ export function Page() {
     verbKeyRef.current = verbKey;
   }, [verbKey]);
 
-  // Yeni fiil veya zaman: quiz cevapları, ilerleme, combo ve ipuçları sıfırlanır (sol panel + alıştırma başlığı)
+  // Aktif sekme (Öğrenme / Alıştırma / Zamana Karşı …), fiil veya zaman değişince alıştırma oturumunu sıfırla
   useEffect(() => {
     resetQuizExerciseState();
     setQuizLayout(readExerciseModePreference());
@@ -2018,10 +2101,11 @@ export function Page() {
       }
     }, 50);
     return () => clearTimeout(t);
-  }, [verbKey, selectedTense, selectedLanguage, pronounsForLang, resetQuizExerciseState, readExerciseModePreference]);
+  }, [mode, verbKey, selectedTense, selectedLanguage, pronounsForLang, resetQuizExerciseState, readExerciseModePreference]);
 
   /** Hata tekrar seansı: fiil+zaman yüklendiğinde doğru şahısa odaklan ve kutuları temizle */
   useEffect(() => {
+    if (mode !== 'quiz') return;
     if (!mistakeReplaySession || (selectedLanguage !== 'es' && selectedLanguage !== 'fr')) return;
     const cur = mistakeReplaySession.queue[mistakeReplaySession.index];
     if (!cur || !verbKey || verbKey !== cur.verb || selectedTense !== cur.tense) return;
@@ -2045,6 +2129,7 @@ export function Page() {
     selectedLanguage,
     pronounsForLang,
     resetSmartHintsAll,
+    mode,
   ]);
 
   useEffect(() => {
@@ -2549,11 +2634,23 @@ export function Page() {
     setCongratsXpBar(quizBarStartPercentRef.current);
     requestAnimationFrame(() => setCongratsXpBar(barTo));
 
+    if (quizLayout === 'focus') {
+      void confetti({
+        particleCount: 130,
+        spread: 72,
+        startVelocity: 38,
+        origin: { y: 0.55 },
+        scalar: 0.95,
+      });
+    }
     if (quizLayout === 'list') setShowCongrats(true);
   }, [addXP, mistakeReplaySession, quizLayout]);
 
   const awardQuizCorrectXp = useCallback(
-    (pronoun: string, opts?: { isReveal?: boolean; clientX?: number; clientY?: number }) => {
+    (
+      pronoun: string,
+      opts?: { isReveal?: boolean; clientX?: number; clientY?: number; splitXpFloat?: boolean }
+    ) => {
       if (!verbKey || mode !== 'quiz') return;
 
       const hintPen = showHints || opts?.isReveal || quizPersonUsedHintRef.current.has(pronoun) ? 3 : 0;
@@ -2590,7 +2687,15 @@ export function Page() {
       const cy = opts?.clientY ?? window.innerHeight * 0.38;
       if (net !== 0) {
         addXP(net);
-        showFloatingXp(`+${net} XP`, cx, cy);
+        const split =
+          opts?.splitXpFloat && firstTryBonus > 0 && hintPen === 0 && !opts?.isReveal && !showHints;
+        if (split) {
+          showFloatingXp('+10 XP', cx, cy);
+          const tid = window.setTimeout(() => showFloatingXp('+5 XP BONUS', cx, cy - 28), 220);
+          focusFlowTimersRef.current.push(tid);
+        } else {
+          showFloatingXp(`+${net} XP`, cx, cy);
+        }
       }
     },
     [verbKey, mode, showHints, quizAttempts, quizHintMode, addXP, showFloatingXp]
@@ -2704,6 +2809,16 @@ export function Page() {
     setShowHints(false);
     setShowCongrats(false);
     setCurrentFocusIndex(0);
+    setQuizLives(3);
+    setFocusMcPickedIndex(null);
+    setFocusMcLocked(false);
+    setFocusCanSkipAfterWrong(false);
+    setFocusCorrectGlow(false);
+    setQuizAccentBarVisible(false);
+    setCongratsXpBar(0);
+    focusFlowBusyRef.current = false;
+    focusFlowTimersRef.current.forEach(clearTimeout);
+    focusFlowTimersRef.current = [];
     requestAnimationFrame(() => quizInputRefs.current[0]?.focus());
   }, [selectedLanguage, resetSmartHintsAll, resetQuizXpSession]);
 
@@ -2780,49 +2895,29 @@ export function Page() {
     return () => clearTimeout(t);
   }, [toastMessage]);
 
-  // Klavye kısayolları: Alt+L Learning, Alt+Q Quiz, Escape menü kapat / modal kapat / quiz temizle / review'dan çık
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && showActivityModal) {
-        e.preventDefault();
-        setShowActivityModal(false);
-        return;
-      }
-      if (e.key === 'Escape' && tenseDetailModalOpen) {
-        e.preventDefault();
-        setTenseDetailModalOpen(false);
-        return;
-      }
-      if (e.altKey && e.key.toLowerCase() === 'l') {
-        e.preventDefault();
-        setMode('learning');
-        return;
-      }
-      if (e.altKey && e.key.toLowerCase() === 'q') {
-        e.preventDefault();
-        setMode('quiz');
-        if (verbKey) requestAnimationFrame(() => quizInputRefs.current[0]?.focus());
-        return;
-      }
-      if (e.key === 'Escape' && verbKey && mode === 'quiz') {
-        e.preventDefault();
-        resetQuiz();
-      }
-      if (e.key === 'Escape' && mode === 'review') {
-        e.preventDefault();
-        setReviewEntry(null);
-        setMode('quiz');
-      }
-      if (e.key === 'Escape' && mode === 'starred') {
-        e.preventDefault();
-        setMode('quiz');
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [mode, verbKey, resetQuiz, showActivityModal, tenseDetailModalOpen]);
-
   const conjugationsForDisplay = conjugations;
+
+  const focusUsesChoice = useMemo(() => {
+    if (quizLayout !== 'focus' || mistakeReplaySession) return false;
+    if (quizInteractionMode === 'choice') return true;
+    if (quizInteractionMode === 'mixed') return currentFocusIndex % 2 === 1;
+    return false;
+  }, [quizLayout, mistakeReplaySession, quizInteractionMode, currentFocusIndex]);
+
+  const focusMcOptions = useMemo(() => {
+    if (!focusUsesChoice || !conjugationsForDisplay) return [];
+    const pid = pronounIds[currentFocusIndex];
+    if (!pid || currentFocusIndex >= pronounIds.length) return [];
+    const correct = conjugationsForDisplay[pid] ?? '';
+    if (!correct.trim()) return [];
+    return buildFocusMultipleChoice(correct, conjugationsForDisplay, pid, pronounIds);
+  }, [focusUsesChoice, conjugationsForDisplay, currentFocusIndex, pronounIds]);
+
+  useEffect(() => {
+    setFocusMcPickedIndex(null);
+    setFocusMcLocked(false);
+    setFocusCanSkipAfterWrong(false);
+  }, [currentFocusIndex, focusUsesChoice, verbKey, selectedTense]);
 
   /** Tekrar zamanı gelmiş (nextReviewDate <= bugün) kayıt sayısı — rozette bu gösterilir. */
   const dueCount = useMemo(() => {
@@ -2988,61 +3083,216 @@ export function Page() {
     [conjugationsForDisplay, userAnswers, showHints, selectedTense, verbKey, addToMistakeBank, selectedLanguage, applySmartHintAfterWrong, clearSmartHint, pronounIds, onQuizMistakeWrong, onQuizMistakeCorrect, mistakeReplaySession, awardQuizCorrectXp, combo]
   );
 
+  const queueFocusTimer = useCallback((fn: () => void, ms: number) => {
+    const tid = window.setTimeout(() => {
+      focusFlowTimersRef.current = focusFlowTimersRef.current.filter((x) => x !== tid);
+      fn();
+    }, ms);
+    focusFlowTimersRef.current.push(tid);
+  }, []);
+
+  const advanceFocusIndex = useCallback(() => {
+    setFocusCorrectGlow(false);
+    setCurrentFocusIndex((i) => i + 1);
+    focusFlowBusyRef.current = false;
+    requestAnimationFrame(() => quizInputRefs.current[0]?.focus());
+  }, []);
+
+  const skipToNextFocusQuestion = useCallback(() => {
+    if (currentFocusIndex >= pronounIds.length) return;
+    setFocusCanSkipAfterWrong(false);
+    focusFlowBusyRef.current = false;
+    setFocusCorrectGlow(false);
+    setCurrentFocusIndex((i) => i + 1);
+    requestAnimationFrame(() => quizInputRefs.current[0]?.focus());
+  }, [currentFocusIndex, pronounIds.length]);
+
   /** Odak modu: tek şahıs kontrolü. Doğruysa sonraki şahısa geç, yanlışsa aynı yerde kal. */
-  const handleFocusModeSubmit = useCallback((override?: string) => {
-    if (!conjugationsForDisplay || currentFocusIndex >= pronounIds.length) return;
-    const pronoun = pronounIds[currentFocusIndex];
-    const userRaw = override ?? userAnswers[pronoun];
-    const user = userRaw.trim();
-    if (!user) {
-      setQuizEmptyShake(pronoun);
-      setTimeout(() => setQuizEmptyShake(null), 500);
-      return;
-    }
-    const correct = conjugationsForDisplay[pronoun];
-    const result = checkAnswer(userRaw, correct);
-    setQuizFeedback((prev) => ({ ...prev, [pronoun]: result }));
-    if (result === 'typo') {
-      if (selectedLanguage === 'fr' && selectedTense === 'passe-compose' && verbKey) {
-        setQuizPasséHint((prev) => ({ ...prev, [pronoun]: null }));
-      }
-      return;
-    }
-    if (result === 'wrong') {
-      quizSessionHadWrongRef.current = true;
-      setCombo(0);
-      if (verbKey) {
-        onQuizMistakeWrong(pronoun, user, correct);
-        addToMistakeBank(verbKey, selectedTense, pronoun);
-        if (selectedLanguage === 'es' || selectedLanguage === 'fr')
-          recordQuizSpacedRepetitionWrong(verbKey, selectedTense, pronoun, selectedLanguage);
-      }
-      if (mistakeReplaySession && (selectedLanguage === 'es' || selectedLanguage === 'fr')) {
-        setQuizPasséHint((prev) => ({ ...prev, [pronoun]: null }));
+  const handleFocusModeSubmit = useCallback(
+    (override?: string) => {
+      if (focusUsesChoice) return;
+      if (!conjugationsForDisplay || currentFocusIndex >= pronounIds.length) return;
+      if (focusFlowBusyRef.current) return;
+      const pronoun = pronounIds[currentFocusIndex];
+      const userRaw = override ?? userAnswers[pronoun];
+      const user = userRaw.trim();
+      if (!user) {
+        setQuizEmptyShake(pronoun);
+        setTimeout(() => setQuizEmptyShake(null), 500);
         return;
       }
-      if (selectedLanguage === 'fr' && selectedTense === 'passe-compose' && verbKey) {
-        const hint = checkPasséComposéLogic(user, correct, pronoun as import('../data/verbs').Pronoun, verbKey);
-        setQuizPasséHint((prev) => ({ ...prev, [pronoun]: hint }));
-      } else {
-        setQuizPasséHint((prev) => ({ ...prev, [pronoun]: null }));
+      const correct = conjugationsForDisplay[pronoun];
+      const result = checkAnswer(userRaw, correct);
+      setQuizFeedback((prev) => ({ ...prev, [pronoun]: result }));
+      if (result === 'typo') {
+        if (selectedLanguage === 'fr' && selectedTense === 'passe-compose' && verbKey) {
+          setQuizPasséHint((prev) => ({ ...prev, [pronoun]: null }));
+        }
+        return;
       }
-      if (verbKey) {
-        applySmartHintAfterWrong(pronoun, correct, verbKey, selectedTense, {
-          onRevealAdvance: () => {
-            setCurrentFocusIndex((i) => i + 1);
-            requestAnimationFrame(() => quizInputRefs.current[0]?.focus());
-          },
+      if (result === 'wrong') {
+        quizSessionHadWrongRef.current = true;
+        setCombo(0);
+        setQuizLives((l) => {
+          if (l <= 0) return l;
+          setQuizHeartBump((n) => n + 1);
+          return l - 1;
         });
+        focusFlowTimersRef.current.push(window.setTimeout(() => setFocusCanSkipAfterWrong(true), 1500));
+        if (verbKey) {
+          onQuizMistakeWrong(pronoun, user, correct);
+          addToMistakeBank(verbKey, selectedTense, pronoun);
+          if (selectedLanguage === 'es' || selectedLanguage === 'fr')
+            recordQuizSpacedRepetitionWrong(verbKey, selectedTense, pronoun, selectedLanguage);
+        }
+        if (mistakeReplaySession && (selectedLanguage === 'es' || selectedLanguage === 'fr')) {
+          setQuizPasséHint((prev) => ({ ...prev, [pronoun]: null }));
+          return;
+        }
+        if (selectedLanguage === 'fr' && selectedTense === 'passe-compose' && verbKey) {
+          const hint = checkPasséComposéLogic(user, correct, pronoun as import('../data/verbs').Pronoun, verbKey);
+          setQuizPasséHint((prev) => ({ ...prev, [pronoun]: hint }));
+        } else {
+          setQuizPasséHint((prev) => ({ ...prev, [pronoun]: null }));
+        }
+        if (verbKey) {
+          applySmartHintAfterWrong(pronoun, correct, verbKey, selectedTense, {
+            onRevealAdvance: () => {
+              setCurrentFocusIndex((i) => i + 1);
+              requestAnimationFrame(() => quizInputRefs.current[0]?.focus());
+            },
+          });
+        }
+        return;
       }
-      return;
-    }
-    setQuizPasséHint((prev) => ({ ...prev, [pronoun]: null }));
-    onQuizMistakeCorrect(pronoun);
-    if (mistakeReplaySession && (selectedLanguage === 'es' || selectedLanguage === 'fr') && verbKey) {
-      const cur = mistakeReplaySession.queue[mistakeReplaySession.index];
-      if (cur && verbKey === cur.verb && selectedTense === cur.tense && pronoun === cur.person) {
-        awardQuizCorrectXp(pronoun);
+      setQuizPasséHint((prev) => ({ ...prev, [pronoun]: null }));
+      onQuizMistakeCorrect(pronoun);
+      if (mistakeReplaySession && (selectedLanguage === 'es' || selectedLanguage === 'fr') && verbKey) {
+        const cur = mistakeReplaySession.queue[mistakeReplaySession.index];
+        if (cur && verbKey === cur.verb && selectedTense === cur.tense && pronoun === cur.person) {
+          awardQuizCorrectXp(pronoun);
+          clearSmartHint(pronoun);
+          if (!showHints) {
+            const nextCombo = combo + 1;
+            recordWeeklyCombo(nextCombo);
+            tryUnlockComboKingBadge(nextCombo);
+            setCombo((c) => {
+              const nc = c + 1;
+              if (nc >= 2) {
+                if (comboDisplayTimeoutRef.current) clearTimeout(comboDisplayTimeoutRef.current);
+                setComboDisplay({ show: true, value: nc });
+                comboDisplayTimeoutRef.current = setTimeout(() => {
+                  setComboDisplay((d) => ({ ...d, show: false }));
+                  comboDisplayTimeoutRef.current = null;
+                }, 1800);
+              }
+              return nc;
+            });
+            setTotalScore((s) => s + 10);
+            addActivityToday(1);
+            updateDocumentTitle();
+          }
+          speakAuto(correct, { lang: selectedLanguage === 'es' ? 'es-ES' : 'fr-FR' });
+          setMistakeReplayShowTick(true);
+          if (mistakeReplayAdvanceTimerRef.current) clearTimeout(mistakeReplayAdvanceTimerRef.current);
+          mistakeReplayAdvanceTimerRef.current = setTimeout(() => {
+            mistakeReplayAdvanceTimerRef.current = null;
+            setMistakeReplayShowTick(false);
+            setMistakeReplaySession((prev) => {
+              if (!prev) return null;
+              const nextIdx = prev.index + 1;
+              const newResolved = prev.resolvedInSession + 1;
+              const replayLang: AppLanguage = (prev.queue[0]?.lang as AppLanguage) ?? 'es';
+              if (nextIdx >= prev.queue.length) {
+                const remaining = getMistakesForReviewSorted(replayLang).filter((e) => !e.resolved).length;
+                setMistakeReplayComplete({ resolvedInSession: newResolved, remaining });
+                return null;
+              }
+              const nextEnt = prev.queue[nextIdx];
+              const entLang: AppLanguage = (nextEnt.lang as AppLanguage) ?? replayLang;
+              loadVerb(nextEnt.verb, entLang, nextEnt.tense);
+              return { ...prev, index: nextIdx, resolvedInSession: newResolved };
+            });
+          }, 900);
+          return;
+        }
+      }
+      const el = quizInputRefs.current[0];
+      const rect = el?.getBoundingClientRect();
+      setFocusCorrectGlow(true);
+      awardQuizCorrectXp(pronoun, {
+        splitXpFloat: true,
+        clientX: rect ? rect.left + rect.width / 2 : undefined,
+        clientY: rect ? rect.top : undefined,
+      });
+      clearSmartHint(pronoun);
+      if (!showHints) {
+        const nextCombo = combo + 1;
+        recordWeeklyCombo(nextCombo);
+        tryUnlockComboKingBadge(nextCombo);
+        setCombo((c) => {
+          const nc = c + 1;
+          if (nc >= 2) {
+            if (comboDisplayTimeoutRef.current) clearTimeout(comboDisplayTimeoutRef.current);
+            setComboDisplay({ show: true, value: nc });
+            comboDisplayTimeoutRef.current = setTimeout(() => {
+              setComboDisplay((d) => ({ ...d, show: false }));
+              comboDisplayTimeoutRef.current = null;
+            }, 1800);
+          }
+          return nc;
+        });
+        setTotalScore((s) => s + 10);
+        addActivityToday(1);
+        updateDocumentTitle();
+      }
+      speakAuto(correct, { lang: selectedLanguage === 'es' ? 'es-ES' : 'fr-FR' });
+      focusFlowBusyRef.current = true;
+      queueFocusTimer(() => {
+        advanceFocusIndex();
+      }, 600);
+    },
+    [
+      focusUsesChoice,
+      conjugationsForDisplay,
+      userAnswers,
+      currentFocusIndex,
+      showHints,
+      selectedTense,
+      verbKey,
+      addToMistakeBank,
+      selectedLanguage,
+      applySmartHintAfterWrong,
+      clearSmartHint,
+      pronounIds,
+      onQuizMistakeWrong,
+      onQuizMistakeCorrect,
+      mistakeReplaySession,
+      loadVerb,
+      awardQuizCorrectXp,
+      combo,
+      queueFocusTimer,
+      advanceFocusIndex,
+    ]
+  );
+
+  const handleFocusMcPick = useCallback(
+    (choiceIndex: number) => {
+      if (!conjugationsForDisplay || currentFocusIndex >= pronounIds.length || !focusUsesChoice) return;
+      if (focusMcLocked || focusFlowBusyRef.current) return;
+      const pronoun = pronounIds[currentFocusIndex];
+      const correct = conjugationsForDisplay[pronoun] ?? '';
+      const picked = focusMcOptions[choiceIndex];
+      if (picked === undefined) return;
+      const result = checkAnswer(picked, correct);
+      setFocusMcPickedIndex(choiceIndex);
+      setFocusMcLocked(true);
+      if (result === 'correct' || result === 'typo') {
+        setQuizFeedback((prev) => ({ ...prev, [pronoun]: 'correct' }));
+        onQuizMistakeCorrect(pronoun);
+        const cx = window.innerWidth / 2;
+        const cy = window.innerHeight * 0.4;
+        awardQuizCorrectXp(pronoun, { clientX: cx, clientY: cy, splitXpFloat: true });
         clearSmartHint(pronoun);
         if (!showHints) {
           const nextCombo = combo + 1;
@@ -3065,56 +3315,128 @@ export function Page() {
           updateDocumentTitle();
         }
         speakAuto(correct, { lang: selectedLanguage === 'es' ? 'es-ES' : 'fr-FR' });
-        setMistakeReplayShowTick(true);
-        if (mistakeReplayAdvanceTimerRef.current) clearTimeout(mistakeReplayAdvanceTimerRef.current);
-        mistakeReplayAdvanceTimerRef.current = setTimeout(() => {
-          mistakeReplayAdvanceTimerRef.current = null;
-          setMistakeReplayShowTick(false);
-          setMistakeReplaySession((prev) => {
-            if (!prev) return null;
-            const nextIdx = prev.index + 1;
-            const newResolved = prev.resolvedInSession + 1;
-            const replayLang: AppLanguage = (prev.queue[0]?.lang as AppLanguage) ?? 'es';
-            if (nextIdx >= prev.queue.length) {
-              const remaining = getMistakesForReviewSorted(replayLang).filter((e) => !e.resolved).length;
-              setMistakeReplayComplete({ resolvedInSession: newResolved, remaining });
-              return null;
-            }
-            const nextEnt = prev.queue[nextIdx];
-            const entLang: AppLanguage = (nextEnt.lang as AppLanguage) ?? replayLang;
-            loadVerb(nextEnt.verb, entLang, nextEnt.tense);
-            return { ...prev, index: nextIdx, resolvedInSession: newResolved };
-          });
-        }, 900);
+        focusFlowBusyRef.current = true;
+        queueFocusTimer(() => {
+          setFocusMcPickedIndex(null);
+          setFocusMcLocked(false);
+          advanceFocusIndex();
+        }, 800);
         return;
       }
-    }
-    awardQuizCorrectXp(pronoun);
-    clearSmartHint(pronoun);
-    if (!showHints) {
-      const nextCombo = combo + 1;
-      recordWeeklyCombo(nextCombo);
-      tryUnlockComboKingBadge(nextCombo);
-      setCombo((c) => {
-        const nc = c + 1;
-        if (nc >= 2) {
-          if (comboDisplayTimeoutRef.current) clearTimeout(comboDisplayTimeoutRef.current);
-          setComboDisplay({ show: true, value: nc });
-          comboDisplayTimeoutRef.current = setTimeout(() => {
-            setComboDisplay((d) => ({ ...d, show: false }));
-            comboDisplayTimeoutRef.current = null;
-          }, 1800);
-        }
-        return nc;
+      setQuizFeedback((prev) => ({ ...prev, [pronoun]: 'wrong' }));
+      quizSessionHadWrongRef.current = true;
+      setCombo(0);
+      setQuizLives((l) => {
+        if (l <= 0) return l;
+        setQuizHeartBump((n) => n + 1);
+        return l - 1;
       });
-      setTotalScore((s) => s + 10);
-      addActivityToday(1);
-      updateDocumentTitle();
-    }
-    speakAuto(correct, { lang: selectedLanguage === 'es' ? 'es-ES' : 'fr-FR' });
-    setCurrentFocusIndex((i) => i + 1);
-    requestAnimationFrame(() => quizInputRefs.current[0]?.focus());
-  }, [conjugationsForDisplay, userAnswers, currentFocusIndex, showHints, selectedTense, verbKey, addToMistakeBank, selectedLanguage, applySmartHintAfterWrong, clearSmartHint, pronounIds, onQuizMistakeWrong, onQuizMistakeCorrect, mistakeReplaySession, loadVerb, awardQuizCorrectXp, combo]);
+      if (verbKey) {
+        onQuizMistakeWrong(pronoun, picked.trim(), correct);
+        addToMistakeBank(verbKey, selectedTense, pronoun);
+        if (selectedLanguage === 'es' || selectedLanguage === 'fr')
+          recordQuizSpacedRepetitionWrong(verbKey, selectedTense, pronoun, selectedLanguage);
+      }
+      focusFlowTimersRef.current.push(window.setTimeout(() => setFocusCanSkipAfterWrong(true), 1500));
+    },
+    [
+      conjugationsForDisplay,
+      currentFocusIndex,
+      focusUsesChoice,
+      focusMcLocked,
+      focusMcOptions,
+      pronounIds,
+      onQuizMistakeCorrect,
+      awardQuizCorrectXp,
+      clearSmartHint,
+      showHints,
+      combo,
+      selectedLanguage,
+      onQuizMistakeWrong,
+      verbKey,
+      selectedTense,
+      addToMistakeBank,
+      queueFocusTimer,
+      advanceFocusIndex,
+    ]
+  );
+
+  // Klavye kısayolları: Alt+L Learning, Alt+Q Quiz, alıştırma odak Tab/Shift+Enter/1–4, Escape …
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && showActivityModal) {
+        e.preventDefault();
+        setShowActivityModal(false);
+        return;
+      }
+      if (e.key === 'Escape' && tenseDetailModalOpen) {
+        e.preventDefault();
+        setTenseDetailModalOpen(false);
+        return;
+      }
+      if (e.altKey && e.key.toLowerCase() === 'l') {
+        e.preventDefault();
+        setMode('learning');
+        return;
+      }
+      if (e.altKey && e.key.toLowerCase() === 'q') {
+        e.preventDefault();
+        setMode('quiz');
+        if (verbKey) requestAnimationFrame(() => quizInputRefs.current[0]?.focus());
+        return;
+      }
+      if (mode === 'quiz' && quizLayout === 'focus') {
+        const inPanel = (e.target as HTMLElement | null)?.closest?.('[data-quiz-practice-panel]');
+        if (e.key === 'Tab' && !e.shiftKey && inPanel) {
+          e.preventDefault();
+          if (currentFocusIndex < pronounIds.length) {
+            const p = pronounIds[currentFocusIndex];
+            if (p) requestHint(p);
+          }
+          return;
+        }
+        if (e.key === 'Enter' && e.shiftKey && focusCanSkipAfterWrong && currentFocusIndex < pronounIds.length) {
+          e.preventDefault();
+          skipToNextFocusQuestion();
+          return;
+        }
+        if (focusUsesChoice && /^[1-4]$/.test(e.key) && !e.altKey && !e.ctrlKey && !e.metaKey && inPanel) {
+          e.preventDefault();
+          handleFocusMcPick(parseInt(e.key, 10) - 1);
+          return;
+        }
+      }
+      if (e.key === 'Escape' && verbKey && mode === 'quiz') {
+        e.preventDefault();
+        resetQuiz();
+      }
+      if (e.key === 'Escape' && mode === 'review') {
+        e.preventDefault();
+        setReviewEntry(null);
+        setMode('quiz');
+      }
+      if (e.key === 'Escape' && mode === 'starred') {
+        e.preventDefault();
+        setMode('quiz');
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [
+    mode,
+    verbKey,
+    resetQuiz,
+    showActivityModal,
+    tenseDetailModalOpen,
+    quizLayout,
+    currentFocusIndex,
+    pronounIds,
+    focusCanSkipAfterWrong,
+    skipToNextFocusQuestion,
+    focusUsesChoice,
+    handleFocusMcPick,
+    requestHint,
+  ]);
 
   const SITE_URL = 'https://diloloji.com';
   const isEzber = location.pathname === '/ezber-makinesi';
@@ -6107,7 +6429,51 @@ export function Page() {
 
             {/* Quiz modu (Alıştırma) — viewMode'dan bağımsız, mod seçimine göre render */}
             {verbKey && mode === 'quiz' && conjugationsForDisplay && (
-            <div className="relative">
+            <div className="relative" data-quiz-practice-panel>
+            {(() => {
+              const total = pronounIds.length;
+              const correctN = pronounIds.filter((p) => quizFeedback[p] === 'correct').length;
+              const pct = total ? (correctN / total) * 100 : 0;
+              const barGreen = correctN >= total;
+              return (
+                <div className="px-5 sm:px-6 pt-3 pb-1">
+                  <div className="flex items-center justify-between gap-2 mb-1">
+                    <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 tabular-nums">
+                      {correctN} / {total} çekim
+                    </span>
+                    {quizLayout === 'focus' && currentFocusIndex < pronounIds.length && !mistakeReplaySession && (
+                      <div
+                        key={quizHeartBump}
+                        className={`flex items-center gap-0.5 ${quizHeartBump > 0 ? 'animate-heart-bounce' : ''}`}
+                        aria-hidden
+                      >
+                        {[0, 1, 2].map((i) => (
+                          <span key={i} className={`text-sm leading-none ${i < quizLives ? '' : 'opacity-25 grayscale'}`}>
+                            ❤️
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <div
+                    className="h-1.5 w-full rounded-full overflow-hidden bg-slate-200/80 dark:bg-white/10"
+                    role="progressbar"
+                    aria-valuenow={correctN}
+                    aria-valuemin={0}
+                    aria-valuemax={total}
+                  >
+                    <div
+                      className={`h-full rounded-full transition-all duration-500 ease-out ${
+                        barGreen
+                          ? 'bg-gradient-to-r from-emerald-400 via-emerald-500 to-teal-500'
+                          : 'bg-gradient-to-r from-violet-500 via-fuchsia-500 to-indigo-600'
+                      }`}
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
+                </div>
+              );
+            })()}
             {(selectedLanguage === 'es' || selectedLanguage === 'fr') && showSpacedRepDueBanner && (
               <div className="mx-3 sm:mx-4 mb-2 rounded-lg border border-amber-400/55 bg-amber-500/15 dark:bg-amber-500/10 px-3 py-2 flex flex-wrap items-center justify-between gap-2">
                 <p className="text-sm font-medium text-amber-950 dark:text-amber-100">
@@ -6287,34 +6653,55 @@ export function Page() {
                     )}
                   </AnimatePresence>
                   </div>
+                  {!mistakeReplaySession && quizLayout === 'focus' && (
+                    <div
+                      className="flex items-center rounded-lg border border-slate-200/80 dark:border-slate-600 bg-slate-50/50 dark:bg-slate-800/40 p-0.5 gap-0.5 ml-1 shrink-0"
+                      role="group"
+                      aria-label="Soru tipi"
+                    >
+                      <button
+                        type="button"
+                        title="Yaz"
+                        aria-pressed={quizInteractionMode === 'write'}
+                        onClick={() => setQuizInteractionModePersist('write')}
+                        className={`w-8 h-8 rounded-md text-sm flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-violet-500/50 ${
+                          quizInteractionMode === 'write'
+                            ? 'bg-violet-500/20 text-violet-700 dark:text-violet-200'
+                            : 'text-slate-500 hover:bg-white/60 dark:hover:bg-white/10'
+                        }`}
+                      >
+                        ✏️
+                      </button>
+                      <button
+                        type="button"
+                        title="Çoktan seç"
+                        aria-pressed={quizInteractionMode === 'choice'}
+                        onClick={() => setQuizInteractionModePersist('choice')}
+                        className={`w-8 h-8 rounded-md text-sm flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-violet-500/50 ${
+                          quizInteractionMode === 'choice'
+                            ? 'bg-violet-500/20 text-violet-700 dark:text-violet-200'
+                            : 'text-slate-500 hover:bg-white/60 dark:hover:bg-white/10'
+                        }`}
+                      >
+                        🎯
+                      </button>
+                      <button
+                        type="button"
+                        title="Karışık"
+                        aria-pressed={quizInteractionMode === 'mixed'}
+                        onClick={() => setQuizInteractionModePersist('mixed')}
+                        className={`w-8 h-8 rounded-md text-sm flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-violet-500/50 ${
+                          quizInteractionMode === 'mixed'
+                            ? 'bg-violet-500/20 text-violet-700 dark:text-violet-200'
+                            : 'text-slate-500 hover:bg-white/60 dark:hover:bg-white/10'
+                        }`}
+                      >
+                        🔀
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
-              {/*
-                İlerleme: X / 6 çekim + ince progress bar (h-1).
-                Görünüm modu butonları (Liste/Odak) yukarıya, tense
-                dropdown'un yanına ikon olarak taşındı — burada artık
-                tekrar eden büyük pill yok.
-              */}
-              {(() => {
-                const total = pronounIds.length;
-                const progressCount =
-                  quizLayout === 'focus'
-                    ? Math.min(currentFocusIndex, total)
-                    : pronounIds.filter((p) => quizFeedback[p] !== null).length;
-                const progressPct = total ? (progressCount / total) * 100 : 0;
-                return (
-                  <div className="mt-4 pt-3 border-t border-slate-100/80 dark:border-white/5">
-                    <div className="flex items-center justify-between gap-2 mb-1.5">
-                      <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                        {progressCount} / {total} çekim
-                      </span>
-                    </div>
-                    <div className="h-1 w-full rounded-full bg-slate-200/70 dark:bg-white/5 overflow-hidden" role="progressbar" aria-valuenow={progressCount} aria-valuemin={0} aria-valuemax={total}>
-                      <div className="h-full bg-indigo-500 dark:bg-indigo-400 rounded-full transition-all duration-300" style={{ width: `${progressPct}%` }} />
-                    </div>
-                  </div>
-                );
-              })()}
               {mode === 'quiz' &&
                 quizLayout === 'focus' &&
                 currentFocusIndex < pronounIds.length &&
@@ -6423,77 +6810,113 @@ export function Page() {
               );
             })()}
 
-            {/* Odak modu: tüm şahıslar tamamlandı */}
-            {quizLayout === 'focus' && currentFocusIndex >= pronounIds.length && (
-              <div className="p-6 sm:p-8 text-center rounded-xl mx-4 mb-4 bg-gradient-to-br from-emerald-50 to-teal-50/80 dark:from-emerald-500/15 dark:to-teal-500/10 border border-emerald-200/80 dark:border-emerald-400/30" role="alert">
-                <p className="text-emerald-800 dark:text-emerald-200 font-bold text-xl">🎉 Tebrikler! Tüm çekimleri tamamladın</p>
-                {quizCompletionSummary && (
-                  <div className="mt-4 max-w-md mx-auto space-y-3 text-left">
-                    {quizCompletionSummary.leveledUp && (
-                      <p className="text-center font-bold text-amber-600 dark:text-amber-300 text-sm">🎊 LEVEL ATLADI!</p>
-                    )}
-                    <p className="text-center text-lg font-bold text-emerald-800 dark:text-emerald-200 tabular-nums">
-                      +{quizCompletionSummary.totalEarnedSession} XP
+            {/* Odak modu: tur bitti (tüm şahıslar geçildi) */}
+            {quizLayout === 'focus' && currentFocusIndex >= pronounIds.length && (() => {
+              const perfect = pronounIds.every((p) => quizFeedback[p] === 'correct');
+              const ok = pronounIds.filter((p) => quizFeedback[p] === 'correct').length;
+              const bad = pronounIds.filter((p) => quizFeedback[p] === 'wrong').length;
+              return (
+                <div
+                  className={`p-6 sm:p-8 text-center rounded-xl mx-4 mb-4 border ${
+                    perfect
+                      ? 'bg-gradient-to-br from-emerald-50 to-teal-50/80 dark:from-emerald-500/15 dark:to-teal-500/10 border-emerald-200/80 dark:border-emerald-400/30'
+                      : 'bg-gradient-to-br from-amber-50 to-orange-50/70 dark:from-amber-900/20 dark:to-orange-900/15 border-amber-200/80 dark:border-amber-500/35'
+                  }`}
+                  role="alert"
+                >
+                  <p className={`font-bold text-2xl ${perfect ? 'text-emerald-800 dark:text-emerald-200' : 'text-amber-900 dark:text-amber-100'}`}>
+                    {perfect ? '🎉 Tebrikler!' : 'Tur tamamlandı'}
+                  </p>
+                  {!perfect && (
+                    <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+                      <span className="text-emerald-600 dark:text-emerald-400 font-semibold">{ok} doğru</span>
+                      {bad > 0 && (
+                        <>
+                          {' '}
+                          · <span className="text-red-600 dark:text-red-400 font-semibold">{bad} yanlış</span>
+                        </>
+                      )}
                     </p>
-                    <p className="text-xs text-emerald-900/85 dark:text-emerald-200/85 leading-relaxed text-center">
-                      {[
-                        quizCompletionSummary.breakdown.correctAnswers > 0
-                          ? `Doğru: +${quizCompletionSummary.breakdown.correctAnswers} XP`
-                          : '',
-                        quizCompletionSummary.breakdown.firstTryBonus > 0
-                          ? `İlk deneme: +${quizCompletionSummary.breakdown.firstTryBonus} XP`
-                          : '',
-                        quizCompletionSummary.breakdown.hintPenalty > 0
-                          ? `İpucu: −${quizCompletionSummary.breakdown.hintPenalty} XP`
-                          : '',
-                        quizCompletionSummary.breakdown.dailyFirst > 0
-                          ? `Günlük ilk: +${quizCompletionSummary.breakdown.dailyFirst} XP`
-                          : '',
-                        quizCompletionSummary.breakdown.dailyVerb > 0
-                          ? `Yeni fiil: +${quizCompletionSummary.breakdown.dailyVerb} XP`
-                          : '',
-                        quizCompletionSummary.breakdown.flawless > 0
-                          ? `Hatasız: +${quizCompletionSummary.breakdown.flawless} XP`
-                          : '',
-                      ]
-                        .filter(Boolean)
-                        .join(' · ')}
-                    </p>
-                    <div className="h-2 rounded-full bg-emerald-200/80 dark:bg-emerald-900/50 overflow-hidden">
-                      <div
-                        className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-amber-400 transition-[width] duration-1000 ease-out"
-                        style={{ width: `${Math.round(congratsXpBar)}%` }}
-                      />
+                  )}
+                  {perfect && quizCompletionSummary && (
+                    <div className="mt-4 max-w-md mx-auto space-y-3 text-left">
+                      {quizCompletionSummary.leveledUp && (
+                        <p className="text-center font-bold text-amber-600 dark:text-amber-300 text-sm">🎊 LEVEL ATLADI!</p>
+                      )}
+                      <p className="text-center text-lg font-bold text-emerald-800 dark:text-emerald-200 tabular-nums">
+                        +{quizCompletionSummary.totalEarnedSession} XP
+                      </p>
+                      <p className="text-xs text-emerald-900/85 dark:text-emerald-200/85 leading-relaxed text-center">
+                        {[
+                          quizCompletionSummary.breakdown.correctAnswers > 0
+                            ? `Doğru: +${quizCompletionSummary.breakdown.correctAnswers} XP`
+                            : '',
+                          quizCompletionSummary.breakdown.firstTryBonus > 0
+                            ? `İlk deneme: +${quizCompletionSummary.breakdown.firstTryBonus} XP`
+                            : '',
+                          quizCompletionSummary.breakdown.hintPenalty > 0
+                            ? `İpucu: −${quizCompletionSummary.breakdown.hintPenalty} XP`
+                            : '',
+                          quizCompletionSummary.breakdown.dailyFirst > 0
+                            ? `Günlük ilk: +${quizCompletionSummary.breakdown.dailyFirst} XP`
+                            : '',
+                          quizCompletionSummary.breakdown.dailyVerb > 0
+                            ? `Yeni fiil: +${quizCompletionSummary.breakdown.dailyVerb} XP`
+                            : '',
+                          quizCompletionSummary.breakdown.flawless > 0
+                            ? `Hatasız: +${quizCompletionSummary.breakdown.flawless} XP`
+                            : '',
+                        ]
+                          .filter(Boolean)
+                          .join(' · ')}
+                      </p>
+                      <div className="h-2 rounded-full bg-emerald-200/80 dark:bg-emerald-900/50 overflow-hidden">
+                        <div
+                          className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-amber-400 transition-[width] duration-1000 ease-out"
+                          style={{ width: `${Math.round(congratsXpBar)}%` }}
+                        />
+                      </div>
                     </div>
+                  )}
+                  <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mt-6">
+                    <button
+                      type="button"
+                      onClick={pickNewExerciseVerb}
+                      className="rounded-xl bg-violet-600 dark:bg-violet-500 text-white font-semibold px-4 sm:px-5 py-2.5 text-sm hover:bg-violet-700 dark:hover:bg-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-colors duration-300"
+                    >
+                      Aynı Tense Başka Fiil
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setQuizTenseMenuOpen(true)}
+                      className="rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold px-4 sm:px-5 py-2.5 text-sm hover:bg-slate-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 transition-colors duration-300"
+                    >
+                      Başka Tense
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        resetQuiz();
+                        setCurrentFocusIndex(0);
+                        requestAnimationFrame(() => quizInputRefs.current[0]?.focus());
+                      }}
+                      className="rounded-xl bg-emerald-600 dark:bg-emerald-500 text-white font-semibold px-4 sm:px-5 py-2.5 text-sm hover:bg-emerald-700 dark:hover:bg-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-colors duration-300"
+                    >
+                      Tekrar Çöz
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setExerciseMode('list')}
+                      className="rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold px-4 py-2.5 text-sm hover:bg-slate-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 transition-colors duration-300"
+                    >
+                      Liste Modu
+                    </button>
                   </div>
-                )}
-                <div className="flex flex-wrap justify-center gap-3 mt-6">
-                  <button
-                    type="button"
-                    onClick={() => { resetQuiz(); setCurrentFocusIndex(0); requestAnimationFrame(() => quizInputRefs.current[0]?.focus()); }}
-                    className="rounded-xl bg-emerald-600 dark:bg-emerald-500 text-white font-semibold px-5 py-2.5 hover:bg-emerald-700 dark:hover:bg-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-colors duration-300"
-                  >
-                    Tekrar Çöz
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setExerciseMode('list')}
-                    className="rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold px-5 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 transition-colors duration-300"
-                  >
-                    Liste Modunda Gör
-                  </button>
-                  <button
-                    type="button"
-                    onClick={pickNewExerciseVerb}
-                    className="rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold px-5 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 transition-colors duration-300"
-                  >
-                    🎲 Yeni Fiil
-                  </button>
                 </div>
-              </div>
-            )}
+              );
+            })()}
 
-            {/* Odak modu: tek büyük input — klasik düzen (zamir üstte, aksanlar altta) */}
+            {/* Odak modu: zamir rozeti + yazı / çoktan seç */}
             {quizLayout === 'focus' && currentFocusIndex < pronounIds.length && (() => {
               const pronoun = pronounIds[currentFocusIndex];
               const label = pronounsForLang.find((p) => p.id === pronoun)?.label ?? pronoun;
@@ -6510,125 +6933,227 @@ export function Page() {
               const memErrCount = memRec?.errorCount ?? 0;
               const wrongBorderRepeat = feedback === 'wrong' && !isRevealing && memErrCount >= 2;
               const showAsCorrect = feedback === 'correct' || isRevealing || mistakeReplayShowTick;
+              const exLine =
+                staticExample && (selectedLanguage === 'fr' ? staticExample.fr?.trim() : staticExample.es?.trim());
+              const exTr = staticExample?.tr?.trim();
+              const showEx = (selectedLanguage === 'es' || selectedLanguage === 'fr') && exLine && exTr;
               return (
-                <div className="p-5 sm:p-6 mb-6">
-                  <p className="text-center text-slate-600 dark:text-slate-300 font-bold text-2xl uppercase tracking-wide mb-4">{label}</p>
-                  <div
-                    className={`max-w-md mx-auto relative rounded-2xl ${feedback === 'wrong' && !isRevealing ? 'animate-shake' : ''} ${quizEmptyShake === pronoun ? 'animate-shake ring-2 ring-red-500 dark:ring-red-400 ring-inset' : ''}`}
-                  >
-                    <input
-                      ref={(el) => {
-                        quizInputRefs.current[0] = el;
-                      }}
-                      type="text"
-                      value={userAnswers[pronoun]}
-                      onChange={(e) => setAnswer(pronoun, e.target.value)}
-                      onFocus={() => {
-                        activeQuizInputIndexRef.current = currentFocusIndex;
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') handleFocusModeSubmit();
-                      }}
-                      readOnly={isRevealing}
-                      placeholder="Cevabınız..."
-                      className={`w-full h-12 rounded-2xl border px-5 py-4 text-base sm:text-2xl text-center placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all duration-300 shadow-inner ${
-                        showAsCorrect
-                          ? 'border-emerald-400 dark:border-emerald-500/60 bg-emerald-50/80 dark:bg-emerald-500/20 text-slate-800 dark:text-slate-100 focus:ring-emerald-500/30 dark:focus:ring-emerald-400/30'
-                          : feedback === 'wrong'
-                            ? wrongBorderRepeat
-                              ? 'border-amber-500 dark:border-amber-400/60 bg-amber-50/80 dark:bg-amber-500/15 text-slate-800 dark:text-slate-100 focus:ring-amber-500/30'
-                              : 'border-red-500 dark:border-red-400/60 bg-red-50/80 dark:bg-red-500/15 text-slate-800 dark:text-slate-100 focus:ring-red-500/20 dark:focus:ring-red-400/30'
-                            : feedback === 'typo'
-                              ? 'border-amber-400 dark:border-amber-500/60 bg-amber-50/80 dark:bg-amber-500/15 text-slate-800 dark:text-slate-100 focus:ring-amber-500/30 dark:focus:ring-amber-400/30'
-                              : 'bg-slate-100/90 dark:bg-slate-900/50 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus:border-indigo-500'
-                      }`}
-                      aria-label={`${label} çekimi`}
-                    />
-                    {showAsCorrect && (
-                      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-emerald-600 dark:text-emerald-400 pointer-events-none" aria-hidden>
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                      </span>
-                    )}
-                    {!showAsCorrect && feedback !== 'wrong' && (
-                      <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                        {verbKey && (hintMode === null || hintMode === 'rule') && (
-                          <button
-                            type="button"
-                            onClick={() => requestHint(pronoun)}
-                            tabIndex={-1}
-                            className="w-7 h-7 inline-flex items-center justify-center rounded-full text-slate-500 dark:text-slate-300 hover:text-amber-700 dark:hover:text-amber-300 hover:bg-amber-100/70 dark:hover:bg-amber-500/15 focus:outline-none focus:ring-2 focus:ring-amber-500/40 transition-colors"
-                            title="İpucu al (-2 puan)"
-                            aria-label="İpucu iste"
-                          >
-                            <span className="text-base font-bold leading-none">?</span>
-                          </button>
-                        )}
-                        {(selectedLanguage === 'es' || selectedLanguage === 'fr') && (
-                          <button
-                            type="button"
-                            onClick={() => setTenseCardOverlay({ kind: 'detail', tenseId: selectedTense })}
-                            tabIndex={-1}
-                            className="w-7 h-7 inline-flex items-center justify-center rounded-full text-slate-500 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-300 hover:bg-indigo-100/70 dark:hover:bg-indigo-500/15 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 transition-colors"
-                            title="Zaman kartını aç"
-                            aria-label="Zaman kartını aç"
-                          >
-                            <BookOpen className="w-4 h-4" strokeWidth={2} aria-hidden />
-                          </button>
-                        )}
-                        <MicButton
-                          size={30}
-                          lang={selectedLanguage === 'es' ? 'es-ES' : 'fr-FR'}
-                          onInterim={(text) => setAnswer(pronoun, text)}
-                          onResult={(res) => {
-                            const match = correctValue
-                              ? res.alternatives.find((a) => checkAnswer(a, correctValue) !== 'wrong')
-                              : null;
-                            const picked = match ?? res.transcript;
-                            setAnswer(pronoun, picked);
-                            handleFocusModeSubmit(picked);
-                          }}
-                        />
-                      </div>
-                    )}
-                    {feedback === 'wrong' && !isRevealing && (
-                      <span
-                        className={`absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none ${wrongBorderRepeat ? 'text-amber-600 dark:text-amber-400' : 'text-red-500 dark:text-red-400'}`}
-                        aria-hidden
+                <motion.div
+                  key={`focus-q-${currentFocusIndex}-${pronoun}-${focusUsesChoice ? 'mc' : 'w'}`}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.28, ease: 'easeOut' }}
+                  className="p-5 sm:p-6 mb-4"
+                >
+                  <div className="max-w-xl mx-auto flex flex-col gap-3">
+                    <div className="flex items-stretch gap-2 min-h-[52px]">
+                      <motion.span
+                        layout
+                        className="shrink-0 inline-flex items-center justify-center px-3 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 text-white text-xs sm:text-sm font-bold uppercase tracking-wide shadow-md min-w-[3.25rem] animate-slide-in-left-soft"
                       >
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                      </span>
+                        {label}
+                      </motion.span>
+                      <div className="flex-1 min-w-0 flex flex-col gap-2">
+                        {focusUsesChoice ? (
+                          <div
+                            className={`grid grid-cols-2 gap-2 ${focusMcLocked && feedback === 'wrong' && !isRevealing ? 'animate-shake' : ''}`}
+                          >
+                            {focusMcOptions.map((opt, idx) => {
+                              const isCorrectOpt = checkAnswer(opt, correctValue) === 'correct';
+                              const picked = focusMcPickedIndex === idx;
+                              const showGreen = focusMcLocked && isCorrectOpt;
+                              const showRed = focusMcLocked && picked && !isCorrectOpt;
+                              return (
+                                <button
+                                  key={`${opt}-${idx}`}
+                                  type="button"
+                                  disabled={focusMcLocked}
+                                  onClick={() => handleFocusMcPick(idx)}
+                                  className={`rounded-xl border py-3 px-2 text-sm font-semibold text-center transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-violet-500/50 disabled:cursor-default ${
+                                    showGreen
+                                      ? 'border-emerald-500 bg-emerald-500/15 text-emerald-900 dark:text-emerald-100'
+                                      : showRed
+                                        ? 'border-red-500 bg-red-500/15 text-red-900 dark:text-red-100'
+                                        : 'border-slate-200 dark:border-slate-600 bg-white/80 dark:bg-slate-800/60 text-slate-800 dark:text-slate-100 hover:border-violet-400/60'
+                                  }`}
+                                >
+                                  <span className="block truncate" title={opt}>
+                                    {opt}
+                                  </span>
+                                  <span className="text-[10px] font-normal opacity-60 tabular-nums">{idx + 1}</span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <motion.div
+                            className={`relative flex-1 min-w-0 rounded-2xl animate-slide-in-right-soft ${feedback === 'wrong' && !isRevealing ? 'animate-shake' : ''} ${quizEmptyShake === pronoun ? 'animate-shake ring-2 ring-red-500 dark:ring-red-400 ring-inset rounded-2xl' : ''} ${focusCorrectGlow ? 'animate-glow-green' : ''}`}
+                          >
+                            <input
+                              ref={(el) => {
+                                quizInputRefs.current[0] = el;
+                              }}
+                              type="text"
+                              value={userAnswers[pronoun]}
+                              onChange={(e) => setAnswer(pronoun, e.target.value)}
+                              onFocus={() => {
+                                activeQuizInputIndexRef.current = currentFocusIndex;
+                                setQuizAccentBarVisible(true);
+                              }}
+                              onBlur={() => setQuizAccentBarVisible(false)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                  e.preventDefault();
+                                  handleFocusModeSubmit();
+                                }
+                              }}
+                              readOnly={isRevealing}
+                              placeholder="Cevabınız..."
+                              className={`w-full h-12 rounded-2xl border pl-4 pr-24 py-3 text-base sm:text-xl text-left placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500 transition-all duration-300 shadow-inner ${
+                                showAsCorrect
+                                  ? 'border-emerald-400 dark:border-emerald-500/60 bg-emerald-50/80 dark:bg-emerald-500/20 text-slate-800 dark:text-slate-100 shadow-[0_0_20px_rgba(34,197,94,0.25)]'
+                                  : feedback === 'wrong'
+                                    ? wrongBorderRepeat
+                                      ? 'border-amber-500 dark:border-amber-400/60 bg-amber-50/80 dark:bg-amber-500/15 text-slate-800 dark:text-slate-100'
+                                      : 'border-red-500 dark:border-red-400/60 bg-red-50/80 dark:bg-red-500/15 text-slate-800 dark:text-slate-100'
+                                    : feedback === 'typo'
+                                      ? 'border-amber-400 dark:border-amber-500/60 bg-amber-50/80 dark:bg-amber-500/15 text-slate-800 dark:text-slate-100'
+                                      : 'bg-slate-100/90 dark:bg-slate-900/50 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white'
+                              }`}
+                              aria-label={`${label} çekimi`}
+                            />
+                            {showAsCorrect && (
+                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-600 dark:text-emerald-400 pointer-events-none" aria-hidden>
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                </svg>
+                              </span>
+                            )}
+                            {!showAsCorrect && feedback !== 'wrong' && (
+                              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
+                                {verbKey && (hintMode === null || hintMode === 'rule') && (
+                                  <button
+                                    type="button"
+                                    onClick={() => requestHint(pronoun)}
+                                    tabIndex={-1}
+                                    className="w-7 h-7 inline-flex items-center justify-center rounded-full text-slate-500 dark:text-slate-300 hover:text-amber-700 dark:hover:text-amber-300 hover:bg-amber-100/70 dark:hover:bg-amber-500/15 focus:outline-none focus:ring-2 focus:ring-amber-500/40 transition-colors"
+                                    title="İpucu (Tab)"
+                                    aria-label="İpucu iste"
+                                  >
+                                    <span className="text-base font-bold leading-none">?</span>
+                                  </button>
+                                )}
+                                {(selectedLanguage === 'es' || selectedLanguage === 'fr') && (
+                                  <button
+                                    type="button"
+                                    onClick={() => setTenseCardOverlay({ kind: 'detail', tenseId: selectedTense })}
+                                    tabIndex={-1}
+                                    className="w-7 h-7 inline-flex items-center justify-center rounded-full text-slate-500 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-300 hover:bg-indigo-100/70 dark:hover:bg-indigo-500/15 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 transition-colors"
+                                    title="Zaman kartı"
+                                    aria-label="Zaman kartını aç"
+                                  >
+                                    <BookOpen className="w-4 h-4" strokeWidth={2} aria-hidden />
+                                  </button>
+                                )}
+                                <MicButton
+                                  size={30}
+                                  lang={selectedLanguage === 'es' ? 'es-ES' : 'fr-FR'}
+                                  onInterim={(text) => setAnswer(pronoun, text)}
+                                  onResult={(res) => {
+                                    const match = correctValue
+                                      ? res.alternatives.find((a) => checkAnswer(a, correctValue) !== 'wrong')
+                                      : null;
+                                    const picked = match ?? res.transcript;
+                                    setAnswer(pronoun, picked);
+                                    handleFocusModeSubmit(picked);
+                                  }}
+                                />
+                              </div>
+                            )}
+                            {feedback === 'wrong' && !isRevealing && (
+                              <span
+                                className={`absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none ${wrongBorderRepeat ? 'text-amber-600 dark:text-amber-400' : 'text-red-500 dark:text-red-400'}`}
+                                aria-hidden
+                              >
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                              </span>
+                            )}
+                          </motion.div>
+                        )}
+                      </div>
+                    </div>
+                    {feedback === 'wrong' && !isRevealing && (
+                      <p className="text-center text-sm font-medium text-emerald-600 dark:text-emerald-400">
+                        Doğrusu: <strong className="font-bold">{correctValue}</strong>
+                      </p>
                     )}
-                    {feedback === 'typo' && (
-                      <p className="absolute left-0 right-0 -bottom-6 text-center text-sm text-amber-700 dark:text-amber-300 font-medium">
+                    {feedback === 'typo' && !focusUsesChoice && (
+                      <p className="text-center text-sm text-amber-700 dark:text-amber-300 font-medium">
                         Neredeyse! Doğrusu: <strong>{correctValue}</strong>
                       </p>
                     )}
+                    {focusCanSkipAfterWrong && (
+                      <p className="text-center text-[10px] text-slate-400 dark:text-slate-500">
+                        Shift+Enter → sonraki soru
+                      </p>
+                    )}
+                    {showEx && (
+                      <div className="rounded-lg border border-slate-200/70 dark:border-slate-600/80 bg-slate-50/80 dark:bg-slate-800/40 px-3 py-2 flex items-start gap-2 text-xs">
+                        <span aria-hidden>📖</span>
+                        <div className="min-w-0 flex-1">
+                          <p className="italic text-slate-800 dark:text-slate-100 leading-snug break-words">
+                            {renderQuizExampleLine(exLine, quizExampleHighlightForm)}
+                          </p>
+                          <p className="text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">{exTr}</p>
+                        </div>
+                        <div className="shrink-0 flex items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => speakAuto(exLine, { lang: selectedLanguage === 'es' ? 'es-ES' : 'fr-FR' })}
+                            className="p-1 rounded-md text-slate-500 hover:text-violet-600 dark:hover:text-violet-300 hover:bg-white/50 dark:hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-violet-500/40"
+                            title="Dinle"
+                            aria-label="Örnek cümleyi dinle"
+                          >
+                            <SpeakerIcon className="w-4 h-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              void navigator.clipboard.writeText(exLine);
+                            }}
+                            className="p-1 rounded-md text-slate-500 hover:text-violet-600 dark:hover:text-violet-300 hover:bg-white/50 dark:hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-violet-500/40"
+                            title="Kopyala"
+                            aria-label="Örneği kopyala"
+                          >
+                            📋
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                    {showHints && (
+                      <p className="text-center text-sm text-slate-500 dark:text-slate-400">
+                        Doğru: <span className="font-medium text-slate-700 dark:text-slate-200">{correctValue}</span>
+                      </p>
+                    )}
+                    {!showHints && hintMode && verbKey && (
+                      <div className="max-w-md mx-auto w-full">
+                        <SmartHintBubble
+                          mode={hintMode}
+                          rule={
+                            hintMode === 'rule'
+                              ? quizPasséHint[pronoun] ??
+                                getRuleHint(verbKey, selectedTense, pronoun, selectedLanguage, correctValue)
+                              : undefined
+                          }
+                          letters={hintMode === 'letters' ? getLetterMask(correctValue, 2) : undefined}
+                          correct={hintMode === 'reveal' ? correctValue : undefined}
+                        />
+                      </div>
+                    )}
                   </div>
-                  {showHints && (
-                    <p className="mt-3 text-center text-sm text-slate-500 dark:text-slate-400">
-                      Doğru: <span className="font-medium text-slate-700 dark:text-slate-200">{correctValue}</span>
-                    </p>
-                  )}
-                  {!showHints && hintMode && verbKey && (
-                    <div className="mt-4 max-w-md mx-auto">
-                      <SmartHintBubble
-                        mode={hintMode}
-                        rule={
-                          hintMode === 'rule'
-                            ? quizPasséHint[pronoun] ??
-                              getRuleHint(verbKey, selectedTense, pronoun, selectedLanguage, correctValue)
-                            : undefined
-                        }
-                        letters={hintMode === 'letters' ? getLetterMask(correctValue, 2) : undefined}
-                        correct={hintMode === 'reveal' ? correctValue : undefined}
-                      />
-                    </div>
-                  )}
-                </div>
+                </motion.div>
               );
             })()}
 
@@ -6841,6 +7366,7 @@ export function Page() {
 
             {(selectedLanguage === 'es' || selectedLanguage === 'fr') &&
               mode === 'quiz' &&
+              quizLayout === 'list' &&
               staticExample &&
               (selectedLanguage === 'fr' ? staticExample.fr?.trim() : staticExample.es?.trim()) &&
               staticExample.tr?.trim() && (
@@ -6893,42 +7419,53 @@ export function Page() {
               </motion.div>
             )}
 
-            {/* Alıştırma alt çubuğu — aksan klavyesi + aksiyonlar (her iki görünümde) */}
+            {/* Alıştırma alt çubuğu — aksan (odak modunda input focus olunca) + aksiyonlar */}
             <div className="px-5 sm:px-6 py-5 border-t border-slate-100/80 dark:border-white/5 space-y-4">
-              <div className="flex justify-center w-full">
-                <AccentKeyboard
-                  compact
-                  lang={selectedLanguage}
-                  onInsert={(char) => {
-                    insertAccentChar(char);
-                    requestAnimationFrame(() => {
-                      const idx = activeQuizInputIndexRef.current;
-                      quizInputRefs.current[idx]?.focus();
-                    });
-                  }}
-                />
-              </div>
-              <div className="flex flex-wrap justify-end gap-2">
+              <AnimatePresence initial={false}>
+                {(quizLayout === 'list' || (quizLayout === 'focus' && quizAccentBarVisible && !focusUsesChoice)) && (
+                  <motion.div
+                    key="accent-kb"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.2, ease: 'easeOut' }}
+                    className="flex justify-center w-full overflow-hidden"
+                  >
+                    <AccentKeyboard
+                      compact
+                      lang={selectedLanguage}
+                      onInsert={(char) => {
+                        insertAccentChar(char);
+                        requestAnimationFrame(() => {
+                          const idx = activeQuizInputIndexRef.current;
+                          quizInputRefs.current[idx]?.focus();
+                        });
+                      }}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              <div className="flex flex-wrap items-center gap-2 w-full">
                 <button
                   type="button"
-                  onClick={() => (quizLayout === 'focus' ? handleFocusModeSubmit() : checkQuiz())}
-                  className="rounded-xl bg-gradient-to-r from-indigo-600 to-blue-500 dark:from-indigo-500 dark:to-blue-500 text-white text-sm font-semibold px-4 py-2.5 shadow-sm hover:shadow-md dark:shadow-indigo-500/20 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-all duration-300"
+                  onClick={resetQuiz}
+                  className="shrink-0 rounded-lg px-3 py-2 text-xs font-medium text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-slate-400/40 transition-colors"
                 >
-                  Kontrol Et
+                  Sıfırla
                 </button>
                 <button
                   type="button"
                   onClick={toggleShowHints}
-                  className="rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 text-sm font-medium px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 transition-colors duration-300"
+                  className="shrink-0 rounded-xl border-2 border-violet-400/70 dark:border-violet-500/50 bg-transparent text-violet-700 dark:text-violet-200 text-sm font-semibold px-4 py-2.5 hover:bg-violet-500/10 focus:outline-none focus:ring-2 focus:ring-violet-500/50 transition-colors"
                 >
                   {showHints ? 'İpucu Gizle' : 'İpucu Göster'}
                 </button>
                 <button
                   type="button"
-                  onClick={resetQuiz}
-                  className="rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 text-sm font-medium px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 transition-colors duration-300"
+                  onClick={() => (quizLayout === 'focus' ? handleFocusModeSubmit() : checkQuiz())}
+                  className="ml-auto min-w-[9rem] rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 dark:from-violet-500 dark:to-indigo-500 text-white text-base font-bold px-6 py-3 shadow-lg shadow-violet-500/25 hover:shadow-violet-500/35 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-all duration-300"
                 >
-                  Sıfırla
+                  Kontrol Et
                 </button>
               </div>
             </div>
