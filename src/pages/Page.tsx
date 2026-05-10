@@ -44,7 +44,7 @@ import { useXp } from '../contexts/XpContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTranslation } from 'react-i18next';
 import confetti from 'canvas-confetti';
-import { Info, BookOpen, Clock } from 'lucide-react';
+import { Info, BookOpen, Clock, Shuffle } from 'lucide-react';
 import EzberMakinesi from '../components/EzberMakinesi';
 import AuthModal from '../components/AuthModal';
 import Navbar from '../components/Navbar';
@@ -3684,18 +3684,22 @@ export function Page() {
                 <button
                   type="button"
                   onClick={pickRandomVerb}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/20 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-colors duration-300"
+                  className="group absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-violet-50 dark:hover:bg-violet-500/15 focus:outline-none focus:ring-2 focus:ring-violet-500/50 transition-colors duration-300"
                   title="Rastgele fiil seç"
                   aria-label="Rastgele fiil seç"
                 >
-                  <span className="text-lg leading-none" aria-hidden>🎲</span>
+                  <Shuffle
+                    className="w-[18px] h-[18px] text-slate-400 dark:text-slate-500 transition-all duration-300 group-hover:text-violet-600 dark:group-hover:text-violet-400 group-hover:rotate-180"
+                    strokeWidth={2}
+                    aria-hidden
+                  />
                 </button>
               </div>
               {/* Sanal aksan klavyesi — diline göre özel karakterler */}
               <div className="flex flex-wrap items-center gap-0.5 mt-1.5">
                 {(selectedLanguage === 'fr'
                   ? ['é', 'è', 'ê', 'ë', 'à', 'â', 'ç', 'î', 'ï', 'ô', 'ù', 'û', 'œ']
-                  : ['á', 'é', 'í', 'ó', 'ú', 'ü', 'ñ', '¿', '¡']
+                  : ['á', 'é', 'í', 'ó', 'ú', 'ü', 'ñ']
                 ).map((char) => (
                   <button
                     key={char}
@@ -5483,7 +5487,7 @@ export function Page() {
                           className="inline-flex items-center gap-0.5 rounded-full bg-indigo-100 dark:bg-indigo-500/25 text-indigo-700 dark:text-indigo-300 text-[10px] font-medium px-1.5 py-0.5 shrink-0"
                           title="Rastgele mod açık"
                         >
-                          🎲
+                          <Shuffle className="w-3 h-3 shrink-0" strokeWidth={2} aria-hidden />
                         </span>
                       )}
                       <button
@@ -5644,7 +5648,8 @@ export function Page() {
                     <h2 className="font-bold text-slate-800 dark:text-slate-100 capitalize text-xl tracking-tight">{verbKey}</h2>
                     {randomVerbMode && (
                       <span className="inline-flex items-center gap-1 rounded-full bg-indigo-100 dark:bg-indigo-500/25 text-indigo-700 dark:text-indigo-300 text-xs font-medium px-2.5 py-0.5 shrink-0" title="Rastgele mod açık">
-                        🎲 Rastgele Mod Aktif
+                        <Shuffle className="w-3.5 h-3.5 shrink-0" strokeWidth={2} aria-hidden />
+                        Rastgele Mod Aktif
                       </span>
                     )}
                     <button
@@ -6513,7 +6518,8 @@ export function Page() {
                   <h2 className="font-bold text-slate-800 dark:text-slate-100 capitalize text-xl tracking-tight">{verbKey}</h2>
                   {randomVerbMode && (
                     <span className="inline-flex items-center gap-1 rounded-full bg-indigo-100 dark:bg-indigo-500/25 text-indigo-700 dark:text-indigo-300 text-xs font-medium px-2.5 py-0.5 shrink-0" title="Rastgele mod açık">
-                      🎲 Rastgele Mod Aktif
+                      <Shuffle className="w-3.5 h-3.5 shrink-0" strokeWidth={2} aria-hidden />
+                      Rastgele Mod Aktif
                     </span>
                   )}
                   <button
@@ -7162,8 +7168,8 @@ export function Page() {
               İpuçları input sarmalayıcıda absolute (layout kayması yok).
             */}
             {quizLayout === 'list' && (
-            <div className="px-5 sm:px-6 py-5">
-              <div className="flex flex-col gap-1.5">
+            <div className="px-5 sm:px-6 py-3">
+              <div className="flex flex-col gap-1">
                 {pronounsForLang.map(({ id, label }, index) => {
                   const feedback = quizFeedback[id];
                   const correctValue = conjugationsForDisplay[id];
@@ -7196,9 +7202,9 @@ export function Page() {
                     showRecallBannerRow;
                   return (
                     <div key={id} className="quiz-align-row">
-                      <span className="quiz-p-label">{label}</span>
+                      <span className="quiz-p-label text-sm">{label}</span>
                       <div
-                        className={`quiz-p-input-wrap ${needHintUnderInput ? 'pb-6' : ''} ${
+                        className={`quiz-p-input-wrap ${needHintUnderInput ? 'pb-5' : ''} ${
                           feedback === 'wrong' && !isRevealing ? 'animate-shake' : ''
                         } ${
                           quizEmptyShake === id
@@ -7235,7 +7241,7 @@ export function Page() {
                           readOnly={isRevealing}
                           placeholder="…"
                           tabIndex={index + 1}
-                          className={`w-full min-w-0 h-10 rounded-lg border pl-3 text-sm placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 transition-all duration-200 ${
+                          className={`w-full min-w-0 h-10 rounded-lg border pl-2.5 text-sm placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 transition-all duration-200 ${
                             !showAsCorrect && feedback === 'wrong' ? 'pr-8' : 'pr-3'
                           } ${
                             showAsCorrect
@@ -7251,11 +7257,11 @@ export function Page() {
                           aria-label={`${label} çekimi`}
                         />
                         {!showAsCorrect && feedback === 'wrong' && (
-                          <span
-                            className={`absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none ${wrongBorderRepeatRow ? 'text-amber-600 dark:text-amber-400' : 'text-red-500 dark:text-red-400'}`}
+                            <span
+                            className={`absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none ${wrongBorderRepeatRow ? 'text-amber-600 dark:text-amber-400' : 'text-red-500 dark:text-red-400'}`}
                             aria-hidden
                           >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
                               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                             </svg>
                           </span>
@@ -7302,11 +7308,11 @@ export function Page() {
                                 type="button"
                                 onClick={() => requestHint(id)}
                                 tabIndex={-1}
-                                className="w-6 h-6 shrink-0 inline-flex items-center justify-center rounded-full text-slate-400 dark:text-slate-500 hover:text-amber-700 dark:hover:text-amber-300 hover:bg-amber-100/70 dark:hover:bg-amber-500/15 focus:outline-none focus:ring-2 focus:ring-amber-500/40 transition-colors"
+                                className="w-4 h-4 shrink-0 inline-flex items-center justify-center rounded-full text-slate-400 dark:text-slate-500 hover:text-amber-700 dark:hover:text-amber-300 hover:bg-amber-100/70 dark:hover:bg-amber-500/15 focus:outline-none focus:ring-2 focus:ring-amber-500/40 transition-colors"
                                 title="İpucu al (-2 puan)"
                                 aria-label={`${label} için ipucu iste`}
                               >
-                                <span className="text-xs font-bold leading-none">?</span>
+                                <span className="text-[10px] font-bold leading-none">?</span>
                               </button>
                             )}
                             {(selectedLanguage === 'es' || selectedLanguage === 'fr') && (
@@ -7314,7 +7320,7 @@ export function Page() {
                                 type="button"
                                 onClick={() => setTenseCardOverlay({ kind: 'detail', tenseId: selectedTense })}
                                 tabIndex={-1}
-                                className="w-6 h-6 shrink-0 inline-flex items-center justify-center rounded-full text-slate-400 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-300 hover:bg-indigo-100/70 dark:hover:bg-indigo-500/15 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 transition-colors"
+                                className="w-4 h-4 shrink-0 inline-flex items-center justify-center rounded-full text-slate-400 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-300 hover:bg-indigo-100/70 dark:hover:bg-indigo-500/15 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 transition-colors"
                                 title="Zaman kartını aç"
                                 aria-label={`${label} için zaman kartını aç`}
                               >
@@ -7345,7 +7351,7 @@ export function Page() {
                           </div>
                         ) : showHintActions ? (
                           <MicButton
-                            size={22}
+                            size={16}
                             lang={selectedLanguage === 'es' ? 'es-ES' : 'fr-FR'}
                             disabled={isRevealing}
                             onInterim={(text) => setAnswer(id, text)}

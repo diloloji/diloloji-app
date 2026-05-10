@@ -6,7 +6,7 @@
 import type { AppLanguage } from '../data/verbs';
 
 const CHARS_FR = ['é', 'è', 'ê', 'ë', 'à', 'â', 'ç', 'î', 'ï', 'ô', 'ù', 'û', 'œ'];
-const CHARS_ES = ['á', 'é', 'í', 'ó', 'ú', 'ü', 'ñ', '¿', '¡'];
+const CHARS_ES = ['á', 'é', 'í', 'ó', 'ú', 'ü', 'ñ'];
 
 interface AccentKeyboardProps {
   lang: AppLanguage;
