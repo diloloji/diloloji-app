@@ -27,6 +27,20 @@ export const PRONOUNS_ES: { id: PronounEs; label: string }[] = [
   { id: 'ellos', label: 'Ellos/Ellas/Uds.' },
 ];
 
+/**
+ * Alıştırma odak modu (✏️ sırayla) — kişi dizisi daima bu sırada;
+ * `Object.keys(conjugations)` veya mastery sıralaması kullanılmaz.
+ * `getConjugationForTenseEs` içindeki person 0..5 ile aynı id sırası.
+ */
+export const SPANISH_QUIZ_PERSON_IDS: readonly PronounEs[] = [
+  'yo',
+  'tu',
+  'el',
+  'nosotros',
+  'vosotros',
+  'ellos',
+];
+
 export const TENSES_ES: { id: TenseIdEs; label: string }[] = [
   { id: 'presente', label: 'Presente' },
   { id: 'imperfecto', label: 'Pretérito Imperfecto' },
