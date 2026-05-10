@@ -2142,7 +2142,6 @@ export function Page() {
         setShowHints(false);
         setShowCongrats(false);
         setCurrentFocusIndex(0);
-        requestAnimationFrame(() => quizInputRefs.current[0]?.focus());
         return;
       }
     }
@@ -2195,7 +2194,6 @@ export function Page() {
       setShowHints(false);
       setShowCongrats(false);
       setCurrentFocusIndex(0);
-      requestAnimationFrame(() => quizInputRefs.current[0]?.focus());
       return;
     }
     setError(t('errors.loadVerbFailed'));
@@ -2254,12 +2252,6 @@ export function Page() {
   useEffect(() => {
     resetQuizExerciseState();
     setQuizLayout(readExerciseModePreference());
-    const t = setTimeout(() => {
-      if (modeRef.current === 'quiz' && verbKey) {
-        quizInputRefs.current[0]?.focus();
-      }
-    }, 50);
-    return () => clearTimeout(t);
   }, [mode, verbKey, selectedTense, selectedLanguage, pronounsForLang, resetQuizExerciseState, readExerciseModePreference]);
 
   /** Hata tekrar seansı: fiil+zaman yüklendiğinde doğru şahısa odaklan ve kutuları temizle */
@@ -2279,7 +2271,6 @@ export function Page() {
     resetSmartHintsAll();
     setShowHints(false);
     setShowCongrats(false);
-    requestAnimationFrame(() => quizInputRefs.current[0]?.focus());
   }, [
     mistakeReplaySession,
     mistakeReplaySession?.index,
@@ -2313,9 +2304,6 @@ export function Page() {
       verbInputRef.current?.focus();
       return;
     }
-    if (mode === 'quiz') {
-      quizInputRefs.current[0]?.focus();
-    }
   }, [verbKey, mode]);
 
   // Alıştırma sekmesi açıldığında kullanıcı tercihini uygula (varsayılan tekli).
@@ -2324,17 +2312,6 @@ export function Page() {
     setQuizLayout(readExerciseModePreference());
     setCurrentFocusIndex(0);
   }, [mode, readExerciseModePreference]);
-
-  // Odak modunda tek input her şahıs değişiminde odaklansın
-  useEffect(() => {
-    if (mode === 'quiz' && verbKey && quizLayout === 'focus' && currentFocusIndex < qp.length) {
-      if (quizInteractionMode === 'reverse') return;
-      const t = requestAnimationFrame(() => {
-        quizInputRefs.current[0]?.focus();
-      });
-      return () => cancelAnimationFrame(t);
-    }
-  }, [mode, verbKey, quizLayout, currentFocusIndex, quizInteractionMode]);
 
   useEffect(() => {
     return () => {
@@ -3145,7 +3122,6 @@ export function Page() {
     focusFlowBusyRef.current = false;
     focusFlowTimersRef.current.forEach(clearTimeout);
     focusFlowTimersRef.current = [];
-    requestAnimationFrame(() => quizInputRefs.current[0]?.focus());
   }, [selectedLanguage, pronounsForLang, resetSmartHintsAll, resetQuizXpSession]);
 
   const advanceMasteryDrillAfterRound = useCallback(() => {
@@ -3291,9 +3267,30 @@ export function Page() {
     if (quizLayout !== 'focus' || mistakeReplaySession) return false;
     if (quizInteractionMode === 'listen' || quizInteractionMode === 'reverse') return false;
     if (quizInteractionMode === 'choice') return true;
+    // Karışık (🔀): soru indeksi çift → yazma, tek → çoktan seç (sırayla).
     if (quizInteractionMode === 'mixed') return currentFocusIndex % 2 === 1;
     return false;
   }, [quizLayout, mistakeReplaySession, quizInteractionMode, currentFocusIndex]);
+
+  /** Odak modunda: yazma/dinleme turunda tek satır input; çoktan seç / ters çevirmede metin kutusu yok. */
+  const focusRoundNeedsTextInputFocus = useMemo(
+    () =>
+      quizLayout === 'focus' &&
+      (focusUsesListen || (!focusUsesChoice && !focusUsesReverse)),
+    [quizLayout, focusUsesListen, focusUsesChoice, focusUsesReverse]
+  );
+
+  useEffect(() => {
+    if (mode !== 'quiz' || !verbKey || quizLayout !== 'focus' || currentFocusIndex >= qp.length) return;
+    const id = requestAnimationFrame(() => {
+      if (focusRoundNeedsTextInputFocus) {
+        quizInputRefs.current[0]?.focus();
+      } else if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
+    });
+    return () => cancelAnimationFrame(id);
+  }, [mode, verbKey, quizLayout, currentFocusIndex, qp.length, focusRoundNeedsTextInputFocus]);
 
   const focusMcOptions = useMemo(() => {
     if (!focusUsesChoice || !conjugationsForDisplay) return [];
@@ -3568,7 +3565,6 @@ export function Page() {
     setFocusCorrectGlow(false);
     setCurrentFocusIndex((i) => i + 1);
     focusFlowBusyRef.current = false;
-    requestAnimationFrame(() => quizInputRefs.current[0]?.focus());
   }, []);
 
   const skipToNextFocusQuestion = useCallback(() => {
@@ -3578,7 +3574,6 @@ export function Page() {
     focusFlowBusyRef.current = false;
     setFocusCorrectGlow(false);
     setCurrentFocusIndex((i) => i + 1);
-    requestAnimationFrame(() => quizInputRefs.current[0]?.focus());
   }, [currentFocusIndex, qp.length, quizSessionLivesDepleted]);
 
   /** Odak modu: tek şahıs kontrolü. Doğruysa sonraki şahısa geç, yanlışsa aynı yerde kal. */
@@ -3631,7 +3626,6 @@ export function Page() {
           applySmartHintAfterWrong(pronoun, correct, verbKey, selectedTense, {
             onRevealAdvance: () => {
               setCurrentFocusIndex((i) => i + 1);
-              requestAnimationFrame(() => quizInputRefs.current[0]?.focus());
             },
           });
         } else {
@@ -3879,7 +3873,7 @@ export function Page() {
           setFocusMcPickedIndex(null);
           setFocusMcLocked(false);
           advanceFocusIndex();
-        }, 800);
+        }, 600);
         return;
       }
       setAnswer(pronoun, picked.trim());
@@ -3941,7 +3935,6 @@ export function Page() {
       if (e.altKey && e.key.toLowerCase() === 'q') {
         e.preventDefault();
         setMode('quiz');
-        if (verbKey) requestAnimationFrame(() => quizInputRefs.current[0]?.focus());
         return;
       }
       if (mode === 'quiz' && quizLayout === 'focus') {
@@ -4900,7 +4893,6 @@ export function Page() {
                           setConjugations(verified);
                           setError('');
                           setMode('quiz');
-                          requestAnimationFrame(() => quizInputRefs.current[0]?.focus());
                         }
                       }}
                       className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-slate-700 font-medium text-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all capitalize"
@@ -4922,7 +4914,6 @@ export function Page() {
                       setConjugations(verified);
                       setError('');
                       setMode('quiz');
-                      requestAnimationFrame(() => quizInputRefs.current[0]?.focus());
                     }
                   }}
                   className="rounded-xl bg-gradient-to-r from-indigo-600 to-blue-500 text-white text-sm font-semibold px-5 py-2.5 hover:from-indigo-700 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all flex items-center gap-2"
@@ -5894,7 +5885,6 @@ export function Page() {
                             setSelectedTense(row.tenseId);
                             setMode('quiz');
                             setExerciseMode('focus');
-                            requestAnimationFrame(() => quizInputRefs.current[0]?.focus());
                           }}
                           className="w-full text-left rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50/80 dark:bg-slate-800/50 px-4 py-3 hover:border-indigo-400/60 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
                         >
@@ -7715,7 +7705,6 @@ export function Page() {
                       onClick={() => {
                         resetQuiz();
                         setCurrentFocusIndex(0);
-                        requestAnimationFrame(() => quizInputRefs.current[0]?.focus());
                       }}
                       className="rounded-xl bg-emerald-600 dark:bg-emerald-500 text-white font-semibold px-4 sm:px-5 py-2.5 text-sm hover:bg-emerald-700 dark:hover:bg-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-colors duration-300"
                     >
