@@ -68,9 +68,7 @@ function NavbarXpChip({ onOpenRoadmap }: XpNavButtonProps) {
         />
       </div>
       <span className="text-[9px] text-indigo-600/80 dark:text-indigo-300/70 tabular-nums">
-        {xpProgress.xpForNextLevel != null
-          ? `${xpProgress.xpInCurrentLevel} / ${xpProgress.xpNeededForNext} XP`
-          : t('nav.maxLevel')}
+        {xpProgress.xpInCurrentLevel} / {xpProgress.xpNeededForNext} XP
       </span>
     </button>
   );

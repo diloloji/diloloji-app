@@ -11,7 +11,7 @@ import {
   getTotalXP,
   setTotalXP as persistTotalXP,
   getLevel,
-  getTitleForLevel,
+  getTitle,
   getXPProgress,
   getStreak,
   getLastActiveDate,
@@ -26,7 +26,6 @@ import {
 } from '../utils/xpLevel';
 import { claimSevenDayStreakMilestone } from '../utils/xpDailyBonuses';
 import { runBadgeChecksAfterXp } from '../utils/xpBadges';
-import LevelUpCelebration from '../components/LevelUpCelebration';
 import BadgeToastHost from '../components/BadgeToastHost';
 import { useAuth } from './AuthContext';
 import { fetchUserXpRow, upsertUserXpRow, upsertActivityLogDay } from '../lib/userProgressDb';
@@ -39,10 +38,7 @@ export type XpContextValue = {
   totalXP: number;
   level: number;
   title: string;
-  levelTitle: string;
   xpProgress: XPProgress;
-  /** Sonraki seviye eşiği (toplam XP), son seviyede null */
-  xpForNextLevel: number | null;
   streak: number;
   lastActiveDate: string | null;
   activityHistory: XpActivityHistory;
@@ -77,12 +73,8 @@ export function XpProvider({ children }: { children: React.ReactNode }) {
   const [activityHistory, setActivityHistory] = useState<XpActivityHistory>(getXpActivityHistory);
   const [bestStreakEver, setBestStreakEver] = useState(getBestStreakEver);
   const [floating, setFloating] = useState<FloatingXpItem[]>([]);
-  const [celebration, setCelebration] = useState<{
-    fromLevel: number;
-    toLevel: number;
-    fromTitle: string;
-    toTitle: string;
-  } | null>(null);
+  /** Seviye atlama: yeni seviye numarası, null ise atlama yok */
+  const [levelUpTo, setLevelUpTo] = useState<number | null>(null);
 
   const cloudSnapRef = useRef<CloudSnap>({
     totalXP: 0,
@@ -132,6 +124,12 @@ export function XpProvider({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener('conjume-remote-progress-loaded', onRemote);
   }, [user?.id, hydrateFromSupabase]);
 
+  useEffect(() => {
+    if (levelUpTo === null) return;
+    const t = window.setTimeout(() => setLevelUpTo(null), 4000);
+    return () => window.clearTimeout(t);
+  }, [levelUpTo]);
+
   const showFloatingXp = useCallback((text: string, x: number, y: number) => {
     const id = ++floatingIdSeq;
     setFloating((f) => [...f, { id, text, x, y }]);
@@ -162,14 +160,7 @@ export function XpProvider({ children }: { children: React.ReactNode }) {
         }
 
         const newLevel = getLevel(next);
-        if (newLevel > oldLevel) {
-          setCelebration({
-            fromLevel: oldLevel,
-            toLevel: newLevel,
-            fromTitle: getTitleForLevel(oldLevel),
-            toTitle: getTitleForLevel(newLevel),
-          });
-        }
+        if (newLevel > oldLevel) setLevelUpTo(newLevel);
 
         runBadgeChecksAfterXp();
         return next;
@@ -212,14 +203,7 @@ export function XpProvider({ children }: { children: React.ReactNode }) {
       }
 
       const newLevel = getLevel(next);
-      if (newLevel > oldLevel) {
-        setCelebration({
-          fromLevel: oldLevel,
-          toLevel: newLevel,
-          fromTitle: getTitleForLevel(oldLevel),
-          toTitle: getTitleForLevel(newLevel),
-        });
-      }
+      if (newLevel > oldLevel) setLevelUpTo(newLevel);
 
       runBadgeChecksAfterXp();
       return next;
@@ -228,7 +212,7 @@ export function XpProvider({ children }: { children: React.ReactNode }) {
   );
 
   const level = getLevel(totalXP);
-  const title = getTitleForLevel(level);
+  const title = getTitle(level);
   const xpProgress = getXPProgress(totalXP);
 
   const value: XpContextValue = {
@@ -236,9 +220,7 @@ export function XpProvider({ children }: { children: React.ReactNode }) {
     totalXP,
     level,
     title,
-    levelTitle: title,
     xpProgress,
-    xpForNextLevel: xpProgress.xpForNextLevel,
     streak,
     lastActiveDate,
     activityHistory,
@@ -259,14 +241,16 @@ export function XpProvider({ children }: { children: React.ReactNode }) {
           {f.text}
         </div>
       ))}
-      <LevelUpCelebration
-        open={celebration !== null}
-        fromLevel={celebration?.fromLevel ?? 1}
-        toLevel={celebration?.toLevel ?? 1}
-        fromTitle={celebration?.fromTitle ?? ''}
-        toTitle={celebration?.toTitle ?? ''}
-        onClose={() => setCelebration(null)}
-      />
+      {levelUpTo !== null && (
+        <div
+          className="fixed top-36 right-6 z-[100] rounded-xl bg-gradient-to-r from-indigo-500 to-amber-500 text-white px-5 py-3 shadow-xl shadow-indigo-500/30 font-bold text-sm flex items-center gap-2 animate-menu-in"
+          role="status"
+          aria-live="polite"
+        >
+          <span aria-hidden>🎉</span>
+          Seviye Atladın! Yeni Seviye: {levelUpTo}
+        </div>
+      )}
       <BadgeToastHost />
       <style>{`
         @keyframes xp-float-up {

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Lock } from 'lucide-react';
 import { useXp } from '../contexts/XpContext';
-import { getXpActivityHistory, getTitleForLevel, MAX_LEVEL, getBestStreakEver } from '../utils/xpLevel';
+import { getXpActivityHistory, getTitle, getBestStreakEver } from '../utils/xpLevel';
 import { getActivityHistory, getLastNDays, formatLocalYMD } from '../utils/activityHistory';
 import { getWorkedVerbsCount } from '../utils/workedVerbs';
 import { getLevelVisual } from '../utils/xpLevelVisual';
@@ -52,8 +52,7 @@ export default function XpProfileModal({ open, onClose, anchorRef }: Props) {
   const allTimeCombo = getAllTimeMaxCombo();
   const todayStr = formatLocalYMD(new Date());
 
-  const nextLevelNum = level >= MAX_LEVEL ? null : level + 1;
-  const nextLevelTitle = nextLevelNum != null ? getTitleForLevel(nextLevelNum) : null;
+  const nextLevelTitle = getTitle(level + 1);
   const visual = getLevelVisual(level);
 
   useEffect(() => {
@@ -173,9 +172,7 @@ export default function XpProfileModal({ open, onClose, anchorRef }: Props) {
                 <div className="flex justify-between text-xs text-slate-400">
                   <span>İlerleme</span>
                   <span className="tabular-nums font-medium text-slate-200">
-                    {xpProgress.xpForNextLevel != null
-                      ? `${xpProgress.xpInCurrentLevel} / ${xpProgress.xpNeededForNext} XP`
-                      : 'Maksimum seviye'}
+                    {xpProgress.xpInCurrentLevel} / {xpProgress.xpNeededForNext} XP
                   </span>
                 </div>
                 <div className="h-2.5 rounded-full bg-slate-800 overflow-hidden">
@@ -186,11 +183,9 @@ export default function XpProfileModal({ open, onClose, anchorRef }: Props) {
                     transition={{ type: 'spring', damping: 22, stiffness: 180 }}
                   />
                 </div>
-                {nextLevelTitle && (
-                  <p className="text-xs text-slate-400">
-                    Sonraki level: <span className="text-slate-200 font-medium">{nextLevelTitle}</span>
-                  </p>
-                )}
+                <p className="text-xs text-slate-400">
+                  Sonraki level: <span className="text-slate-200 font-medium">{nextLevelTitle}</span>
+                </p>
               </div>
 
               <div key={badgeTick}>

@@ -1,4 +1,5 @@
-import { MAX_LEVEL } from './xpLevel';
+/** Görsel katman: çok yüksek seviyelerde rozet/emoji tavanı (XP eğrisi sınırsız). */
+const LEVEL_VISUAL_CAP = 20;
 
 export type LevelVisual = {
   emoji: string;
@@ -8,13 +9,13 @@ export type LevelVisual = {
   badgeBgClass: string;
   /** Başlık metin rengi (Tailwind) */
   titleClass: string;
-  /** Özel animasyon (L20) */
+  /** Özel animasyon (üst görsel dilim) */
   isRainbow?: boolean;
 };
 
-/** Nav / popup için seviye görseli (1–20+). */
+/** Nav / popup için seviye görseli (emoji rozetleri 1–20+ aralığında tekrar kullanılır). */
 export function getLevelVisual(level: number): LevelVisual {
-  const L = Math.min(MAX_LEVEL, Math.max(1, Math.floor(level)));
+  const L = Math.min(LEVEL_VISUAL_CAP, Math.max(1, Math.floor(level)));
 
   if (L === 20) {
     return {
