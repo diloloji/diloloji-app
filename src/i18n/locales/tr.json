@@ -65,7 +65,30 @@
       "learning": "Öğrenme",
       "practice": "Alıştırma",
       "timeAttack": "Zamana Karşı",
-      "compare": "Kıyaslama"
+      "compare": "Kıyaslama",
+      "mastery": "Ustalık"
+    },
+    "mastery": {
+      "todayReviews": "Bugünün Tekrarları",
+      "todayAllDone": "Bugün tüm tekrarlar tamam!",
+      "solveAll": "Hepsini Çöz",
+      "reviewBadge": "Tekrar Zamanı!",
+      "verbScore": "Ustalık skoru: %{{pct}}",
+      "dueForVerb": "Bugün tekrar edilmesi gerekenler ({{n}})",
+      "onlyEsFr": "Ustalık takibi şu an yalnızca İspanyolca ve Fransızca için.",
+      "xpFloat": "Ustalık XP",
+      "fullVerbToast": "🏆 {{verb}} fiilini tamamen ustalaştın!",
+      "drillComplete": "Bugünün ustalık tekrarları tamamlandı.",
+      "nextDrill": "Sonraki tekrar ({{n}} kaldı)",
+      "finishDrill": "Günlük tekrarları bitir",
+      "levelLabels": {
+        "0": "Yeni",
+        "1": "Başlangıç",
+        "2": "Gelişiyor",
+        "3": "İyi",
+        "4": "Güçlü",
+        "5": "Ustalık"
+      }
     },
     "check": "Kontrol Et",
     "showHint": "İpucu Göster",
@@ -90,9 +113,11 @@
     "wrongSerEstar": "Yanlış: ESTAR geçici durumlar içindir; meslekte SER kullanılır.",
     "correctSerEstar": "Doğru: Meslek/kimlik için SER kullanılır → Soy médico.",
     "quizXp": {
-      "correct": "Doğru cevaplar: +{{xp}} XP",
-      "firstTry": "İlk denemede doğru: +{{xp}} XP",
-      "hint": "İpucu: −{{xp}} XP",
+      "correct": "Doğru cevaplar: +{{xp}} XP (zaman zorluğuna göre)",
+      "irregular": "Düzensiz bonus: +{{xp}} XP",
+      "firstTry": "İlk deneme bonusu: +{{xp}} XP",
+      "hint": "İpucu cezası: −{{xp}} XP",
+      "special": "Ekstra: +{{xp}} XP",
       "dailyFirst": "İlk günlük alıştırma: +{{xp}} XP",
       "dailyVerb": "Bugün yeni fiil: +{{xp}} XP",
       "flawless": "Hatasız bonus: +{{xp}} XP"

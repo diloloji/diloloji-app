@@ -1,4 +1,12 @@
-import { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import {
   getTotalXP,
   setTotalXP as persistTotalXP,
@@ -10,6 +18,9 @@ import {
   getXpActivityHistory,
   addXpToActivityToday,
   updateStreakInStorage,
+  computeStreakForActivity,
+  getTodayString,
+  getBestStreakEver,
   type XPProgress,
   type XpActivityHistory,
 } from '../utils/xpLevel';
@@ -17,6 +28,8 @@ import { claimSevenDayStreakMilestone } from '../utils/xpDailyBonuses';
 import { runBadgeChecksAfterXp } from '../utils/xpBadges';
 import LevelUpCelebration from '../components/LevelUpCelebration';
 import BadgeToastHost from '../components/BadgeToastHost';
+import { useAuth } from './AuthContext';
+import { fetchUserXpRow, upsertUserXpRow, upsertActivityLogDay } from '../lib/userProgressDb';
 
 export type FloatingXpItem = { id: number; text: string; x: number; y: number };
 
@@ -43,7 +56,17 @@ const XpContext = createContext<XpContextValue | null>(null);
 
 let floatingIdSeq = 0;
 
+type CloudSnap = {
+  totalXP: number;
+  streak: number;
+  lastActive: string | null;
+  activity: XpActivityHistory;
+  bestStreakEver: number;
+};
+
 export function XpProvider({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth();
+
   useEffect(() => {
     runBadgeChecksAfterXp();
   }, []);
@@ -52,6 +75,7 @@ export function XpProvider({ children }: { children: React.ReactNode }) {
   const [streak, setStreak] = useState(getStreak);
   const [lastActiveDate, setLastActiveDate] = useState<string | null>(getLastActiveDate);
   const [activityHistory, setActivityHistory] = useState<XpActivityHistory>(getXpActivityHistory);
+  const [bestStreakEver, setBestStreakEver] = useState(getBestStreakEver);
   const [floating, setFloating] = useState<FloatingXpItem[]>([]);
   const [celebration, setCelebration] = useState<{
     fromLevel: number;
@@ -59,6 +83,54 @@ export function XpProvider({ children }: { children: React.ReactNode }) {
     fromTitle: string;
     toTitle: string;
   } | null>(null);
+
+  const cloudSnapRef = useRef<CloudSnap>({
+    totalXP: 0,
+    streak: 0,
+    lastActive: null,
+    activity: {},
+    bestStreakEver: 0,
+  });
+
+  useLayoutEffect(() => {
+    cloudSnapRef.current = {
+      totalXP,
+      streak,
+      lastActive: lastActiveDate,
+      activity: activityHistory,
+      bestStreakEver,
+    };
+  }, [totalXP, streak, lastActiveDate, activityHistory, bestStreakEver]);
+
+  const hydrateFromSupabase = useCallback((uid: string) => {
+    void fetchUserXpRow(uid).then((row) => {
+      if (!row) return;
+      setTotalXP(row.total_xp);
+      setStreak(row.streak);
+      setLastActiveDate(row.last_active_date);
+      setActivityHistory((row.xp_activity as XpActivityHistory) ?? {});
+      setBestStreakEver(row.best_streak ?? row.streak ?? 0);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!user?.id) {
+      setTotalXP(getTotalXP());
+      setStreak(getStreak());
+      setLastActiveDate(getLastActiveDate());
+      setActivityHistory(getXpActivityHistory());
+      setBestStreakEver(getBestStreakEver());
+      return;
+    }
+    hydrateFromSupabase(user.id);
+  }, [user?.id, hydrateFromSupabase]);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    const onRemote = () => hydrateFromSupabase(user.id);
+    window.addEventListener('conjume-remote-progress-loaded', onRemote);
+    return () => window.removeEventListener('conjume-remote-progress-loaded', onRemote);
+  }, [user?.id, hydrateFromSupabase]);
 
   const showFloatingXp = useCallback((text: string, x: number, y: number) => {
     const id = ++floatingIdSeq;
@@ -68,38 +140,92 @@ export function XpProvider({ children }: { children: React.ReactNode }) {
     }, 1100);
   }, []);
 
-  const addXP = useCallback((amount: number) => {
-    const current = getTotalXP();
-    const oldLevel = getLevel(current);
-    const { newStreak, didUpdate } = updateStreakInStorage();
-    setStreak(newStreak);
-    setLastActiveDate(getLastActiveDate());
+  const addXP = useCallback(
+    (amount: number) => {
+      if (!user?.id) {
+        const current = getTotalXP();
+        const oldLevel = getLevel(current);
+        const { newStreak, didUpdate } = updateStreakInStorage();
+        setStreak(newStreak);
+        setLastActiveDate(getLastActiveDate());
 
-    const streakBonus = claimSevenDayStreakMilestone(newStreak, didUpdate);
-    const totalDelta = Math.floor(amount) + streakBonus;
-    const next = Math.max(0, current + totalDelta);
-    persistTotalXP(next);
-    setTotalXP(next);
+        const streakBonus = claimSevenDayStreakMilestone(newStreak, didUpdate);
+        const totalDelta = Math.floor(amount) + streakBonus;
+        const next = Math.max(0, current + totalDelta);
+        persistTotalXP(next);
+        setTotalXP(next);
+        setBestStreakEver(getBestStreakEver());
 
-    if (totalDelta > 0) {
-      addXpToActivityToday(totalDelta);
-      setActivityHistory(getXpActivityHistory());
-    }
+        if (totalDelta > 0) {
+          addXpToActivityToday(totalDelta);
+          setActivityHistory(getXpActivityHistory());
+        }
 
-    const newLevel = getLevel(next);
-    if (newLevel > oldLevel) {
-      setCelebration({
-        fromLevel: oldLevel,
-        toLevel: newLevel,
-        fromTitle: getTitleForLevel(oldLevel),
-        toTitle: getTitleForLevel(newLevel),
+        const newLevel = getLevel(next);
+        if (newLevel > oldLevel) {
+          setCelebration({
+            fromLevel: oldLevel,
+            toLevel: newLevel,
+            fromTitle: getTitleForLevel(oldLevel),
+            toTitle: getTitleForLevel(newLevel),
+          });
+        }
+
+        runBadgeChecksAfterXp();
+        return next;
+      }
+
+      const uid = user.id;
+      const snap = cloudSnapRef.current;
+      const oldLevel = getLevel(snap.totalXP);
+      const { newStreak, didUpdate, newLastActive } = computeStreakForActivity({
+        lastActiveDate: snap.lastActive,
+        streak: snap.streak,
       });
-    }
+      const streakBonus = claimSevenDayStreakMilestone(newStreak, didUpdate);
+      const totalDelta = Math.floor(amount) + streakBonus;
+      const next = Math.max(0, snap.totalXP + totalDelta);
+      const nextBest = Math.max(snap.bestStreakEver, newStreak);
 
-    runBadgeChecksAfterXp();
+      const nextActivity = { ...snap.activity };
+      if (totalDelta > 0) {
+        const today = getTodayString();
+        nextActivity[today] = (nextActivity[today] ?? 0) + totalDelta;
+      }
 
-    return next;
-  }, []);
+      setStreak(newStreak);
+      setLastActiveDate(newLastActive);
+      setTotalXP(next);
+      setActivityHistory(nextActivity);
+      setBestStreakEver(nextBest);
+
+      void upsertUserXpRow({
+        id: uid,
+        total_xp: next,
+        streak: newStreak,
+        last_active_date: newLastActive,
+        best_streak: nextBest,
+        xp_activity: nextActivity,
+      });
+      if (totalDelta > 0) {
+        void upsertActivityLogDay(uid, getTodayString(), totalDelta, 0);
+      }
+
+      const newLevel = getLevel(next);
+      if (newLevel > oldLevel) {
+        setCelebration({
+          fromLevel: oldLevel,
+          toLevel: newLevel,
+          fromTitle: getTitleForLevel(oldLevel),
+          toTitle: getTitleForLevel(newLevel),
+        });
+      }
+
+      runBadgeChecksAfterXp();
+      return next;
+    },
+    [user?.id]
+  );
 
   const level = getLevel(totalXP);
   const title = getTitleForLevel(level);

@@ -2,11 +2,16 @@
  * Profil / İstatistik — XP, Seviye, Seri özeti + GitHub tarzı aktivite ısı haritası.
  */
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Brain, Star, Flame, User } from 'lucide-react';
+import { Navigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
+import LevelRoadmapModal from '../components/LevelRoadmapModal';
 import { useXp } from '../contexts/XpContext';
+import { useAuth } from '../contexts/AuthContext';
+import { isSupabaseConfigured } from '../lib/supabase';
+import { fetchActivityLog } from '../lib/userProgressDb';
 
 const WEEKS = 26;
 const DAY_NAMES = ['Paz', 'Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt'];
@@ -50,8 +55,27 @@ function getCellColor(xp: number, isFuture: boolean): string {
 }
 
 export default function Profile() {
-  const { totalXP, level, streak, activityHistory } = useXp();
+  const { user, loading: authLoading } = useAuth();
+  const { totalXP, level, streak, activityHistory: ctxActivity } = useXp();
+  const [logXpByDay, setLogXpByDay] = useState<Record<string, number>>({});
   const [hoverCell, setHoverCell] = useState<{ dateStr: string; xp: number; x: number; y: number } | null>(null);
+  const [levelRoadmapOpen, setLevelRoadmapOpen] = useState(false);
+
+  useEffect(() => {
+    if (!user?.id) {
+      setLogXpByDay({});
+      return;
+    }
+    void fetchActivityLog(user.id).then(setLogXpByDay);
+  }, [user?.id]);
+
+  const activityHistory = useMemo(() => {
+    const out = { ...ctxActivity };
+    for (const [k, v] of Object.entries(logXpByDay)) {
+      if (typeof v === 'number' && v >= 0) out[k] = Math.max(out[k] ?? 0, v);
+    }
+    return out;
+  }, [ctxActivity, logXpByDay]);
 
   const gridByPos = useMemo(() => {
     const dates = getGridDates();
@@ -65,6 +89,19 @@ export default function Profile() {
     });
     return map;
   }, [activityHistory]);
+
+  if (isSupabaseConfigured && !authLoading && !user) {
+    return <Navigate to="/" replace />;
+  }
+
+  if (isSupabaseConfigured && authLoading) {
+    return (
+      <div className="min-h-[100dvh] min-h-screen overflow-x-hidden bg-[#0a0e17] flex flex-col">
+        <Navbar />
+        <main className="flex-1 flex items-center justify-center text-slate-500 text-sm">Yükleniyor…</main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-[100dvh] min-h-screen overflow-x-hidden bg-[#0a0e17] flex flex-col">
@@ -94,13 +131,18 @@ export default function Profile() {
             </div>
             <p className="text-2xl font-bold text-slate-100 tabular-nums">{totalXP}</p>
           </div>
-          <div className="rounded-2xl bg-white/5 border border-white/10 p-4 sm:p-5">
+          <button
+            type="button"
+            onClick={() => setLevelRoadmapOpen(true)}
+            className="rounded-2xl bg-white/5 border border-white/10 p-4 sm:p-5 text-left w-full min-h-0 transition-colors hover:bg-white/[0.08] hover:border-white/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/70"
+            aria-label="Seviye yolculuğunu aç"
+          >
             <div className="flex items-center gap-2 text-slate-400 mb-1">
               <Star className="w-4 h-4 text-amber-400/90" strokeWidth={2} />
               <span className="text-xs font-medium uppercase tracking-wider">Seviye</span>
             </div>
             <p className="text-2xl font-bold text-slate-100 tabular-nums">Lvl {level}</p>
-          </div>
+          </button>
           <div className="rounded-2xl bg-white/5 border border-white/10 p-4 sm:p-5 col-span-2 md:col-span-1">
             <div className="flex items-center gap-2 text-slate-400 mb-1">
               <Flame className="w-4 h-4 text-amber-400/90" strokeWidth={2} />
@@ -183,6 +225,8 @@ export default function Profile() {
           </div>
         </section>
       </main>
+
+      <LevelRoadmapModal open={levelRoadmapOpen} onClose={() => setLevelRoadmapOpen(false)} />
     </div>
   );
 }

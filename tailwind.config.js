@@ -86,6 +86,11 @@ export default {
           '40%': { transform: 'scale(1.35)' },
           '60%': { transform: 'scale(0.92)' },
         },
+        'heart-lost': {
+          '0%': { transform: 'scale(1) translateY(0)', opacity: '1' },
+          '35%': { transform: 'scale(1.35) translateY(-4px) rotate(-10deg)', opacity: '1' },
+          '100%': { transform: 'scale(0.2) translateY(18px)', opacity: '0' },
+        },
         'slide-in-left-soft': {
           '0%': { transform: 'translateX(-12px)', opacity: '0' },
           '100%': { transform: 'translateX(0)', opacity: '1' },
@@ -113,6 +118,7 @@ export default {
         'glow-pink': 'glow-pink 3s ease-in-out infinite',
         'xp-float-up': 'xp-float-up 0.65s ease-out forwards',
         'heart-bounce': 'heart-bounce 0.45s ease-out',
+        'heart-lost': 'heart-lost 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
         'slide-in-left-soft': 'slide-in-left-soft 0.35s ease-out forwards',
         'slide-in-right-soft': 'slide-in-right-soft 0.35s ease-out forwards',
         'mic-pulse': 'mic-pulse 1.4s cubic-bezier(0.4, 0, 0.6, 1) infinite',

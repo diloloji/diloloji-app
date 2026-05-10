@@ -1,16 +1,16 @@
 /**
- * Giriş modalı — minimalist, Firebase Auth için hazır.
- * Mock auth: Giriş Yap / Google ile Devam Et → onLoginSuccess + kapat.
+ * Supabase Auth — giriş / kayıt modalı (e-posta, Google, şifre sıfırlama).
  */
 
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { X } from 'lucide-react';
+import { Eye, EyeOff, X } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import { isSupabaseConfigured } from '../lib/supabase';
 
 export type LoginModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  onLoginSuccess: () => void;
 };
 
 function GoogleIcon() {
@@ -36,22 +36,95 @@ function GoogleIcon() {
   );
 }
 
-export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps) {
+export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
+  const { signIn, signUp, signInWithGoogle, resetPassword } = useAuth();
+  const [mode, setMode] = useState<'login' | 'register'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [mode, setMode] = useState<'login' | 'register'>('login');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPw, setShowPw] = useState(false);
+  const [showPw2, setShowPw2] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [info, setInfo] = useState<string | null>(null);
+  const [forgotOpen, setForgotOpen] = useState(false);
 
-  const handleGoogleClick = () => {
-    // TODO: Firebase Auth will be implemented here (e.g. signInWithPopup(auth, googleProvider))
-    onLoginSuccess();
-    onClose();
+  const resetFormMessages = () => {
+    setError(null);
+    setInfo(null);
   };
 
-  const handleEmailSubmit = (e: React.FormEvent) => {
+  const handleGoogleClick = async () => {
+    if (!isSupabaseConfigured) {
+      setError('Supabase yapılandırılmadı.');
+      return;
+    }
+    resetFormMessages();
+    setBusy(true);
+    const { error: err } = await signInWithGoogle();
+    setBusy(false);
+    if (err) setError(err);
+    else onClose();
+  };
+
+  const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Firebase Auth will be implemented here (signInWithEmailAndPassword / createUserWithEmailAndPassword)
-    onLoginSuccess();
-    onClose();
+    resetFormMessages();
+    if (!isSupabaseConfigured) {
+      setError('Supabase yapılandırılmadı.');
+      return;
+    }
+    const em = email.trim();
+    if (!em) {
+      setError('E-posta girin.');
+      return;
+    }
+    if (password.length < 6) {
+      setError('Şifre en az 6 karakter olmalı');
+      return;
+    }
+    if (mode === 'register' && password !== confirmPassword) {
+      setError('Şifreler eşleşmiyor.');
+      return;
+    }
+
+    setBusy(true);
+    if (mode === 'login') {
+      const { error: err } = await signIn(em, password);
+      setBusy(false);
+      if (err) {
+        setError(err);
+        return;
+      }
+      onClose();
+      return;
+    }
+
+    const { error: err } = await signUp(em, password);
+    setBusy(false);
+    if (err) {
+      setError(err);
+      return;
+    }
+    setInfo('Kayıt tamam. E-postanızı doğrulamanız istenirse gelen kutunuzu kontrol edin.');
+  };
+
+  const handleForgot = async (e: React.FormEvent) => {
+    e.preventDefault();
+    resetFormMessages();
+    const em = email.trim();
+    if (!em) {
+      setError('Şifre sıfırlama için e-posta girin.');
+      return;
+    }
+    setBusy(true);
+    const { error: err } = await resetPassword(em);
+    setBusy(false);
+    if (err) setError(err);
+    else {
+      setInfo('Şifre sıfırlama bağlantısı e-postanıza gönderildi.');
+      setForgotOpen(false);
+    }
   };
 
   const handleOverlayClick = (e: React.MouseEvent) => {
@@ -79,10 +152,9 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginMod
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.96 }}
               transition={{ duration: 0.2 }}
-              className="relative w-full max-w-md rounded-2xl bg-[#0a0e17]/90 backdrop-blur-md border border-white/15 shadow-2xl shadow-black/40 ring-1 ring-white/10"
+              className="relative w-full max-w-md rounded-2xl bg-[#0a0e17]/90 backdrop-blur-md border border-white/15 shadow-2xl shadow-black/40 ring-1 ring-white/10 max-h-[90vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* İnce parlayan üst çizgi */}
               <div className="absolute inset-x-0 top-0 h-px rounded-t-2xl bg-gradient-to-r from-transparent via-amber-400/40 to-transparent" />
 
               <div className="p-6 sm:p-8">
@@ -95,80 +167,197 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginMod
                   <X className="w-5 h-5" strokeWidth={2} />
                 </button>
 
-                <h2
-                  id="login-modal-title"
-                  className="text-xl font-semibold text-slate-100 text-center mb-6 pr-8"
-                >
+                <h2 id="login-modal-title" className="text-xl font-semibold text-slate-100 text-center mb-4 pr-8">
                   Diloloji&apos;ye Hoş Geldiniz
                 </h2>
 
-                {/* Google ile Devam Et */}
+                <div
+                  className="flex rounded-xl border border-white/10 p-0.5 mb-5 bg-white/[0.03]"
+                  role="tablist"
+                  aria-label="Giriş veya kayıt"
+                >
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={mode === 'login'}
+                    className={`flex-1 rounded-lg py-2 text-sm font-semibold transition-colors ${
+                      mode === 'login'
+                        ? 'bg-amber-500/20 text-amber-200'
+                        : 'text-slate-400 hover:text-slate-200'
+                    }`}
+                    onClick={() => {
+                      setMode('login');
+                      resetFormMessages();
+                    }}
+                  >
+                    Giriş Yap
+                  </button>
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={mode === 'register'}
+                    className={`flex-1 rounded-lg py-2 text-sm font-semibold transition-colors ${
+                      mode === 'register'
+                        ? 'bg-amber-500/20 text-amber-200'
+                        : 'text-slate-400 hover:text-slate-200'
+                    }`}
+                    onClick={() => {
+                      setMode('register');
+                      resetFormMessages();
+                    }}
+                  >
+                    Kayıt Ol
+                  </button>
+                </div>
+
+                {error && (
+                  <p className="mb-3 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-200" role="alert">
+                    {error}
+                  </p>
+                )}
+                {info && (
+                  <p className="mb-3 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-200">
+                    {info}
+                  </p>
+                )}
+
                 <button
                   type="button"
-                  onClick={handleGoogleClick}
-                  className="w-full flex items-center justify-center gap-3 rounded-xl py-3 px-4 bg-white/5 hover:bg-white/10 border border-white/10 text-slate-200 font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:ring-offset-2 focus:ring-offset-[#0a0e17] focus:border-amber-500/30 mb-5"
-                  aria-label="Google ile devam et"
+                  onClick={() => void handleGoogleClick()}
+                  disabled={busy}
+                  className="w-full flex items-center justify-center gap-3 rounded-xl py-3 px-4 bg-white/5 hover:bg-white/10 border border-white/10 text-slate-200 font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:ring-offset-2 focus:ring-offset-[#0a0e17] mb-5 disabled:opacity-50"
+                  aria-label={mode === 'login' ? 'Google ile giriş' : 'Google ile kayıt'}
                 >
                   <GoogleIcon />
-                  Google ile Devam Et
+                  {mode === 'login' ? 'Google ile Giriş' : 'Google ile Kayıt'}
                 </button>
 
-                {/* Veya e-posta ile */}
                 <div className="relative my-5">
                   <div className="absolute inset-0 flex items-center">
                     <div className="w-full border-t border-white/10" />
                   </div>
                   <div className="relative flex justify-center text-xs">
-                    <span className="px-3 bg-[#0a0e17] text-slate-500">Veya e-posta ile</span>
+                    <span className="px-3 bg-[#0a0e17] text-slate-500">— veya —</span>
                   </div>
                 </div>
 
-                <form onSubmit={handleEmailSubmit} className="flex flex-col gap-4">
-                  <div>
-                    <label htmlFor="login-email" className="sr-only">
-                      E-posta
-                    </label>
+                {forgotOpen ? (
+                  <form onSubmit={handleForgot} className="flex flex-col gap-4">
+                    <p className="text-sm text-slate-400">Şifre sıfırlama bağlantısı için e-postanızı girin.</p>
                     <input
-                      id="login-email"
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="E-posta"
                       autoComplete="email"
-                      className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/30 focus:bg-white/[0.07] transition-all duration-200"
+                      className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
                     />
-                  </div>
-                  <div>
-                    <label htmlFor="login-password" className="sr-only">
-                      Şifre
-                    </label>
-                    <input
-                      id="login-password"
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Şifre"
-                      autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-                      className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/30 focus:bg-white/[0.07] transition-all duration-200"
-                    />
-                  </div>
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setForgotOpen(false);
+                          resetFormMessages();
+                        }}
+                        className="flex-1 rounded-xl py-3 px-4 bg-white/5 border border-white/10 text-slate-200"
+                      >
+                        Geri
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={busy}
+                        className="flex-1 rounded-xl py-3 px-4 bg-amber-500/90 hover:bg-amber-400 text-slate-900 font-semibold disabled:opacity-50"
+                      >
+                        Gönder
+                      </button>
+                    </div>
+                  </form>
+                ) : (
+                  <form onSubmit={(e) => void handleEmailSubmit(e)} className="flex flex-col gap-4">
+                    <div>
+                      <label htmlFor="login-email" className="sr-only">
+                        E-posta
+                      </label>
+                      <input
+                        id="login-email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="E-posta"
+                        autoComplete="email"
+                        className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/30 focus:bg-white/[0.07] transition-all duration-200"
+                      />
+                    </div>
+                    <div className="relative">
+                      <label htmlFor="login-password" className="sr-only">
+                        Şifre
+                      </label>
+                      <input
+                        id="login-password"
+                        type={showPw ? 'text' : 'password'}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Şifre"
+                        autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+                        className="w-full rounded-xl bg-white/5 border border-white/10 pl-4 pr-12 py-3 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/30 focus:bg-white/[0.07] transition-all duration-200"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPw((s) => !s)}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg text-slate-400 hover:text-slate-200"
+                        aria-label={showPw ? 'Şifreyi gizle' : 'Şifreyi göster'}
+                      >
+                        {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
 
-                  <div className="flex gap-3 pt-1">
+                    {mode === 'register' && (
+                      <div className="relative">
+                        <label htmlFor="login-password2" className="sr-only">
+                          Şifre tekrar
+                        </label>
+                        <input
+                          id="login-password2"
+                          type={showPw2 ? 'text' : 'password'}
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          placeholder="Şifre tekrar"
+                          autoComplete="new-password"
+                          className="w-full rounded-xl bg-white/5 border border-white/10 pl-4 pr-12 py-3 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPw2((s) => !s)}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg text-slate-400 hover:text-slate-200"
+                          aria-label={showPw2 ? 'Şifreyi gizle' : 'Şifreyi göster'}
+                        >
+                          {showPw2 ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                      </div>
+                    )}
+
+                    {mode === 'login' && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          resetFormMessages();
+                          setForgotOpen(true);
+                        }}
+                        className="text-left text-sm text-amber-400/90 hover:text-amber-300"
+                      >
+                        Şifremi Unuttum
+                      </button>
+                    )}
+
                     <button
                       type="submit"
-                      className="flex-1 rounded-xl py-3 px-4 bg-amber-500/90 hover:bg-amber-400 text-slate-900 font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-[#0a0e17]"
+                      disabled={busy}
+                      className="rounded-xl py-3 px-4 bg-amber-500/90 hover:bg-amber-400 text-slate-900 font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-[#0a0e17] disabled:opacity-50"
                     >
                       {mode === 'login' ? 'Giriş Yap' : 'Kayıt Ol'}
                     </button>
-                    <button
-                      type="button"
-                      onClick={() => setMode(mode === 'login' ? 'register' : 'login')}
-                      className="flex-1 rounded-xl py-3 px-4 bg-white/5 hover:bg-white/10 border border-white/10 text-slate-200 font-medium transition-all focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:ring-offset-2 focus:ring-offset-[#0a0e17]"
-                    >
-                      {mode === 'login' ? 'Kayıt Ol' : 'Giriş Yap'}
-                    </button>
-                  </div>
-                </form>
+                  </form>
+                )}
               </div>
             </motion.div>
           </motion.div>
