@@ -50,6 +50,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useTranslation } from 'react-i18next';
 import confetti from 'canvas-confetti';
 import { Info, BookOpen, Clock, Shuffle, Volume2 } from 'lucide-react';
+import LearningCardDeck from '../components/LearningCardDeck';
 import EzberMakinesi from '../components/EzberMakinesi';
 import SurvivalMode from '../components/SurvivalMode';
 import AuthModal from '../components/AuthModal';
@@ -104,6 +105,8 @@ import {
   getVerbMasteryDueForVerb,
   isVerbFullyMastered,
   getTodayLocal,
+  loadMasteryStore,
+  buildMasteryKey,
   MASTERY_LEVEL_META,
   type MasteryDueItem,
 } from '../data/masterySystem';
@@ -991,6 +994,8 @@ export function Page() {
 
   /** Öğrenme tablosu: Ezber Modu (Active Recall) — çekimler blur, hover’da netleşir */
   const [activeRecallMode, setActiveRecallMode] = useState(false);
+  const [learningCardModeOpen, setLearningCardModeOpen] = useState(false);
+  const [masteryUiTick, setMasteryUiTick] = useState(0);
   const [showAllTenses, setShowAllTenses] = useState(false);
   const allTensesSectionRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -1138,8 +1143,14 @@ export function Page() {
     if (mode !== 'quiz' || !verbKey || (selectedLanguage !== 'es' && selectedLanguage !== 'fr')) {
       return pronounIds;
     }
+    // Liste modunda: mastery’ye göre sıra (due / düşük seviye önce). Odak modunda: Yo→Tú→… sabit
+    // sıra — aksi halde doğru cevap sonrası mastery güncellenince qp yeniden sıralanıyor ve indeks
+    // ile kişi kayıyor (ör. Tú atlanıyor).
+    if (quizLayout === 'focus') {
+      return pronounIds;
+    }
     return sortQuizPronounsByMastery(selectedLanguage, verbKey, selectedTense, pronounIds);
-  }, [mode, verbKey, selectedTense, selectedLanguage, pronounIds, masteryUiTick]);
+  }, [mode, verbKey, selectedTense, selectedLanguage, pronounIds, masteryUiTick, quizLayout]);
 
   const qp = mode === 'quiz' ? masteryQuizPronounOrder : pronounIds;
 
@@ -1696,6 +1707,38 @@ export function Page() {
     }
     return dynamicMeaning || getTranslationOrPlaceholder(verbKey ?? '', selectedLanguage);
   }, [selectedLanguage, staticSpanishMeaning, staticFrenchMeaning, dynamicMeaning, verbKey, t]);
+
+  const learningVerbMasteryStats = useMemo(() => {
+    if (!verbKey || (selectedLanguage !== 'es' && selectedLanguage !== 'fr')) return null;
+    const lang = selectedLanguage as 'es' | 'fr';
+    const store = loadMasteryStore();
+    let total = 0;
+    let learned = 0;
+    for (const group of tenseGroupsForLang) {
+      for (const tenseId of group.tenseIds) {
+        const map = getSafeConjugationMap(verbKey, tenseId, selectedLanguage);
+        if (!map || Object.keys(map).length === 0) continue;
+        for (const pid of pronounIds) {
+          const raw = map[pid];
+          if (isConjugationValueMissing(raw) || raw === '—') continue;
+          total += 1;
+          const key = buildMasteryKey(lang, verbKey, tenseId, pid);
+          const rec = store[key];
+          if (rec && rec.totalCorrect > 0) learned += 1;
+        }
+      }
+    }
+    const pct = total ? Math.round((learned / total) * 100) : 0;
+    return { learned, total, pct };
+  }, [
+    verbKey,
+    selectedLanguage,
+    tenseGroupsForLang,
+    pronounIds,
+    getSafeConjugationMap,
+    masteryUiTick,
+  ]);
+
   const getHistoryMeaning = useCallback(
     (verb: string) => {
       if (selectedLanguage === 'es') {
@@ -2292,6 +2335,16 @@ export function Page() {
     setActiveCollocationTip(null);
     setCollocationLevelFilter('A1');
   }, [verbKey, selectedLanguage]);
+
+  useEffect(() => {
+    setLearningCardModeOpen(false);
+  }, [verbKey, selectedTense]);
+
+  useEffect(() => {
+    const onMastery = () => setMasteryUiTick((n) => n + 1);
+    window.addEventListener('conjume-mastery-changed', onMastery);
+    return () => window.removeEventListener('conjume-mastery-changed', onMastery);
+  }, []);
 
   useEffect(() => {
     setShowAllIrregulars(false);
@@ -6717,6 +6770,60 @@ export function Page() {
                 )}
               </AnimatePresence>
             </div>
+            <div className="mx-4 sm:mx-0 mb-4 space-y-3 print:hidden">
+              {learningVerbMasteryStats && (
+                <div className="rounded-xl border border-slate-200/80 dark:border-slate-600/80 bg-white/60 dark:bg-slate-800/40 px-4 py-3">
+                  <p className="text-xs font-medium text-slate-600 dark:text-slate-300 mb-2">
+                    Bu fiilin çekimlerini ne kadar biliyorsun?
+                  </p>
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className="flex-1 h-2 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+                      <div
+                        className="h-full rounded-full bg-gradient-to-r from-violet-500 to-indigo-500 transition-all duration-500"
+                        style={{ width: `${learningVerbMasteryStats.pct}%` }}
+                      />
+                    </div>
+                    <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-300 tabular-nums shrink-0">
+                      %{learningVerbMasteryStats.pct}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 tabular-nums">
+                    {learningVerbMasteryStats.learned}/{learningVerbMasteryStats.total} çekim öğrenildi
+                  </p>
+                </div>
+              )}
+              <button
+                type="button"
+                onClick={() => setLearningCardModeOpen((v) => !v)}
+                className={`w-full sm:w-auto rounded-xl border-2 px-4 py-2.5 text-sm font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-violet-500/50 ${
+                  learningCardModeOpen
+                    ? 'border-violet-600 bg-violet-500/10 text-violet-800 dark:text-violet-200 dark:bg-violet-500/15'
+                    : 'border-violet-500/70 dark:border-violet-400/60 bg-transparent text-violet-700 dark:text-violet-300 hover:bg-violet-500/10'
+                }`}
+              >
+                {learningCardModeOpen ? 'Çekim tablosuna dön' : '🃏 Kart Modunda Çalış'}
+              </button>
+            </div>
+
+            {learningCardModeOpen ? (
+              <LearningCardDeck
+                verbKey={verbKey ?? ''}
+                tenseLabel={tenseLabel}
+                tenseId={selectedTense}
+                pronouns={pronounsForLang}
+                conjugations={conjugationsForDisplay}
+                lang={selectedLanguage}
+                verbMeaningTr={displayMeaning}
+                staticExample={staticExample}
+                addXP={addXP}
+                onGoQuiz={() => {
+                  setLearningCardModeOpen(false);
+                  setMode('quiz');
+                }}
+                onFinishSession={() => setMasteryUiTick((n) => n + 1)}
+              />
+            ) : (
+            <>
             {(viewMode === 'detailed' || viewMode === 'simple') && showAllTenses ? (
               /* Tüm zamanlar — kip (mood) gruplarına göre başlık + kartlar; smooth açılış */
               <motion.div
@@ -7116,9 +7223,11 @@ export function Page() {
             )}
             </>
             )}
+</>
+)}
 
             {/* Tüm Zamanları Göster / Daralt — her iki durumda da görünür; açıkken sticky float */}
-            {verbKey && conjugations && (
+            {verbKey && conjugations && !learningCardModeOpen && (
               <div
                 className={`mt-4 mx-4 sm:mx-0 pb-2 ${
                   showAllTenses
@@ -7743,6 +7852,16 @@ export function Page() {
                 staticExample && (selectedLanguage === 'fr' ? staticExample.fr?.trim() : staticExample.es?.trim());
               const exTr = staticExample?.tr?.trim();
               const showEx = (selectedLanguage === 'es' || selectedLanguage === 'fr') && exLine && exTr;
+              /** Çoktan seç renklendirme: yalnızca tıklanan + tek doğru kutunun indeksi (tüm isCorrectOpt yeşili yok). */
+              const mcCorrectChoiceIdx = focusMcOptions.findIndex(
+                (opt) => checkAnswer(opt, correctValue ?? '') === 'correct'
+              );
+              const mcPickIdx = focusMcPickedIndex;
+              const mcPickRes =
+                mcPickIdx !== null && focusMcOptions[mcPickIdx] !== undefined
+                  ? checkAnswer(focusMcOptions[mcPickIdx], correctValue ?? '')
+                  : null;
+              const mcPickOk = mcPickRes === 'correct' || mcPickRes === 'typo';
               return (
                 <motion.div
                   key={`focus-q-${currentFocusIndex}-${pronoun}-${quizInteractionMode}`}
@@ -7894,10 +8013,16 @@ export function Page() {
                         className={`grid grid-cols-2 gap-3 w-full ${focusMcLocked && feedback === 'wrong' && !isRevealing ? 'animate-shake' : ''}`}
                       >
                         {focusMcOptions.map((opt, idx) => {
-                          const isCorrectOpt = checkAnswer(opt, correctValue) === 'correct';
-                          const picked = focusMcPickedIndex === idx;
-                          const showGreen = focusMcLocked && isCorrectOpt;
-                          const showRed = focusMcLocked && picked && !isCorrectOpt;
+                          const showGreen =
+                            focusMcLocked &&
+                            mcPickIdx !== null &&
+                            ((mcPickOk && idx === mcPickIdx) ||
+                              (!mcPickOk && mcCorrectChoiceIdx !== -1 && idx === mcCorrectChoiceIdx));
+                          const showRed =
+                            focusMcLocked &&
+                            mcPickIdx !== null &&
+                            !mcPickOk &&
+                            idx === mcPickIdx;
                           return (
                             <button
                               key={`${opt}-${idx}`}
