@@ -16,7 +16,12 @@ import {
 import { formatConjugation } from '../conjugation/stemSuffix';
 import { checkPasséComposéLogic } from '../conjugation/passeCompose';
 import { getRandomVerbForLang } from '../data/commonVerbs';
-import { getRandomVerbSpanish, formatSpanishIrregularSectionTitlePrefix, type TenseIdEs } from '../data/spanish';
+import {
+  getRandomVerbSpanish,
+  formatSpanishIrregularSectionTitlePrefix,
+  SPANISH_QUIZ_PERSON_IDS,
+  type TenseIdEs,
+} from '../data/spanish';
 import irregularByTenseJson from '../data/irregular_by_tense.json';
 import { isIrregularVerb } from '../data/irregularVerbs';
 import {
@@ -1132,27 +1137,29 @@ export function Page() {
     return () => window.removeEventListener('conjume-spaced-rep-changed', fn);
   }, []);
 
-  const [masteryUiTick, setMasteryUiTick] = useState(0);
-  useEffect(() => {
-    const fn = () => setMasteryUiTick((x) => x + 1);
-    window.addEventListener('conjume-mastery-changed', fn);
-    return () => window.removeEventListener('conjume-mastery-changed', fn);
-  }, []);
-
   const masteryQuizPronounOrder = useMemo(() => {
     if (mode !== 'quiz' || !verbKey || (selectedLanguage !== 'es' && selectedLanguage !== 'fr')) {
       return pronounIds;
     }
-    // Liste modunda: mastery’ye göre sıra (due / düşük seviye önce). Odak modunda: Yo→Tú→… sabit
-    // sıra — aksi halde doğru cevap sonrası mastery güncellenince qp yeniden sıralanıyor ve indeks
-    // ile kişi kayıyor (ör. Tú atlanıyor).
+    // Liste modunda: mastery’ye göre sıra. Odak modunda: PRONOUNS / SPANISH_QUIZ_PERSON_IDS sabit
+    // sıra (mastery yeniden sıralaması + indeks ilerlemesi Tú’yu atlatıyordu).
     if (quizLayout === 'focus') {
+      if (selectedLanguage === 'es') {
+        return SPANISH_QUIZ_PERSON_IDS.filter((id) => pronounIds.includes(id));
+      }
       return pronounIds;
     }
     return sortQuizPronounsByMastery(selectedLanguage, verbKey, selectedTense, pronounIds);
   }, [mode, verbKey, selectedTense, selectedLanguage, pronounIds, masteryUiTick, quizLayout]);
 
   const qp = mode === 'quiz' ? masteryQuizPronounOrder : pronounIds;
+
+  useEffect(() => {
+    if (import.meta.env.PROD) return;
+    if (mode !== 'quiz' || quizLayout !== 'focus' || selectedLanguage !== 'es') return;
+    const currentPerson = qp[currentFocusIndex] ?? null;
+    console.log('[quiz focus ES] current person:', currentPerson, 'index:', currentFocusIndex, 'full order:', qp);
+  }, [mode, quizLayout, selectedLanguage, qp, currentFocusIndex]);
 
   useEffect(() => {
     spacedRepBannerDismissedRef.current = null;
