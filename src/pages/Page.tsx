@@ -3896,9 +3896,15 @@ export function Page() {
       const correct = conjugationsForDisplay[pronoun] ?? '';
       const picked = focusMcOptions[choiceIndex];
       if (picked === undefined) return;
-      const result = checkAnswer(picked, correct);
+      let result = checkAnswer(picked, correct);
+      /* Çoktan seç: şık metni ile doğru çekim normMcForm’da aynıysa doğru say (UI ile aynı mantık) */
+      if (result === 'wrong' && normMcForm(picked) === normMcForm(correct)) {
+        result = 'correct';
+      }
+
       setFocusMcPickedIndex(choiceIndex);
       setFocusMcLocked(true);
+
       if (result === 'correct' || result === 'typo') {
         setAnswer(pronoun, correct.trim());
         setQuizFeedback((prev) => ({ ...prev, [pronoun]: 'correct' }));
@@ -3928,26 +3934,27 @@ export function Page() {
           updateDocumentTitle();
         }
         speakAuto(correct, { lang: selectedLanguage === 'es' ? 'es-ES' : 'fr-FR' });
-        focusFlowBusyRef.current = true;
-        queueFocusTimer(() => {
-          setFocusMcPickedIndex(null);
-          setFocusMcLocked(false);
-          advanceFocusIndex();
-        }, 600);
-        return;
+      } else {
+        setAnswer(pronoun, picked.trim());
+        setQuizFeedback((prev) => ({ ...prev, [pronoun]: 'wrong' }));
+        quizSessionHadWrongRef.current = true;
+        setCombo(0);
+        if (verbKey) {
+          onQuizMistakeWrong(pronoun, picked.trim(), correct);
+          addToMistakeBank(verbKey, selectedTense, pronoun);
+          if (selectedLanguage === 'es' || selectedLanguage === 'fr')
+            recordQuizSpacedRepetitionWrong(verbKey, selectedTense, pronoun, selectedLanguage);
+        }
+        if (applyQuizLifeLoss()) return;
       }
-      setAnswer(pronoun, picked.trim());
-      setQuizFeedback((prev) => ({ ...prev, [pronoun]: 'wrong' }));
-      quizSessionHadWrongRef.current = true;
-      setCombo(0);
-      if (verbKey) {
-        onQuizMistakeWrong(pronoun, picked.trim(), correct);
-        addToMistakeBank(verbKey, selectedTense, pronoun);
-        if (selectedLanguage === 'es' || selectedLanguage === 'fr')
-          recordQuizSpacedRepetitionWrong(verbKey, selectedTense, pronoun, selectedLanguage);
-      }
-      if (applyQuizLifeLoss()) return;
-      focusFlowTimersRef.current.push(window.setTimeout(() => setFocusCanSkipAfterWrong(true), 1500));
+
+      focusFlowBusyRef.current = true;
+      queueFocusTimer(() => {
+        setFocusMcPickedIndex(null);
+        setFocusMcLocked(false);
+        setFocusCanSkipAfterWrong(false);
+        advanceFocusIndex();
+      }, 800);
     },
     [
       conjugationsForDisplay,
@@ -6777,39 +6784,43 @@ export function Page() {
                 )}
               </AnimatePresence>
             </div>
-            <div className="mx-4 sm:mx-0 mb-4 space-y-3 print:hidden">
-              {learningVerbMasteryStats && (
-                <div className="rounded-xl border border-slate-200/80 dark:border-slate-600/80 bg-white/60 dark:bg-slate-800/40 px-4 py-3">
-                  <p className="text-xs font-medium text-slate-600 dark:text-slate-300 mb-2">
-                    Bu fiilin çekimlerini ne kadar biliyorsun?
-                  </p>
-                  <div className="flex items-center gap-2 mb-1">
-                    <div className="flex-1 h-2 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
-                      <div
-                        className="h-full rounded-full bg-gradient-to-r from-violet-500 to-indigo-500 transition-all duration-500"
-                        style={{ width: `${learningVerbMasteryStats.pct}%` }}
-                      />
+            <div className="mx-4 sm:mx-0 mb-4 print:hidden">
+              <div className="rounded-xl border border-slate-200/80 dark:border-slate-600/80 bg-white/60 dark:bg-slate-800/40 px-4 py-3">
+                {learningVerbMasteryStats ? (
+                  <>
+                    <p className="text-xs font-medium text-slate-600 dark:text-slate-300 mb-2">
+                      Bu fiilin çekimlerini ne kadar biliyorsun?
+                    </p>
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className="flex-1 h-2 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+                        <div
+                          className="h-full rounded-full bg-gradient-to-r from-violet-500 to-indigo-500 transition-all duration-500"
+                          style={{ width: `${learningVerbMasteryStats.pct}%` }}
+                        />
+                      </div>
+                      <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-300 tabular-nums shrink-0">
+                        %{learningVerbMasteryStats.pct}
+                      </span>
                     </div>
-                    <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-300 tabular-nums shrink-0">
-                      %{learningVerbMasteryStats.pct}
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 tabular-nums">
-                    {learningVerbMasteryStats.learned}/{learningVerbMasteryStats.total} çekim öğrenildi
-                  </p>
-                </div>
-              )}
-              <button
-                type="button"
-                onClick={() => setLearningCardModeOpen((v) => !v)}
-                className={`w-full sm:w-auto rounded-xl border-2 px-4 py-2.5 text-sm font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-violet-500/50 ${
-                  learningCardModeOpen
-                    ? 'border-violet-600 bg-violet-500/10 text-violet-800 dark:text-violet-200 dark:bg-violet-500/15'
-                    : 'border-violet-500/70 dark:border-violet-400/60 bg-transparent text-violet-700 dark:text-violet-300 hover:bg-violet-500/10'
-                }`}
-              >
-                {learningCardModeOpen ? 'Çekim tablosuna dön' : '🃏 Kart Modunda Çalış'}
-              </button>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 tabular-nums mb-3">
+                      {learningVerbMasteryStats.learned}/{learningVerbMasteryStats.total} çekim öğrenildi
+                    </p>
+                  </>
+                ) : null}
+                <button
+                  type="button"
+                  onClick={() => setLearningCardModeOpen((v) => !v)}
+                  className={`w-full rounded-xl px-4 py-3 text-sm font-bold shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-900 ${
+                    learningVerbMasteryStats ? 'mt-3' : ''
+                  } ${
+                    learningCardModeOpen
+                      ? 'border-2 border-violet-400 bg-gradient-to-r from-violet-600 via-violet-500 to-indigo-600 text-white shadow-violet-500/35 ring-violet-400/80 dark:from-violet-500 dark:via-violet-400 dark:to-indigo-500'
+                      : 'border border-violet-400/40 bg-gradient-to-r from-violet-600 via-fuchsia-600 to-indigo-600 text-white hover:brightness-110 hover:shadow-xl hover:shadow-violet-500/30 active:scale-[0.99] dark:from-violet-600 dark:via-violet-500 dark:to-indigo-600'
+                  }`}
+                >
+                  {learningCardModeOpen ? 'Çekim tablosuna dön' : '🃏 Kart Modunda Çalış'}
+                </button>
+              </div>
             </div>
 
             {learningCardModeOpen ? (
@@ -6821,7 +6832,6 @@ export function Page() {
                 conjugations={conjugationsForDisplay}
                 lang={selectedLanguage}
                 verbMeaningTr={displayMeaning}
-                staticExample={staticExample}
                 addXP={addXP}
                 onGoQuiz={() => {
                   setLearningCardModeOpen(false);
