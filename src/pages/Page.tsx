@@ -7859,10 +7859,12 @@ export function Page() {
                 staticExample && (selectedLanguage === 'fr' ? staticExample.fr?.trim() : staticExample.es?.trim());
               const exTr = staticExample?.tr?.trim();
               const showEx = (selectedLanguage === 'es' || selectedLanguage === 'fr') && exLine && exTr;
-              /** Çoktan seç renklendirme: yalnızca tıklanan + tek doğru kutunun indeksi (tüm isCorrectOpt yeşili yok). */
-              const mcCorrectChoiceIdx = focusMcOptions.findIndex(
-                (opt) => checkAnswer(opt, correctValue ?? '') === 'correct'
-              );
+              /**
+               * Çoktan seç renkleri: doğru şık normMcForm ile correctValue’ya eşit mi (aksan/boşluk/büyük-küçük).
+               * checkAnswer ile findIndex kullanma — bazı çiftlerde metin aynı görünürken checkAnswer 'wrong' dönebiliyor,
+               * o zaman doğru şık kırmızı kalıyordu.
+               */
+              const mcCorrectNorm = normMcForm(correctValue ?? '');
               const mcPickIdx = focusMcPickedIndex;
               const mcPickRes =
                 mcPickIdx !== null && focusMcOptions[mcPickIdx] !== undefined
@@ -8020,16 +8022,12 @@ export function Page() {
                         className={`grid grid-cols-2 gap-3 w-full ${focusMcLocked && feedback === 'wrong' && !isRevealing ? 'animate-shake' : ''}`}
                       >
                         {focusMcOptions.map((opt, idx) => {
+                          const isThisCorrect = normMcForm(opt) === mcCorrectNorm;
+                          const isThisSelected = mcPickIdx !== null && idx === mcPickIdx;
                           const showGreen =
                             focusMcLocked &&
-                            mcPickIdx !== null &&
-                            ((mcPickOk && idx === mcPickIdx) ||
-                              (!mcPickOk && mcCorrectChoiceIdx !== -1 && idx === mcCorrectChoiceIdx));
-                          const showRed =
-                            focusMcLocked &&
-                            mcPickIdx !== null &&
-                            !mcPickOk &&
-                            idx === mcPickIdx;
+                            (isThisCorrect || (isThisSelected && mcPickOk));
+                          const showRed = focusMcLocked && isThisSelected && !mcPickOk;
                           return (
                             <button
                               key={`${opt}-${idx}`}
