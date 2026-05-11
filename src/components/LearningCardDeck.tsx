@@ -1,67 +1,52 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
+import { Maximize2, X } from 'lucide-react';
 import type { AppLanguage } from '../data/verbs';
 import {
   recordMasteryCorrect,
   recordMasteryWrong,
 } from '../data/masterySystem';
-import { getVerbExample } from '../data/verbExamples';
+import { exampleSentences } from '../data/example_sentences';
+import { exampleSentencesFr } from '../data/example_sentences_fr.js';
 import { speak, ttsSupported } from '../utils/speech';
 
-type StaticExample = {
-  es?: string;
-  fr?: string;
-  tr?: string;
-  person?: string;
-} | null;
-
-const QUIZ_EXAMPLE_PRONOUN_TOKENS: Record<string, string[]> = {
-  yo: ['yo'],
-  tu: ['tu', 'tú'],
-  el: ['el', 'él', 'ella', 'usted'],
-  nosotros: ['nosotros', 'nosotras'],
-  vosotros: ['vosotros', 'vosotras'],
-  ellos: ['ellos', 'ellas', 'ustedes'],
-};
-
-const QUIZ_EXAMPLE_PRONOUN_TOKENS_FR: Record<string, string[]> = {
-  je: ['je'],
-  tu: ['tu'],
-  il: ['il', 'elle', 'il/elle'],
-  nous: ['nous'],
-  vous: ['vous'],
-  ils: ['ils', 'elles', 'ils/elles'],
-};
-
-function norm(s: string): string {
-  return s
-    .trim()
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '');
-}
-
-function examplePersonMatches(
-  examplePerson: string | undefined,
-  pronounId: string,
-  lang: AppLanguage
-): boolean {
-  if (!examplePerson?.trim()) return true;
-  const segments = examplePerson
-    .split(/\s*\/\s*|\s*,\s*|\s+(?:et|y)\s+/i)
-    .map(norm)
-    .filter(Boolean);
-  const table = lang === 'fr' ? QUIZ_EXAMPLE_PRONOUN_TOKENS_FR : QUIZ_EXAMPLE_PRONOUN_TOKENS;
-  const allowed = (table[pronounId] ?? []).map(norm);
-  if (allowed.length === 0) return false;
-  return segments.some((seg) => allowed.some((a) => seg === a));
-}
+type LexExampleRow = { es?: string; fr?: string; tr?: string } | null | undefined;
 
 function displayVerbTitle(verbKey: string): string {
   const v = verbKey.trim();
   if (!v) return '';
   return v.charAt(0).toUpperCase() + v.slice(1);
+}
+
+function escapeRegExp(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/** Örnek cümlede çekimin ilk geçişini mor kalın gösterir */
+function SentenceWithVerbHighlight({
+  sentence,
+  verbForm,
+  className,
+}: {
+  sentence: string;
+  verbForm: string;
+  className?: string;
+}) {
+  const vf = verbForm.trim();
+  if (!vf) return <span className={className}>{sentence}</span>;
+  const re = new RegExp(escapeRegExp(vf), 'i');
+  const m = sentence.match(re);
+  if (!m || m.index === undefined) return <span className={className}>{sentence}</span>;
+  const i = m.index;
+  const len = m[0].length;
+  return (
+    <span className={className}>
+      {sentence.slice(0, i)}
+      <strong className="font-bold text-violet-400">{sentence.slice(i, i + len)}</strong>
+      {sentence.slice(i + len)}
+    </span>
+  );
 }
 
 const COMPLETION_BONUS_XP = 15;
@@ -74,7 +59,6 @@ export type LearningCardDeckProps = {
   conjugations: Record<string, string>;
   lang: AppLanguage;
   verbMeaningTr: string;
-  staticExample: StaticExample;
   addXP: (amount: number) => number;
   onGoQuiz: () => void;
   onFinishSession?: () => void;
@@ -88,7 +72,6 @@ export default function LearningCardDeck({
   conjugations,
   lang,
   verbMeaningTr,
-  staticExample,
   addXP,
   onGoQuiz,
   onFinishSession,
@@ -112,6 +95,7 @@ export default function LearningCardDeck({
   const dragStart = useRef<{ x: number; y: number } | null>(null);
   const busyRef = useRef(false);
   const completionConfettiFired = useRef(false);
+  const [exampleModalOpen, setExampleModalOpen] = useState(false);
 
   const total = cards.length;
   const current = cards[index];
@@ -209,7 +193,33 @@ export default function LearningCardDeck({
   }, [phase]);
 
   useEffect(() => {
+    setExampleModalOpen(false);
+  }, [index, phase, verbKey, tenseLabel]);
+
+  useEffect(() => {
+    if (!exampleModalOpen) return;
     const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        setExampleModalOpen(false);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [exampleModalOpen]);
+
+  useEffect(() => {
+    if (!exampleModalOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [exampleModalOpen]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (exampleModalOpen) return;
       if (phase !== 'playing' || !current) return;
       const t = e.target as HTMLElement | null;
       if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
@@ -229,27 +239,35 @@ export default function LearningCardDeck({
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [phase, current, advance]);
+  }, [phase, current, advance, exampleModalOpen]);
 
-  const cardExample = useMemo(() => {
-    if (!staticExample?.tr) return null;
-    const line =
-      lang === 'fr' ? staticExample.fr?.trim() : staticExample.es?.trim();
-    if (!line) return null;
-    if (!examplePersonMatches(staticExample.person, current?.id ?? '', lang)) return null;
-    return { sentence: line, tr: staticExample.tr };
-  }, [staticExample, lang, current?.id]);
+  /** Örnek cümle: example_sentences[fiil][zaman etiketi] — pronoun filtresi yok */
+  const lexExample = useMemo(() => {
+    const key = verbKey.trim();
+    if (!key) return null;
+    if (lang === 'es') {
+      const map = exampleSentences as Record<string, Record<string, LexExampleRow>>;
+      const row = map[key]?.[tenseLabel];
+      const es = row?.es?.trim();
+      if (!es) return null;
+      return { sentence: es, tr: row?.tr?.trim() ?? '' };
+    }
+    if (lang === 'fr') {
+      const map = exampleSentencesFr as Record<string, Record<string, LexExampleRow>>;
+      const row = map[key]?.[tenseLabel];
+      const fr = row?.fr?.trim();
+      if (!fr) return null;
+      return { sentence: fr, tr: row?.tr?.trim() ?? '' };
+    }
+    return null;
+  }, [verbKey, tenseLabel, lang]);
 
-  const fallbackExample = useMemo(() => {
-    if (cardExample) return null;
-    if (lang !== 'es' && lang !== 'fr') return null;
-    return getVerbExample(lang, verbKey);
-  }, [cardExample, lang, verbKey]);
+  const speakExampleSentence = useCallback(() => {
+    if (!lexExample?.sentence?.trim()) return;
+    speak(lexExample.sentence, { lang: ttsLang });
+  }, [lexExample, ttsLang]);
 
-  const meaningQuoted = useMemo(() => {
-    const m = verbMeaningTr.trim() || verbKey;
-    return `"${m}"`;
-  }, [verbMeaningTr, verbKey]);
+  const meaningPlain = useMemo(() => verbMeaningTr.trim() || verbKey, [verbMeaningTr, verbKey]);
 
   const pointerDown = (e: React.PointerEvent) => {
     dragStart.current = { x: e.clientX, y: e.clientY };
@@ -372,17 +390,9 @@ export default function LearningCardDeck({
           <span className="text-slate-300 dark:text-slate-600">·</span>
           <span className="text-rose-600 dark:text-rose-400 drop-shadow-sm">✗ {unknown}</span>
         </div>
-        <div className="flex flex-wrap items-center justify-center gap-2">
-          <kbd className="inline-flex items-center rounded-full border border-slate-200/90 bg-slate-50 px-2.5 py-1 text-[11px] font-medium text-slate-600 shadow-sm dark:border-slate-600 dark:bg-slate-800/80 dark:text-slate-300">
-            ← Bilmedim
-          </kbd>
-          <kbd className="inline-flex items-center rounded-full border border-slate-200/90 bg-slate-50 px-2.5 py-1 text-[11px] font-medium text-slate-600 shadow-sm dark:border-slate-600 dark:bg-slate-800/80 dark:text-slate-300">
-            Boşluk: Çevir
-          </kbd>
-          <kbd className="inline-flex items-center rounded-full border border-slate-200/90 bg-slate-50 px-2.5 py-1 text-[11px] font-medium text-slate-600 shadow-sm dark:border-slate-600 dark:bg-slate-800/80 dark:text-slate-300">
-            Bildim →
-          </kbd>
-        </div>
+        <p className="text-[11px] text-slate-500 dark:text-slate-400 tracking-tight">
+          Boşluk: çevir · → Bildim · ← Bilmedim
+        </p>
       </div>
 
       <AnimatePresence mode="wait">
@@ -401,11 +411,12 @@ export default function LearningCardDeck({
               dragStart.current = null;
             }}
           >
-            <motion.div
-              className="relative w-full min-h-[320px] cursor-pointer rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-violet-500/60 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-900"
-              animate={{ rotateY: flipped ? 180 : 0 }}
-              transition={{ duration: 0.5, ease: 'easeInOut' }}
-              style={{ transformStyle: 'preserve-3d' }}
+            <div
+              className="relative min-h-[320px] w-full cursor-pointer rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-violet-500/60 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-900 [transform-style:preserve-3d]"
+              style={{
+                transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+                transition: 'transform 0.5s ease',
+              }}
               role="button"
               tabIndex={0}
               aria-label={flipped ? 'Ön yüze dön' : 'Arka yüzü göster'}
@@ -422,19 +433,22 @@ export default function LearningCardDeck({
                   transform: 'rotateY(0deg)',
                 }}
               >
-                <p className="text-center text-xs font-semibold uppercase tracking-wider text-violet-600/90 dark:text-violet-300/90">
+                <p className="text-center text-[11px] font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
                   {verbTitle} · {tenseLabel}
                 </p>
-                <div className="flex flex-1 flex-col items-center justify-center gap-1 px-2 py-4">
-                  <p className="text-center text-5xl sm:text-6xl font-black uppercase tracking-tight text-violet-600 dark:text-violet-300 drop-shadow-sm">
+                <p className="mt-2 text-center text-base font-semibold text-violet-600 dark:text-violet-300">
+                  {meaningPlain}
+                </p>
+                <div className="flex flex-1 flex-col items-center justify-center px-2 py-2">
+                  <p className="text-center text-5xl sm:text-6xl font-black uppercase tracking-tight text-violet-700 dark:text-violet-200 drop-shadow-sm">
                     {current.label}
                   </p>
-                  <p className="mt-4 text-center text-base text-slate-400 dark:text-slate-500 italic">
-                    {meaningQuoted}
-                  </p>
                 </div>
-                <p className="text-center text-xs font-medium text-slate-400 dark:text-slate-500">
-                  Kartı Çevir <span aria-hidden>👆</span>
+                <p className="text-center text-[11px] font-medium text-slate-400 dark:text-slate-500">
+                  <span aria-hidden className="mr-1">
+                    👆
+                  </span>
+                  Cevabı görmek için tıkla
                 </p>
               </div>
 
@@ -447,11 +461,11 @@ export default function LearningCardDeck({
                   transform: 'rotateY(180deg)',
                 }}
               >
-                <p className="text-center text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                <p className="text-center text-[11px] font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
                   {verbTitle} · {tenseLabel} ·{' '}
                   <span className="text-violet-600 dark:text-violet-300">{current.label}</span>
                 </p>
-                <div className="flex flex-1 flex-col items-center justify-center gap-3 px-1">
+                <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-4 px-1 pt-2">
                   <p className="text-center text-4xl sm:text-5xl font-black tracking-tight text-emerald-600 dark:text-emerald-400 break-words max-w-full">
                     {current.form}
                   </p>
@@ -464,26 +478,40 @@ export default function LearningCardDeck({
                     }}
                     disabled={!ttsSupported}
                     title={!ttsSupported ? 'Tarayıcı seslendirmeyi desteklemiyor' : undefined}
-                    className="inline-flex items-center gap-2 rounded-full border border-emerald-500/50 bg-emerald-500/10 px-4 py-2 text-sm font-semibold text-emerald-800 dark:text-emerald-200 hover:bg-emerald-500/20 transition-colors disabled:cursor-not-allowed disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
+                    className="inline-flex items-center gap-2 rounded-full border border-emerald-500/50 bg-emerald-500/10 px-5 py-2.5 text-sm font-semibold text-emerald-800 dark:text-emerald-200 hover:bg-emerald-500/20 transition-colors disabled:cursor-not-allowed disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
                   >
                     <span aria-hidden>🔊</span> Seslendir
                   </button>
                 </div>
-                {(cardExample || fallbackExample) && (
-                  <div className="mt-auto border-t border-emerald-200/70 dark:border-emerald-500/25 pt-4 text-center space-y-1.5">
-                    <p className="text-sm italic leading-snug text-slate-700 dark:text-slate-200 px-1">
-                      <span aria-hidden className="mr-1">
-                        📖
-                      </span>
-                      {cardExample?.sentence ?? fallbackExample?.sentence}
-                    </p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 leading-snug px-1">
-                      {cardExample?.tr ?? fallbackExample?.translation}
-                    </p>
+                {lexExample && (
+                  <div className="group/ex relative mt-auto border-t border-emerald-200/70 dark:border-emerald-500/25 pt-4 text-center">
+                    <button
+                      type="button"
+                      data-card-no-flip="true"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setExampleModalOpen(true);
+                      }}
+                      className="absolute right-0 top-3 z-10 rounded-md p-1.5 text-slate-500 opacity-0 transition-opacity hover:bg-slate-200/80 hover:text-violet-600 group-hover/ex:opacity-100 dark:text-slate-400 dark:hover:bg-slate-700/80 dark:hover:text-violet-300 focus:outline-none focus:ring-2 focus:ring-violet-500/50"
+                      aria-label="Örnek cümleyi büyüt"
+                    >
+                      <Maximize2 className="h-4 w-4" strokeWidth={2} />
+                    </button>
+                    <div className="space-y-1.5 pr-7">
+                      <p className="text-sm italic leading-snug text-slate-700 dark:text-slate-200 px-1">
+                        <span aria-hidden className="mr-1">
+                          📖
+                        </span>
+                        {lexExample.sentence}
+                      </p>
+                      {lexExample.tr ? (
+                        <p className="text-xs text-slate-500 dark:text-slate-400 leading-snug px-1">{lexExample.tr}</p>
+                      ) : null}
+                    </div>
                   </div>
                 )}
               </div>
-            </motion.div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -508,6 +536,58 @@ export default function LearningCardDeck({
           Bildim ✓
         </motion.button>
       </div>
+
+      {exampleModalOpen && lexExample && current && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="learning-card-example-modal-title">
+          <button
+            type="button"
+            className="absolute inset-0 bg-black/70 backdrop-blur-[8px]"
+            aria-label="Kapat"
+            onClick={() => setExampleModalOpen(false)}
+          />
+          <div
+            className="relative z-10 w-full max-w-[600px] rounded-2xl bg-slate-900 px-8 py-8 text-slate-100 shadow-2xl ring-1 ring-white/10"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mb-6 flex items-start justify-between gap-4 border-b border-white/10 pb-4">
+              <h2 id="learning-card-example-modal-title" className="text-lg font-semibold tracking-tight">
+                <span aria-hidden className="mr-2">
+                  📖
+                </span>
+                Örnek Cümle
+              </h2>
+              <button
+                type="button"
+                onClick={() => setExampleModalOpen(false)}
+                className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-white/10 hover:text-white focus:outline-none focus:ring-2 focus:ring-violet-500/50"
+                aria-label="Kapat"
+              >
+                <X className="h-5 w-5" strokeWidth={2} />
+              </button>
+            </div>
+            <div className="space-y-6">
+              <p className="text-xl sm:text-2xl font-medium leading-relaxed text-slate-100">
+                <SentenceWithVerbHighlight sentence={lexExample.sentence} verbForm={current.form} />
+              </p>
+              {lexExample.tr ? (
+                <p className="text-base leading-relaxed text-slate-400">{lexExample.tr}</p>
+              ) : null}
+              <button
+                type="button"
+                onClick={() => speakExampleSentence()}
+                disabled={!ttsSupported}
+                title={!ttsSupported ? 'Tarayıcı seslendirmeyi desteklemiyor' : undefined}
+                className="inline-flex items-center gap-2 rounded-xl border border-emerald-500/40 bg-emerald-500/15 px-5 py-3 text-sm font-semibold text-emerald-200 transition-colors hover:bg-emerald-500/25 disabled:cursor-not-allowed disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
+              >
+                <span aria-hidden>🔊</span> Seslendir
+              </button>
+              <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                {verbTitle} · {tenseLabel}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
