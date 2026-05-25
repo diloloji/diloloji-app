@@ -23,8 +23,35 @@ type View = 'list' | 'detail' | 'create' | 'edit' | 'flashcard' | 'quiz';
 type QuizMode = 'classic' | 'multiple-choice' | 'fill-blank';
 
 type SRSRating = 'again' | 'hard' | 'good' | 'easy';
+type CardSortMode = 'random' | 'unknown_first' | 'newest_first' | 'sequential';
+type CardStatsEntry = {
+  correctCount: number;
+  wrongCount: number;
+  lastSeen: string | null;
+  streak: number;
+};
+type FlashcardStudyMode = 'cards' | 'write';
+type WriteCheckResult = 'correct' | 'close' | 'wrong';
+type WriteSessionSummary = { correct: number; close: number; wrong: number };
+type DeckProgressDay = { correct: number; wrong: number; cards_seen: number };
+type DeckProgressMap = Record<string, DeckProgressDay>;
+type ImportPayload = {
+  name: string;
+  cards: { front: string; back: string; example?: string }[];
+  language?: string;
+};
 
 const MIN_EASE = 1.3;
+const CARD_STATS_KEY = 'card_stats';
+const CARD_AUDIO_ENABLED_KEY = 'card_audio_enabled';
+const CARD_SORT_MODE_KEY = 'card_sort_mode';
+const TOAST_DURATION_MS = 2200;
+const SORT_OPTIONS: { id: CardSortMode; label: string }[] = [
+  { id: 'random', label: 'Rastgele' },
+  { id: 'unknown_first', label: 'Önce Bilinmeyenler' },
+  { id: 'newest_first', label: 'Önce Yeniler' },
+  { id: 'sequential', label: 'Sıralı' },
+];
 
 /** SRS (SM-2 benzeri): tıklanan butona göre yeni state ve “sonraki tekrar” etiketi */
 function computeSRSUpdate(
@@ -105,41 +132,241 @@ function formatIntervalLabel(days: number): string {
   return `${Math.round(days)} gün`;
 }
 
-/** Klavye kısayolları: Space (çevir), Sol/Sağ ok (önceki/sonraki) */
-function FlashcardKeyboard({
-  onFlip,
-  onNext,
-  onPrev,
-  canPrev,
-  canNext,
-}: {
-  onFlip: () => void;
-  onNext: () => void;
-  onPrev: () => void;
-  canPrev: boolean;
-  canNext: boolean;
-}) {
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === ' ') {
-        e.preventDefault();
-        onFlip();
-        return;
-      }
-      if (e.key === 'ArrowRight') {
-        e.preventDefault();
-        if (canNext) onNext();
-        return;
-      }
-      if (e.key === 'ArrowLeft') {
-        e.preventDefault();
-        if (canPrev) onPrev();
-      }
+function defaultCardStats(): CardStatsEntry {
+  return { correctCount: 0, wrongCount: 0, lastSeen: null, streak: 0 };
+}
+
+function loadCardStats(): Record<string, CardStatsEntry> {
+  if (typeof window === 'undefined') return {};
+  try {
+    const raw = window.localStorage.getItem(CARD_STATS_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw) as Record<string, Partial<CardStatsEntry>>;
+    const out: Record<string, CardStatsEntry> = {};
+    Object.entries(parsed || {}).forEach(([id, value]) => {
+      out[id] = {
+        correctCount: Math.max(0, Number(value?.correctCount ?? 0) || 0),
+        wrongCount: Math.max(0, Number(value?.wrongCount ?? 0) || 0),
+        lastSeen: typeof value?.lastSeen === 'string' ? value.lastSeen : null,
+        streak: Math.max(0, Number(value?.streak ?? 0) || 0),
+      };
+    });
+    return out;
+  } catch {
+    return {};
+  }
+}
+
+function saveCardStats(stats: Record<string, CardStatsEntry>): void {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.setItem(CARD_STATS_KEY, JSON.stringify(stats));
+  } catch {
+    // ignore
+  }
+}
+
+function readCardAudioEnabled(): boolean {
+  if (typeof window === 'undefined') return true;
+  const raw = window.localStorage.getItem(CARD_AUDIO_ENABLED_KEY);
+  return raw == null ? true : raw === 'true';
+}
+
+function readCardSortMode(): CardSortMode {
+  if (typeof window === 'undefined') return 'random';
+  const raw = window.localStorage.getItem(CARD_SORT_MODE_KEY);
+  return SORT_OPTIONS.some((opt) => opt.id === raw) ? (raw as CardSortMode) : 'random';
+}
+
+function formatSeenAgo(lastSeen: string | null): string {
+  if (!lastSeen) return 'İlk kez';
+  const ts = new Date(lastSeen).getTime();
+  if (Number.isNaN(ts)) return 'Az önce';
+  const diffMs = Date.now() - ts;
+  const diffMinutes = Math.max(0, Math.floor(diffMs / 60000));
+  if (diffMinutes < 1) return 'Az önce';
+  if (diffMinutes < 60) return `${diffMinutes} dk önce`;
+  const diffHours = Math.floor(diffMinutes / 60);
+  if (diffHours < 24) return `${diffHours} sa önce`;
+  const diffDays = Math.floor(diffHours / 24);
+  return `${diffDays} gün önce`;
+}
+
+function getSpeechLang(deckLanguage?: string): 'es-ES' | 'fr-FR' | 'en-US' {
+  const code = (deckLanguage ?? '').toUpperCase();
+  if (code === 'FR') return 'fr-FR';
+  if (code === 'EN') return 'en-US';
+  return 'es-ES';
+}
+
+function speakCard(text: string, lang: 'es-ES' | 'fr-FR' | 'en-US' = 'es-ES') {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window) || !text.trim()) return;
+  const synth = window.speechSynthesis;
+  const run = () => {
+    synth.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = lang;
+    utterance.rate = 0.85;
+    const voices = synth.getVoices();
+    const voice =
+      voices.find((v) => v.lang === lang && v.localService) ||
+      voices.find((v) => v.lang.startsWith(lang.slice(0, 2)));
+    if (voice) utterance.voice = voice;
+    synth.speak(utterance);
+  };
+
+  if (synth.getVoices().length > 0) {
+    run();
+    return;
+  }
+
+  const handler = () => {
+    const synthWithEvents = synth as typeof synth & {
+      addEventListener?: (name: string, cb: () => void, opts?: { once?: boolean }) => void;
+      removeEventListener?: (name: string, cb: () => void) => void;
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onFlip, onNext, onPrev, canPrev, canNext]);
-  return null;
+    if (typeof synthWithEvents.removeEventListener === 'function') {
+      synthWithEvents.removeEventListener('voiceschanged', handler);
+    } else if (synth.onvoiceschanged === handler) {
+      synth.onvoiceschanged = null;
+    }
+    run();
+  };
+
+  const synthWithEvents = synth as typeof synth & {
+    addEventListener?: (name: string, cb: () => void, opts?: { once?: boolean }) => void;
+  };
+  if (typeof synthWithEvents.addEventListener === 'function') {
+    synthWithEvents.addEventListener('voiceschanged', handler, { once: true });
+  } else {
+    synth.onvoiceschanged = handler;
+  }
+  synth.getVoices();
+}
+
+function sortCards(cards: Flashcard[], mode: CardSortMode, stats: Record<string, CardStatsEntry>): Flashcard[] {
+  switch (mode) {
+    case 'unknown_first':
+      return [...cards].sort((a, b) => {
+        const aStats = stats[a.id] ?? defaultCardStats();
+        const bStats = stats[b.id] ?? defaultCardStats();
+        const aRatio = aStats.correctCount / (aStats.correctCount + aStats.wrongCount + 1);
+        const bRatio = bStats.correctCount / (bStats.correctCount + bStats.wrongCount + 1);
+        return aRatio - bRatio;
+      });
+    case 'newest_first':
+      return [...cards].sort(
+        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+    case 'random':
+      return [...cards].sort(() => Math.random() - 0.5);
+    case 'sequential':
+    default:
+      return [...cards];
+  }
+}
+
+function normalizeWriteAnswer(str: string): string {
+  return str
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim();
+}
+
+function levenshteinDistance(a: string, b: string): number {
+  const m = a.length;
+  const n = b.length;
+  const dp = Array.from({ length: m + 1 }, () => Array(n + 1).fill(0));
+  for (let i = 0; i <= m; i++) dp[i][0] = i;
+  for (let j = 0; j <= n; j++) dp[0][j] = j;
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost);
+    }
+  }
+  return dp[m][n];
+}
+
+function checkWriteAnswer(input: string, correct: string): WriteCheckResult {
+  const normalizedInput = normalizeWriteAnswer(input);
+  const normalizedCorrect = normalizeWriteAnswer(correct);
+  if (normalizedInput === normalizedCorrect) return 'correct';
+  if (levenshteinDistance(normalizedInput, normalizedCorrect) <= 2) return 'close';
+  return 'wrong';
+}
+
+function deckProgressKey(deckId: string): string {
+  return `deck_progress_${deckId}`;
+}
+
+function readDeckProgress(deckId: string): DeckProgressMap {
+  if (typeof window === 'undefined') return {};
+  try {
+    const raw = window.localStorage.getItem(deckProgressKey(deckId));
+    if (!raw) return {};
+    return JSON.parse(raw) as DeckProgressMap;
+  } catch {
+    return {};
+  }
+}
+
+function writeDeckProgress(deckId: string, progress: DeckProgressMap): void {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.setItem(deckProgressKey(deckId), JSON.stringify(progress));
+  } catch {
+    // ignore
+  }
+}
+
+function addDeckProgressEntry(deckId: string, entry: { correct?: number; wrong?: number; cards_seen?: number }): DeckProgressMap {
+  const today = new Date().toISOString().slice(0, 10);
+  const prev = readDeckProgress(deckId);
+  const day = prev[today] ?? { correct: 0, wrong: 0, cards_seen: 0 };
+  const next: DeckProgressMap = {
+    ...prev,
+    [today]: {
+      correct: day.correct + (entry.correct ?? 0),
+      wrong: day.wrong + (entry.wrong ?? 0),
+      cards_seen: day.cards_seen + (entry.cards_seen ?? 0),
+    },
+  };
+  writeDeckProgress(deckId, next);
+  return next;
+}
+
+function formatLanguageForImport(language?: string): string {
+  const code = (language ?? '').toUpperCase();
+  if (code === 'FR' || code === 'EN' || code === 'ES') return code;
+  return 'ES';
+}
+
+function encodeSharePayload(payload: ImportPayload): string {
+  return btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+}
+
+function decodeSharePayload(encoded: string): ImportPayload | null {
+  try {
+    const json = decodeURIComponent(escape(atob(encoded)));
+    const parsed = JSON.parse(json) as ImportPayload;
+    if (!parsed || typeof parsed !== 'object' || !Array.isArray(parsed.cards)) return null;
+    return {
+      name: typeof parsed.name === 'string' ? parsed.name : 'Paylasilan Deste',
+      language: typeof parsed.language === 'string' ? parsed.language : 'es',
+      cards: parsed.cards
+        .filter((c) => c && typeof c.front === 'string' && typeof c.back === 'string')
+        .map((c) => ({
+          front: c.front.trim(),
+          back: c.back.trim(),
+          example: typeof c.example === 'string' ? c.example.trim() : undefined,
+        }))
+        .filter((c) => c.front && c.back),
+    };
+  } catch {
+    return null;
+  }
 }
 
 /** Quiz sonuç modalı: başarı yüzdesi, doğru/yanlış, konfeti, Tekrar Oyna / Ana Sayfaya Dön */
@@ -246,10 +473,14 @@ function QuizResultModal({
 /** Kutlama ekranı: konfeti + sonuç + Setlere Dön / Tekrar Çalış */
 function FlashcardCelebration({
   cardCount,
+  mode,
+  summary,
   onBackToDeck,
   onRestart,
 }: {
   cardCount: number;
+  mode?: FlashcardStudyMode;
+  summary?: WriteSessionSummary;
   onBackToDeck: () => void;
   onRestart: () => void;
 }) {
@@ -284,6 +515,22 @@ function FlashcardCelebration({
         <span className="font-semibold text-indigo-600 dark:text-indigo-400 tabular-nums">{cardCount}</span>{' '}
         kart çalıştın.
       </p>
+      {mode === 'write' && summary && (
+        <div className="mb-8 grid grid-cols-3 gap-3 w-full max-w-md">
+          <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/20 px-4 py-3 text-center">
+            <p className="text-xs text-emerald-700 dark:text-emerald-300">Doğru</p>
+            <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400">{summary.correct}</p>
+          </div>
+          <div className="rounded-xl bg-amber-500/10 border border-amber-500/20 px-4 py-3 text-center">
+            <p className="text-xs text-amber-700 dark:text-amber-300">Neredeyse</p>
+            <p className="text-xl font-bold text-amber-600 dark:text-amber-400">{summary.close}</p>
+          </div>
+          <div className="rounded-xl bg-rose-500/10 border border-rose-500/20 px-4 py-3 text-center">
+            <p className="text-xs text-rose-700 dark:text-rose-300">Yanlış</p>
+            <p className="text-xl font-bold text-rose-600 dark:text-rose-400">{summary.wrong}</p>
+          </div>
+        </div>
+      )}
       <div className="flex flex-col sm:flex-row gap-3 w-full max-w-xs">
         <button
           type="button"
@@ -335,6 +582,20 @@ export default function EzberMakinesi() {
   const [cardIndex, setCardIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [flashcardFinished, setFlashcardFinished] = useState(false);
+  const flashcardRef = useRef<HTMLDivElement | null>(null);
+  const [cardStats, setCardStats] = useState<Record<string, CardStatsEntry>>(() => loadCardStats());
+  const [cardAudioEnabled, setCardAudioEnabled] = useState<boolean>(() => readCardAudioEnabled());
+  const [cardSortMode, setCardSortMode] = useState<CardSortMode>(() => readCardSortMode());
+  const [flashcardStudyMode, setFlashcardStudyMode] = useState<FlashcardStudyMode>('cards');
+  const [writeAnswer, setWriteAnswer] = useState('');
+  const [writeResult, setWriteResult] = useState<WriteCheckResult | null>(null);
+  const [writeSessionSummary, setWriteSessionSummary] = useState<WriteSessionSummary>({ correct: 0, close: 0, wrong: 0 });
+  const writeInputRef = useRef<HTMLInputElement | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [importPreview, setImportPreview] = useState<ImportPayload | null>(null);
+  const [detailTab, setDetailTab] = useState<'cards' | 'progress'>('cards');
+  const [deckProgress, setDeckProgress] = useState<DeckProgressMap>({});
   // Quiz mode
   const [quizIndex, setQuizIndex] = useState(0);
   const [quizAnswer, setQuizAnswer] = useState('');
@@ -356,17 +617,45 @@ export default function EzberMakinesi() {
   const loadDecks = useCallback(() => setDecks(getFlashcardDecks()), []);
   useEffect(() => { loadDecks(); }, [loadDecks]);
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    window.localStorage.setItem(CARD_AUDIO_ENABLED_KEY, String(cardAudioEnabled));
+  }, [cardAudioEnabled]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    window.localStorage.setItem(CARD_SORT_MODE_KEY, cardSortMode);
+  }, [cardSortMode]);
+
+  useEffect(() => {
+    if (view !== 'flashcard') return;
+    const id = requestAnimationFrame(() => {
+      flashcardRef.current?.focus();
+    });
+    return () => cancelAnimationFrame(id);
+  }, [view, cardIndex]);
+
   useEffect(() => () => {
     if (quizNextTimeoutRef.current) clearTimeout(quizNextTimeoutRef.current);
+  }, []);
+
+  const patchCardStats = useCallback((cardId: string, updater: (prev: CardStatsEntry) => CardStatsEntry) => {
+    setCardStats((prev) => {
+      const next = { ...prev, [cardId]: updater(prev[cardId] ?? defaultCardStats()) };
+      saveCardStats(next);
+      return next;
+    });
   }, []);
 
   const selectedDeck = selectedDeckId ? getFlashcardDeckById(selectedDeckId) : null;
   const cards = selectedDeck?.cards ?? [];
   /** Flashcard modunda sadece bugün tekrarlanacak kartlar (SRS due) */
   const cardsForFlashcard = useMemo(
-    () => getDueCards(selectedDeck?.cards ?? []),
-    [selectedDeck?.cards]
+    () => sortCards(getDueCards(selectedDeck?.cards ?? []), cardSortMode, cardStats),
+    [selectedDeck?.cards, cardSortMode, cardStats]
   );
+  const currentFlashcardCard = cardsForFlashcard[cardIndex] ?? null;
+  const currentFlashcardLang = getSpeechLang(selectedDeck?.language);
   /** Fill-blank modunda sadece örnek cümlesi olan kartlar; diğer modlarda tüm kartlar */
   const cardsForQuiz = useMemo(
     () => (quizMode === 'fill-blank' ? cards.filter((c) => c.example?.trim()) : cards),
@@ -374,6 +663,82 @@ export default function EzberMakinesi() {
   );
   const quizCard = cardsForQuiz[quizIndex];
   const hasAnyExample = cards.some((c) => c.example?.trim());
+
+  const showToast = useCallback((message: string) => {
+    setToastMessage(message);
+    if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
+    toastTimeoutRef.current = setTimeout(() => {
+      setToastMessage(null);
+      toastTimeoutRef.current = null;
+    }, TOAST_DURATION_MS);
+  }, []);
+
+  const recordDeckProgress = useCallback((deckId: string, entry: { correct?: number; wrong?: number; cards_seen?: number }) => {
+    const next = addDeckProgressEntry(deckId, entry);
+    setDeckProgress(next);
+  }, []);
+
+  useEffect(() => {
+    if (!selectedDeckId) {
+      setDeckProgress({});
+      return;
+    }
+    setDeckProgress(readDeckProgress(selectedDeckId));
+  }, [selectedDeckId]);
+
+  useEffect(() => {
+    if (view !== 'flashcard' || flashcardStudyMode !== 'write') return;
+    const id = requestAnimationFrame(() => {
+      writeInputRef.current?.focus();
+    });
+    return () => cancelAnimationFrame(id);
+  }, [view, flashcardStudyMode, cardIndex, writeResult]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const encoded = params.get('import');
+    if (!encoded) return;
+    const decoded = decodeSharePayload(encoded);
+    if (!decoded || decoded.cards.length === 0) {
+      params.delete('import');
+      window.history.replaceState({}, '', `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ''}`);
+      return;
+    }
+    setImportPreview(decoded);
+  }, []);
+
+  useEffect(() => {
+    if (view !== 'flashcard' || !currentFlashcardCard) return;
+    patchCardStats(currentFlashcardCard.id, (prev) => ({
+      ...prev,
+      lastSeen: new Date().toISOString(),
+    }));
+  }, [view, currentFlashcardCard?.id, patchCardStats]);
+
+  useEffect(() => {
+    if (view !== 'flashcard' || !currentFlashcardCard || !cardAudioEnabled) return;
+    speakCard(isFlipped ? currentFlashcardCard.back : currentFlashcardCard.front, currentFlashcardLang);
+  }, [
+    view,
+    currentFlashcardCard?.id,
+    currentFlashcardCard?.front,
+    currentFlashcardCard?.back,
+    isFlipped,
+    cardAudioEnabled,
+    currentFlashcardLang,
+  ]);
+
+  useEffect(() => {
+    if (view === 'flashcard') return;
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+  }, [view]);
+
+  useEffect(() => () => {
+    if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
+  }, []);
 
   /** Çoktan seçmeli: mevcut soru için 4 şık (sabit kalır) */
   const multipleChoiceOptions = useMemo(() => {
@@ -395,6 +760,7 @@ export default function EzberMakinesi() {
 
   const goToList = useCallback(() => {
     setView('list');
+    setDetailTab('cards');
     setSelectedDeckId(null);
     setFormTitle('');
     setFormFront('');
@@ -545,6 +911,7 @@ export default function EzberMakinesi() {
 
   const openDeck = useCallback((id: string) => {
     setSelectedDeckId(id);
+    setDetailTab('cards');
     setView('detail');
   }, []);
 
@@ -554,8 +921,100 @@ export default function EzberMakinesi() {
     setCardIndex(0);
     setIsFlipped(false);
     setFlashcardFinished(false);
+    setWriteAnswer('');
+    setWriteResult(null);
+    setWriteSessionSummary({ correct: 0, close: 0, wrong: 0 });
     setView('flashcard');
   }, []);
+
+  const clearImportQuery = useCallback(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    params.delete('import');
+    window.history.replaceState({}, '', `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ''}`);
+  }, []);
+
+  const handleImportDeck = useCallback(() => {
+    if (!importPreview) return;
+    createDeck(
+      importPreview.name,
+      importPreview.cards.map((c) => ({ front: c.front, back: c.back, example: c.example })),
+      formatLanguageForImport(importPreview.language)
+    );
+    loadDecks();
+    showToast(`'${importPreview.name}' iceri aktarıldı`);
+    setImportPreview(null);
+    clearImportQuery();
+  }, [importPreview, loadDecks, showToast, clearImportQuery]);
+
+  const handleCancelImport = useCallback(() => {
+    setImportPreview(null);
+    clearImportQuery();
+  }, [clearImportQuery]);
+
+  const handleCopyShareLink = useCallback(async (deck: FlashcardDeck) => {
+    if (deck.cards.length > 50) {
+      showToast('Bu deste cok buyuk, link olusturulamiyor (max 50 kart)');
+      return;
+    }
+    const payload: ImportPayload = {
+      name: deck.title,
+      language: (deck.language ?? 'ES').toLowerCase(),
+      cards: deck.cards.map((c) => ({ front: c.front, back: c.back, example: c.example })),
+    };
+    const encoded = encodeSharePayload(payload);
+    const url = `${window.location.origin}/ezber-makinesi?import=${encoded}`;
+    if (url.length > 2000) {
+      showToast('Bu deste cok buyuk, link olusturulamiyor (max 50 kart)');
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      showToast('Kopyalandi!');
+    } catch {
+      showToast('Link kopyalanamadi');
+    }
+  }, [showToast]);
+
+  const submitWriteAnswer = useCallback(() => {
+    if (!selectedDeckId || !currentFlashcardCard) return;
+    const result = checkWriteAnswer(writeAnswer, currentFlashcardCard.back);
+    setWriteResult(result);
+    patchCardStats(currentFlashcardCard.id, (prevStats) => ({
+      ...prevStats,
+      correctCount:
+        result === 'wrong' ? prevStats.correctCount : prevStats.correctCount + 1,
+      wrongCount: result === 'wrong' ? prevStats.wrongCount + 1 : prevStats.wrongCount,
+      streak:
+        result === 'correct'
+          ? prevStats.streak + 1
+          : result === 'close'
+            ? prevStats.streak
+            : 0,
+      lastSeen: new Date().toISOString(),
+    }));
+    setWriteSessionSummary((prev) => ({
+      correct: prev.correct + (result === 'correct' ? 1 : 0),
+      close: prev.close + (result === 'close' ? 1 : 0),
+      wrong: prev.wrong + (result === 'wrong' ? 1 : 0),
+    }));
+    recordDeckProgress(selectedDeckId, {
+      correct: result === 'wrong' ? 0 : 1,
+      wrong: result === 'wrong' ? 1 : 0,
+      cards_seen: 1,
+    });
+  }, [selectedDeckId, currentFlashcardCard, writeAnswer, patchCardStats, recordDeckProgress]);
+
+  const nextWriteCard = useCallback(() => {
+    if (!currentFlashcardCard) return;
+    setWriteAnswer('');
+    setWriteResult(null);
+    if (cardIndex < cardsForFlashcard.length - 1) {
+      setCardIndex((i) => i + 1);
+    } else {
+      setFlashcardFinished(true);
+    }
+  }, [cardIndex, cardsForFlashcard.length, currentFlashcardCard]);
 
   const handleEditDeck = useCallback(() => {
     setView('edit');
@@ -654,6 +1113,9 @@ export default function EzberMakinesi() {
     setCardIndex(0);
     setIsFlipped(false);
     setFlashcardFinished(false);
+    setWriteAnswer('');
+    setWriteResult(null);
+    setWriteSessionSummary({ correct: 0, close: 0, wrong: 0 });
     setView('flashcard');
   }, []);
 
@@ -695,6 +1157,7 @@ export default function EzberMakinesi() {
     const langFlag: Record<string, string> = { FR: '🇫🇷', ES: '🇪🇸', EN: '🇬🇧' };
 
     return (
+      <>
       <main className="max-w-5xl mx-auto px-4 py-6 pb-20">
         <h1 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-2">
           Ezber Makinesi
@@ -823,12 +1286,46 @@ export default function EzberMakinesi() {
           )}
         </div>
       </main>
+      {importPreview && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
+          <button type="button" className="absolute inset-0" aria-label="İçe aktarmayı kapat" onClick={handleCancelImport} />
+          <div className="relative z-10 w-full max-w-md rounded-2xl border border-slate-700 bg-slate-900 p-6 text-slate-100 shadow-2xl">
+            <h2 className="text-lg font-bold mb-2">Deste içe aktarılsın mı?</h2>
+            <p className="text-sm text-slate-300 mb-6">
+              {importPreview.cards.length} kartlı '{importPreview.name}' destesi içe aktarılsın mı?
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                type="button"
+                onClick={handleCancelImport}
+                className="rounded-xl border border-slate-600 px-4 py-2.5 text-sm font-medium text-slate-200 hover:bg-slate-800"
+              >
+                İptal
+              </button>
+              <button
+                type="button"
+                onClick={handleImportDeck}
+                className="rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-500"
+              >
+                İçe Aktar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {toastMessage && (
+        <div className="fixed bottom-4 left-1/2 z-50 -translate-x-1/2 rounded-full bg-slate-900/95 px-4 py-2 text-sm font-medium text-white shadow-xl">
+          {toastMessage}
+        </div>
+      )}
+      </>
     );
   }
 
   // —— Create deck (form: title + single add or bulk import) ——
   if (view === 'create') {
     return (
+      <>
       <main className="max-w-2xl mx-auto px-4 py-6 pb-20">
         <button
           type="button"
@@ -1077,6 +1574,12 @@ export default function EzberMakinesi() {
           </>
         )}
       </main>
+      {toastMessage && (
+        <div className="fixed bottom-4 left-1/2 z-50 -translate-x-1/2 rounded-full bg-slate-900/95 px-4 py-2 text-sm font-medium text-white shadow-xl">
+          {toastMessage}
+        </div>
+      )}
+      </>
     );
   }
 
@@ -1086,6 +1589,33 @@ export default function EzberMakinesi() {
     const learned = selectedDeck.cards.filter((c) => (c.repetition ?? 0) > 0 || (c.interval ?? 0) > 0).length;
     const total = selectedDeck.cards.length;
     const progressPercent = total ? Math.round((learned / total) * 100) : 0;
+    const progressEntries = Object.entries(deckProgress).sort(([a], [b]) => a.localeCompare(b));
+    const totalSeen = progressEntries.reduce((sum, [, day]) => sum + day.cards_seen, 0);
+    const totalCorrect = progressEntries.reduce((sum, [, day]) => sum + day.correct, 0);
+    const totalWrong = progressEntries.reduce((sum, [, day]) => sum + day.wrong, 0);
+    const accuracy = totalSeen ? Math.round((totalCorrect / Math.max(1, totalCorrect + totalWrong)) * 100) : 0;
+    let practiceStreak = 0;
+    for (let offset = 0; offset < 365; offset++) {
+      const d = new Date();
+      d.setDate(d.getDate() - offset);
+      const key = d.toISOString().slice(0, 10);
+      if ((deckProgress[key]?.cards_seen ?? 0) > 0) practiceStreak += 1;
+      else break;
+    }
+    const chartDays = Array.from({ length: 14 }, (_, idx) => {
+      const d = new Date();
+      d.setDate(d.getDate() - (13 - idx));
+      const key = d.toISOString().slice(0, 10);
+      const day = deckProgress[key] ?? { correct: 0, wrong: 0, cards_seen: 0 };
+      return {
+        key,
+        label: `${d.getDate()}/${d.getMonth() + 1}`,
+        ...day,
+      };
+    });
+    const maxSeen = Math.max(1, ...chartDays.map((d) => d.cards_seen));
+    const masteredCount = selectedDeck.cards.filter((card) => (cardStats[card.id]?.streak ?? 0) >= 5).length;
+    const masteredPct = total ? Math.round((masteredCount / total) * 100) : 0;
 
     return (
       <main className="max-w-2xl mx-auto px-4 py-6 pb-20">
@@ -1099,15 +1629,24 @@ export default function EzberMakinesi() {
 
         {/* Header: başlık, kelime sayısı, ilerleme, ayar butonu sağ üst */}
         <header className="relative rounded-2xl border border-slate-200/80 dark:border-slate-600/80 bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm p-6 mb-6 shadow-sm">
-          <button
-            type="button"
-            onClick={handleEditDeck}
-            className="absolute top-4 right-4 p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-500/10 dark:hover:bg-indigo-400/10 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-colors"
-            title="Seti düzenle"
-            aria-label="Seti düzenle"
-          >
-            <span className="text-xl leading-none" aria-hidden>⚙️</span>
-          </button>
+          <div className="absolute top-4 right-4 flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => handleCopyShareLink(selectedDeck)}
+              className="rounded-xl px-3 py-2 text-xs font-semibold text-indigo-600 dark:text-indigo-300 hover:bg-indigo-500/10 dark:hover:bg-indigo-400/10 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-colors"
+            >
+              Linki Kopyala
+            </button>
+            <button
+              type="button"
+              onClick={handleEditDeck}
+              className="p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-500/10 dark:hover:bg-indigo-400/10 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-colors"
+              title="Seti düzenle"
+              aria-label="Seti düzenle"
+            >
+              <span className="text-xl leading-none" aria-hidden>⚙️</span>
+            </button>
+          </div>
           <h1 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-1 pr-10">
             {selectedDeck.title}
           </h1>
@@ -1156,7 +1695,32 @@ export default function EzberMakinesi() {
           </button>
         </div>
 
-        {/* Setteki Kelimeler: Hızlı Ekle + liste */}
+        <div className="mb-4 flex gap-2">
+          <button
+            type="button"
+            onClick={() => setDetailTab('cards')}
+            className={`rounded-xl px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${
+              detailTab === 'cards'
+                ? 'bg-indigo-600 text-white'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+            }`}
+          >
+            Kartlar
+          </button>
+          <button
+            type="button"
+            onClick={() => setDetailTab('progress')}
+            className={`rounded-xl px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${
+              detailTab === 'progress'
+                ? 'bg-indigo-600 text-white'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+            }`}
+          >
+            İlerleme
+          </button>
+        </div>
+
+        {detailTab === 'cards' ? (
         <section className="rounded-2xl border border-slate-200/80 dark:border-slate-600/80 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm overflow-hidden shadow-sm">
           <h2 className="text-base font-semibold text-slate-800 dark:text-slate-100 px-5 py-4 border-b border-slate-200 dark:border-slate-600">
             Setteki Kelimeler
@@ -1290,6 +1854,68 @@ export default function EzberMakinesi() {
             )}
           </ul>
         </section>
+        ) : (
+        <section className="rounded-2xl border border-slate-200/80 dark:border-slate-600/80 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm overflow-hidden shadow-sm p-5">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
+            <div className="rounded-xl bg-slate-100/80 dark:bg-slate-800/70 px-4 py-4">
+              <p className="text-xs text-slate-500 dark:text-slate-400">Toplam</p>
+              <p className="text-lg font-bold text-slate-800 dark:text-slate-100">{totalSeen} kart</p>
+            </div>
+            <div className="rounded-xl bg-slate-100/80 dark:bg-slate-800/70 px-4 py-4">
+              <p className="text-xs text-slate-500 dark:text-slate-400">Doğruluk</p>
+              <p className="text-lg font-bold text-emerald-600 dark:text-emerald-400">%{accuracy}</p>
+            </div>
+            <div className="rounded-xl bg-slate-100/80 dark:bg-slate-800/70 px-4 py-4">
+              <p className="text-xs text-slate-500 dark:text-slate-400">Günlük seri</p>
+              <p className="text-lg font-bold text-orange-500">{practiceStreak} gün</p>
+            </div>
+          </div>
+          <div className="mb-6">
+            <div className="flex items-center justify-between gap-3 mb-2">
+              <p className="text-sm font-medium text-slate-700 dark:text-slate-200">Uzmanlaşılan kartlar</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400">{masteredCount} / {total} kart (%{masteredPct})</p>
+            </div>
+            <div className="h-3 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-indigo-500 transition-all duration-500"
+                style={{ width: `${masteredPct}%` }}
+              />
+            </div>
+          </div>
+          {totalSeen === 0 ? (
+            <p className="rounded-xl bg-slate-100/80 dark:bg-slate-800/70 px-4 py-6 text-center text-sm text-slate-500 dark:text-slate-400">
+              Henüz yeterli veri yok — çalışmaya devam et!
+            </p>
+          ) : (
+            <div className="rounded-2xl border border-slate-200/80 dark:border-slate-700/80 bg-white/70 dark:bg-slate-900/40 p-4 overflow-x-auto">
+              <svg viewBox="0 0 560 220" className="w-full min-w-[520px] h-auto">
+                {chartDays.map((day, idx) => {
+                  const x = 24 + idx * 38;
+                  const width = 24;
+                  const totalHeight = (day.cards_seen / maxSeen) * 140;
+                  const correctHeight = day.cards_seen > 0 ? (day.correct / day.cards_seen) * totalHeight : 0;
+                  const wrongHeight = Math.max(0, totalHeight - correctHeight);
+                  const baseY = 170;
+                  return (
+                    <g key={day.key}>
+                      <rect x={x} y={baseY - totalHeight} width={width} height={wrongHeight} rx={6} fill="rgba(244,63,94,0.75)" />
+                      <rect x={x} y={baseY - totalHeight} width={width} height={correctHeight} rx={6} fill="rgba(16,185,129,0.85)" />
+                      <text x={x + width / 2} y={195} textAnchor="middle" fontSize="10" fill="currentColor" className="text-slate-500">
+                        {day.label}
+                      </text>
+                    </g>
+                  );
+                })}
+                <line x1="18" y1="170" x2="550" y2="170" stroke="rgba(148,163,184,0.35)" />
+              </svg>
+              <div className="mt-3 flex flex-wrap gap-4 text-xs text-slate-500 dark:text-slate-400">
+                <span className="inline-flex items-center gap-2"><span className="inline-block w-3 h-3 rounded-sm bg-emerald-500" /> Doğru</span>
+                <span className="inline-flex items-center gap-2"><span className="inline-block w-3 h-3 rounded-sm bg-rose-500" /> Yanlış</span>
+              </div>
+            </div>
+          )}
+        </section>
+        )}
       </main>
     );
   }
@@ -1297,52 +1923,71 @@ export default function EzberMakinesi() {
   // —— Edit deck ——
   if (view === 'edit' && selectedDeckId) {
     return (
-      <main className="max-w-2xl mx-auto px-4 py-6 pb-20">
+      <div className="fixed inset-0 z-50 p-4 bg-black/60 backdrop-blur-md">
         <button
           type="button"
+          aria-label="Düzenlemeyi kapat"
           onClick={() => { setView('detail'); loadDecks(); }}
-          className="text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 mb-4"
-        >
-          ← Sete dön
-        </button>
-        <h1 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-4">
-          Seti düzenle
-        </h1>
-        <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">
-          Set adı
-        </label>
-        <input
-          type="text"
-          value={formTitle}
-          onChange={(e) => setFormTitle(e.target.value)}
-          className="w-full rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-3 text-slate-800 dark:text-slate-100 mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+          className="absolute inset-0"
         />
-        <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">
-          Kartlar (kelime - anlam, satır başına bir)
-        </label>
-        <textarea
-          value={formBulk}
-          onChange={(e) => setFormBulk(e.target.value)}
-          rows={12}
-          className="w-full rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-3 text-slate-800 dark:text-slate-100 font-mono text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
-        />
-        <div className="flex gap-3">
-          <button
-            type="button"
-            onClick={handleSaveEdit}
-            className="rounded-xl bg-indigo-600 text-white px-5 py-2.5 font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          >
-            Kaydet
-          </button>
-          <button
-            type="button"
-            onClick={handleDeleteDeck}
-            className="rounded-xl border border-red-300 dark:border-red-500/50 text-red-600 dark:text-red-400 px-5 py-2.5 font-medium hover:bg-red-50 dark:hover:bg-red-500/10 focus:outline-none focus:ring-2 focus:ring-red-500/50"
-          >
-            Seti sil
-          </button>
+        <div className="relative mx-auto flex w-full max-w-2xl max-h-[85vh] flex-col overflow-y-auto overscroll-contain rounded-2xl border border-slate-200/80 bg-white shadow-2xl dark:border-slate-700 dark:bg-slate-900">
+          <div className="px-4 py-4 sm:px-6 sm:py-5">
+            <button
+              type="button"
+              onClick={() => { setView('detail'); loadDecks(); }}
+              className="text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 mb-4"
+            >
+              ← Sete dön
+            </button>
+            <h1 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-4">
+              Seti düzenle
+            </h1>
+            <div className="pb-20">
+              <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">
+                Set adı
+              </label>
+              <input
+                type="text"
+                value={formTitle}
+                onChange={(e) => setFormTitle(e.target.value)}
+                className="w-full rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-3 text-slate-800 dark:text-slate-100 mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+              />
+              <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">
+                Kartlar (kelime - anlam, satır başına bir)
+              </label>
+              <textarea
+                value={formBulk}
+                onChange={(e) => setFormBulk(e.target.value)}
+                rows={12}
+                className="w-full rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-3 text-slate-800 dark:text-slate-100 font-mono text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+              />
+              <button
+                type="button"
+                onClick={handleDeleteDeck}
+                className="rounded-xl border border-red-300 dark:border-red-500/50 text-red-600 dark:text-red-400 px-5 py-2.5 font-medium hover:bg-red-50 dark:hover:bg-red-500/10 focus:outline-none focus:ring-2 focus:ring-red-500/50"
+              >
+                Seti sil
+              </button>
+            </div>
+          </div>
+          <div className="sticky bottom-0 flex gap-3 border-t border-slate-200 bg-white/95 px-4 py-4 backdrop-blur sm:px-6 dark:border-slate-700 dark:bg-slate-900/95">
+            <button
+              type="button"
+              onClick={() => { setView('detail'); loadDecks(); }}
+              className="rounded-xl border border-slate-300 dark:border-slate-600 px-5 py-2.5 font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400/50"
+            >
+              İptal
+            </button>
+            <button
+              type="button"
+              onClick={handleSaveEdit}
+              className="rounded-xl bg-indigo-600 text-white px-5 py-2.5 font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
+              Güncelle
+            </button>
+          </div>
         </div>
-      </main>
+      </div>
     );
   }
 
@@ -1351,6 +1996,8 @@ export default function EzberMakinesi() {
     return (
       <FlashcardCelebration
         cardCount={cardsForFlashcard.length}
+        mode={flashcardStudyMode}
+        summary={flashcardStudyMode === 'write' ? writeSessionSummary : undefined}
         onBackToDeck={() => {
           setFlashcardFinished(false);
           setView('detail');
@@ -1359,6 +2006,9 @@ export default function EzberMakinesi() {
           setFlashcardFinished(false);
           setCardIndex(0);
           setIsFlipped(false);
+          setWriteAnswer('');
+          setWriteResult(null);
+          setWriteSessionSummary({ correct: 0, close: 0, wrong: 0 });
         }}
       />
     );
@@ -1386,6 +2036,7 @@ export default function EzberMakinesi() {
   if (view === 'flashcard' && selectedDeck && cardsForFlashcard.length > 0 && cardIndex < cardsForFlashcard.length) {
     const sessionCards = cardsForFlashcard;
     const currentSessionCard = sessionCards[cardIndex];
+    const currentStats = cardStats[currentSessionCard.id] ?? defaultCardStats();
     const next = () => {
       if (cardIndex < sessionCards.length - 1) {
         setCardIndex(cardIndex + 1);
@@ -1417,6 +2068,18 @@ export default function EzberMakinesi() {
         easeFactor: update.easeFactor,
         nextReviewDate: update.nextReviewDate,
       });
+      patchCardStats(currentSessionCard.id, (prevStats) => ({
+        ...prevStats,
+        correctCount: rating === 'again' ? prevStats.correctCount : prevStats.correctCount + 1,
+        wrongCount: rating === 'again' ? prevStats.wrongCount + 1 : prevStats.wrongCount,
+        streak: rating === 'again' ? 0 : prevStats.streak + 1,
+        lastSeen: new Date().toISOString(),
+      }));
+      recordDeckProgress(selectedDeckId, {
+        correct: rating === 'again' ? 0 : 1,
+        wrong: rating === 'again' ? 1 : 0,
+        cards_seen: 1,
+      });
       if (rating === 'good' || rating === 'easy') addXP(5);
       loadDecks();
       next();
@@ -1426,16 +2089,33 @@ export default function EzberMakinesi() {
     const hardNext = computeSRSUpdate(currentSessionCard, 'hard');
     const goodNext = computeSRSUpdate(currentSessionCard, 'good');
     const easyNext = computeSRSUpdate(currentSessionCard, 'easy');
+    const handleFlashcardKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+      if (flashcardStudyMode === 'write') return;
+      if (e.key === ' ' || e.code === 'Space') {
+        e.preventDefault();
+        setIsFlipped((f) => !f);
+        return;
+      }
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        handleSRSRating('good');
+        return;
+      }
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        handleSRSRating('again');
+      }
+    };
+    const replayCurrentSide = (side: 'front' | 'back') => {
+      speakCard(side === 'front' ? currentSessionCard.front : currentSessionCard.back, currentFlashcardLang);
+    };
+    const insertAccentChar = (char: string) => {
+      setWriteAnswer((prev) => `${prev}${char}`);
+      requestAnimationFrame(() => writeInputRef.current?.focus());
+    };
 
     return (
       <main className="max-w-2xl mx-auto px-4 py-6 pb-20">
-        <FlashcardKeyboard
-          onFlip={() => setIsFlipped((f) => !f)}
-          onNext={next}
-          onPrev={prev}
-          canPrev={cardIndex > 0}
-          canNext={true}
-        />
         <div className="flex justify-start mb-4">
           <button
             type="button"
@@ -1449,30 +2129,125 @@ export default function EzberMakinesi() {
         <p className="text-sm text-slate-500 dark:text-slate-400 mb-2">
           {cardIndex + 1} / {sessionCards.length}
         </p>
+        <div className="mb-4 flex flex-wrap items-center gap-2">
+          {SORT_OPTIONS.map((opt) => (
+            <button
+              key={opt.id}
+              type="button"
+              onClick={() => {
+                setCardSortMode(opt.id);
+                setCardIndex(0);
+                setIsFlipped(false);
+              }}
+              className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${
+                cardSortMode === opt.id
+                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20'
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+        <div className="mb-4 flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white/70 px-3 py-2 dark:border-slate-700 dark:bg-slate-800/70">
+          <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Otomatik sesli okuma</span>
+          <button
+            type="button"
+            onClick={() => setCardAudioEnabled((v) => !v)}
+            aria-pressed={cardAudioEnabled}
+            className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${
+              cardAudioEnabled ? 'bg-indigo-600' : 'bg-slate-300 dark:bg-slate-600'
+            }`}
+          >
+            <span
+              className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${
+                cardAudioEnabled ? 'translate-x-6' : 'translate-x-1'
+              }`}
+            />
+          </button>
+        </div>
         <div className="w-full h-1 bg-slate-800 dark:bg-slate-700 rounded-full overflow-hidden mb-6">
           <div
             className="h-full bg-blue-500 dark:bg-blue-400 rounded-full transition-all duration-500 ease-out"
             style={{ width: `${progress * 100}%` }}
           />
         </div>
-        <div className="w-full min-h-[260px]" style={{ perspective: '1000px' }}>
+        <div className="mb-4 inline-flex rounded-xl bg-slate-100 p-1 dark:bg-slate-800">
           <button
             type="button"
+            onClick={() => {
+              setFlashcardStudyMode('cards');
+              setWriteAnswer('');
+              setWriteResult(null);
+            }}
+            className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+              flashcardStudyMode === 'cards'
+                ? 'bg-white text-slate-800 shadow-sm dark:bg-slate-700 dark:text-slate-100'
+                : 'text-slate-500 dark:text-slate-400'
+            }`}
+          >
+            Kartlar
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setFlashcardStudyMode('write');
+              setIsFlipped(false);
+              setWriteAnswer('');
+              setWriteResult(null);
+            }}
+            className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+              flashcardStudyMode === 'write'
+                ? 'bg-white text-slate-800 shadow-sm dark:bg-slate-700 dark:text-slate-100'
+                : 'text-slate-500 dark:text-slate-400'
+            }`}
+          >
+            Yaz
+          </button>
+        </div>
+        {flashcardStudyMode === 'cards' ? (
+        <div className="w-full min-h-[260px]" style={{ perspective: '1200px' }}>
+          <div
+            ref={flashcardRef}
+            tabIndex={0}
             onClick={() => setIsFlipped((f) => !f)}
-            className="w-full h-full min-h-[260px] rounded-2xl border-0 p-0 bg-transparent cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 dark:focus:ring-offset-slate-900 [perspective:1000px]"
+            onKeyDown={handleFlashcardKeyDown}
+            className="w-full h-full min-h-[260px] rounded-2xl border-0 p-0 bg-transparent cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 dark:focus:ring-offset-slate-900"
             aria-label={isFlipped ? 'Kartı çevir (ön yüz)' : 'Kartı çevir (arka yüz)'}
+            role="button"
+            aria-pressed={isFlipped}
           >
             <div
-              className="relative w-full h-full min-h-[260px] transition-transform duration-500 ease-in-out"
+              className="relative w-full h-full min-h-[260px]"
               style={{
                 transformStyle: 'preserve-3d',
                 transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+                transition: 'transform 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
               }}
             >
               <div
                 className="absolute inset-0 rounded-2xl border-2 border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 shadow-lg p-8 flex flex-col justify-center text-left"
-                style={{ backfaceVisibility: 'hidden', transform: 'rotateY(0deg)' }}
+                style={{
+                  backfaceVisibility: 'hidden',
+                  WebkitBackfaceVisibility: 'hidden',
+                  transform: 'rotateY(0deg)',
+                }}
               >
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    replayCurrentSide('front');
+                  }}
+                  className="absolute right-4 top-4 rounded-full p-2 text-slate-400 hover:bg-slate-100 hover:text-indigo-600 dark:text-slate-500 dark:hover:bg-slate-700 dark:hover:text-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                  aria-label="Ön yüzü tekrar seslendir"
+                >
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5 6 9H3v6h3l5 4V5Z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.5 8.5a5 5 0 0 1 0 7" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.5 5.5a9 9 0 0 1 0 13" />
+                  </svg>
+                </button>
                 <p className="text-sm text-slate-500 dark:text-slate-400 mb-2">Ön</p>
                 <p className="text-xl font-semibold text-slate-800 dark:text-slate-100">
                   {currentSessionCard.front}
@@ -1485,9 +2260,25 @@ export default function EzberMakinesi() {
                 className="absolute inset-0 rounded-2xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 shadow-lg p-8 flex flex-col justify-center text-left"
                 style={{
                   backfaceVisibility: 'hidden',
+                  WebkitBackfaceVisibility: 'hidden',
                   transform: 'rotateY(180deg)',
                 }}
               >
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    replayCurrentSide('back');
+                  }}
+                  className="absolute right-4 top-4 rounded-full p-2 text-slate-400 hover:bg-slate-100 hover:text-indigo-600 dark:text-slate-500 dark:hover:bg-slate-700 dark:hover:text-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                  aria-label="Arka yüzü tekrar seslendir"
+                >
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5 6 9H3v6h3l5 4V5Z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.5 8.5a5 5 0 0 1 0 7" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.5 5.5a9 9 0 0 1 0 13" />
+                  </svg>
+                </button>
                 <p className="text-sm text-slate-500 dark:text-slate-400 mb-2">Arka</p>
                 <p className="text-xl font-semibold text-slate-800 dark:text-slate-100">
                   {currentSessionCard.back}
@@ -1499,10 +2290,90 @@ export default function EzberMakinesi() {
                 )}
               </div>
             </div>
-          </button>
+          </div>
+        </div>
+        ) : (
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-900/50 p-6">
+          <div className="rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 mb-5">
+            <p className="text-sm text-slate-500 dark:text-slate-400 mb-2">Ön yüz</p>
+            <p className="text-2xl font-bold text-slate-800 dark:text-slate-100">{currentSessionCard.front}</p>
+          </div>
+          <div className="max-w-lg mx-auto">
+            <label className="block text-sm font-medium text-slate-600 dark:text-slate-300 text-center mb-3">
+              Arka yüzü yazın
+            </label>
+            <input
+              ref={writeInputRef}
+              type="text"
+              value={writeAnswer}
+              onChange={(e) => setWriteAnswer(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key !== 'Enter') return;
+                e.preventDefault();
+                if (writeResult) nextWriteCard();
+                else submitWriteAnswer();
+              }}
+              disabled={writeResult !== null}
+              placeholder="Cevabınız..."
+              className="w-full rounded-2xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 px-5 py-4 text-lg text-center text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+            />
+            {currentFlashcardLang === 'es-ES' && (
+              <div className="mt-3 flex flex-wrap justify-center gap-2">
+                {['á', 'é', 'í', 'ó', 'ú', 'ñ', 'ü', '¿', '¡'].map((char) => (
+                  <button
+                    key={char}
+                    type="button"
+                    onClick={() => insertAccentChar(char)}
+                    className="rounded-lg border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700"
+                  >
+                    {char}
+                  </button>
+                ))}
+              </div>
+            )}
+            {writeResult && (
+              <div
+                className={`mt-4 rounded-2xl border px-4 py-4 text-center ${
+                  writeResult === 'correct'
+                    ? 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/15 dark:text-emerald-300'
+                    : writeResult === 'close'
+                      ? 'border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-500/30 dark:bg-amber-500/15 dark:text-amber-300'
+                      : 'border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/15 dark:text-rose-300'
+                }`}
+              >
+                <p className="font-semibold">
+                  {writeResult === 'correct'
+                    ? 'Doğru!'
+                    : writeResult === 'close'
+                      ? `Neredeyse! Doğrusu: ${currentSessionCard.back}`
+                      : `Yanlış! Doğrusu: ${currentSessionCard.back}`}
+                </p>
+                {writeResult !== 'correct' && (
+                  <p className="mt-1 text-sm opacity-80">Sizin cevabınız: {writeAnswer || '(boş)'}</p>
+                )}
+              </div>
+            )}
+            <button
+              type="button"
+              onClick={() => (writeResult ? nextWriteCard() : submitWriteAnswer())}
+              className="mt-5 w-full rounded-xl bg-indigo-600 text-white py-3 font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
+              {writeResult ? (cardIndex < sessionCards.length - 1 ? 'Sonraki →' : 'Bitir') : 'Kontrol Et'}
+            </button>
+          </div>
+        </div>
+        )}
+        <div
+          className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1"
+          style={{ fontSize: 'var(--font-size-xs, 0.75rem)', color: 'var(--text-muted, #64748b)' }}
+        >
+          <span className="font-medium text-emerald-600">✓ {currentStats.correctCount}</span>
+          <span className="font-medium text-rose-600">✗ {currentStats.wrongCount}</span>
+          <span>Son: {formatSeenAgo(currentStats.lastSeen)}</span>
+          <span className="font-medium text-orange-500">🔥 {currentStats.streak}</span>
         </div>
 
-        {!isFlipped ? (
+        {flashcardStudyMode === 'cards' ? (!isFlipped ? (
           <div className="flex justify-between mt-6">
             <button
               type="button"
@@ -1557,7 +2428,7 @@ export default function EzberMakinesi() {
               </button>
             </div>
           </div>
-        )}
+        )) : null}
       </main>
     );
   }
