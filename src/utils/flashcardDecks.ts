@@ -7,6 +7,8 @@ export interface Flashcard {
   id: string;
   front: string;
   back: string;
+  /** Kartın oluşturulma zamanı (ISO) */
+  createdAt: string;
   /** Örnek cümle (opsiyonel); arka yüzde italik gösterilir */
   example?: string;
   /** Telaffuz ses kaydı (data URL); opsiyonel */
@@ -71,6 +73,19 @@ function todayString(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
+function nowIso(): string {
+  return new Date().toISOString();
+}
+
+function inferCreatedAt(cardId: string): string {
+  const ts = Number(cardId.split('-')[0]);
+  if (Number.isFinite(ts) && ts > 0) {
+    const d = new Date(ts);
+    if (!Number.isNaN(d.getTime())) return d.toISOString();
+  }
+  return nowIso();
+}
+
 export function defaultCard(
   front: string,
   back: string,
@@ -81,6 +96,7 @@ export function defaultCard(
     id: generateId(),
     front: front.trim(),
     back: back.trim(),
+    createdAt: nowIso(),
     example: example?.trim() || undefined,
     audioDataUrl: audioDataUrl || undefined,
     repetition: 0,
@@ -96,6 +112,7 @@ function normalizeCard(c: Partial<Flashcard> & { id: string; front: string; back
     id: c.id,
     front: c.front,
     back: c.back,
+    createdAt: c.createdAt ?? inferCreatedAt(c.id),
     example: c.example,
     audioDataUrl: c.audioDataUrl,
     repetition: c.repetition ?? 0,
@@ -122,12 +139,14 @@ export function getFlashcardDeckById(id: string): FlashcardDeck | null {
 /** Yeni deste oluşturur. */
 export function createDeck(
   title: string,
-  cards: { front: string; back: string; example?: string; audioDataUrl?: string }[]
+  cards: { front: string; back: string; example?: string; audioDataUrl?: string }[],
+  language?: string
 ): FlashcardDeck {
   const deck: FlashcardDeck = {
     id: generateId(),
     title: title.trim() || 'İsimsiz Set',
     cards: cards.map((c) => defaultCard(c.front, c.back, c.example, c.audioDataUrl)),
+    language: language?.trim() || undefined,
   };
   const decks = storageGet();
   decks.push(deck);
