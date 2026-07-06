@@ -7,7 +7,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import type { LucideIcon } from 'lucide-react';
-import { Menu, X, User, LogOut, Sun, Moon, Languages, BookOpen } from 'lucide-react';
+import { Menu, X, LogOut, Sun, Moon, Languages, BookOpen } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useThemeContext } from '../contexts/ThemeContext';
 import { useXp } from '../contexts/XpContext';
@@ -73,7 +73,6 @@ const MAIN_LINKS = [
   { to: '/sozluk', labelKey: 'nav.dictionary' },
   { to: '/fiil-laboratuvari', labelKey: 'nav.verbLab' },
   { to: '/ezber-makinesi', labelKey: 'nav.memorizer' },
-  { to: '/ogrenme', labelKey: 'nav.learning' },
 ] as const;
 
 const UI_LOCALE_FLAGS: { lng: 'tr' | 'es' | 'fr' | 'en'; flag: string }[] = [
@@ -90,18 +89,8 @@ type HamburgerLinkItem = {
   icon?: LucideIcon;
 };
 
-const HAMBURGER_LINKS: HamburgerLinkItem[] = [
-  { to: '/serbest', labelKey: 'nav.secondary.freeMode', labelFallback: 'Serbest Mod' },
-  { to: '/historia', labelKey: 'nav.secondary.historia', labelFallback: 'Historia Mode' },
-  { to: '/cloze-sprint', labelKey: 'nav.secondary.clozeSprint', labelFallback: 'Cloze Sprint' },
-  { to: '/okuma', labelKey: 'nav.secondary.reading', labelFallback: 'Okuma Pratiği' },
-  { to: '/haberler', labelKey: 'nav.secondary.news', labelFallback: 'Okuma Modu (Haberler)' },
-  { to: '/syntax-lab', labelKey: 'nav.secondary.syntaxLab', labelFallback: 'Cümle Laboratuvarı' },
-  { to: '/youtube-lab', labelKey: 'nav.secondary.youtubeLab', labelFallback: 'YouTube Lab' },
-  { to: '/simulator', labelKey: 'nav.secondary.simulator', labelFallback: 'Simülatör' },
-  { to: '/leaderboard', labelKey: 'nav.secondary.leaderboard', labelFallback: 'Ligler' },
-  { to: '/profil', labelKey: 'nav.secondary.profile', labelFallback: 'Profil', icon: User },
-];
+/** Odak conjugaison + sözlük olduğu için ikincil mod linkleri şimdilik boş; sayfalar devre dışı bırakıldı (App.tsx'e bakın). */
+const HAMBURGER_LINKS: HamburgerLinkItem[] = [];
 
 export type NavbarProps = {
   rightExtra?: React.ReactNode;
@@ -303,12 +292,6 @@ export default function Navbar({ onLoginClick, onLogoutClick, isLoggedIn, printH
                 </button>
               </div>
             )}
-            <Link
-              to="/pricing"
-              className="hidden md:flex px-5 py-2.5 rounded-lg text-sm font-medium bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-900 hover:from-amber-300 hover:via-yellow-300 hover:to-amber-400 shadow-md shadow-amber-500/25 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 dark:focus:ring-offset-[#0a0e17] items-center shrink-0 whitespace-nowrap"
-            >
-              🌟 {t('nav.goPro')}
-            </Link>
             <button
               type="button"
               onClick={() => setHamburgerOpen((o) => !o)}
@@ -385,19 +368,7 @@ export default function Navbar({ onLoginClick, onLogoutClick, isLoggedIn, printH
                   <div className="my-2 border-t border-slate-200/50 dark:border-white/10" />
                 </div>
 
-                <div className="lg:hidden flex flex-col gap-2 mb-1">
-                  <Link
-                    to="/pricing"
-                    onClick={closeHamburger}
-                    className="w-full min-h-[48px] flex items-center justify-center rounded-xl text-base font-bold bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-900 shadow-md"
-                  >
-                    🌟 {t('nav.goPro')}
-                  </Link>
-                </div>
-
-                {/* Cümle Laboratuvarı, Simülatör, Ligler, Profil */}
                 {HAMBURGER_LINKS.map(({ to, labelKey, labelFallback, icon: Icon }) => {
-                  if (to === '/profil' && !resolvedLoggedIn) return null;
                   const active = isActive(to);
                   const translated = labelKey ? t(labelKey) : '';
                   const label = (translated && translated !== labelKey) ? translated : (labelFallback ?? translated);
