@@ -1133,8 +1133,8 @@ export function Page() {
 
   useEffect(() => {
     const fn = () => setSpacedRepTick((x) => x + 1);
-    window.addEventListener('conjume-spaced-rep-changed', fn);
-    return () => window.removeEventListener('conjume-spaced-rep-changed', fn);
+    window.addEventListener('diloloji-spaced-rep-changed', fn);
+    return () => window.removeEventListener('diloloji-spaced-rep-changed', fn);
   }, []);
 
   const masteryQuizPronounOrder = useMemo(() => {
@@ -1395,8 +1395,8 @@ export function Page() {
         highlightId: selectedLanguage === 'es' || selectedLanguage === 'fr' ? selectedTense : undefined,
       });
     };
-    window.addEventListener('conjume:open-tense-cards', handler);
-    return () => window.removeEventListener('conjume:open-tense-cards', handler);
+    window.addEventListener('diloloji:open-tense-cards', handler);
+    return () => window.removeEventListener('diloloji:open-tense-cards', handler);
   }, [selectedLanguage, selectedTense]);
   const quizTenseMenuRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -2349,8 +2349,8 @@ export function Page() {
 
   useEffect(() => {
     const onMastery = () => setMasteryUiTick((n) => n + 1);
-    window.addEventListener('conjume-mastery-changed', onMastery);
-    return () => window.removeEventListener('conjume-mastery-changed', onMastery);
+    window.addEventListener('diloloji-mastery-changed', onMastery);
+    return () => window.removeEventListener('diloloji-mastery-changed', onMastery);
   }, []);
 
   useEffect(() => {
@@ -2750,7 +2750,7 @@ export function Page() {
         try {
           const tenseIds = tensesForLang.map((x) => x.id);
           if (isVerbFullyMastered(selectedLanguage, verbKey, tenseIds, pronounIds)) {
-            const tid = `conjume-full-mastery-${selectedLanguage}-${verbKey.toLowerCase()}`;
+            const tid = `diloloji-full-mastery-${selectedLanguage}-${verbKey.toLowerCase()}`;
             if (typeof sessionStorage !== 'undefined' && !sessionStorage.getItem(tid)) {
               sessionStorage.setItem(tid, '1');
               setToastMessage(t('verbLab.mastery.fullVerbToast', { verb: verbKey }));

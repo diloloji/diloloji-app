@@ -9,7 +9,7 @@
  *  4. Seans bittiğinde toplam skor, en zayıf zaman ve özet gösterilir.
  *
  * localStorage:
- *  - Seans sonuçları historiaProgress.ts içinden `conjume-historia-progress` anahtarı ile saklanır.
+ *  - Seans sonuçları historiaProgress.ts içinden `diloloji-historia-progress` anahtarı ile saklanır.
  *  - Doğru yanıt verildiğinde dailyGoal / activityHistory güncellenir (günlük seri).
  *  - Yanlış çekimler mistakeBank'a (verb + tense + pronoun) eklenir ve SRS tekrarına dahil olur.
  */
@@ -290,7 +290,7 @@ export default function HistoriaMode() {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-[#0a0e17] text-slate-900 dark:text-slate-100 transition-colors duration-300">
         <Helmet>
-          <title>Historia Mode — Conjume</title>
+          <title>Historia Mode — Diloloji</title>
         </Helmet>
         <Navbar />
         <div className="relative overflow-hidden">

@@ -4,7 +4,7 @@
 
 import type { AppLanguage } from './verbs';
 
-export const MASTERY_STORAGE_KEY = 'conjume-mastery-cells-v1';
+export const MASTERY_STORAGE_KEY = 'diloloji-mastery-cells-v1';
 
 export type MasteryRecord = {
   key: string;
@@ -37,7 +37,7 @@ const XP_BY_LEVEL: Record<number, number> = {
 
 function dispatchChanged() {
   if (typeof window === 'undefined') return;
-  window.dispatchEvent(new CustomEvent('conjume-mastery-changed'));
+  window.dispatchEvent(new CustomEvent('diloloji-mastery-changed'));
 }
 
 export function getTodayLocal(): string {

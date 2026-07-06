@@ -3,7 +3,7 @@
  * 20 seviye: eşik = o seviyeye giriş için minimum toplam XP.
  */
 
-const STORAGE_KEY = 'conjume-total-xp';
+const STORAGE_KEY = 'diloloji-total-xp';
 
 /** Level L için minimum toplam XP (L = 1..20). */
 export const LEVEL_ENTRY_XP: readonly number[] = [
@@ -138,9 +138,9 @@ export function getXPProgress(totalXP: number): XPProgress {
 }
 
 /** Günlük seri — localStorage anahtarları */
-const STREAK_KEY = 'conjume-streak';
-const LAST_ACTIVE_KEY = 'conjume-last-active-date';
-const BEST_STREAK_KEY = 'conjume-best-streak';
+const STREAK_KEY = 'diloloji-streak';
+const LAST_ACTIVE_KEY = 'diloloji-last-active-date';
+const BEST_STREAK_KEY = 'diloloji-best-streak';
 
 export function getBestStreakEver(): number {
   if (typeof window === 'undefined') return 0;
@@ -262,7 +262,7 @@ export function updateStreakInStorage(): { newStreak: number; didUpdate: boolean
   return { newStreak, didUpdate: true };
 }
 
-const XP_ACTIVITY_KEY = 'conjume-xp-activity';
+const XP_ACTIVITY_KEY = 'diloloji-xp-activity';
 
 export type XpActivityHistory = Record<string, number>;
 

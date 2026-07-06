@@ -120,8 +120,8 @@ export function XpProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!user?.id) return;
     const onRemote = () => hydrateFromSupabase(user.id);
-    window.addEventListener('conjume-remote-progress-loaded', onRemote);
-    return () => window.removeEventListener('conjume-remote-progress-loaded', onRemote);
+    window.addEventListener('diloloji-remote-progress-loaded', onRemote);
+    return () => window.removeEventListener('diloloji-remote-progress-loaded', onRemote);
   }, [user?.id, hydrateFromSupabase]);
 
   useEffect(() => {

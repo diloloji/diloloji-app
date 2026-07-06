@@ -8,7 +8,7 @@ import {
   type ReactNode,
 } from 'react';
 
-const STORAGE_KEY = 'conjume-theme';
+const STORAGE_KEY = 'diloloji-theme';
 type Theme = 'light' | 'dark';
 
 function getSystemTheme(): Theme {

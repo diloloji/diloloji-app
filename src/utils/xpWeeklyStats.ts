@@ -1,8 +1,8 @@
 /**
  * Haftalık maksimum combo (Pzt başlangıçlı hafta, yerel saat).
  */
-const WEEKLY_COMBO_KEY = 'conjume-weekly-max-combo';
-const ALLTIME_COMBO_KEY = 'conjume-alltime-max-combo';
+const WEEKLY_COMBO_KEY = 'diloloji-weekly-max-combo';
+const ALLTIME_COMBO_KEY = 'diloloji-alltime-max-combo';
 
 function readAllTimeCombo(): number {
   if (typeof window === 'undefined') return 0;

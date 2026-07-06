@@ -3,10 +3,10 @@
  */
 import { getTodayString } from './xpLevel';
 
-const KEY_FIRST_QUIZ_XP = 'conjume-xp-daily-first-quiz';
-const KEY_VERBS_DAY = 'conjume-xp-quiz-verbs-date';
-const KEY_VERBS_JSON = 'conjume-xp-quiz-verbs-json';
-const KEY_STREAK_MILESTONE = 'conjume-xp-streak-milestone-awarded';
+const KEY_FIRST_QUIZ_XP = 'diloloji-xp-daily-first-quiz';
+const KEY_VERBS_DAY = 'diloloji-xp-quiz-verbs-date';
+const KEY_VERBS_JSON = 'diloloji-xp-quiz-verbs-json';
+const KEY_STREAK_MILESTONE = 'diloloji-xp-streak-milestone-awarded';
 
 type VerbsDay = { date: string; verbs: string[] };
 

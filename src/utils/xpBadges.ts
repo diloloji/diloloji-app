@@ -2,8 +2,8 @@ import { getActivityHistory } from './activityHistory';
 import { getStreak } from './xpLevel';
 import { getWorkedVerbsCount } from './workedVerbs';
 
-const BADGES_STORAGE_KEY = 'conjume-badges-earned';
-const NIGHT_OWL_FLAG_KEY = 'conjume-session-after-23';
+const BADGES_STORAGE_KEY = 'diloloji-badges-earned';
+const NIGHT_OWL_FLAG_KEY = 'diloloji-session-after-23';
 
 const TA_PREFIX = 'diloloji-time-attack-scores';
 
@@ -112,7 +112,7 @@ export function earnBadge(id: BadgeId): boolean {
   persistEarned([...cur, id]);
   if (typeof window !== 'undefined') {
     window.dispatchEvent(
-      new CustomEvent('conjume-badge-unlocked', {
+      new CustomEvent('diloloji-badge-unlocked', {
         detail: { emoji: def.emoji, name: def.name },
       })
     );

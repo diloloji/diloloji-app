@@ -4,7 +4,7 @@
  * Unique key: verb + tense + pronoun (aynı soru tekrar eklenmez).
  * tense ve pronoun string (Fransızca/İspanyolca dil id'leri).
  */
-const STORAGE_KEY = 'conjume-mistake-bank';
+const STORAGE_KEY = 'diloloji-mistake-bank';
 
 const DEFAULT_EASE_FACTOR = 2.5;
 const MIN_EASE_FACTOR = 1.3;

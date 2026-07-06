@@ -1,7 +1,7 @@
 /**
  * AutoSpeakToggle — Otomatik sesli okuma aç/kapa düğmesi.
- * localStorage (conjume-speech-settings) üzerinden saklar, aynı window'daki
- * diğer toggle'lara "conjume:speech-settings" CustomEvent ile senkronize çalışır.
+ * localStorage (diloloji-speech-settings) üzerinden saklar, aynı window'daki
+ * diğer toggle'lara "diloloji:speech-settings" CustomEvent ile senkronize çalışır.
  */
 
 import { useEffect, useState } from 'react';

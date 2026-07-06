@@ -2,7 +2,7 @@
  * Aktivite geçmişi: Günlük doğru cevap sayıları (GitHub heatmap için).
  * Format: { 'YYYY-MM-DD': count, ... }
  */
-const STORAGE_KEY = 'conjume-activity-history';
+const STORAGE_KEY = 'diloloji-activity-history';
 
 export type ActivityHistory = Record<string, number>;
 

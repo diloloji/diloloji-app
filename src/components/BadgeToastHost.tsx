@@ -6,7 +6,7 @@ type Toast = { id: number; emoji: string; name: string };
 let toastSeq = 0;
 
 /**
- * Rozet kazanımı toast'ları — `conjume-badge-unlocked` CustomEvent dinler.
+ * Rozet kazanımı toast'ları — `diloloji-badge-unlocked` CustomEvent dinler.
  */
 export default function BadgeToastHost() {
   const [items, setItems] = useState<Toast[]>([]);
@@ -22,8 +22,8 @@ export default function BadgeToastHost() {
         setItems((t) => t.filter((x) => x.id !== id));
       }, 4200);
     };
-    window.addEventListener('conjume-badge-unlocked', onBadge);
-    return () => window.removeEventListener('conjume-badge-unlocked', onBadge);
+    window.addEventListener('diloloji-badge-unlocked', onBadge);
+    return () => window.removeEventListener('diloloji-badge-unlocked', onBadge);
   }, []);
 
   return (

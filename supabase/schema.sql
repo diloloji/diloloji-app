@@ -1,4 +1,4 @@
--- Conjume / Diloloji — Supabase şeması (SQL Editor’da çalıştırın).
+-- Diloloji — Supabase şeması (SQL Editor’da çalıştırın).
 -- Google OAuth: Dashboard → Authentication → Providers → Google; redirect:
 --   https://<PROJECT_REF>.supabase.co/auth/v1/callback
 

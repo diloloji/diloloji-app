@@ -1,7 +1,7 @@
 /**
  * Fiil laboratuvarında çalışılmış benzersiz fiiller (localStorage).
  */
-const STORAGE_KEY = 'conjume-worked-verbs-unique';
+const STORAGE_KEY = 'diloloji-worked-verbs-unique';
 
 function normalizeVerb(v: string): string {
   return v.trim().toLowerCase();

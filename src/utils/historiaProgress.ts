@@ -4,7 +4,7 @@
  */
 import type { TenseIdEs } from '../data/spanish';
 
-const STORAGE_KEY = 'conjume-historia-progress';
+const STORAGE_KEY = 'diloloji-historia-progress';
 const MAX_SESSIONS = 50;
 
 export interface HistoriaSessionResult {

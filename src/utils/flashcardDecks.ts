@@ -31,7 +31,7 @@ export interface FlashcardDeck {
   language?: string;
 }
 
-const STORAGE_KEY = 'conjume-flashcard-decks';
+const STORAGE_KEY = 'diloloji-flashcard-decks';
 
 function storageGet(): FlashcardDeck[] {
   if (typeof window === 'undefined') return [];

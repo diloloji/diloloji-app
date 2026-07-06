@@ -59,12 +59,12 @@ export default function XpProfileModal({ open, onClose, anchorRef }: Props) {
     if (!open) return;
     const refresh = () => setBadgeTick((t) => t + 1);
     const onStorage = (e: StorageEvent) => {
-      if (e.key === 'conjume-badges-earned') refresh();
+      if (e.key === 'diloloji-badges-earned') refresh();
     };
-    window.addEventListener('conjume-badge-unlocked', refresh);
+    window.addEventListener('diloloji-badge-unlocked', refresh);
     window.addEventListener('storage', onStorage);
     return () => {
-      window.removeEventListener('conjume-badge-unlocked', refresh);
+      window.removeEventListener('diloloji-badge-unlocked', refresh);
       window.removeEventListener('storage', onStorage);
     };
   }, [open]);

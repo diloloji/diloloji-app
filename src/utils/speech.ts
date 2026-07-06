@@ -11,7 +11,7 @@
  *     - Tarayıcı desteklemiyorsa `sttSupported === false`, Firefox gibi
  *
  * localStorage:
- *   conjume-speech-settings → { autoSpeak: boolean, lang: 'es-ES' | 'fr-FR' | ... }
+ *   diloloji-speech-settings → { autoSpeak: boolean, lang: 'es-ES' | 'fr-FR' | ... }
  */
 
 /* ───────────────────── Destek algılama ───────────────────── */
@@ -75,7 +75,7 @@ export interface SpeechSettings {
   autoSpeak: boolean;
 }
 
-const SETTINGS_KEY = 'conjume-speech-settings';
+const SETTINGS_KEY = 'diloloji-speech-settings';
 
 const DEFAULT_SETTINGS: SpeechSettings = {
   autoSpeak: true,
@@ -102,7 +102,7 @@ export function setSpeechSettings(patch: Partial<SpeechSettings>): SpeechSetting
     try {
       window.localStorage.setItem(SETTINGS_KEY, JSON.stringify(next));
       window.dispatchEvent(
-        new CustomEvent<SpeechSettings>('conjume:speech-settings', { detail: next })
+        new CustomEvent<SpeechSettings>('diloloji:speech-settings', { detail: next })
       );
     } catch {
       /* ignore */
@@ -120,10 +120,10 @@ export function subscribeSpeechSettings(listener: (s: SpeechSettings) => void): 
   const storageHandler = (e: StorageEvent) => {
     if (e.key === SETTINGS_KEY) listener(getSpeechSettings());
   };
-  window.addEventListener('conjume:speech-settings', handler);
+  window.addEventListener('diloloji:speech-settings', handler);
   window.addEventListener('storage', storageHandler);
   return () => {
-    window.removeEventListener('conjume:speech-settings', handler);
+    window.removeEventListener('diloloji:speech-settings', handler);
     window.removeEventListener('storage', storageHandler);
   };
 }

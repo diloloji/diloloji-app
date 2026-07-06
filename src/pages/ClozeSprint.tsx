@@ -9,7 +9,7 @@
  *  3. Summary — süre bitince overlay: toplam puan, doğru/yanlış, zayıf zaman,
  *     bugünün en iyi skoru. "Tekrar Oyna" yeni random 20 cümle seçer.
  *
- * localStorage: conjume-cloze-sprint (clozeProgress.ts).
+ * localStorage: diloloji-cloze-sprint (clozeProgress.ts).
  * Doğru cevap: günlük hedef (addActivityToday) güncellenir.
  * Yanlış cevap: mistakeBank'a kaydedilir (SRS tekrarına dahil).
  */
@@ -454,7 +454,7 @@ function IntroScreen({
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#0a0e17] text-slate-900 dark:text-slate-100 transition-colors duration-300">
       <Helmet>
-        <title>Cloze Sprint — Conjume</title>
+        <title>Cloze Sprint — Diloloji</title>
       </Helmet>
       <Navbar />
       <div className="relative overflow-hidden">

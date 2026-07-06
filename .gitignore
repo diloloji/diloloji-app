@@ -31,3 +31,6 @@ src/data/spanish_conjugation_overrides.json.bak.*
 *.njsproj
 *.sln
 *.sw?
+
+__pycache__/
+*.pyc

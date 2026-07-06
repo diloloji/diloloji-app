@@ -4,7 +4,7 @@
 import { getCachedAuthUserId } from '../lib/authSession';
 import { upsertUserFavorites } from '../lib/userProgressDb';
 
-const STORAGE_KEY = 'conjume-starred-verbs';
+const STORAGE_KEY = 'diloloji-starred-verbs';
 
 let cloudOverride: string[] | null = null;
 

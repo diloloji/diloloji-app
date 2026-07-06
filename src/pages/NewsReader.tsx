@@ -391,7 +391,7 @@ export default function NewsReader() {
   return (
     <div className="relative min-h-screen w-full overflow-x-hidden bg-white dark:bg-[#0a0e17] text-slate-900 dark:text-slate-100">
       <Helmet>
-        <title>Okuma Modu — Conjume</title>
+        <title>Okuma Modu — Diloloji</title>
       </Helmet>
       <Navbar />
 

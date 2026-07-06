@@ -12,35 +12,58 @@ import requests, urllib3
 
 urllib3.disable_warnings()
 
-GROQ_API_KEY = "***REMOVED-REVOKED-GROQ-KEY***"
+
+def _load_env_local():
+    """.env.local dosyasındaki KEY=VALUE satırlarını, zaten set edilmemişse ortama yükler."""
+    env_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".env.local")
+    if not os.path.exists(env_path):
+        return
+    with open(env_path, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, _, value = line.partition("=")
+            key = key.strip()
+            if key and key not in os.environ:
+                os.environ[key] = value.strip()
+
+
+_load_env_local()
+
+GROQ_API_KEY = os.environ.get("VITE_GROQ_API_KEY") or os.environ.get("GROQ_API_KEY")
+if not GROQ_API_KEY:
+    sys.exit("Hata: GROQ_API_KEY bulunamadı. .env.local içine VITE_GROQ_API_KEY=... ekleyin.")
+
 GROQ_VISION_URL = "https://api.groq.com/openai/v1/chat/completions"
 VISION_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct"
 
-OUTPUT_DIR = "/Users/aliaydin/Desktop/Conjume/diloloji/datos"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+OUTPUT_DIR = os.path.join(BASE_DIR, "datos")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 PDFS = [
     {
         "name": "uso-gramatica",
-        "path": "/Users/aliaydin/Desktop/Conjume/diloloji/kaynak-pdfler/uso-gramatica.pdf",
+        "path": os.path.join(BASE_DIR, "kaynak-pdfler", "uso-gramatica.pdf"),
         "focus": "gramer",
         "pages": list(range(4, 88)),
     },
     {
         "name": "espanol-2000-parte1",
-        "path": "/Users/aliaydin/Desktop/Conjume/diloloji/kaynak-pdfler/espanol-2000-parte1.pdf",
+        "path": os.path.join(BASE_DIR, "kaynak-pdfler", "espanol-2000-parte1.pdf"),
         "focus": "kelime+aliştırma",
         "pages": list(range(4, 139)),
     },
     {
         "name": "espanol-2000-parte2",
-        "path": "/Users/aliaydin/Desktop/Conjume/diloloji/kaynak-pdfler/espanol-2000-parte2.pdf",
+        "path": os.path.join(BASE_DIR, "kaynak-pdfler", "espanol-2000-parte2.pdf"),
         "focus": "kelime+aliştırma",
         "pages": list(range(4, 139)),
     },
     {
         "name": "nuevo-ven-1",
-        "path": "/Users/aliaydin/Desktop/Conjume/diloloji/kaynak-pdfler/nuevo-ven-1.pdf",
+        "path": os.path.join(BASE_DIR, "kaynak-pdfler", "nuevo-ven-1.pdf"),
         "focus": "diyalog+kültür+kelime",
         "pages": list(range(4, 151)),
     },
