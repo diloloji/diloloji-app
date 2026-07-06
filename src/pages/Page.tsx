@@ -55,7 +55,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTranslation } from 'react-i18next';
 import confetti from 'canvas-confetti';
-import { Info, BookOpen, Clock, Shuffle, Volume2 } from 'lucide-react';
+import { Info, BookOpen, Clock, Shuffle, Volume2, Star, Flame, FlaskConical, ChevronDown, ChevronUp, ChevronRight, SlidersHorizontal, Calendar, RotateCw, AlarmClock, ArrowRight } from 'lucide-react';
 import LearningCardDeck from '../components/LearningCardDeck';
 import EzberMakinesi from '../components/EzberMakinesi';
 import SurvivalMode from '../components/SurvivalMode';
@@ -4243,7 +4243,6 @@ export function Page() {
               title="İspanyolca"
               className={`lang-btn${selectedLanguage === 'es' ? ' active' : ''}`}
             >
-              <span aria-hidden>🇪🇸</span>
               <span>ES</span>
             </button>
             <button
@@ -4255,7 +4254,6 @@ export function Page() {
               title="Fransızca"
               className={`lang-btn${selectedLanguage === 'fr' ? ' active' : ''}`}
             >
-              <span aria-hidden>🇫🇷</span>
               <span>FR</span>
             </button>
           </div>
@@ -4268,14 +4266,19 @@ export function Page() {
           >
             <button
               type="button"
-              className="md:hidden list-none cursor-pointer rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-100/80 dark:bg-slate-800/80 px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 flex items-center justify-between w-full"
+              className="md:hidden list-none cursor-pointer rounded-xl bg-slate-50 dark:bg-white/5 px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 flex items-center justify-between w-full"
               onClick={() => setLeftPanelOpen((o) => !o)}
               aria-expanded={leftPanelOpen}
             >
-              ⚙ Fiil Seç
-              <span className={`inline-block transition-transform duration-200 ${leftPanelOpen ? 'rotate-180' : ''}`} aria-hidden>
-                ▼
+              <span className="flex items-center gap-2">
+                <SlidersHorizontal className="w-4 h-4 text-indigo-500 dark:text-indigo-400" strokeWidth={2} aria-hidden />
+                Fiil Seç
               </span>
+              <ChevronDown
+                className={`w-4 h-4 text-slate-400 dark:text-slate-500 transition-transform duration-200 ${leftPanelOpen ? 'rotate-180' : ''}`}
+                strokeWidth={2}
+                aria-hidden
+              />
             </button>
             <div
               className={
@@ -4283,7 +4286,7 @@ export function Page() {
               }
             >
             {/* Fiil arama + Zaman seçici */}
-            <section className="relative z-10 p-5 sm:p-6 rounded-2xl bg-white dark:bg-slate-800/80 shadow-md dark:shadow-none border border-slate-200 dark:border-slate-700/50 backdrop-blur-md transition-colors duration-300 shrink-0 overflow-visible" ref={autocompleteWrapRef}>
+            <section className="relative z-10 p-5 sm:p-6 rounded-2xl bg-white dark:bg-slate-800/80 shadow-md dark:shadow-none backdrop-blur-md transition-colors duration-300 shrink-0 overflow-visible" ref={autocompleteWrapRef}>
               <div className="flex flex-col gap-4">
             {/* Fiil girişi — relative + anchor ref (Portal pozisyonu için) */}
             <div className="flex-1 min-w-0 flex flex-col relative">
@@ -4330,7 +4333,7 @@ export function Page() {
                     }
                   }}
                   placeholder={selectedLanguage === 'es' ? 'Örn: comer, gitmek, yazmak...' : 'Örn: être, aller...'}
-                  className="absolute inset-0 w-full h-full rounded-xl border border-slate-200 dark:border-slate-700/50 bg-slate-50 dark:bg-slate-800/80 pl-4 pr-12 py-3 text-base text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 dark:focus:ring-indigo-400 dark:focus:border-indigo-400 transition-colors duration-300"
+                  className="absolute inset-0 w-full h-full rounded-xl bg-slate-50 dark:bg-white/5 pl-4 pr-12 py-3 text-base text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-colors duration-300"
                   aria-label={t('fiil_girin')}
                   aria-autocomplete="list"
                   aria-expanded={autocompleteSuggestions.length > 0 && !autocompleteClosed}
@@ -4375,7 +4378,7 @@ export function Page() {
                 <ul
                   id="autocomplete-list"
                   role="listbox"
-                  className="z-[9999] isolate rounded-xl border border-slate-200 dark:border-slate-700 border-indigo-500/30 bg-white dark:bg-slate-800 shadow-[0_10px_40px_rgba(0,0,0,0.3)] dark:shadow-[0_10px_40px_rgba(0,0,0,0.6)] overflow-hidden max-h-[min(16rem,60vh)] overflow-y-auto"
+                  className="z-[9999] isolate rounded-xl bg-white dark:bg-slate-800 shadow-[0_10px_40px_rgba(0,0,0,0.15)] dark:shadow-[0_10px_40px_rgba(0,0,0,0.6)] overflow-hidden max-h-[min(16rem,60vh)] overflow-y-auto"
                   style={{
                     position: 'fixed',
                     top: autocompletePosition.top,
@@ -4413,7 +4416,7 @@ export function Page() {
               <button
                 type="button"
                 onClick={() => setTenseDropdownOpen((o) => !o)}
-                className="w-full h-12 rounded-xl border border-slate-200 dark:border-slate-700/50 bg-slate-50 dark:bg-slate-800/80 px-4 py-3 text-left text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 dark:focus:ring-indigo-400 dark:focus:border-indigo-400 transition-colors duration-300 flex items-center justify-between gap-2"
+                className="w-full h-12 rounded-xl bg-slate-50 dark:bg-white/5 px-4 py-3 text-left text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-colors duration-300 flex items-center justify-between gap-2"
                 aria-label={t('zaman_secin')}
                 aria-expanded={tenseDropdownOpen}
                 aria-haspopup="listbox"
@@ -4427,7 +4430,7 @@ export function Page() {
               <div
                 role="listbox"
                 aria-labelledby="tense-trigger"
-                className={`absolute left-0 right-0 top-full mt-1 z-[100] rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl shadow-2xl overflow-hidden transition-all duration-200 ease-out ${
+                className={`absolute left-0 right-0 top-full mt-1 z-[100] rounded-2xl bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl shadow-2xl overflow-hidden transition-all duration-200 ease-out ${
                   tenseDropdownOpen ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-[0.98] pointer-events-none'
                 }`}
               >
@@ -4478,19 +4481,19 @@ export function Page() {
                   setShowFavorites((v) => !v);
                   setSelectedCEFRLevel(null);
                 }}
-                className={`w-full flex items-center justify-between gap-2 rounded-lg border py-2 px-3 text-xs font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${
+                className={`w-full flex items-center justify-between gap-2 rounded-lg py-2 px-3 text-xs font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${
                   showFavorites
-                    ? 'border-transparent bg-gradient-to-r from-amber-500 to-yellow-500 text-white shadow-md shadow-amber-500/25'
-                    : 'border-slate-200/50 dark:border-slate-700/40 bg-white/5 dark:bg-slate-800/30 text-slate-600 dark:text-slate-300 hover:text-amber-600 dark:hover:text-amber-400 hover:border-amber-400/40 dark:hover:border-amber-500/40 hover:bg-amber-50/50 dark:hover:bg-amber-500/5'
+                    ? 'bg-indigo-600 text-white shadow-sm'
+                    : 'bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10'
                 }`}
                 aria-expanded={showFavorites}
               >
                 <span className="flex items-center gap-1.5">
-                  <span aria-hidden>⭐</span>
+                  <Star className="w-3.5 h-3.5" strokeWidth={2} aria-hidden />
                   Favorilerim
                 </span>
                 <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold tabular-nums ${
-                  showFavorites ? 'bg-white/25 text-white' : 'bg-amber-500/15 text-amber-600 dark:text-amber-400'
+                  showFavorites ? 'bg-white/25 text-white' : 'bg-indigo-500/15 text-indigo-600 dark:text-indigo-400'
                 }`}>
                   {starredVerbs.length}
                 </span>
@@ -4507,8 +4510,8 @@ export function Page() {
                     className="overflow-hidden"
                   >
                     {starredVerbs.length === 0 ? (
-                      <p className="rounded-lg border border-dashed border-slate-200/60 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/40 px-3 py-3 text-xs text-slate-500 dark:text-slate-500 italic text-center">
-                        Henüz favori fiilin yok. Fiil kartındaki ⭐ ikonuna tıkla.
+                      <p className="rounded-lg bg-slate-50 dark:bg-white/5 px-3 py-3 text-xs text-slate-500 dark:text-slate-500 italic text-center">
+                        Henüz favori fiilin yok. Fiil kartındaki yıldız ikonuna tıkla.
                       </p>
                     ) : (
                       <div className="flex flex-wrap gap-1.5">
@@ -4522,12 +4525,10 @@ export function Page() {
                               setAutocompleteClosed(true);
                               loadVerb(verb);
                             }}
-                            className="group flex items-center gap-1 rounded-lg border border-amber-500/25 bg-amber-500/10 px-2.5 py-1 text-xs font-medium text-amber-700 dark:text-amber-300 hover:bg-amber-500/20 hover:border-amber-500/50 transition-all duration-150 focus:outline-none focus:ring-1 focus:ring-amber-500/50 active:scale-95"
+                            className="group flex items-center gap-1 rounded-lg bg-indigo-500/10 px-2.5 py-1 text-xs font-medium text-indigo-700 dark:text-indigo-300 hover:bg-indigo-500/20 transition-all duration-150 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 active:scale-95"
                             title={`${verb} çekimini göster`}
                           >
-                            <span className="text-[10px] opacity-70 group-hover:opacity-100 transition-opacity" aria-hidden>
-                              ⭐
-                            </span>
+                            <Star className="w-3 h-3 opacity-70 group-hover:opacity-100 transition-opacity" strokeWidth={2} aria-hidden />
                             {verb}
                           </button>
                         ))}
@@ -4549,10 +4550,10 @@ export function Page() {
                       key={lvl}
                       type="button"
                       onClick={() => setSelectedCEFRLevel(isActive ? null : lvl)}
-                      className={`flex-1 rounded-lg border py-1.5 text-xs font-bold tracking-wide transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${
+                      className={`flex-1 rounded-lg py-1.5 text-xs font-bold tracking-wide transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${
                         isActive
-                          ? `${CEFR_COLORS[lvl].btn} shadow-md border-transparent`
-                          : 'border-slate-200/50 dark:border-slate-700/40 bg-white/5 dark:bg-slate-800/30 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100/60 dark:hover:bg-slate-700/40'
+                          ? `${CEFR_COLORS[lvl].btn} shadow-sm`
+                          : 'bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/10'
                       }`}
                     >
                       {lvl}
@@ -4592,7 +4593,7 @@ export function Page() {
             {(selectedLanguage === 'es' || selectedLanguage === 'fr') && (
               <div className="flex flex-col gap-1.5">
                 {irregularVerbsForSelectedTense.length === 0 ? (
-                  <p className="rounded-md border border-dashed border-slate-200/60 dark:border-slate-700/50 px-2 py-2 text-[11px] text-slate-500 dark:text-slate-500 italic text-center">
+                  <p className="rounded-md bg-slate-50 dark:bg-white/5 px-2 py-2 text-[11px] text-slate-500 dark:text-slate-500 italic text-center">
                     Bu zamanda düzensiz fiil yok
                   </p>
                 ) : (
@@ -4609,9 +4610,11 @@ export function Page() {
                         className="flex min-w-0 flex-1 items-center gap-1.5 text-left text-[11px] font-medium text-slate-600 dark:text-slate-300 hover:text-violet-700 dark:hover:text-violet-300 rounded-md py-1 px-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/40"
                         aria-expanded={irregularLeftPanelOpen}
                       >
-                        <span className="text-slate-400 w-3 shrink-0" aria-hidden>
-                          {irregularLeftPanelOpen ? '▾' : '▶'}
-                        </span>
+                        {irregularLeftPanelOpen ? (
+                          <ChevronDown className="w-3 h-3 shrink-0 text-slate-400" strokeWidth={2} aria-hidden />
+                        ) : (
+                          <ChevronRight className="w-3 h-3 shrink-0 text-slate-400" strokeWidth={2} aria-hidden />
+                        )}
                         <span className="truncate">
                           {selectedLanguage === 'es'
                             ? formatSpanishIrregularSectionTitlePrefix(selectedTense as TenseIdEs)
@@ -4621,11 +4624,11 @@ export function Page() {
                       </button>
                       <button
                         type="button"
-                        className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-slate-300/70 dark:border-slate-600 text-[10px] text-slate-500 dark:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-slate-700/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/40"
+                        className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/40"
                         title="Bu zamanda düzenli paradigmadan sapma gösteren fiiller"
                         aria-label="Bilgi"
                       >
-                        ℹ
+                        <Info className="w-3.5 h-3.5" strokeWidth={2} aria-hidden />
                       </button>
                     </div>
 
@@ -4642,7 +4645,7 @@ export function Page() {
                                 setAutocompleteClosed(true);
                                 loadVerb(verb);
                               }}
-                              className="rounded-md border border-violet-500/30 bg-violet-500/[0.06] dark:bg-violet-500/10 px-2 py-0.5 text-[12px] font-medium text-violet-800 dark:text-violet-300 hover:bg-violet-500/15 transition-all duration-150 focus:outline-none focus:ring-1 focus:ring-violet-500/40 active:scale-95"
+                              className="rounded-md bg-violet-500/10 px-2 py-0.5 text-[12px] font-medium text-violet-800 dark:text-violet-300 hover:bg-violet-500/20 transition-all duration-150 focus:outline-none focus:ring-1 focus:ring-violet-500/40 active:scale-95"
                             >
                               {verb}
                             </button>
@@ -4670,14 +4673,16 @@ export function Page() {
                   type="button"
                   onClick={toggleHistoryPanel}
                   aria-expanded={historyPanelOpen}
-                  className="flex w-full items-center justify-between gap-2 border-b border-slate-200/70 dark:border-slate-700/50 pb-1.5 text-left rounded-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40"
+                  className="flex w-full items-center justify-between gap-2 pb-1.5 text-left rounded-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40"
                 >
                   <span className="text-[11px] font-medium text-slate-500 dark:text-slate-500 select-none tracking-wide">
                     GEÇMİŞ
                   </span>
-                  <span className="shrink-0 text-[10px] leading-none text-slate-400 dark:text-slate-500 tabular-nums" aria-hidden>
-                    {historyPanelOpen ? '▴' : '▾'}
-                  </span>
+                  {historyPanelOpen ? (
+                    <ChevronUp className="w-3.5 h-3.5 shrink-0 text-slate-400 dark:text-slate-500" strokeWidth={2} aria-hidden />
+                  ) : (
+                    <ChevronDown className="w-3.5 h-3.5 shrink-0 text-slate-400 dark:text-slate-500" strokeWidth={2} aria-hidden />
+                  )}
                 </button>
                 <div
                   className={`overflow-hidden transition-[max-height] duration-200 ease ${
@@ -4695,7 +4700,7 @@ export function Page() {
                           setAutocompleteClosed(true);
                           loadVerb(verb);
                         }}
-                        className="group flex items-center justify-between gap-2 rounded-md border border-slate-200/50 dark:border-slate-700/40 bg-white/5 dark:bg-slate-800/30 px-2 py-1 text-left hover:bg-slate-100/60 dark:hover:bg-slate-700/40 transition-all duration-150 focus:outline-none focus:ring-1 focus:ring-indigo-500/50"
+                        className="group flex items-center justify-between gap-2 rounded-md bg-slate-50 dark:bg-white/5 px-2 py-1 text-left hover:bg-slate-100 dark:hover:bg-white/10 transition-all duration-150 focus:outline-none focus:ring-1 focus:ring-indigo-500/50"
                       >
                         <span className="truncate text-[13px] text-slate-700 dark:text-slate-200">
                           <span className="font-medium">{verb}</span>
@@ -4744,9 +4749,10 @@ export function Page() {
             )}
 
             {(selectedLanguage === 'es' || selectedLanguage === 'fr') && (
-              <div className="flex flex-col gap-1.5 border-t border-slate-200/50 dark:border-slate-700/40 pt-3 mt-2">
-                <p className="text-[11px] font-bold tracking-wide text-red-700 dark:text-red-300 select-none">
-                  📅 {t('verbLab.mastery.todayReviews')}{' '}
+              <div className="flex flex-col gap-1.5 pt-3 mt-2">
+                <p className="flex items-center gap-1 text-[11px] font-bold tracking-wide text-red-700 dark:text-red-300 select-none">
+                  <Calendar className="w-3 h-3" strokeWidth={2} aria-hidden />
+                  {t('verbLab.mastery.todayReviews')}{' '}
                   <span className="tabular-nums text-red-600 dark:text-red-400">
                     ({masteryDueTodayAll.length})
                   </span>
@@ -4766,10 +4772,11 @@ export function Page() {
                             key={`mastery-due-${row.key}`}
                             type="button"
                             onClick={() => openMasteryDueRow(row)}
-                            className="flex flex-col items-start gap-0.5 rounded-md border border-red-500/25 dark:border-red-500/35 bg-red-500/[0.06] dark:bg-red-500/10 px-2 py-1.5 text-left hover:bg-red-500/15 dark:hover:bg-red-500/20 transition-colors focus:outline-none focus:ring-1 focus:ring-red-500/40"
+                            className="flex flex-col items-start gap-0.5 rounded-md bg-red-500/10 px-2 py-1.5 text-left hover:bg-red-500/15 dark:hover:bg-red-500/20 transition-colors focus:outline-none focus:ring-1 focus:ring-red-500/40"
                           >
-                            <span className="text-[11px] font-semibold text-red-800 dark:text-red-200">
-                              ⏰ {t('verbLab.mastery.reviewBadge')}
+                            <span className="flex items-center gap-1 text-[11px] font-semibold text-red-800 dark:text-red-200">
+                              <AlarmClock className="w-3 h-3" strokeWidth={2} aria-hidden />
+                              {t('verbLab.mastery.reviewBadge')}
                             </span>
                             <span className="text-[13px] font-semibold text-slate-800 dark:text-slate-100 capitalize">
                               {row.verb}
@@ -4794,9 +4801,10 @@ export function Page() {
             )}
 
             {(selectedLanguage === 'es' || selectedLanguage === 'fr') && spacedRepDueList.length > 0 && (
-              <div className="flex flex-col gap-1.5 border-t border-slate-200/50 dark:border-slate-700/40 pt-3 mt-2">
-                <p className="text-[11px] font-bold tracking-wide text-violet-700 dark:text-violet-300 select-none">
-                  🔁 Tekrar Zamanı{' '}
+              <div className="flex flex-col gap-1.5 pt-3 mt-2">
+                <p className="flex items-center gap-1 text-[11px] font-bold tracking-wide text-violet-700 dark:text-violet-300 select-none">
+                  <RotateCw className="w-3 h-3" strokeWidth={2} aria-hidden />
+                  Tekrar Zamanı{' '}
                   <span className="tabular-nums text-violet-600 dark:text-violet-400">({spacedRepDueList.length})</span>
                 </p>
                 <div className="flex flex-col gap-1 max-h-36 overflow-y-auto pr-0.5">
@@ -4809,7 +4817,7 @@ export function Page() {
                         key={`sprep-${row.verb}-${row.tense}-${row.person}`}
                         type="button"
                         onClick={() => openSpacedRepetitionRow(row)}
-                        className="flex flex-col items-start gap-0.5 rounded-md border border-violet-500/25 dark:border-violet-500/35 bg-violet-500/[0.06] dark:bg-violet-500/10 px-2 py-1.5 text-left hover:bg-violet-500/15 dark:hover:bg-violet-500/20 transition-colors focus:outline-none focus:ring-1 focus:ring-violet-500/40"
+                        className="flex flex-col items-start gap-0.5 rounded-md bg-violet-500/10 px-2 py-1.5 text-left hover:bg-violet-500/15 dark:hover:bg-violet-500/20 transition-colors focus:outline-none focus:ring-1 focus:ring-violet-500/40"
                       >
                         <span className="text-[13px] font-semibold text-slate-800 dark:text-slate-100 capitalize">
                           {row.verb}
@@ -4825,7 +4833,7 @@ export function Page() {
             )}
 
             {(selectedLanguage === 'es' || selectedLanguage === 'fr') && (
-              <div className="flex flex-col gap-2 border-t border-slate-200/50 dark:border-slate-700/40 pt-3 mt-2">
+              <div className="flex flex-col gap-2 pt-3 mt-2">
                 <p
                   className="text-[11px] font-bold tracking-wide text-slate-600 dark:text-slate-400 select-none cursor-help leading-snug"
                   title={zorlandiklarimStatsTitle}
@@ -4845,7 +4853,7 @@ export function Page() {
                           key={`${row.lang}-${row.verb}-${row.tense}-${row.person}`}
                           type="button"
                           onClick={() => openMistakeRow(row)}
-                          className="flex items-center justify-between gap-2 rounded-lg border border-rose-500/25 dark:border-rose-500/35 bg-rose-500/5 dark:bg-rose-500/10 px-2 py-1.5 text-left hover:bg-rose-500/15 dark:hover:bg-rose-500/20 transition-colors focus:outline-none focus:ring-1 focus:ring-rose-500/40"
+                          className="flex items-center justify-between gap-2 rounded-lg bg-rose-500/5 dark:bg-rose-500/10 px-2 py-1.5 text-left hover:bg-rose-500/15 dark:hover:bg-rose-500/20 transition-colors focus:outline-none focus:ring-1 focus:ring-rose-500/40"
                         >
                           <span className="truncate text-xs text-slate-700 dark:text-slate-200">
                             <span className="font-medium">{row.verb}</span>
@@ -4876,9 +4884,9 @@ export function Page() {
             </section>
             {/* Zaman açıklaması kartı — compact, seçilen zamana göre güncellenir */}
             {viewMode === 'detailed' && getTenseExplanation(selectedLanguage, selectedTense) && (
-              <div className="rounded-lg bg-blue-900/15 dark:bg-blue-900/25 border border-blue-500/25 dark:border-blue-400/30 px-3 py-2.5 flex flex-col gap-1.5 backdrop-blur-sm transition-all duration-200">
+              <div className="rounded-lg bg-indigo-50 dark:bg-indigo-500/10 px-3 py-2.5 flex flex-col gap-1.5 backdrop-blur-sm transition-all duration-200">
                 <div className="flex items-start gap-2">
-                  <Info className="w-4 h-4 shrink-0 text-slate-400 dark:text-slate-500 mt-0.5" strokeWidth={2} aria-hidden />
+                  <Info className="w-4 h-4 shrink-0 text-indigo-500 dark:text-indigo-400 mt-0.5" strokeWidth={2} aria-hidden />
                   <p className="text-xs text-slate-700 dark:text-slate-200 leading-snug">
                     {getTenseExplanation(selectedLanguage, selectedTense)?.shortDesc}
                   </p>
@@ -4887,7 +4895,7 @@ export function Page() {
                   <button
                     type="button"
                     onClick={() => setTenseDetailModalOpen(true)}
-                    className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-full bg-blue-600/30 border border-blue-500/40 text-blue-200 hover:bg-blue-600/50 transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                    className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-full bg-indigo-600 text-white hover:bg-indigo-700 dark:hover:bg-indigo-500 transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
                     aria-label="Zaman açıklaması detayı (modal)"
                   >
                     Detaylı İncele
@@ -4896,10 +4904,11 @@ export function Page() {
                     to={`/ogrenme#zaman-${selectedTense}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-full bg-slate-600/30 dark:bg-slate-500/30 border border-slate-500/40 dark:border-slate-400/40 text-slate-200 dark:text-slate-200 hover:bg-slate-600/50 dark:hover:bg-slate-500/50 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-white/20 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
                     aria-label="Zaman anlatım sayfası (yeni sekme)"
                   >
-                    Yeni sekmede aç ➔
+                    Yeni sekmede aç
+                    <ArrowRight className="w-3 h-3" strokeWidth={2} aria-hidden />
                   </Link>
                 </div>
               </div>
@@ -5221,17 +5230,17 @@ export function Page() {
 
         {/* Boş durum + Öğrenme/Alıştırma — tek kart; Basit modda üst boşluk minimum */}
         {mode !== 'review' && mode !== 'starred' && (
-          <section className={`rounded-2xl bg-white dark:bg-slate-800/80 shadow-md dark:shadow-none border border-slate-200 dark:border-slate-700/50 overflow-visible backdrop-blur-md transition-all duration-300 min-h-[400px] print:shadow-none print:border print:border-slate-200 ${viewMode === 'simple' ? 'mb-4 mt-0 pt-2' : 'mb-4 mt-6 md:mt-0'}`}>
+          <section className={`rounded-2xl bg-white dark:bg-slate-800/80 shadow-md dark:shadow-none overflow-visible backdrop-blur-md transition-all duration-300 min-h-[400px] print:shadow-none print:border print:border-slate-200 ${viewMode === 'simple' ? 'mb-4 mt-0 pt-2' : 'mb-4 mt-6 md:mt-0'}`}>
             {/* Kart başlığı sekmeleri — her zaman görünür (Basit ve Detaylı) */}
-            <div className="flex justify-start md:justify-center overflow-x-auto overflow-y-hidden scrollbar-hide print:hidden pt-3 pb-2 sm:pt-4 sm:pb-3 px-1 -mx-1 scroll-pl-2 scroll-pr-2">
-              <div className="flex items-center gap-1 p-1 bg-slate-800/60 backdrop-blur-sm border border-slate-700 rounded-full w-max min-w-0 flex-nowrap shadow-inner max-w-[100vw] px-1" role="tablist" aria-label="Mod">
+            <div className="flex justify-start md:justify-center overflow-x-auto overflow-y-hidden scrollbar-hide print:hidden pt-3 sm:pt-4 px-1 -mx-1 scroll-pl-2 scroll-pr-2 border-b border-slate-100 dark:border-white/5">
+              <div className="flex items-center gap-4 sm:gap-6 w-max min-w-0 flex-nowrap max-w-[100vw] px-2" role="tablist" aria-label="Mod">
               <button
                 type="button"
                 onClick={() => setMode('learning')}
-                className={`min-h-[44px] px-4 py-2 md:px-5 md:py-2 rounded-full text-base md:text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer shrink-0 touch-manipulation ${
+                className={`min-h-[44px] px-1 py-2.5 text-base md:text-sm font-medium transition-colors duration-200 cursor-pointer shrink-0 touch-manipulation border-b-2 -mb-px ${
                   mode === 'learning'
-                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
-                    : 'bg-transparent text-slate-400 hover:text-slate-200'
+                    ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400'
+                    : 'border-transparent text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'
                 }`}
                 title="Alt+L"
               >
@@ -5240,10 +5249,10 @@ export function Page() {
               <button
                 type="button"
                 onClick={() => setMode('quiz')}
-                className={`min-h-[44px] px-4 py-2 md:px-5 md:py-2 rounded-full text-base md:text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer shrink-0 touch-manipulation ${
+                className={`min-h-[44px] px-1 py-2.5 text-base md:text-sm font-medium transition-colors duration-200 cursor-pointer shrink-0 touch-manipulation border-b-2 -mb-px ${
                   mode === 'quiz'
-                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
-                    : 'bg-transparent text-slate-400 hover:text-slate-200'
+                    ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400'
+                    : 'border-transparent text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'
                 }`}
                 title="Alt+Q"
               >
@@ -5252,10 +5261,10 @@ export function Page() {
               <button
                 type="button"
                 onClick={() => setMode('time-attack')}
-                className={`min-h-[44px] px-4 py-2 md:px-5 md:py-2 rounded-full text-base md:text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer shrink-0 touch-manipulation ${
+                className={`min-h-[44px] px-1 py-2.5 text-base md:text-sm font-medium transition-colors duration-200 cursor-pointer shrink-0 touch-manipulation border-b-2 -mb-px ${
                   mode === 'time-attack'
-                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
-                    : 'bg-transparent text-slate-400 hover:text-slate-200'
+                    ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400'
+                    : 'border-transparent text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'
                 }`}
                 title={t('verbLab.modes.timeAttack')}
               >
@@ -5264,10 +5273,10 @@ export function Page() {
               <button
                 type="button"
                 onClick={() => setMode('compare')}
-                className={`min-h-[44px] px-4 py-2 md:px-5 md:py-2 rounded-full text-base md:text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer shrink-0 touch-manipulation ${
+                className={`min-h-[44px] px-1 py-2.5 text-base md:text-sm font-medium transition-colors duration-200 cursor-pointer shrink-0 touch-manipulation border-b-2 -mb-px ${
                   mode === 'compare'
-                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
-                    : 'bg-transparent text-slate-400 hover:text-slate-200'
+                    ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400'
+                    : 'border-transparent text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'
                 }`}
                 title={t('verbLab.modes.compare')}
               >
@@ -5277,10 +5286,10 @@ export function Page() {
                 type="button"
                 onClick={() => setMode('mastery')}
                 disabled={!verbKey || (selectedLanguage !== 'es' && selectedLanguage !== 'fr')}
-                className={`min-h-[44px] px-4 py-2 md:px-5 md:py-2 rounded-full text-base md:text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer shrink-0 touch-manipulation disabled:opacity-40 disabled:cursor-not-allowed ${
+                className={`min-h-[44px] px-1 py-2.5 text-base md:text-sm font-medium transition-colors duration-200 cursor-pointer shrink-0 touch-manipulation border-b-2 -mb-px disabled:opacity-40 disabled:cursor-not-allowed ${
                   mode === 'mastery'
-                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/10'
-                    : 'bg-transparent text-slate-400 hover:text-slate-200'
+                    ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400'
+                    : 'border-transparent text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'
                 }`}
                 title={t('verbLab.modes.mastery')}
               >
@@ -5985,9 +5994,9 @@ export function Page() {
 
             {!verbKey && mode !== 'time-attack' && mode !== 'compare' && mode !== 'mastery' && (
               <div className="p-6 sm:p-10 flex items-center justify-center min-h-[280px]">
-                <div className="w-full max-w-lg rounded-2xl border border-slate-200/80 dark:border-slate-600/80 bg-white/60 dark:bg-slate-800/50 backdrop-blur-md shadow-lg shadow-slate-200/50 dark:shadow-slate-900/50 px-6 py-8 text-center">
-                  <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-slate-100/80 dark:bg-slate-700/80 text-slate-500 dark:text-slate-400 mb-4 text-3xl" aria-hidden>
-                    🧪
+                <div className="w-full max-w-lg rounded-2xl bg-slate-50 dark:bg-white/5 backdrop-blur-md px-6 py-8 text-center">
+                  <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-500 dark:text-indigo-400 mb-4" aria-hidden>
+                    <FlaskConical className="w-6 h-6" strokeWidth={2} />
                   </div>
                   <p className="text-slate-800 dark:text-slate-100 font-bold text-lg">
                     {t('verb_lab_ready')}
@@ -5996,8 +6005,9 @@ export function Page() {
                     {t('verb_lab_empty_subtitle')}
                   </p>
                   <div className="mt-6 flex flex-col items-center gap-3">
-                    <p className="text-sm text-slate-400 dark:text-slate-500">
-                      🔥 {t('verb_lab_popular_label')}:
+                    <p className="flex items-center gap-1.5 text-sm text-slate-400 dark:text-slate-500">
+                      <Flame className="w-3.5 h-3.5" strokeWidth={2} aria-hidden />
+                      {t('verb_lab_popular_label')}:
                     </p>
                     <div className="flex flex-wrap justify-center gap-2">
                       {(selectedLanguage === 'fr' ? ['être', 'avoir', 'aller', 'faire', 'pouvoir'] : ['ser', 'estar', 'ir', 'hacer', 'tener']).map((verb) => (
@@ -6008,7 +6018,7 @@ export function Page() {
                             setVerbInput(verb);
                             loadVerb(verb);
                           }}
-                          className="px-4 py-2 rounded-full bg-slate-200/90 dark:bg-slate-800/50 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:scale-105 hover:bg-indigo-600 hover:border-indigo-500 hover:text-white hover:shadow-lg hover:shadow-indigo-500/20 active:scale-95 transition-all duration-200 ease-out cursor-pointer text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                          className="px-4 py-2 rounded-full bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-300 hover:scale-105 hover:bg-indigo-600 hover:text-white hover:shadow-lg hover:shadow-indigo-500/20 active:scale-95 transition-all duration-200 ease-out cursor-pointer text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
                         >
                           {verb}
                         </button>

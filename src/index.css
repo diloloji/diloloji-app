@@ -190,7 +190,7 @@ select optgroup {
 /* Fiil uygulaması: dil seçici — mobilde dokunma için daha yüksek */
 @layer components {
   .lang-switcher {
-    @apply inline-flex items-stretch gap-0.5 rounded-full border border-slate-200/90 dark:border-slate-600/80 bg-slate-100/50 dark:bg-slate-800/50 p-0.5;
+    @apply inline-flex items-stretch gap-0.5 rounded-full bg-slate-100/70 dark:bg-white/5 p-0.5;
     max-height: none;
   }
   @media (min-width: 768px) {
