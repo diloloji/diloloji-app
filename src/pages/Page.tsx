@@ -59,7 +59,6 @@ import { Info, BookOpen, Clock, Shuffle, Volume2 } from 'lucide-react';
 import LearningCardDeck from '../components/LearningCardDeck';
 import EzberMakinesi from '../components/EzberMakinesi';
 import SurvivalMode from '../components/SurvivalMode';
-import AuthModal from '../components/AuthModal';
 import Navbar from '../components/Navbar';
 import AccentKeyboard from '../components/AccentKeyboard';
 import PronunciationButton from '../components/PronunciationButton';
@@ -1298,9 +1297,6 @@ export function Page() {
   const [tenseDetailModalOpen, setTenseDetailModalOpen] = useState(false);
   const [addToSetOpen, setAddToSetOpen] = useState(false);
   const addToSetRef = useRef<HTMLDivElement>(null);
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  /** Üyelik sistemi: şimdilik mock — true yaparak giriş yapmış kullanıcıyı simüle edebilirsin */
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   /** Zamana Karşı (Arcade): zorluk, süre (soru başına), soru, skor, combo, can, oyun bitti */
   const [timeAttackDifficulty, setTimeAttackDifficulty] = useState<TimeAttackDifficulty | null>(null);
@@ -4124,10 +4120,7 @@ export function Page() {
       </Helmet>
       <Navbar
         printHide
-        isLoggedIn={isLoggedIn}
-        onLoginClick={() => setShowAuthModal(true)}
-        onLogoutClick={() => setIsLoggedIn(false)}
-        rightExtra={isLoggedIn ? (
+        rightExtra={user ? (
           <>
             <button type="button" onClick={() => setShowActivityModal(true)} className="flex items-center gap-0.5 text-[10px] uppercase tracking-wider text-slate-400 dark:text-slate-500 tabular-nums hover:text-amber-600 dark:hover:text-amber-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-1.5 py-1" title="Aktivite haritası" aria-label="Puan ve aktivite haritası">
               <span aria-live="polite">{totalScore}</span>
@@ -8829,14 +8822,6 @@ export function Page() {
           </div>
         );
       })()}
-
-      {/* Giriş / Kayıt modali (mock — backend bağlanmadan önce sadece UI) */}
-      <AuthModal
-        isOpen={showAuthModal}
-        onClose={() => setShowAuthModal(false)}
-        onLogin={() => setIsLoggedIn(true)}
-        onRegister={() => setIsLoggedIn(true)}
-      />
     </div>
   );
 }

@@ -1,6 +1,8 @@
 /**
  * Haftalık maksimum combo (Pzt başlangıçlı hafta, yerel saat).
  */
+import { isGamificationEnabled } from './gamificationGate';
+
 const WEEKLY_COMBO_KEY = 'diloloji-weekly-max-combo';
 const ALLTIME_COMBO_KEY = 'diloloji-alltime-max-combo';
 
@@ -59,6 +61,7 @@ function readWeeklyCombo(): { week: string; max: number } {
 }
 
 export function recordWeeklyCombo(combo: number): void {
+  if (!isGamificationEnabled()) return;
   if (typeof window === 'undefined' || combo <= 0) return;
   const currentWeek = mondayKey(new Date());
   let { week, max } = readWeeklyCombo();
