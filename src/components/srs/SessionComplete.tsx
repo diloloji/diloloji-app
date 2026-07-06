@@ -3,11 +3,10 @@
  * XP ekleme çağıran bileşende (bir kez addXP) yapılmalı; burada yalnızca gösterim.
  */
 
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import { Trophy, RotateCcw } from 'lucide-react';
-import { useXp } from '../../contexts/XpContext';
 
 function motivationForAccuracy(percent: number): string {
   if (percent >= 100) return 'Mükemmel! 🏆';
@@ -33,22 +32,12 @@ export interface SessionCompleteProps {
 export default function SessionComplete({
   deckTitle,
   accuracyPercent,
-  xpEarned,
   elapsedSeconds,
   gradeRow,
   subtitle,
   onFinish,
   onStudyAgain,
 }: SessionCompleteProps) {
-  const { addXP } = useXp();
-  const xpGranted = useRef(false);
-
-  useEffect(() => {
-    if (xpGranted.current || xpEarned <= 0) return;
-    xpGranted.current = true;
-    addXP(xpEarned);
-  }, [xpEarned, addXP]);
-
   useEffect(() => {
     if (accuracyPercent < 80) return;
     const duration = 2400;
@@ -102,23 +91,6 @@ export default function SessionComplete({
         <h2 className="mb-1 text-2xl font-bold text-white">Oturum Tamamlandı!</h2>
         <p className="mb-2 text-sm text-slate-400">{deckTitle}</p>
         <p className="mb-4 text-base font-semibold text-amber-200/90">{msg}</p>
-
-        <motion.div
-          className="mb-6 rounded-2xl border border-amber-500/30 bg-gradient-to-br from-amber-500/15 to-orange-500/10 px-6 py-5"
-          initial={{ scale: 0.85, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ type: 'spring', stiffness: 400, damping: 22, delay: 0.1 }}
-        >
-          <p className="text-xs font-medium uppercase tracking-wider text-amber-400/80">Kazanılan XP</p>
-          <motion.p
-            className="text-4xl font-black tabular-nums text-amber-300"
-            initial={{ scale: 0.5 }}
-            animate={{ scale: [0.5, 1.15, 1] }}
-            transition={{ duration: 0.55, ease: 'easeOut' }}
-          >
-            +{xpEarned}
-          </motion.p>
-        </motion.div>
 
         <div className="mb-6 grid grid-cols-2 gap-3">
           <div className="rounded-xl border border-white/10 bg-white/5 py-3">

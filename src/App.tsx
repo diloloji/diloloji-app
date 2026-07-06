@@ -1,21 +1,8 @@
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Page } from './pages/Page';
-import HomePage from './pages/HomePage';
 import Dictionary from './pages/Dictionary';
-import LearningPath from './pages/LearningPath';
 import MemorizationMachine from './pages/MemorizationMachine';
-import Roleplay from './pages/Roleplay';
-import SyntaxLab from './pages/SyntaxLab';
-import Profile from './pages/Profile';
-import Leaderboard from './pages/Leaderboard';
-import Pricing from './pages/Pricing';
-import YouTubeLab from './pages/YouTubeLab';
-import ReadingPractice from './pages/ReadingPractice';
-import NewsReader from './pages/NewsReader';
-import HistoriaMode from './pages/HistoriaMode';
-import ClozeSprint from './pages/ClozeSprint';
-import TodaysSession from './pages/TodaysSession';
 import { useEffect } from 'react';
 import { XpProvider } from './contexts/XpContext';
 import { AuthProvider } from './contexts/AuthContext';
@@ -27,50 +14,24 @@ import OnboardingWizard from './components/OnboardingWizard';
 import BottomNav from './components/BottomNav';
 import { updateDocumentTitle } from './utils/dailyGoal';
 
+/**
+ * Odak: conjugaison + sözlük. Diğer modlar (roleplay, syntax lab, YouTube lab,
+ * okuma/haberler, historia, cloze sprint, learning path, home/pricing/profil vs.)
+ * geçici olarak devre dışı — sayfa dosyaları src/pages altında duruyor, istenirse
+ * buraya route olarak geri eklenebilir.
+ */
 function getPageElement(pathname: string) {
   switch (pathname) {
     case '/':
-      return <Page />;
-    case '/home':
-      return <TodaysSession />;
-    case '/serbest':
-    case '/anasayfa':
-      return <HomePage />;
-    case '/login':
-      return <Navigate to="/" replace />;
     case '/fiil-laboratuvari':
       return <Page />;
     case '/ezber-makinesi':
       return <MemorizationMachine />;
     case '/sozluk':
       return <Dictionary />;
-    case '/ogrenme':
-      return <LearningPath />;
-    case '/simulator':
-      return <Roleplay />;
-    case '/syntax-lab':
-    case '/cumle-analizi':
-      return <SyntaxLab />;
-    case '/youtube-lab':
-      return <YouTubeLab />;
-    case '/okuma':
-      return <ReadingPractice />;
-    case '/haberler':
-      return <NewsReader />;
-    case '/historia':
-      return <HistoriaMode />;
-    case '/cloze-sprint':
-      return <ClozeSprint />;
-    case '/profil':
-      return <Profile />;
-    case '/leaderboard':
-      return <Leaderboard />;
-    case '/fiyatlandirma':
-    case '/pricing':
-    case '/paketler':
-      return <Pricing />;
+    case '/login':
+      return <Navigate to="/" replace />;
     default:
-      if (pathname.startsWith('/ogrenme/')) return <LearningPath />;
       return <Navigate to="/" replace />;
   }
 }

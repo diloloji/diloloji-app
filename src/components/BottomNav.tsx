@@ -1,16 +1,15 @@
 /**
- * Mobil alt navigasyon çubuğu: Sözlük, Fiil Lab, Ezber, Profil.
+ * Mobil alt navigasyon çubuğu: Sözlük, Fiil Lab, Ezber.
  * Sadece md (768px) altında görünür.
  */
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { BookOpen, FlaskConical, Brain, User } from 'lucide-react';
+import { BookOpen, FlaskConical, Brain } from 'lucide-react';
 
 const ITEMS = [
   { to: '/sozluk', labelKey: 'bottomNav.dictionary' as const, icon: BookOpen },
   { to: '/fiil-laboratuvari', labelKey: 'bottomNav.verbLab' as const, icon: FlaskConical },
   { to: '/ezber-makinesi', labelKey: 'bottomNav.memorizer' as const, icon: Brain },
-  { to: '/profil', labelKey: 'bottomNav.profile' as const, icon: User },
 ] as const;
 
 export default function BottomNav() {

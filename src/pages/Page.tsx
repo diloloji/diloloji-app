@@ -51,6 +51,7 @@ import { tryUnlockPerfectionistBadge, runTimeAttackBadgeChecks, tryUnlockComboKi
 import { recordWeeklyCombo } from '../utils/xpWeeklyStats';
 import { getFlashcardDecks, addCardToDeck, type FlashcardDeck } from '../utils/flashcardDecks';
 import { useXp } from '../contexts/XpContext';
+import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTranslation } from 'react-i18next';
 import confetti from 'canvas-confetti';
@@ -910,7 +911,16 @@ export function Page() {
   /** Uygulama modu: URL'den türetilir */
   const appMode: AppMode = location.pathname === '/ezber-makinesi' ? 'ezber' : 'conjugation';
 
-  const { addXP, showFloatingXp, level } = useXp();
+  const { user } = useAuth();
+  const { addXP: rawAddXP, showFloatingXp: rawShowFloatingXp, level } = useXp();
+  /** XP sadece giriş yapmış kullanıcılar için kazanılır (misafirler için no-op). */
+  const addXP = useCallback((amount: number) => (user ? rawAddXP(amount) : 0), [user, rawAddXP]);
+  const showFloatingXp = useCallback(
+    (text: string, x: number, y: number) => {
+      if (user) rawShowFloatingXp(text, x, y);
+    },
+    [user, rawShowFloatingXp]
+  );
   const { t } = useTranslation();
 
   const difficultyConfig = useMemo((): Record<TimeAttackDifficulty, DifficultyConfig> => {

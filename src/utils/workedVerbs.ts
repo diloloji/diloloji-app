@@ -1,6 +1,8 @@
 /**
  * Fiil laboratuvarında çalışılmış benzersiz fiiller (localStorage).
  */
+import { isGamificationEnabled } from './gamificationGate';
+
 const STORAGE_KEY = 'diloloji-worked-verbs-unique';
 
 function normalizeVerb(v: string): string {
@@ -8,6 +10,7 @@ function normalizeVerb(v: string): string {
 }
 
 export function recordWorkedVerb(verbKey: string): void {
+  if (!isGamificationEnabled()) return;
   const n = normalizeVerb(verbKey);
   if (!n) return;
   if (typeof window === 'undefined') return;

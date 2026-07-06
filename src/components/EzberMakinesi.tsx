@@ -552,7 +552,7 @@ function FlashcardCelebration({
 }
 
 export default function EzberMakinesi() {
-  const { addXP, level, title, xpProgress } = useXp();
+  const { level, title, xpProgress } = useXp();
   const [decks, setDecks] = useState<FlashcardDeck[]>([]);
   const [view, setView] = useState<View>('list');
   const [selectedDeckId, setSelectedDeckId] = useState<string | null>(null);
@@ -2080,7 +2080,6 @@ export default function EzberMakinesi() {
         wrong: rating === 'again' ? 1 : 0,
         cards_seen: 1,
       });
-      if (rating === 'good' || rating === 'easy') addXP(5);
       loadDecks();
       next();
     };
