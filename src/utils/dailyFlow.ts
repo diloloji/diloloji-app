@@ -7,7 +7,7 @@
  *  - last_active_date   : string   — en son akışın tamamlandığı gün (YYYY-MM-DD)
  *  - today_completed    : boolean  — bugünkü akış tamamlandı mı?
  *
- * SRS verisi `conjume-mistake-bank` anahtarı üzerinden mistakeBank.ts tarafından yönetilir;
+ * SRS verisi `diloloji-mistake-bank` anahtarı üzerinden mistakeBank.ts tarafından yönetilir;
  *  burada yalnızca `getDueMistakesByPriority()` ile okunur.
  *
  * Gece yarısı davranışı: `ensureFreshDay()` çağrıldığında last_active_date bugünden eski ise

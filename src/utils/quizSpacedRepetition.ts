@@ -3,7 +3,7 @@
  * Yanlış: 1→1g, 2→3g, 3+→7g; doğru: interval 2x, wrongCount sıfırlanır.
  */
 
-const STORAGE_KEY = 'conjume-quiz-spaced-rep-v1';
+const STORAGE_KEY = 'diloloji-quiz-spaced-rep-v1';
 
 export type QuizSpacedRepetitionEntry = {
   verb: string;
@@ -21,7 +21,7 @@ export type QuizSpacedRepetitionEntry = {
 
 function dispatchChanged() {
   if (typeof window === 'undefined') return;
-  window.dispatchEvent(new CustomEvent('conjume-spaced-rep-changed'));
+  window.dispatchEvent(new CustomEvent('diloloji-spaced-rep-changed'));
 }
 
 function getTodayLocal(): string {

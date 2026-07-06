@@ -157,8 +157,8 @@ export default function Navbar({ onLoginClick, onLogoutClick, isLoggedIn, printH
 
   useEffect(() => {
     const open = () => setIsLoginModalOpen(true);
-    window.addEventListener('conjume-open-auth-modal', open);
-    return () => window.removeEventListener('conjume-open-auth-modal', open);
+    window.addEventListener('diloloji-open-auth-modal', open);
+    return () => window.removeEventListener('diloloji-open-auth-modal', open);
   }, []);
 
   useEffect(() => {
@@ -425,7 +425,7 @@ export default function Navbar({ onLoginClick, onLogoutClick, isLoggedIn, printH
                   type="button"
                   onClick={() => {
                     closeHamburger();
-                    window.dispatchEvent(new CustomEvent('conjume:open-tense-cards'));
+                    window.dispatchEvent(new CustomEvent('diloloji:open-tense-cards'));
                   }}
                   className="w-full py-3 px-4 rounded-xl text-left text-sm font-medium flex items-center gap-2 bg-slate-100/80 dark:bg-white/5 text-slate-700 dark:text-slate-200 hover:bg-slate-200/80 dark:hover:bg-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
                 >

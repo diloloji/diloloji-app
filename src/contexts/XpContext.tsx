@@ -29,6 +29,7 @@ import { runBadgeChecksAfterXp } from '../utils/xpBadges';
 import BadgeToastHost from '../components/BadgeToastHost';
 import { useAuth } from './AuthContext';
 import { fetchUserXpRow, upsertUserXpRow, upsertActivityLogDay } from '../lib/userProgressDb';
+import { setGamificationEnabled } from '../utils/gamificationGate';
 
 export type FloatingXpItem = { id: number; text: string; x: number; y: number };
 
@@ -64,8 +65,12 @@ export function XpProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
 
   useEffect(() => {
-    runBadgeChecksAfterXp();
-  }, []);
+    setGamificationEnabled(!!user);
+  }, [user]);
+
+  useEffect(() => {
+    if (user) runBadgeChecksAfterXp();
+  }, [user]);
 
   const [totalXP, setTotalXP] = useState(getTotalXP);
   const [streak, setStreak] = useState(getStreak);
@@ -120,8 +125,8 @@ export function XpProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!user?.id) return;
     const onRemote = () => hydrateFromSupabase(user.id);
-    window.addEventListener('conjume-remote-progress-loaded', onRemote);
-    return () => window.removeEventListener('conjume-remote-progress-loaded', onRemote);
+    window.addEventListener('diloloji-remote-progress-loaded', onRemote);
+    return () => window.removeEventListener('diloloji-remote-progress-loaded', onRemote);
   }, [user?.id, hydrateFromSupabase]);
 
   useEffect(() => {

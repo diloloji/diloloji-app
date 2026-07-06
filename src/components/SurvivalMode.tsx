@@ -8,7 +8,7 @@ import { SPANISH_VERBS } from '../data/spanish-data';
 import { getConjugationForTenseForLang } from '../conjugation/helpers';
 import { TENSES_ES, PRONOUNS_ES, type TenseIdEs } from '../data/spanish';
 
-const STORAGE_KEY = 'conjume-survival-v1';
+const STORAGE_KEY = 'diloloji-survival-v1';
 const ROUND_MS = 10_000;
 const PR_IDS = PRONOUNS_ES.map((p) => p.id);
 

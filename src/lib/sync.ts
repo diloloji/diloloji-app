@@ -22,17 +22,17 @@ import {
 } from '../utils/xpLevel';
 import { getStarredVerbs } from '../utils/starredVerbs';
 
-const BEST_STREAK_KEY = 'conjume-best-streak';
+const BEST_STREAK_KEY = 'diloloji-best-streak';
 
 /** Girişte buluta taşınan / çıkışta geri yüklenen anahtarlar */
-export const CONJUME_SYNC_STORAGE_KEYS = [
-  'conjume-total-xp',
-  'conjume-streak',
-  'conjume-last-active-date',
-  'conjume-best-streak',
-  'conjume-xp-activity',
+export const DILOLOJI_SYNC_STORAGE_KEYS = [
+  'diloloji-total-xp',
+  'diloloji-streak',
+  'diloloji-last-active-date',
+  'diloloji-best-streak',
+  'diloloji-xp-activity',
   MASTERY_STORAGE_KEY,
-  'conjume-starred-verbs',
+  'diloloji-starred-verbs',
 ] as const;
 
 function hasMeaningfulLocalProgress(): boolean {
@@ -127,7 +127,7 @@ export async function syncLocalProgressToSupabase(userId: string): Promise<void>
   }
 
   if (hasMeaningfulLocalProgress()) {
-    for (const k of CONJUME_SYNC_STORAGE_KEYS) {
+    for (const k of DILOLOJI_SYNC_STORAGE_KEYS) {
       try {
         window.localStorage.removeItem(k);
       } catch {
@@ -136,8 +136,8 @@ export async function syncLocalProgressToSupabase(userId: string): Promise<void>
     }
   }
 
-  window.dispatchEvent(new CustomEvent('conjume-remote-progress-loaded'));
-  window.dispatchEvent(new CustomEvent('conjume-mastery-changed'));
+  window.dispatchEvent(new CustomEvent('diloloji-remote-progress-loaded'));
+  window.dispatchEvent(new CustomEvent('diloloji-mastery-changed'));
 }
 
 /**
@@ -155,7 +155,7 @@ export async function syncSupabaseProgressToLocal(userId: string): Promise<void>
       /* ignore */
     }
     try {
-      window.localStorage.setItem('conjume-xp-activity', JSON.stringify(row.xp_activity ?? {}));
+      window.localStorage.setItem('diloloji-xp-activity', JSON.stringify(row.xp_activity ?? {}));
     } catch {
       /* ignore */
     }
@@ -165,7 +165,7 @@ export async function syncSupabaseProgressToLocal(userId: string): Promise<void>
   const xpHist = getXpActivityHistory();
   const merged = mergeXpActivity(xpHist, log);
   try {
-    window.localStorage.setItem('conjume-xp-activity', JSON.stringify(merged));
+    window.localStorage.setItem('diloloji-xp-activity', JSON.stringify(merged));
   } catch {
     /* ignore */
   }
@@ -179,11 +179,11 @@ export async function syncSupabaseProgressToLocal(userId: string): Promise<void>
 
   const fav = await fetchUserFavorites(userId);
   try {
-    window.localStorage.setItem('conjume-starred-verbs', JSON.stringify(fav));
+    window.localStorage.setItem('diloloji-starred-verbs', JSON.stringify(fav));
   } catch {
     /* ignore */
   }
 
-  window.dispatchEvent(new CustomEvent('conjume-remote-progress-loaded'));
-  window.dispatchEvent(new CustomEvent('conjume-mastery-changed'));
+  window.dispatchEvent(new CustomEvent('diloloji-remote-progress-loaded'));
+  window.dispatchEvent(new CustomEvent('diloloji-mastery-changed'));
 }

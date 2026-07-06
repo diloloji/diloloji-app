@@ -17,7 +17,7 @@ export default function GuestBanner() {
         </span>
         <button
           type="button"
-          onClick={() => window.dispatchEvent(new CustomEvent('conjume-open-auth-modal'))}
+          onClick={() => window.dispatchEvent(new CustomEvent('diloloji-open-auth-modal'))}
           className="shrink-0 rounded-lg bg-amber-500/90 px-3 py-1 text-xs font-semibold text-slate-900 hover:bg-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-300"
         >
           Giriş Yap

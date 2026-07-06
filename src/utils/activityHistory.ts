@@ -2,7 +2,9 @@
  * Aktivite geçmişi: Günlük doğru cevap sayıları (GitHub heatmap için).
  * Format: { 'YYYY-MM-DD': count, ... }
  */
-const STORAGE_KEY = 'conjume-activity-history';
+import { isGamificationEnabled } from './gamificationGate';
+
+const STORAGE_KEY = 'diloloji-activity-history';
 
 export type ActivityHistory = Record<string, number>;
 
@@ -51,6 +53,7 @@ export function getActivityHistory(): ActivityHistory {
 
 /** Bugünün tarihi için sayacı n artırır (her doğru cevapta 1). */
 export function addActivityToday(n: number): void {
+  if (!isGamificationEnabled()) return;
   if (n <= 0) return;
   const key = getTodayKey();
   const data = storageGet();

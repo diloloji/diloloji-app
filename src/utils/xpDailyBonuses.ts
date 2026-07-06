@@ -2,11 +2,12 @@
  * Alıştırma ile ilişkili günlük XP bonusları (localStorage).
  */
 import { getTodayString } from './xpLevel';
+import { isGamificationEnabled } from './gamificationGate';
 
-const KEY_FIRST_QUIZ_XP = 'conjume-xp-daily-first-quiz';
-const KEY_VERBS_DAY = 'conjume-xp-quiz-verbs-date';
-const KEY_VERBS_JSON = 'conjume-xp-quiz-verbs-json';
-const KEY_STREAK_MILESTONE = 'conjume-xp-streak-milestone-awarded';
+const KEY_FIRST_QUIZ_XP = 'diloloji-xp-daily-first-quiz';
+const KEY_VERBS_DAY = 'diloloji-xp-quiz-verbs-date';
+const KEY_VERBS_JSON = 'diloloji-xp-quiz-verbs-json';
+const KEY_STREAK_MILESTONE = 'diloloji-xp-streak-milestone-awarded';
 
 type VerbsDay = { date: string; verbs: string[] };
 
@@ -35,6 +36,7 @@ function saveVerbsToday(data: VerbsDay): void {
 
 /** Bugün bu fiille ilk kez alıştırma XP’si kazanılıyorsa +15 (bir kez / fiil / gün). */
 export function claimDifferentVerbBonus(verbKey: string): number {
+  if (!isGamificationEnabled()) return 0;
   const v = verbKey.trim().toLowerCase();
   if (!v) return 0;
   let data = loadVerbsToday();
@@ -48,6 +50,7 @@ export function claimDifferentVerbBonus(verbKey: string): number {
 
 /** Gün içinde ilk alıştırma XP etkinliğinde +25 (bir kez / gün). */
 export function claimFirstDailyQuizBonus(): number {
+  if (!isGamificationEnabled()) return 0;
   const today = getTodayString();
   try {
     if (localStorage.getItem(KEY_FIRST_QUIZ_XP) === today) return 0;

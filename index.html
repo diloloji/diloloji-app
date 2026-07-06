@@ -17,8 +17,27 @@
   </head>
   <body>
     <script>
+      // Eski "conjume-*" localStorage anahtarlarını "diloloji-*" adına taşır
+      // (tek seferlik). Tema kontrolünden önce çalışmalı ki ilk yüklemede
+      // kullanıcının teması / XP'si / rozetleri vs. kaybolmasın.
       (function() {
-        var t = localStorage.getItem('conjume-theme');
+        if (localStorage.getItem('diloloji-migrated-v1')) return;
+        try {
+          var keys = Object.keys(localStorage);
+          for (var i = 0; i < keys.length; i++) {
+            var oldKey = keys[i];
+            if (oldKey.indexOf('conjume') !== 0) continue;
+            var newKey = 'diloloji' + oldKey.slice('conjume'.length);
+            if (localStorage.getItem(newKey) === null) {
+              localStorage.setItem(newKey, localStorage.getItem(oldKey));
+            }
+            localStorage.removeItem(oldKey);
+          }
+        } catch (e) { /* ignore */ }
+        try { localStorage.setItem('diloloji-migrated-v1', '1'); } catch (e) { /* ignore */ }
+      })();
+      (function() {
+        var t = localStorage.getItem('diloloji-theme');
         var d = window.matchMedia('(prefers-color-scheme: dark)').matches;
         if (t === 'dark' || (t !== 'light' && d)) document.documentElement.classList.add('dark');
         else document.documentElement.classList.remove('dark');

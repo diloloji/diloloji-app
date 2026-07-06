@@ -264,7 +264,7 @@ export default function TodaysSession() {
   return (
     <div className="min-h-[100dvh] min-h-screen overflow-x-hidden bg-slate-50 dark:bg-[#0a0e17] text-slate-900 dark:text-slate-100 transition-colors duration-300">
       <Helmet>
-        <title>Bugünün Seansı — Conjume</title>
+        <title>Bugünün Seansı — Diloloji</title>
       </Helmet>
       <Navbar />
 

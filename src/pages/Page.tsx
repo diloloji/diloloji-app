@@ -51,6 +51,7 @@ import { tryUnlockPerfectionistBadge, runTimeAttackBadgeChecks, tryUnlockComboKi
 import { recordWeeklyCombo } from '../utils/xpWeeklyStats';
 import { getFlashcardDecks, addCardToDeck, type FlashcardDeck } from '../utils/flashcardDecks';
 import { useXp } from '../contexts/XpContext';
+import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTranslation } from 'react-i18next';
 import confetti from 'canvas-confetti';
@@ -58,7 +59,6 @@ import { Info, BookOpen, Clock, Shuffle, Volume2 } from 'lucide-react';
 import LearningCardDeck from '../components/LearningCardDeck';
 import EzberMakinesi from '../components/EzberMakinesi';
 import SurvivalMode from '../components/SurvivalMode';
-import AuthModal from '../components/AuthModal';
 import Navbar from '../components/Navbar';
 import AccentKeyboard from '../components/AccentKeyboard';
 import PronunciationButton from '../components/PronunciationButton';
@@ -910,7 +910,16 @@ export function Page() {
   /** Uygulama modu: URL'den türetilir */
   const appMode: AppMode = location.pathname === '/ezber-makinesi' ? 'ezber' : 'conjugation';
 
-  const { addXP, showFloatingXp, level } = useXp();
+  const { user } = useAuth();
+  const { addXP: rawAddXP, showFloatingXp: rawShowFloatingXp, level } = useXp();
+  /** XP sadece giriş yapmış kullanıcılar için kazanılır (misafirler için no-op). */
+  const addXP = useCallback((amount: number) => (user ? rawAddXP(amount) : 0), [user, rawAddXP]);
+  const showFloatingXp = useCallback(
+    (text: string, x: number, y: number) => {
+      if (user) rawShowFloatingXp(text, x, y);
+    },
+    [user, rawShowFloatingXp]
+  );
   const { t } = useTranslation();
 
   const difficultyConfig = useMemo((): Record<TimeAttackDifficulty, DifficultyConfig> => {
@@ -1133,8 +1142,8 @@ export function Page() {
 
   useEffect(() => {
     const fn = () => setSpacedRepTick((x) => x + 1);
-    window.addEventListener('conjume-spaced-rep-changed', fn);
-    return () => window.removeEventListener('conjume-spaced-rep-changed', fn);
+    window.addEventListener('diloloji-spaced-rep-changed', fn);
+    return () => window.removeEventListener('diloloji-spaced-rep-changed', fn);
   }, []);
 
   const masteryQuizPronounOrder = useMemo(() => {
@@ -1288,9 +1297,6 @@ export function Page() {
   const [tenseDetailModalOpen, setTenseDetailModalOpen] = useState(false);
   const [addToSetOpen, setAddToSetOpen] = useState(false);
   const addToSetRef = useRef<HTMLDivElement>(null);
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  /** Üyelik sistemi: şimdilik mock — true yaparak giriş yapmış kullanıcıyı simüle edebilirsin */
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   /** Zamana Karşı (Arcade): zorluk, süre (soru başına), soru, skor, combo, can, oyun bitti */
   const [timeAttackDifficulty, setTimeAttackDifficulty] = useState<TimeAttackDifficulty | null>(null);
@@ -1395,8 +1401,8 @@ export function Page() {
         highlightId: selectedLanguage === 'es' || selectedLanguage === 'fr' ? selectedTense : undefined,
       });
     };
-    window.addEventListener('conjume:open-tense-cards', handler);
-    return () => window.removeEventListener('conjume:open-tense-cards', handler);
+    window.addEventListener('diloloji:open-tense-cards', handler);
+    return () => window.removeEventListener('diloloji:open-tense-cards', handler);
   }, [selectedLanguage, selectedTense]);
   const quizTenseMenuRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -2349,8 +2355,8 @@ export function Page() {
 
   useEffect(() => {
     const onMastery = () => setMasteryUiTick((n) => n + 1);
-    window.addEventListener('conjume-mastery-changed', onMastery);
-    return () => window.removeEventListener('conjume-mastery-changed', onMastery);
+    window.addEventListener('diloloji-mastery-changed', onMastery);
+    return () => window.removeEventListener('diloloji-mastery-changed', onMastery);
   }, []);
 
   useEffect(() => {
@@ -2750,7 +2756,7 @@ export function Page() {
         try {
           const tenseIds = tensesForLang.map((x) => x.id);
           if (isVerbFullyMastered(selectedLanguage, verbKey, tenseIds, pronounIds)) {
-            const tid = `conjume-full-mastery-${selectedLanguage}-${verbKey.toLowerCase()}`;
+            const tid = `diloloji-full-mastery-${selectedLanguage}-${verbKey.toLowerCase()}`;
             if (typeof sessionStorage !== 'undefined' && !sessionStorage.getItem(tid)) {
               sessionStorage.setItem(tid, '1');
               setToastMessage(t('verbLab.mastery.fullVerbToast', { verb: verbKey }));
@@ -4114,10 +4120,7 @@ export function Page() {
       </Helmet>
       <Navbar
         printHide
-        isLoggedIn={isLoggedIn}
-        onLoginClick={() => setShowAuthModal(true)}
-        onLogoutClick={() => setIsLoggedIn(false)}
-        rightExtra={isLoggedIn ? (
+        rightExtra={user ? (
           <>
             <button type="button" onClick={() => setShowActivityModal(true)} className="flex items-center gap-0.5 text-[10px] uppercase tracking-wider text-slate-400 dark:text-slate-500 tabular-nums hover:text-amber-600 dark:hover:text-amber-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-1.5 py-1" title="Aktivite haritası" aria-label="Puan ve aktivite haritası">
               <span aria-live="polite">{totalScore}</span>
@@ -8819,14 +8822,6 @@ export function Page() {
           </div>
         );
       })()}
-
-      {/* Giriş / Kayıt modali (mock — backend bağlanmadan önce sadece UI) */}
-      <AuthModal
-        isOpen={showAuthModal}
-        onClose={() => setShowAuthModal(false)}
-        onLogin={() => setIsLoggedIn(true)}
-        onRegister={() => setIsLoggedIn(true)}
-      />
     </div>
   );
 }

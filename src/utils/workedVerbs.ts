@@ -1,13 +1,16 @@
 /**
  * Fiil laboratuvarında çalışılmış benzersiz fiiller (localStorage).
  */
-const STORAGE_KEY = 'conjume-worked-verbs-unique';
+import { isGamificationEnabled } from './gamificationGate';
+
+const STORAGE_KEY = 'diloloji-worked-verbs-unique';
 
 function normalizeVerb(v: string): string {
   return v.trim().toLowerCase();
 }
 
 export function recordWorkedVerb(verbKey: string): void {
+  if (!isGamificationEnabled()) return;
   const n = normalizeVerb(verbKey);
   if (!n) return;
   if (typeof window === 'undefined') return;

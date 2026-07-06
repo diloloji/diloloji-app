@@ -1,10 +1,10 @@
 /**
  * Cloze Sprint — seans skorlarını + günlük en iyi skoru localStorage'da tutar.
- * Kayıt anahtarı: conjume-cloze-sprint
+ * Kayıt anahtarı: diloloji-cloze-sprint
  */
 import type { ClozeTenseLabel } from '../data/clozeData';
 
-const STORAGE_KEY = 'conjume-cloze-sprint';
+const STORAGE_KEY = 'diloloji-cloze-sprint';
 
 export interface ClozeSessionResult {
   timestamp: number;
